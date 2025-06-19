@@ -1,0 +1,263 @@
+'use client'
+
+import { useState } from 'react'
+import Link from 'next/link'
+import { motion } from 'framer-motion'
+import { slideDown, motionSafe } from '@/lib/motion'
+import { useAuth } from '@/contexts/AuthContext'
+import AuthModal from './auth/AuthModal'
+import UserMenu from './auth/UserMenu'
+
+interface NavbarProps {
+  language?: 'vi' | 'en'
+  setLanguage?: (lang: 'vi' | 'en') => void
+}
+
+export default function Navbar({ language = 'en', setLanguage }: NavbarProps) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
+  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
+  
+  const { user, loading } = useAuth()
+
+  const content = {
+    vi: {
+      navigation: [
+        { name: 'Tính năng', href: '#features' },
+        { name: 'Tài liệu', href: '/documents' },
+        { name: 'Giá cả', href: '#pricing' },
+        { name: 'Doanh nghiệp', href: '#enterprise' },
+        { name: 'Blog', href: '/blog' },
+      ],
+      signin: 'Đăng nhập',
+      getStarted: 'Bắt đầu'
+    },
+    en: {
+      navigation: [
+        { name: 'Features', href: '#features' },
+        { name: 'Documents', href: '/documents' },
+        { name: 'Pricing', href: '#pricing' },
+        { name: 'Enterprise', href: '#enterprise' },
+        { name: 'Blog', href: '/blog' },
+      ],
+      signin: 'Sign In',
+      getStarted: 'Get Started'
+    }
+  }
+
+  return (
+    <motion.header 
+      className="glass-header"
+      variants={motionSafe(slideDown)}
+      initial="hidden"
+      animate="visible"
+    >
+      {/* Rainbow bar */}
+      <div className="rainbow-bar" />
+      
+      <nav className="w-full" aria-label="Main navigation">
+        <div className="content-container">
+          <div className="flex items-center h-16">
+          {/* Logo - Text only */}
+          <Link 
+            href="/" 
+            className="focus-visible-ring rounded-md mr-5"
+            aria-label="Prismy home"
+          >
+            <span className="heading-4 font-bold">Prismy</span>
+          </Link>
+
+          {/* Desktop Navigation - Moved left close to Prismy */}
+          <div className="hidden md:flex items-center space-x-5 flex-1">
+            {content[language].navigation.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                className="body-base font-bold text-gray-600 hover:text-gray-900 
+                         transition-[var(--transition-base)] focus-visible-ring 
+                         rounded-md px-2 py-1"
+              >
+                {item.name}
+              </Link>
+            ))}
+          </div>
+
+          {/* Right Section: Language Toggle + Auth */}
+          <div className="hidden md:flex items-center space-x-2.5">
+            {/* Language Toggle */}
+            {setLanguage && (
+              <div className="flex items-center bg-gray-100 rounded-lg p-1">
+                <button
+                  onClick={() => setLanguage('vi')}
+                  className={`px-3 py-1 rounded-md text-sm font-bold transition-all ${
+                    language === 'vi'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  VN
+                </button>
+                <button
+                  onClick={() => setLanguage('en')}
+                  className={`px-3 py-1 rounded-md text-sm font-bold transition-all ${
+                    language === 'en'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  EN
+                </button>
+              </div>
+            )}
+            
+            {!loading && (
+              user ? (
+                <UserMenu />
+              ) : (
+                <>
+                  <button
+                    onClick={() => {
+                      setAuthMode('signin')
+                      setIsAuthModalOpen(true)
+                    }}
+                    className="btn-ghost font-bold"
+                  >
+                    {content[language].signin}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setAuthMode('signup')
+                      setIsAuthModalOpen(true)
+                    }}
+                    className="btn-primary font-bold"
+                  >
+                    {content[language].getStarted}
+                  </button>
+                </>
+              )
+            )}
+          </div>
+
+          {/* Mobile menu button */}
+          <button
+            type="button"
+            className="md:hidden btn-ghost p-2 ml-auto"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-menu"
+            aria-label="Toggle navigation menu"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              {isMenuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
+          </div>
+        </div>
+
+        {/* Mobile menu */}
+        {isMenuOpen && (
+          <div className="content-container">
+            <motion.div
+              id="mobile-menu"
+              className="md:hidden border-t border-gray-100 pt-4 pb-6"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <div className="space-y-3">
+              {content[language].navigation.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className="block py-2 body-base font-bold text-gray-600 hover:text-gray-900 focus-visible-ring rounded-md"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {item.name}
+                </Link>
+              ))}
+              
+              {/* Mobile Language Toggle */}
+              {setLanguage && (
+                <div className="flex items-center bg-gray-100 rounded-lg p-1 w-fit">
+                  <button
+                    onClick={() => setLanguage('vi')}
+                    className={`px-3 py-1 rounded-md text-sm font-bold transition-all ${
+                      language === 'vi'
+                        ? 'bg-white text-gray-900 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    VN
+                  </button>
+                  <button
+                    onClick={() => setLanguage('en')}
+                    className={`px-3 py-1 rounded-md text-sm font-bold transition-all ${
+                      language === 'en'
+                        ? 'bg-white text-gray-900 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    EN
+                  </button>
+                </div>
+              )}
+              
+              <div className="pt-4 space-y-3">
+                {!loading && (
+                  user ? (
+                    <div className="flex items-center justify-center py-4">
+                      <UserMenu />
+                    </div>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => {
+                          setAuthMode('signin')
+                          setIsAuthModalOpen(true)
+                          setIsMenuOpen(false)
+                        }}
+                        className="block btn-ghost w-full text-center font-bold"
+                      >
+                        {content[language].signin}
+                      </button>
+                      <button
+                        onClick={() => {
+                          setAuthMode('signup')
+                          setIsAuthModalOpen(true)
+                          setIsMenuOpen(false)
+                        }}
+                        className="block btn-primary w-full text-center font-bold"
+                      >
+                        {content[language].getStarted}
+                      </button>
+                    </>
+                  )
+                )}
+              </div>
+            </div>
+            </motion.div>
+          </div>
+        )}
+      </nav>
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        initialMode={authMode}
+        language={language}
+      />
+    </motion.header>
+  )
+}

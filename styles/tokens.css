@@ -1,0 +1,96 @@
+/* Design System Tokens - 2-Tone Seamless */
+:root {
+  /* Core 2-tone colors */
+  --black: #000000;
+  --white: #ffffff;
+  
+  /* Main backgrounds */
+  --bg-main: var(--white);
+  --bg-footer: var(--black);
+  
+  /* Text colors */
+  --text-primary: var(--black);
+  --text-secondary: rgba(0, 0, 0, 0.6);
+  --text-muted: rgba(0, 0, 0, 0.4);
+  --text-inverse: var(--white);
+  
+  /* Border and divider */
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --border-main: rgba(0, 0, 0, 0.12);
+  
+  /* Legacy gray scale - mapped to black/white/transparent variations */
+  --gray-900: var(--black);
+  --gray-800: var(--black);
+  --gray-700: var(--black);
+  --gray-600: rgba(0, 0, 0, 0.8);
+  --gray-500: rgba(0, 0, 0, 0.6);
+  --gray-400: rgba(0, 0, 0, 0.4);
+  --gray-300: rgba(0, 0, 0, 0.2);
+  --gray-200: rgba(0, 0, 0, 0.12);
+  --gray-100: rgba(0, 0, 0, 0.08);
+  --gray-50: rgba(0, 0, 0, 0.04);
+
+  /* Accent laser */
+  --accent-rainbow: linear-gradient(90deg,
+    #ff5757 0%, #ffca46 25%, #34d97b 45%,
+    #45b2ff 65%, #c47bff 85%, #ff5790 100%);
+
+  /* Radius */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1.25rem;
+
+  /* Refined shadows for 2-tone design */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 6px 24px rgba(0, 0, 0, 0.05);
+  
+  /* Spacing scale */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+  
+  /* Container width constraints for full-width design */
+  --container-padding: 1rem;
+  --container-padding-lg: 2rem;
+  --container-padding-xl: 3rem;
+  --max-content-width: 1400px;
+  
+  /* Font sizes */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  --text-5xl: 3rem;
+  
+  /* Line heights */
+  --leading-tight: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.75;
+  
+  /* Durations */
+  --duration-fast: 200ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+  
+  /* Transitions */
+  --transition-base: all var(--duration-fast) ease-out;
+  --transition-slow: all var(--duration-normal) ease-out;
+}
+
+/* Reduced motion variants */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-normal: 0ms;
+    --duration-slow: 0ms;
+  }
+}
