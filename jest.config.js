@@ -13,13 +13,25 @@ const customJestConfig = {
     'lib/**/*.{js,jsx,ts,tsx}',
     'components/**/*.{js,jsx,ts,tsx}',
     'app/**/*.{js,jsx,ts,tsx}',
+    'middleware/**/*.{js,jsx,ts,tsx}',
     '!**/*.d.ts',
     '!**/node_modules/**',
     '!**/.next/**',
     '!**/coverage/**',
     '!lib/supabase-server.ts', // Skip server-only components
-    '!middleware.ts', // Skip middleware for now
+    '!middleware.ts', // Skip main middleware for now
+    '!**/*.config.{js,ts}',
+    '!**/instrumentation.ts',
+    '!sentry.*.config.ts',
   ],
+  coverageThreshold: {
+    global: {
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80,
+    },
+  },
   coverageReporters: ['text', 'lcov', 'html'],
   coverageDirectory: 'coverage',
   testMatch: [
