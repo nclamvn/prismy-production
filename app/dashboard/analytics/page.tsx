@@ -83,42 +83,101 @@ function AnalyticsPage() {
     }
   }
 
-  // Mock data - in production, fetch from API
-  const analyticsData = {
-    metrics: {
-      totalTranslations: 1234,
-      wordsTranslated: 45678,
-      avgAccuracy: 98.5,
-      timeSpent: 127, // hours
-      documentsProcessed: 89,
-      languagePairs: 12,
-      avgWordsPerDay: 850,
-      efficiency: 92.3
-    },
-    trends: {
-      translationsGrowth: '+23%',
-      wordsGrowth: '+18%',
-      accuracyChange: '+2.1%',
-      efficiencyChange: '+5.2%'
-    },
-    charts: {
-      translationsOverTime: [
-        { date: '2024-01-01', count: 45 },
-        { date: '2024-01-02', count: 52 },
-        { date: '2024-01-03', count: 38 },
-        { date: '2024-01-04', count: 67 },
-        { date: '2024-01-05', count: 58 },
-        { date: '2024-01-06', count: 71 },
-        { date: '2024-01-07', count: 63 }
-      ],
-      languageUsage: [
-        { language: 'EN → VI', percentage: 35, count: 432 },
-        { language: 'VI → EN', percentage: 28, count: 345 },
-        { language: 'EN → ES', percentage: 15, count: 185 },
-        { language: 'JA → EN', percentage: 12, count: 148 },
-        { language: 'Others', percentage: 10, count: 124 }
-      ]
+  // Real analytics data
+  const [analyticsData, setAnalyticsData] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      try {
+        setLoading(true)
+        
+        // Get user metrics from analytics service
+        const response = await fetch(`/api/analytics/user-metrics?period=${selectedPeriod}`)
+        if (!response.ok) throw new Error('Failed to fetch analytics')
+        
+        const data = await response.json()
+        setAnalyticsData(data)
+        setError(null)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load analytics')
+        console.error('Analytics error:', err)
+        
+        // Fallback to mock data
+        setAnalyticsData({
+          metrics: {
+            totalTranslations: 0,
+            wordsTranslated: 0,
+            avgAccuracy: 0,
+            timeSpent: 0,
+            documentsProcessed: 0,
+            languagePairs: 0,
+            avgWordsPerDay: 0,
+            efficiency: 0
+          },
+          trends: {
+            translationsGrowth: '0%',
+            wordsGrowth: '0%',
+            accuracyChange: '0%',
+            efficiencyChange: '0%'
+          },
+          charts: {
+            translationsOverTime: [],
+            languageUsage: []
+          }
+        })
+      } finally {
+        setLoading(false)
+      }
     }
+
+    fetchAnalytics()
+  }, [selectedPeriod])
+
+  if (loading) {
+    return (
+      <DashboardLayout language={language}>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading analytics...</p>
+          </div>
+        </div>
+      </DashboardLayout>
+    )
+  }
+
+  if (error) {
+    return (
+      <DashboardLayout language={language}>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <svg className="w-12 h-12 text-red-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p className="text-red-600 mb-2">Failed to load analytics</p>
+            <p className="text-sm text-gray-500">{error}</p>
+            <button 
+              onClick={() => window.location.reload()} 
+              className="mt-4 btn-primary"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </DashboardLayout>
+    )
+  }
+
+  if (!analyticsData) {
+    return (
+      <DashboardLayout language={language}>
+        <div className="flex items-center justify-center h-64">
+          <p className="text-gray-600">No analytics data available</p>
+        </div>
+      </DashboardLayout>
+    )
   }
 
   return (

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ProcessedDocument, DocumentChunk } from '@/lib/document-processor'
+import { ProcessedDocument, DocumentChunk } from '@/lib/enhanced-document-processor'
 import { motionSafe } from '@/lib/motion'
 
 interface DocumentTranslatorProps {
@@ -98,7 +98,7 @@ export default function DocumentTranslator({
         
         // Simulate API call - replace with actual translation API
         const translatedText = await translateChunk(chunk, sourceLang, targetLang)
-        translatedChunks.set(chunk.id, translatedText)
+        translatedChunks.set(`chunk-${i}`, translatedText)
 
         // Update progress
         const current = i + 1
@@ -145,7 +145,7 @@ export default function DocumentTranslator({
     //   body: JSON.stringify({ text: chunk.text, source, target })
     // })
     
-    return `[Translated: ${chunk.text.substring(0, 50)}...]`
+    return `[Translated: ${chunk.content.substring(0, 50)}...]`
   }
 
   const formatTime = (seconds: number): string => {
@@ -178,11 +178,11 @@ export default function DocumentTranslator({
           </h3>
           <div className="space-y-1 text-sm">
             <p className="text-gray-600">
-              <span className="font-medium">{content[language].fileName}:</span> {document.fileName}
+              <span className="font-medium">{content[language].fileName}:</span> {document.metadata.filename}
             </p>
             <p className="text-gray-500">
-              {document.metadata.wordCount} {content[language].stats.words} • {' '}
-              {document.metadata.characterCount} {content[language].stats.characters} • {' '}
+              {document.metadata.words || 0} {content[language].stats.words} • {' '}
+              {document.metadata.characters || 0} {content[language].stats.characters} • {' '}
               {document.chunks.length} {content[language].stats.chunks}
             </p>
           </div>

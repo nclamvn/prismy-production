@@ -18,7 +18,13 @@ const ACCEPTED_FILE_TYPES = {
   'text/plain': ['.txt'],
   'text/csv': ['.csv'],
   'application/vnd.ms-excel': ['.xls'],
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx']
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
+  'image/jpeg': ['.jpg', '.jpeg'],
+  'image/png': ['.png'],
+  'image/gif': ['.gif'],
+  'image/bmp': ['.bmp'],
+  'image/tiff': ['.tiff'],
+  'image/webp': ['.webp']
 }
 
 export default function DocumentUpload({ 
@@ -35,7 +41,7 @@ export default function DocumentUpload({
     vi: {
       title: 'Tải lên tài liệu',
       subtitle: 'Kéo và thả tài liệu vào đây hoặc nhấp để chọn',
-      supportedFormats: 'Hỗ trợ: PDF, DOCX, DOC, TXT, CSV, XLS, XLSX',
+      supportedFormats: 'Hỗ trợ: PDF, DOCX, DOC, TXT, CSV, XLS, XLSX, JPG, PNG, GIF, BMP, TIFF, WEBP',
       maxSize: `Kích thước tối đa: ${maxSizeMB}MB`,
       uploadButton: 'Chọn tài liệu',
       processing: 'Đang xử lý...',
@@ -54,7 +60,7 @@ export default function DocumentUpload({
     en: {
       title: 'Upload Document',
       subtitle: 'Drag and drop your document here or click to select',
-      supportedFormats: 'Supported: PDF, DOCX, DOC, TXT, CSV, XLS, XLSX',
+      supportedFormats: 'Supported: PDF, DOCX, DOC, TXT, CSV, XLS, XLSX, JPG, PNG, GIF, BMP, TIFF, WEBP',
       maxSize: `Maximum size: ${maxSizeMB}MB`,
       uploadButton: 'Select Document',
       processing: 'Processing...',

@@ -46,6 +46,15 @@ export class DocumentProcessor {
       case 'csv':
         text = await this.processCsvFile(file)
         break
+      case 'jpg':
+      case 'jpeg':
+      case 'png':
+      case 'gif':
+      case 'bmp':
+      case 'tiff':
+      case 'webp':
+        text = await this.processImageFile(file)
+        break
       default:
         throw new Error(`Unsupported file type: ${fileType}`)
     }
@@ -73,7 +82,14 @@ export class DocumentProcessor {
       'application/msword': 'doc',
       'text/csv': 'csv',
       'application/vnd.ms-excel': 'xls',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx'
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
+      'image/jpeg': 'jpg',
+      'image/jpg': 'jpg',
+      'image/png': 'png',
+      'image/gif': 'gif',
+      'image/bmp': 'bmp',
+      'image/tiff': 'tiff',
+      'image/webp': 'webp'
     }
     
     return mimeTypeMap[file.type] || extension
@@ -84,8 +100,25 @@ export class DocumentProcessor {
   }
 
   private static async processPdfFile(file: File): Promise<string> {
-    // For now, return placeholder. In production, use pdf.js or similar
-    return `[PDF content extraction would be implemented here for: ${file.name}]`
+    try {
+      // First try to extract text directly from PDF
+      // This would require pdf.js or similar for text-based PDFs
+      
+      // For now, use OCR as fallback for image-based PDFs
+      const { ocrService } = await import('./ocr-service')
+      
+      // Convert PDF to image and perform OCR
+      // Note: In a real implementation, you'd want to render PDF pages to canvas first
+      const result = await ocrService.recognizeFromFile(file, {
+        language: 'eng+vie', // Support both English and Vietnamese
+        psm: 3 // Fully automatic page segmentation
+      })
+      
+      return result.text || `[Could not extract text from PDF: ${file.name}]`
+    } catch (error) {
+      console.error('[Document Processor] PDF processing failed:', error)
+      return `[PDF processing failed for: ${file.name}. Error: ${error}]`
+    }
   }
 
   private static async processDocxFile(file: File): Promise<string> {
@@ -98,6 +131,27 @@ export class DocumentProcessor {
     // Convert CSV to readable text format
     const lines = text.split('\n')
     return lines.map(line => line.split(',').join(' | ')).join('\n')
+  }
+
+  private static async processImageFile(file: File): Promise<string> {
+    try {
+      const { ocrService } = await import('./ocr-service')
+      
+      // Perform OCR on the image
+      const result = await ocrService.recognizeFromFile(file, {
+        language: 'eng+vie', // Support both English and Vietnamese
+        psm: 3 // Fully automatic page segmentation
+      })
+      
+      if (!result.text || result.text.trim().length === 0) {
+        return `[No text detected in image: ${file.name}]`
+      }
+      
+      return result.text
+    } catch (error) {
+      console.error('[Document Processor] Image OCR failed:', error)
+      return `[OCR processing failed for image: ${file.name}. Error: ${error}]`
+    }
   }
 
   private static createChunks(text: string): DocumentChunk[] {
