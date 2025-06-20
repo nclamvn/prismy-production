@@ -20,7 +20,18 @@ export default function Navbar({}: NavbarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
+  const [isScrolled, setIsScrolled] = useState(false)
   const { user, loading } = useAuth()
+
+  // Scroll detection for dynamic border
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const content = {
     vi: {
@@ -57,7 +68,9 @@ export default function Navbar({}: NavbarProps) {
 
   return (
     <motion.header 
-      className="glass-header"
+      className={`glass-header transition-all duration-300 ${
+        isScrolled ? 'border-b border-gray-200 bg-white/95 backdrop-blur-md' : 'bg-white/90'
+      }`}
       variants={motionSafe(slideDown)}
       initial="hidden"
       animate="visible"
@@ -83,8 +96,8 @@ export default function Navbar({}: NavbarProps) {
               <Link
                 key={item.name}
                 href={item.href}
-                className="body-base font-bold text-gray-600 hover:text-gray-900 
-                         transition-[var(--transition-base)] focus-visible-ring 
+                className="body-base font-normal hover:font-semibold text-gray-600 hover:text-gray-900 
+                         transition-all duration-200 focus-visible-ring 
                          rounded-md px-2 py-1"
               >
                 {item.name}
@@ -124,7 +137,7 @@ export default function Navbar({}: NavbarProps) {
                       setAuthMode('signin')
                       setIsAuthModalOpen(true)
                     }}
-                    className="btn-ghost font-bold"
+                    className="btn-ghost font-normal hover:font-semibold"
                   >
                     {content[language].signin}
                   </button>
@@ -133,7 +146,7 @@ export default function Navbar({}: NavbarProps) {
                       setAuthMode('signup')
                       setIsAuthModalOpen(true)
                     }}
-                    className="btn-primary font-bold"
+                    className="btn-primary font-semibold"
                   >
                     {content[language].getStarted}
                   </button>
@@ -184,7 +197,7 @@ export default function Navbar({}: NavbarProps) {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className="block py-2 body-base font-bold text-gray-600 hover:text-gray-900 focus-visible-ring rounded-md"
+                  className="block py-2 body-base font-normal hover:font-semibold text-gray-600 hover:text-gray-900 focus-visible-ring rounded-md transition-all duration-200"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.name}
@@ -235,7 +248,7 @@ export default function Navbar({}: NavbarProps) {
                           setIsAuthModalOpen(true)
                           setIsMenuOpen(false)
                         }}
-                        className="block btn-ghost w-full text-center font-bold"
+                        className="block btn-ghost w-full text-center font-normal hover:font-semibold"
                       >
                         {content[language].signin}
                       </button>
@@ -245,7 +258,7 @@ export default function Navbar({}: NavbarProps) {
                           setIsAuthModalOpen(true)
                           setIsMenuOpen(false)
                         }}
-                        className="block btn-primary w-full text-center font-bold"
+                        className="block btn-primary w-full text-center font-semibold"
                       >
                         {content[language].getStarted}
                       </button>

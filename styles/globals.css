@@ -103,17 +103,39 @@
     @apply input-base resize-none;
   }
   
-  /* Select styles */
+  /* Select styles - Vietnamese DNA (No Shadow) */
   .select-base {
     @apply input-base appearance-none cursor-pointer pr-10 bg-white;
     background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTQgNkw4IDEwTDEyIDYiIHN0cm9rZT0iIzZmNmY2ZiIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+');
     background-size: 16px;
     background-position: right 1rem center;
     background-repeat: no-repeat;
+    box-shadow: none;
   }
   
   .select-base:hover {
     @apply bg-gray-50 font-bold text-gray-900;
+    box-shadow: none;
+  }
+  
+  .select-base:focus {
+    box-shadow: none;
+  }
+  
+  /* Vietnamese Dropdown DNA - No Shadow Standard */
+  .dropdown-vietnamese {
+    @apply bg-white border border-gray-300 rounded-lg;
+    box-shadow: none !important;
+  }
+  
+  .dropdown-vietnamese:hover {
+    @apply border-gray-400;
+    box-shadow: none !important;
+  }
+  
+  .dropdown-vietnamese:focus {
+    @apply ring-2 ring-gray-300 ring-offset-1;
+    box-shadow: none !important;
   }
   
   /* Typography */
@@ -184,6 +206,93 @@
   
   .stat-label {
     @apply text-sm text-gray-500;
+  }
+  
+  /* Vietnamese Pricing Card Hover Effects */
+  .zen-card-hover-pricing {
+    @apply transition-all duration-200 ease-in-out;
+  }
+  
+  .zen-card-hover-pricing:hover {
+    transform: translateY(-2px);
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.05);
+    background-color: #ffffff;
+  }
+  
+  /* Hero GIF Container & Responsive */
+  .hero-gif-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background-color: transparent;
+  }
+  
+  .hero-gif {
+    display: block;
+    object-fit: contain;
+    object-position: center;
+    max-width: 100%;
+    height: auto;
+    /* Optional: Blend với background nếu cần */
+    /* mix-blend-mode: multiply; */
+  }
+  
+  @media (max-width: 1279px) {
+    .hero-gif-container {
+      max-width: 70vw !important;
+    }
+    .heading-1 {
+      font-size: calc(3rem * 0.9); /* 90% of original size */
+    }
+  }
+  
+  @media (max-width: 767px) {
+    .hero-gif-container {
+      max-width: 90vw !important;
+    }
+    .hero-gif {
+      filter: drop-shadow(none);
+    }
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .hero-gif-container {
+      display: none;
+    }
+  }
+  
+  /* LLM Logo Styles */
+  .llm-logo-container {
+    opacity: 0.8;
+    transition: all 200ms ease-in-out;
+  }
+  
+  .llm-logo-container:hover {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  
+  .llm-logo {
+    filter: brightness(0) saturate(100%) invert(60%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(60%) contrast(100%);
+    width: auto;
+    transition: all 300ms ease-in-out;
+    opacity: 0.7;
+  }
+  
+  .llm-logo:hover {
+    filter: none;
+    opacity: 1;
+  }
+  
+  /* Mobile: giảm thêm 10% và điều chỉnh gap */
+  @media (max-width: 767px) {
+    .llm-logo {
+      transform: scale(0.9);
+    }
+    
+    .llm-logos-container {
+      gap: 3rem !important; /* 48px thay vì 64px */
+    }
   }
 }
 

@@ -15,6 +15,13 @@ import {
   ArrowRight,
   Tag
 } from 'lucide-react'
+import { 
+  AITranslationIcon, 
+  BusinessIcon, 
+  CultureIcon, 
+  TechnicalIcon, 
+  AIIcon 
+} from '@/components/ui/ArtlineIcons'
 
 export default function Blog() {
   const { language } = useLanguage()
@@ -45,6 +52,7 @@ export default function Blog() {
           date: '15 Tháng 12, 2024',
           readTime: '8 phút đọc',
           image: '/api/placeholder/600/400',
+          artlineIcon: AITranslationIcon,
           featured: true
         },
         {
@@ -55,7 +63,8 @@ export default function Blog() {
           author: 'Trần Văn Nam',
           date: '12 Tháng 12, 2024',
           readTime: '6 phút đọc',
-          image: '/api/placeholder/600/400'
+          image: '/api/placeholder/600/400',
+          artlineIcon: BusinessIcon
         },
         {
           id: 3,
@@ -65,7 +74,8 @@ export default function Blog() {
           author: 'Lê Thị Hương',
           date: '10 Tháng 12, 2024',
           readTime: '10 phút đọc',
-          image: '/api/placeholder/600/400'
+          image: '/api/placeholder/600/400',
+          artlineIcon: CultureIcon
         },
         {
           id: 4,
@@ -75,7 +85,8 @@ export default function Blog() {
           author: 'Phạm Quang Huy',
           date: '8 Tháng 12, 2024',
           readTime: '12 phút đọc',
-          image: '/api/placeholder/600/400'
+          image: '/api/placeholder/600/400',
+          artlineIcon: TechnicalIcon
         },
         {
           id: 5,
@@ -85,7 +96,8 @@ export default function Blog() {
           author: 'Hoàng Thị Mai',
           date: '5 Tháng 12, 2024',
           readTime: '7 phút đọc',
-          image: '/api/placeholder/600/400'
+          image: '/api/placeholder/600/400',
+          artlineIcon: BusinessIcon
         },
         {
           id: 6,
@@ -95,7 +107,8 @@ export default function Blog() {
           author: 'Dr. Vũ Hoàng Long',
           date: '2 Tháng 12, 2024',
           readTime: '15 phút đọc',
-          image: '/api/placeholder/600/400'
+          image: '/api/placeholder/600/400',
+          artlineIcon: AIIcon
         }
       ]
     },
@@ -271,7 +284,7 @@ export default function Blog() {
                           </span>
                         </div>
                         
-                        <h2 className="heading-3 text-text-primary mb-4">
+                        <h2 className="heading-3 font-bold text-text-primary mb-4">
                           {featuredArticle.title}
                         </h2>
                         
@@ -346,7 +359,7 @@ export default function Blog() {
                             </span>
                           </div>
                           
-                          <h3 className="heading-5 text-text-primary mb-3 line-clamp-2">
+                          <h3 className="heading-5 font-bold text-text-primary mb-3 line-clamp-2">
                             {article.title}
                           </h3>
                           
@@ -387,51 +400,6 @@ export default function Blog() {
             </div>
           </section>
 
-          {/* Newsletter Signup */}
-          <section className="py-20 bg-black w-full">
-            <div className="w-full px-4 sm:px-6 lg:px-8">
-              <div className="max-w-4xl mx-auto">
-                <motion.div
-                  variants={motionSafe(staggerContainer)}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                  className="text-center"
-                >
-                  <motion.h2 
-                    variants={motionSafe(slideUp)}
-                    className="heading-2 text-white mb-6"
-                  >
-                    {language === 'vi' ? 'Đăng ký nhận bản tin' : 'Subscribe to Newsletter'}
-                  </motion.h2>
-                  
-                  <motion.p 
-                    variants={motionSafe(slideUp)}
-                    className="body-lg text-gray-300 mb-8"
-                  >
-                    {language === 'vi' 
-                      ? 'Nhận những insights mới nhất về AI translation và xu hướng ngành'
-                      : 'Get the latest insights on AI translation and industry trends'
-                    }
-                  </motion.p>
-                  
-                  <motion.div 
-                    variants={motionSafe(slideUp)}
-                    className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto"
-                  >
-                    <input
-                      type="email"
-                      placeholder={language === 'vi' ? 'Email của bạn' : 'Your email'}
-                      className="input-base flex-1"
-                    />
-                    <button className="bg-white text-black hover:bg-gray-100 px-6 py-3 rounded-lg font-semibold transition-colors">
-                      {language === 'vi' ? 'Đăng ký' : 'Subscribe'}
-                    </button>
-                  </motion.div>
-                </motion.div>
-              </div>
-            </div>
-          </section>
         </main>
 
         <Footer />

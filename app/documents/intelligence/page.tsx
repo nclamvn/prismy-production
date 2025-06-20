@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { AuthProvider, useAuth } from '@/contexts/AuthContext'
+import { useLanguage } from '@/contexts/LanguageContext'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import IntelligentDocumentUpload from '@/components/documents/IntelligentDocumentUpload'
@@ -36,7 +37,7 @@ interface DocumentIntelligence {
 }
 
 function IntelligenceDashboardContent() {
-  const [language, setLanguage] = useState<'vi' | 'en'>('en')
+  const { language } = useLanguage()
   const [documentIntelligence, setDocumentIntelligence] = useState<DocumentIntelligence | null>(null)
   const [showDetailedResults, setShowDetailedResults] = useState(false)
   const [error, setError] = useState<string | null>(null)

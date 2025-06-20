@@ -7,6 +7,7 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { slideUp, staggerContainer, motionSafe } from '@/lib/motion'
 import { UNIFIED_SUBSCRIPTION_PLANS } from '@/lib/payments/payment-service'
+import FeatureCard from '@/components/ui/FeatureCard'
 import { 
   Zap, 
   Globe, 
@@ -35,32 +36,32 @@ export default function Home() {
         items: [
           {
             title: 'Dịch thuật tức thì',
-            description: 'AI thế hệ mới dịch chính xác trong vài giây',
+            description: 'AI thế hệ mới với công nghệ neural machine translation tiên tiến, đảm bảo độ chính xác cao và tốc độ xử lý nhanh chóng chỉ trong vài giây. Hỗ trợ dịch thuật theo ngữ cảnh và giữ nguyên định dạng tài liệu gốc.',
             icon: Zap
           },
           {
             title: 'Hỗ trợ 100+ ngôn ngữ',
-            description: 'Dịch giữa tất cả các ngôn ngữ phổ biến trên thế giới',
+            description: 'Hệ thống dịch thuật đa ngôn ngữ toàn diện, bao phủ tất cả các ngôn ngữ chính thống trên thế giới. Từ các ngôn ngữ phổ biến như Anh, Trung, Nhật đến các ngôn ngữ địa phương hiếm gặp, đảm bảo chất lượng dịch thuật nhất quán.',
             icon: Globe
           },
           {
             title: 'Thanh toán Việt Nam',
-            description: 'VNPay, MoMo và thẻ quốc tế - linh hoạt thanh toán',
+            description: 'Tích hợp đầy đủ các phương thức thanh toán phổ biến tại Việt Nam: VNPay, MoMo, ZaloPay và thẻ quốc tế. Giao dịch an toàn, nhanh chóng với mã hóa 256-bit và tuân thủ chuẩn bảo mật PCI DSS.',
             icon: CreditCard
           },
           {
             title: 'Bảo mật tuyệt đối',
-            description: 'Dữ liệu được mã hóa và bảo vệ theo chuẩn quốc tế',
+            description: 'Hệ thống bảo mật đa lớp với mã hóa AES-256, xác thực hai yếu tố và tuân thủ các tiêu chuẩn quốc tế ISO 27001, SOC 2. Tất cả dữ liệu được xử lý trong môi trường cloud bảo mật và tự động xóa sau khi hoàn tất.',
             icon: Shield
           },
           {
             title: 'API doanh nghiệp',
-            description: 'Tích hợp dễ dàng vào hệ thống hiện tại',
+            description: 'RESTful API mạnh mẽ và linh hoạt, dễ dàng tích hợp vào hệ thống hiện tại của doanh nghiệp. Hỗ trợ webhook, batch processing và SDK cho các ngôn ngữ lập trình phổ biến. Tài liệu API chi tiết và mẫu code sẵn sàng.',
             icon: Settings
           },
           {
             title: 'Hỗ trợ 24/7',
-            description: 'Đội ngũ chuyên gia sẵn sàng hỗ trợ mọi lúc',
+            description: 'Đội ngũ chuyên gia kỹ thuật và customer success sẵn sàng hỗ trợ 24/7 qua nhiều kênh: live chat, email, phone và ticket system. Thời gian phản hồi trung bình dưới 15 phút, đảm bảo doanh nghiệp luôn được hỗ trợ kịp thời.',
             icon: Headphones
           }
         ]
@@ -80,12 +81,6 @@ export default function Home() {
         monthly: 'Hàng tháng',
         getStarted: 'Bắt đầu',
         mostPopular: 'Phổ biến nhất'
-      },
-      cta: {
-        title: 'Sẵn sàng bắt đầu?',
-        description: 'Tham gia cùng hàng nghìn doanh nghiệp đang sử dụng Prismy',
-        getStarted: 'Bắt đầu miễn phí',
-        contactSales: 'Liên hệ bán hàng'
       }
     },
     en: {
@@ -103,32 +98,32 @@ export default function Home() {
         items: [
           {
             title: 'Instant Translation',
-            description: 'Next-gen AI translates accurately in seconds',
+            description: 'Next-generation AI with advanced neural machine translation technology, ensuring high accuracy and lightning-fast processing in just seconds. Supports context-aware translation while preserving original document formatting.',
             icon: Zap
           },
           {
             title: '100+ Languages',
-            description: 'Translate between all major world languages',
+            description: 'Comprehensive multilingual translation system covering all major world languages. From popular languages like English, Chinese, Japanese to rare regional dialects, ensuring consistent translation quality across all language pairs.',
             icon: Globe
           },
           {
             title: 'Vietnamese Payments',
-            description: 'VNPay, MoMo and international cards - flexible payment',
+            description: 'Full integration with popular Vietnamese payment methods: VNPay, MoMo, ZaloPay, and international cards. Secure, fast transactions with 256-bit encryption and PCI DSS compliance standards.',
             icon: CreditCard
           },
           {
             title: 'Absolute Security',
-            description: 'Data encrypted and protected by international standards',
+            description: 'Multi-layered security system with AES-256 encryption, two-factor authentication, and compliance with international standards ISO 27001, SOC 2. All data processed in secure cloud environment and automatically deleted after completion.',
             icon: Shield
           },
           {
             title: 'Enterprise API',
-            description: 'Easy integration into existing systems',
+            description: 'Powerful and flexible RESTful API, easily integrated into existing enterprise systems. Supports webhooks, batch processing, and SDKs for popular programming languages. Comprehensive API documentation and ready-to-use code samples.',
             icon: Settings
           },
           {
             title: '24/7 Support',
-            description: 'Expert team ready to help anytime',
+            description: 'Expert technical and customer success teams available 24/7 through multiple channels: live chat, email, phone, and ticket system. Average response time under 15 minutes, ensuring businesses receive timely support.',
             icon: Headphones
           }
         ]
@@ -148,19 +143,20 @@ export default function Home() {
         monthly: 'Monthly',
         getStarted: 'Get Started',
         mostPopular: 'Most Popular'
-      },
-      cta: {
-        title: 'Ready to get started?',
-        description: 'Join thousands of businesses already using Prismy',
-        getStarted: 'Start Free',
-        contactSales: 'Contact Sales'
       }
     }
   }
 
-  const companies = [
-    'Vinamilk', 'Vietcombank', 'VNPT', 'Viettel', 'FPT', 'VinGroup'
+  const llmCompanies = [
+    { name: 'OpenAI', logo: '/assets/logos/OpenAI.png', baseSize: 66 },        // 44 * 1.5
+    { name: 'Anthropic', logo: '/assets/logos/Anthropic.png', baseSize: 35 },  // Giữ nguyên
+    { name: 'Google', logo: '/assets/logos/Google.png', baseSize: 78 },        // 52 * 1.5
+    { name: 'Cohere', logo: '/assets/logos/Cohere.png', baseSize: 44 },        // Giữ nguyên
+    { name: 'DeepL', logo: '/assets/logos/DeepL.png', baseSize: 75 }           // 50 * 1.5
   ]
+
+  // Thu nhỏ toàn bộ 2.5 lần
+  const getFinalLogoSize = (baseSize: number) => Math.round(baseSize / 2.5)
 
   return (
     <AuthProvider>
@@ -169,8 +165,8 @@ export default function Home() {
         
         <main>
           {/* Hero Section - Full Width */}
-          <section className="relative overflow-hidden bg-white pt-20 w-full">
-            <div className="w-full py-20">
+          <section className="relative overflow-hidden bg-white pt-12 md:pt-16 w-full">
+            <div className="w-full py-12 md:py-16">
               <div className="w-full">
                 <motion.div
                   variants={motionSafe(staggerContainer)}
@@ -178,6 +174,27 @@ export default function Home() {
                   animate="visible"
                   className="text-center px-4 md:px-8 lg:px-12"
                 >
+                {/* Hero GIF */}
+                <motion.div 
+                  variants={motionSafe(slideUp)}
+                  className="mb-8 md:mb-10 lg:mb-12"
+                >
+                  <div className="hero-gif-container mx-auto" style={{ maxWidth: '720px' }}>
+                    <img 
+                      src="/assets/header.gif"
+                      alt=""
+                      aria-hidden="true"
+                      loading="lazy"
+                      className="hero-gif w-full"
+                      style={{
+                        width: '100%',
+                        height: 'auto',
+                        display: 'block'
+                      }}
+                    />
+                  </div>
+                </motion.div>
+                
                 <motion.h1 
                   variants={motionSafe(slideUp)}
                   className="heading-1 text-text-primary mb-6"
@@ -195,7 +212,7 @@ export default function Home() {
                 
                 <motion.div 
                   variants={motionSafe(slideUp)}
-                  className="flex flex-col sm:flex-row gap-4 justify-center mb-12"
+                  className="flex flex-col sm:flex-row gap-4 justify-center mb-8 md:mb-10 lg:mb-12"
                 >
                   <button className="btn-primary btn-lg">
                     {content[language].hero.getStarted}
@@ -207,7 +224,7 @@ export default function Home() {
                 
                 <motion.p 
                   variants={motionSafe(slideUp)}
-                  className="body-sm text-text-muted"
+                  className="body-sm text-text-muted mb-4 md:mb-6 lg:mb-8"
                 >
                   {content[language].hero.trustIndicator}
                 </motion.p>
@@ -217,13 +234,21 @@ export default function Home() {
           </section>
 
           {/* Company Logos - Full Width */}
-          <section className="py-12 border-b border-border-subtle w-full">
+          <section className="py-4 md:py-6 lg:py-8 border-b border-border-subtle w-full">
             <div className="w-full">
               <div className="w-full">
-              <div className="flex flex-wrap justify-center items-center gap-8 opacity-60 px-4 md:px-8 lg:px-12">
-                {companies.map((company) => (
-                  <div key={company} className="body-base font-semibold text-text-muted">
-                    {company}
+              <div className="flex flex-wrap justify-center items-center gap-16 px-4 md:px-8 lg:px-12 llm-logos-container">
+                {llmCompanies.map((company) => (
+                  <div key={company.name} className="llm-logo-container">
+                    <img 
+                      src={company.logo}
+                      alt={company.name}
+                      className="llm-logo"
+                      style={{ 
+                        height: `${getFinalLogoSize(company.baseSize)}px`, 
+                        width: 'auto' 
+                      }}
+                    />
                   </div>
                 ))}
               </div>
@@ -251,26 +276,15 @@ export default function Home() {
                 </motion.div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 md:px-8 lg:px-12">
-                  {content[language].features.items.map((feature, index) => {
-                    const IconComponent = feature.icon
-                    return (
-                      <motion.div
-                        key={index}
-                        variants={motionSafe(slideUp)}
-                        className="feature-card-vertical zen-card-hover-enhanced"
-                      >
-                        <div className="feature-icon-container">
-                          <IconComponent 
-                            size={26} 
-                            className="text-black zen-icon-hover transition-all duration-300" 
-                            strokeWidth={1.5}
-                          />
-                        </div>
-                        <h3 className="feature-title">{feature.title}</h3>
-                        <p className="feature-description">{feature.description}</p>
-                      </motion.div>
-                    )
-                  })}
+                  {content[language].features.items.map((feature, index) => (
+                    <FeatureCard
+                      key={index}
+                      icon={feature.icon}
+                      title={feature.title}
+                      description={feature.description}
+                      delay={index * 0.1}
+                    />
+                  ))}
                 </div>
               </motion.div>
               </div>
@@ -334,7 +348,7 @@ export default function Home() {
                       variants={motionSafe(slideUp)}
                       className="relative"
                     >
-                      <div className={`bg-bg-secondary rounded-xl p-8 border-2 h-full ${
+                      <div className={`bg-bg-secondary rounded-xl p-8 border-2 h-full zen-card-hover-pricing ${
                         key === 'standard' ? 'border-border-pricing' : 'border-border-subtle'
                       }`}>
                       
@@ -375,46 +389,6 @@ export default function Home() {
             </div>
           </section>
 
-          {/* CTA Section - Full Width */}
-          <section className="py-20 bg-black w-full">
-            <div className="w-full">
-              <div className="w-full">
-              <motion.div
-                variants={motionSafe(staggerContainer)}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                className="text-center"
-              >
-                <motion.h2 
-                  variants={motionSafe(slideUp)}
-                  className="heading-2 text-white mb-4"
-                >
-                  {content[language].cta.title}
-                </motion.h2>
-                
-                <motion.p 
-                  variants={motionSafe(slideUp)}
-                  className="body-lg text-primary-100 mb-8"
-                >
-                  {content[language].cta.description}
-                </motion.p>
-                
-                <motion.div 
-                  variants={motionSafe(slideUp)}
-                  className="flex flex-col sm:flex-row gap-4 justify-center"
-                >
-                  <button className="bg-white text-black hover:bg-gray-100 px-8 py-4 rounded-xl font-semibold transition-colors zen-language-hover">
-                    {content[language].cta.getStarted}
-                  </button>
-                  <button className="border border-gray-600 text-white hover:bg-gray-900 px-8 py-4 rounded-xl font-semibold transition-colors zen-language-hover">
-                    {content[language].cta.contactSales}
-                  </button>
-                </motion.div>
-              </motion.div>
-              </div>
-            </div>
-          </section>
         </main>
 
         <Footer />

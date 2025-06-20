@@ -3,8 +3,10 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { AuthProvider } from '@/contexts/AuthContext'
+import { useLanguage } from '@/contexts/LanguageContext'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import UniversalDropdown from '@/components/ui/UniversalDropdown'
 import { slideUp, staggerContainer, motionSafe } from '@/lib/motion'
 import { 
   Building2,
@@ -19,8 +21,9 @@ import {
   CheckCircle
 } from 'lucide-react'
 
-export default function Enterprise() {
-  const [language, setLanguage] = useState<'vi' | 'en'>('en')
+function EnterpriseContent() {
+  const { language } = useLanguage()
+  const [employeeCount, setEmployeeCount] = useState('1-50')
 
   const content = {
     vi: {
@@ -248,11 +251,10 @@ export default function Enterprise() {
   }
 
   return (
-    <AuthProvider>
-      <div className="min-h-screen bg-bg-main">
-        <Navbar />
-        
-        <main>
+    <div className="min-h-screen bg-bg-main">
+      <Navbar />
+      
+      <main>
           {/* Hero Section */}
           <section className="relative overflow-hidden bg-white pt-20 w-full">
             <div className="w-full py-20 px-4 sm:px-6 lg:px-8">
@@ -436,6 +438,171 @@ export default function Enterprise() {
             </div>
           </section>
 
+          {/* Vietnamese Market Focus */}
+          <section className="py-20 bg-gradient-to-br from-blue-50 to-indigo-50 w-full">
+            <div className="w-full px-4 sm:px-6 lg:px-8">
+              <div className="max-w-7xl mx-auto">
+                <motion.div
+                  variants={motionSafe(staggerContainer)}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                >
+                  <motion.div variants={motionSafe(slideUp)} className="text-center mb-16">
+                    <h2 className="heading-2 text-text-primary mb-4">
+                      {language === 'vi' ? 'Được thiết kế đặc biệt cho thị trường Việt Nam' : 'Specifically Designed for Vietnamese Market'}
+                    </h2>
+                    <p className="body-lg text-text-secondary max-w-3xl mx-auto">
+                      {language === 'vi' 
+                        ? 'Chúng tôi hiểu sâu sắc về văn hóa, quy định pháp lý và nhu cầu kinh doanh đặc thù của các doanh nghiệp Việt Nam'
+                        : 'We deeply understand the culture, legal regulations and specific business needs of Vietnamese enterprises'
+                      }
+                    </p>
+                  </motion.div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {[
+                      {
+                        title: language === 'vi' ? 'Tuân thủ pháp luật Việt Nam' : 'Vietnamese Legal Compliance',
+                        description: language === 'vi' 
+                          ? 'Đáp ứng đầy đủ Luật An toàn thông tin mạng, Nghị định 85/2016, Thông tư 20/2017 và các quy định mới nhất của Bộ TT&TT'
+                          : 'Full compliance with Cybersecurity Law, Decree 85/2016, Circular 20/2017 and latest regulations from Ministry of ICT',
+                        icon: '🇻🇳'
+                      },
+                      {
+                        title: language === 'vi' ? 'Data Center tại Việt Nam' : 'Data Center in Vietnam',
+                        description: language === 'vi' 
+                          ? 'Máy chủ đặt tại Việt Nam, đảm bảo độ trễ thấp và tuân thủ quy định về lưu trữ dữ liệu trong nước'
+                          : 'Servers located in Vietnam, ensuring low latency and compliance with domestic data storage regulations',
+                        icon: '🏢'
+                      },
+                      {
+                        title: language === 'vi' ? 'Hỗ trợ tiếng Việt chuyên sâu' : 'Deep Vietnamese Language Support',
+                        description: language === 'vi' 
+                          ? 'AI được huấn luyện chuyên biệt cho tiếng Việt, hiểu ngữ cảnh văn hóa và thuật ngữ chuyên ngành Việt Nam'
+                          : 'AI specially trained for Vietnamese, understanding cultural context and Vietnamese industry terminology',
+                        icon: '🤖'
+                      },
+                      {
+                        title: language === 'vi' ? 'Tích hợp hệ thống Việt Nam' : 'Vietnamese System Integration',
+                        description: language === 'vi' 
+                          ? 'Tích hợp sẵn với các hệ thống phổ biến tại Việt Nam như VNPT, Viettel, FPT và các giải pháp ERP địa phương'
+                          : 'Pre-integrated with popular Vietnamese systems like VNPT, Viettel, FPT and local ERP solutions',
+                        icon: '🔗'
+                      },
+                      {
+                        title: language === 'vi' ? 'Thanh toán nội địa' : 'Local Payment Methods',
+                        description: language === 'vi' 
+                          ? 'Hỗ trợ đầy đủ các phương thức thanh toán Việt Nam: VNPay, MoMo, chuyển khoản ngân hàng và hóa đơn VAT'
+                          : 'Full support for Vietnamese payment methods: VNPay, MoMo, bank transfers and VAT invoicing',
+                        icon: '💳'
+                      },
+                      {
+                        title: language === 'vi' ? 'Đội ngũ hỗ trợ Việt Nam' : 'Vietnamese Support Team',
+                        description: language === 'vi' 
+                          ? 'Đội ngũ kỹ thuật và CSKH người Việt, hiểu rõ văn hóa làm việc và có thể hỗ trợ 24/7 bằng tiếng Việt'
+                          : 'Vietnamese technical and customer support team, understanding work culture and providing 24/7 Vietnamese support',
+                        icon: '👥'
+                      }
+                    ].map((item, index) => (
+                      <motion.div
+                        key={index}
+                        variants={motionSafe(slideUp)}
+                        className="bg-white rounded-2xl p-6 border border-blue-200 hover:border-blue-300 transition-all duration-300"
+                      >
+                        <div className="text-3xl mb-4">{item.icon}</div>
+                        <h3 className="heading-4 text-text-primary mb-3">{item.title}</h3>
+                        <p className="body-sm text-text-secondary">{item.description}</p>
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+          </section>
+
+          {/* Testimonials Section */}
+          <section className="py-20 w-full">
+            <div className="w-full px-4 sm:px-6 lg:px-8">
+              <div className="max-w-6xl mx-auto">
+                <motion.div
+                  variants={motionSafe(staggerContainer)}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                >
+                  <motion.div variants={motionSafe(slideUp)} className="text-center mb-16">
+                    <h2 className="heading-2 text-text-primary mb-4">
+                      {language === 'vi' ? 'Lời chứng thực từ khách hàng' : 'Customer Testimonials'}
+                    </h2>
+                    <p className="body-lg text-text-secondary">
+                      {language === 'vi' 
+                        ? 'Nghe những chia sẻ từ các nhà lãnh đạo doanh nghiệp về trải nghiệm với Prismy'
+                        : 'Hear from business leaders about their experience with Prismy'
+                      }
+                    </p>
+                  </motion.div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    {[
+                      {
+                        quote: language === 'vi' 
+                          ? '"Prismy đã giúp chúng tôi giảm 70% thời gian dịch thuật tài liệu pháp lý quốc tế. Độ chính xác và tốc độ vượt xa mong đợi của chúng tôi."'
+                          : '"Prismy has helped us reduce international legal document translation time by 70%. The accuracy and speed exceeded our expectations."',
+                        author: 'Nguyễn Văn Minh',
+                        position: language === 'vi' ? 'Giám đốc Pháp chế, VinGroup' : 'Legal Director, VinGroup',
+                        company: 'VinGroup'
+                      },
+                      {
+                        quote: language === 'vi' 
+                          ? '"Việc tích hợp Prismy vào quy trình CI/CD của chúng tôi đã tăng tốc độ ra mắt sản phẩm quốc tế lên 300%. Đây là game changer thực sự."'
+                          : '"Integrating Prismy into our CI/CD process has accelerated international product launches by 300%. This is a real game changer."',
+                        author: 'Trần Thanh Hương',
+                        position: language === 'vi' ? 'CTO, FPT Software' : 'CTO, FPT Software',
+                        company: 'FPT Corporation'
+                      },
+                      {
+                        quote: language === 'vi' 
+                          ? '"Bảo mật và tuân thủ của Prismy đáp ứng hoàn hảo yêu cầu khắt khe của ngành ngân hàng. Chúng tôi hoàn toàn yên tâm về dữ liệu khách hàng."'
+                          : '"Prismy\'s security and compliance perfectly meet the stringent requirements of the banking industry. We are completely confident about customer data."',
+                        author: 'Lê Thị Mai',
+                        position: language === 'vi' ? 'Phó Tổng Giám đốc, Vietcombank' : 'Deputy CEO, Vietcombank',
+                        company: 'Vietcombank'
+                      },
+                      {
+                        quote: language === 'vi' 
+                          ? '"ROI từ Prismy đạt 400% chỉ trong 6 tháng đầu. Chi phí dịch thuật giảm mạnh nhưng chất lượng lại tăng đáng kể."'
+                          : '"ROI from Prismy reached 400% in just the first 6 months. Translation costs dropped significantly but quality increased remarkably."',
+                        author: 'Phạm Đức Thành',
+                        position: language === 'vi' ? 'CFO, Techcombank' : 'CFO, Techcombank',
+                        company: 'Techcombank'
+                      }
+                    ].map((testimonial, index) => (
+                      <motion.div
+                        key={index}
+                        variants={motionSafe(slideUp)}
+                        className="bg-white rounded-2xl p-8 border border-gray-200 shadow-lg"
+                      >
+                        <p className="body-base text-text-secondary mb-6 italic leading-relaxed">
+                          {testimonial.quote}
+                        </p>
+                        <div className="flex items-center">
+                          <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold mr-4">
+                            {testimonial.author.split(' ').map(n => n[0]).join('')}
+                          </div>
+                          <div>
+                            <div className="font-semibold text-text-primary">{testimonial.author}</div>
+                            <div className="body-sm text-text-muted">{testimonial.position}</div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+          </section>
+
           {/* Enterprise Pricing */}
           <section className="py-20 w-full">
             <div className="w-full px-4 sm:px-6 lg:px-8">
@@ -532,13 +699,18 @@ export default function Enterprise() {
                         placeholder={content[language].contact.form.phone}
                         className="input-base"
                       />
-                      <select className="input-base">
-                        <option>{content[language].contact.form.employees}</option>
-                        <option>1-50</option>
-                        <option>51-200</option>
-                        <option>201-1000</option>
-                        <option>1000+</option>
-                      </select>
+                      <UniversalDropdown
+                        value={employeeCount}
+                        onChange={(value) => setEmployeeCount(value)}
+                        size="lg"
+                        placeholder={content[language].contact.form.employees}
+                        options={[
+                          { value: '1-50', label: '1-50' },
+                          { value: '51-200', label: '51-200' },
+                          { value: '201-1000', label: '201-1000' },
+                          { value: '1000+', label: '1000+' }
+                        ]}
+                      />
                       <input
                         type="text"
                         placeholder={content[language].contact.form.industry}
@@ -565,6 +737,13 @@ export default function Enterprise() {
 
         <Footer />
       </div>
+  )
+}
+
+export default function Enterprise() {
+  return (
+    <AuthProvider>
+      <EnterpriseContent />
     </AuthProvider>
   )
 }

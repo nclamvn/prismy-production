@@ -4,7 +4,9 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { AuthProvider, useAuth } from '@/contexts/AuthContext'
 import DashboardLayout from '@/components/dashboard/DashboardLayout'
+import UniversalDropdown from '@/components/ui/UniversalDropdown'
 import { motionSafe, slideUp, staggerContainer } from '@/lib/motion'
+import { Globe } from 'lucide-react'
 
 function SettingsPage() {
   const [language, setLanguage] = useState<'vi' | 'en'>('en')
@@ -270,14 +272,25 @@ function PreferencesTab({ content, language, setLanguage }: { content: any, lang
       {/* Language Settings */}
       <div className="bg-white rounded-xl border border-gray-200 p-6">
         <h3 className="heading-4 text-gray-900 mb-4">{content.preferences.language}</h3>
-        <select 
-          value={language} 
-          onChange={(e) => setLanguage(e.target.value as 'vi' | 'en')}
-          className="input-base max-w-xs"
-        >
-          <option value="en">English</option>
-          <option value="vi">Tiếng Việt</option>
-        </select>
+        <div className="max-w-xs">
+          <UniversalDropdown
+            value={language}
+            onChange={(value) => setLanguage(value as 'vi' | 'en')}
+            size="md"
+            options={[
+              {
+                value: 'en',
+                label: 'English',
+                icon: <Globe size={16} strokeWidth={1.5} />
+              },
+              {
+                value: 'vi',
+                label: 'Tiếng Việt',
+                icon: <Globe size={16} strokeWidth={1.5} />
+              }
+            ]}
+          />
+        </div>
       </div>
 
       {/* Translation Defaults */}
@@ -288,21 +301,31 @@ function PreferencesTab({ content, language, setLanguage }: { content: any, lang
             <label className="block text-sm font-medium text-gray-700 mb-2">
               {content.preferences.defaultSourceLang}
             </label>
-            <select className="input-base">
-              <option>Auto-detect</option>
-              <option>English</option>
-              <option>Vietnamese</option>
-            </select>
+            <UniversalDropdown
+              value="auto"
+              onChange={(value) => console.log('Source language changed:', value)}
+              size="md"
+              options={[
+                { value: 'auto', label: 'Auto-detect' },
+                { value: 'en', label: 'English' },
+                { value: 'vi', label: 'Vietnamese' }
+              ]}
+            />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               {content.preferences.defaultTargetLang}
             </label>
-            <select className="input-base">
-              <option>Vietnamese</option>
-              <option>English</option>
-              <option>Spanish</option>
-            </select>
+            <UniversalDropdown
+              value="vi"
+              onChange={(value) => console.log('Target language changed:', value)}
+              size="md"
+              options={[
+                { value: 'vi', label: 'Vietnamese' },
+                { value: 'en', label: 'English' },
+                { value: 'es', label: 'Spanish' }
+              ]}
+            />
           </div>
         </div>
       </div>

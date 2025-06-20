@@ -6,6 +6,7 @@ import { AuthProvider } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import FeatureCard from '@/components/ui/FeatureCard'
 import { slideUp, staggerContainer, motionSafe } from '@/lib/motion'
 import { 
   Zap, 
@@ -278,26 +279,15 @@ export default function Features() {
                     
                     {/* Features Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4 md:px-8 lg:px-12">
-                      {section.features.map((feature, index) => {
-                        const IconComponent = feature.icon
-                        return (
-                          <motion.div
-                            key={index}
-                            variants={motionSafe(slideUp)}
-                            className="feature-card-vertical zen-card-hover-enhanced"
-                          >
-                            <div className="feature-icon-container">
-                              <IconComponent 
-                                size={26} 
-                                className="text-black zen-icon-hover transition-all duration-300" 
-                                strokeWidth={1.5}
-                              />
-                            </div>
-                            <h3 className="feature-title">{feature.title}</h3>
-                            <p className="feature-description">{feature.description}</p>
-                          </motion.div>
-                        )
-                      })}
+                      {section.features.map((feature, index) => (
+                        <FeatureCard
+                          key={index}
+                          icon={feature.icon}
+                          title={feature.title}
+                          description={feature.description}
+                          delay={index * 0.1}
+                        />
+                      ))}
                     </div>
                   </motion.div>
                 </div>
@@ -305,49 +295,6 @@ export default function Features() {
             </section>
           ))}
 
-          {/* CTA Section */}
-          <section className="py-20 bg-black w-full">
-            <div className="w-full">
-              <div className="w-full">
-                <motion.div
-                  variants={motionSafe(staggerContainer)}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                  className="text-center px-4 md:px-8 lg:px-12"
-                >
-                  <motion.h2 
-                    variants={motionSafe(slideUp)}
-                    className="heading-2 text-white mb-6"
-                  >
-                    {language === 'vi' ? 'Sẵn sàng trải nghiệm?' : 'Ready to experience?'}
-                  </motion.h2>
-                  
-                  <motion.p 
-                    variants={motionSafe(slideUp)}
-                    className="body-lg text-gray-300 mb-8"
-                  >
-                    {language === 'vi' 
-                      ? 'Bắt đầu với Prismy ngay hôm nay và khám phá sức mạnh của AI dịch thuật'
-                      : 'Start with Prismy today and discover the power of AI translation'
-                    }
-                  </motion.p>
-                  
-                  <motion.div 
-                    variants={motionSafe(slideUp)}
-                    className="flex flex-col sm:flex-row gap-4 justify-center px-4 md:px-8 lg:px-12"
-                  >
-                    <button className="bg-white text-black hover:bg-gray-100 px-8 py-4 rounded-xl font-semibold transition-colors zen-language-hover">
-                      {language === 'vi' ? 'Bắt đầu miễn phí' : 'Start Free'}
-                    </button>
-                    <button className="border border-gray-600 text-white hover:bg-gray-900 px-8 py-4 rounded-xl font-semibold transition-colors zen-language-hover">
-                      {language === 'vi' ? 'Xem demo' : 'View Demo'}
-                    </button>
-                  </motion.div>
-                </motion.div>
-              </div>
-            </div>
-          </section>
         </main>
 
         <Footer />

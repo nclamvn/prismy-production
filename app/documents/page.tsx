@@ -3,15 +3,17 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { AuthProvider, useAuth } from '@/contexts/AuthContext'
+import { useLanguage } from '@/contexts/LanguageContext'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import DocumentUpload from '@/components/documents/DocumentUpload'
 import DocumentTranslator from '@/components/documents/DocumentTranslator'
+import UniversalDropdown from '@/components/ui/UniversalDropdown'
 import { DocumentProcessor, ProcessedDocument } from '@/lib/document-processor'
 import { motionSafe, slideUp, staggerContainer } from '@/lib/motion'
 
 function DocumentsPageContent() {
-  const [language, setLanguage] = useState<'vi' | 'en'>('en')
+  const { language } = useLanguage()
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [processedDocument, setProcessedDocument] = useState<ProcessedDocument | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
@@ -174,42 +176,40 @@ function DocumentsPageContent() {
             ))}
           </motion.div>
 
-          {/* Language Selection */}
+          {/* Language Selection - Redesigned */}
           <motion.div 
             className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8"
             variants={motionSafe(slideUp)}
           >
-            <h3 className="heading-4 text-gray-900 mb-4">{content[language].selectLanguages}</h3>
-            <div className="flex flex-col sm:flex-row gap-4 items-center">
-              <div className="flex-1 w-full">
-                <label className="block body-sm text-gray-700 mb-2">{content[language].from}</label>
-                <select 
+            <h3 className="heading-4 text-gray-900 mb-6">{content[language].selectLanguages}</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="block body-sm font-medium text-gray-700">{content[language].from}</label>
+                <UniversalDropdown
                   value={sourceLang}
-                  onChange={(e) => setSourceLang(e.target.value)}
-                  className="input-base w-full"
-                >
-                  <option value="auto">{content[language].autoDetect}</option>
-                  {Object.entries(content[language].languages).map(([code, name]) => (
-                    <option key={code} value={code}>{name}</option>
-                  ))}
-                </select>
+                  onChange={(value) => setSourceLang(value)}
+                  size="lg"
+                  options={[
+                    { value: 'auto', label: content[language].autoDetect },
+                    ...Object.entries(content[language].languages).map(([code, name]) => ({
+                      value: code,
+                      label: name as string
+                    }))
+                  ]}
+                />
               </div>
               
-              <svg className="w-6 h-6 text-gray-400 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-              
-              <div className="flex-1 w-full">
-                <label className="block body-sm text-gray-700 mb-2">{content[language].to}</label>
-                <select 
+              <div className="space-y-2">
+                <label className="block body-sm font-medium text-gray-700">{content[language].to}</label>
+                <UniversalDropdown
                   value={targetLang}
-                  onChange={(e) => setTargetLang(e.target.value)}
-                  className="input-base w-full"
-                >
-                  {Object.entries(content[language].languages).map(([code, name]) => (
-                    <option key={code} value={code}>{name}</option>
-                  ))}
-                </select>
+                  onChange={(value) => setTargetLang(value)}
+                  size="lg"
+                  options={Object.entries(content[language].languages).map(([code, name]) => ({
+                    value: code,
+                    label: name as string
+                  }))}
+                />
               </div>
             </div>
           </motion.div>

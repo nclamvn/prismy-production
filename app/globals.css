@@ -413,7 +413,48 @@ body {
 /* FEATURE CARDS VERTICAL SYSTEM */
 /* ============================================================================ */
 
-/* Feature card vertical layout */
+/* Feature card horizontal layout - NEW DESIGN SYSTEM */
+.feature-card-horizontal {
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 1rem;
+  transition: all 200ms ease;
+  cursor: pointer;
+}
+
+.feature-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.feature-icon-container-horizontal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.feature-title-horizontal {
+  font-size: calc(var(--text-xl) * 1.5);
+  font-weight: bold;
+  color: #111827;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.feature-description-horizontal {
+  color: #4B5563;
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  margin: 0;
+}
+
+/* Legacy vertical layout - DEPRECATED */
 .feature-card-vertical {
   display: flex;
   flex-direction: column;
@@ -448,17 +489,28 @@ body {
   line-height: var(--leading-normal);
 }
 
-/* Enhanced hover effects */
+/* Enhanced hover effects - PRISMY DNA */
 .zen-card-hover-enhanced {
-  transition: all 200ms ease-in-out;
+  transition: all 200ms ease;
   cursor: pointer;
 }
 
 .zen-card-hover-enhanced:hover {
   transform: translateY(-2px);
   background: white;
-  border-color: var(--gray-400);
-  box-shadow: 0px 4px 12px rgba(0,0,0,0.08);
+  box-shadow: 0px 2px 8px rgba(0,0,0,0.05);
+}
+
+/* Pricing card hover effects */
+.zen-card-hover-pricing {
+  transition: all 200ms ease-in-out;
+  cursor: pointer;
+}
+
+.zen-card-hover-pricing:hover {
+  transform: translateY(-2px);
+  background: #ffffff;
+  box-shadow: 0px 4px 10px rgba(0,0,0,0.05);
 }
 
 /* ============================================================================ */

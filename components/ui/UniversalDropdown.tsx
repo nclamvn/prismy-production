@@ -102,7 +102,8 @@ export default function UniversalDropdown({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -8 }}
             transition={{ duration: 0.15 }}
-            className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg overflow-hidden"
+            className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg overflow-hidden"
+            style={{ boxShadow: 'none' }}
           >
             <div className="max-h-60 overflow-y-auto">
               {options.map((option) => (

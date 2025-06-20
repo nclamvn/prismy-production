@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import UniversalDropdown from '@/components/ui/UniversalDropdown'
 import { 
   zenBreathe, 
   invisiblePresence, 
@@ -148,20 +149,18 @@ export default function Workbench({ language = 'en' }: WorkbenchProps) {
                 <span className="text-caption text-mono-medium vietnamese-text">
                   {content[language].from}
                 </span>
-                <select
-                  value={sourceLang}
-                  onChange={(e) => setSourceLang(e.target.value)}
-                  className="form-input text-body-sm border-whisper bg-transparent 
-                           focus:border-mono-black transition-all duration-200
-                           hover-whisper cursor-pointer vietnamese-text"
-                  style={{ minWidth: '120px' }}
-                >
-                  {getLanguages(language).map((lang) => (
-                    <option key={lang.code} value={lang.code}>
-                      {lang.name}
-                    </option>
-                  ))}
-                </select>
+                <div style={{ minWidth: '120px' }}>
+                  <UniversalDropdown
+                    value={sourceLang}
+                    onChange={(value) => setSourceLang(value)}
+                    size="sm"
+                    options={getLanguages(language).map((lang) => ({
+                      value: lang.code,
+                      label: lang.name
+                    }))}
+                    className="text-body-sm vietnamese-text"
+                  />
+                </div>
               </div>
 
               {/* Zen Swap - Invisible Until Needed */}
@@ -185,20 +184,18 @@ export default function Workbench({ language = 'en' }: WorkbenchProps) {
                 <span className="text-caption text-mono-medium vietnamese-text">
                   {content[language].to}
                 </span>
-                <select
-                  value={targetLang}
-                  onChange={(e) => setTargetLang(e.target.value)}
-                  className="form-input text-body-sm border-whisper bg-transparent 
-                           focus:border-mono-black transition-all duration-200
-                           hover-whisper cursor-pointer vietnamese-text"
-                  style={{ minWidth: '120px' }}
-                >
-                  {getLanguages(language).filter(lang => lang.code !== 'auto').map((lang) => (
-                    <option key={lang.code} value={lang.code}>
-                      {lang.name}
-                    </option>
-                  ))}
-                </select>
+                <div style={{ minWidth: '120px' }}>
+                  <UniversalDropdown
+                    value={targetLang}
+                    onChange={(value) => setTargetLang(value)}
+                    size="sm"
+                    options={getLanguages(language).filter(lang => lang.code !== 'auto').map((lang) => ({
+                      value: lang.code,
+                      label: lang.name
+                    }))}
+                    className="text-body-sm vietnamese-text"
+                  />
+                </div>
               </div>
             </motion.div>
 
