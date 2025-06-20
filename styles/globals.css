@@ -5,6 +5,10 @@
 
 /* Base styles */
 @layer base {
+  :root {
+    --font-times: 'Times New Roman', Times, serif;
+  }
+  
   html {
     @apply antialiased scroll-smooth;
   }
@@ -138,29 +142,29 @@
     box-shadow: none !important;
   }
   
-  /* Typography - Enhanced Scale with Optima for Headings */
+  /* Typography - Enhanced Scale with Times New Roman for Headings */
   .heading-1 {
-    @apply font-optima text-[3.75rem] font-bold tracking-tight leading-[1.2];
+    @apply font-times text-[3.75rem] font-bold tracking-tight leading-[1.2];
   }
   
   .heading-2 {
-    @apply font-optima text-[2.5rem] font-semibold tracking-tight leading-[1.3];
+    @apply font-times text-[2.5rem] font-semibold tracking-tight leading-[1.3];
   }
   
   .heading-3 {
-    @apply font-optima text-[1.67rem] font-medium tracking-tight leading-[1.4];
+    @apply font-times text-[1.67rem] font-medium tracking-tight leading-[1.4];
   }
   
   .heading-4 {
-    @apply font-optima text-[1.46rem] font-medium leading-[1.5];
+    @apply font-times text-[1.46rem] font-medium leading-[1.5];
   }
   
   .heading-5 {
-    @apply font-optima text-[1.04rem] font-medium leading-[var(--leading-tight)];
+    @apply font-times text-[1.04rem] font-medium leading-[var(--leading-tight)];
   }
   
   .subheadline {
-    @apply font-optima text-[1.46rem] font-medium leading-[1.5];
+    @apply font-times text-[1.46rem] font-medium leading-[1.5];
   }
   
   .body-lg {

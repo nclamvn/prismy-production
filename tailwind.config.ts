@@ -10,7 +10,7 @@ const config: Config = {
     extend: {
       fontFamily: {
         'inter': ['var(--font-inter)', 'system-ui', 'sans-serif'],
-        'optima': ['Optima', 'Segoe UI', 'Lucida Grande', 'Helvetica Neue', 'Arial', 'sans-serif'],
+        'times': ['var(--font-times)', 'Times New Roman', 'Times', 'serif'],
       },
       colors: {
         black: 'var(--black)',

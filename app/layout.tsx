@@ -11,9 +11,9 @@ const inter = Inter({
   variable: '--font-inter'
 })
 
-// Optima font configuration with system fallbacks
-const optimaFont = {
-  variable: '--font-optima'
+// Times New Roman font configuration with system fallbacks
+const timesFont = {
+  variable: '--font-times'
 }
 
 export const metadata: Metadata = {
@@ -110,7 +110,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="vi" className={`${inter.variable} ${optimaFont.variable}`}>
+    <html lang="vi" className={`${inter.variable} ${timesFont.variable}`}>
       <body className="font-inter antialiased bg-white text-gray-900" style={{ fontSize: '21.6px', lineHeight: '1.6' }}>
         <LanguageProvider>
           {children}
