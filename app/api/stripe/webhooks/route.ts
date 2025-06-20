@@ -1,21 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { headers } from 'next/headers'
+import Stripe from 'stripe'
+import { stripe } from '@/lib/stripe'
+import { createServiceRoleClient } from '@/lib/supabase'
+import { getRateLimitForTier } from '@/lib/rate-limiter'
+import { validateCSRFMiddleware } from '@/lib/csrf'
 
-// Temporarily disabled all Stripe imports for deployment
+const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET!
 
 export async function POST(request: NextRequest) {
-  // Temporarily disabled for deployment
-  return NextResponse.json({ error: 'Stripe temporarily disabled' }, { status: 503 })
-}
-
-/*
   const startTime = Date.now()
   const clientIp = request.headers.get('x-forwarded-for') || 'unknown'
   
   try {
-    // Rate limiting for webhooks
-    const rateLimitOk = await checkWebhookRateLimit('stripe')
-    if (!rateLimitOk) {
-      logWebhookAttempt('stripe', false, 'Rate limit exceeded', { ip: clientIp })
+    // Basic rate limiting
+    const rateLimitResult = await getRateLimitForTier(request, 'free')
+    if (!rateLimitResult.success) {
       return NextResponse.json(
         { error: 'Rate limit exceeded' },
         { status: 429 }
@@ -27,24 +27,8 @@ export async function POST(request: NextRequest) {
     const sig = headersList.get('stripe-signature')
 
     if (!sig) {
-      logWebhookAttempt('stripe', false, 'Missing signature', { ip: clientIp })
       return NextResponse.json(
         { error: 'Missing stripe signature' },
-        { status: 400 }
-      )
-    }
-
-    // Enhanced webhook security validation
-    const securityValidation = await validateWebhookSecurity(
-      body,
-      { 'stripe-signature': sig },
-      (payload, headers) => verifyStripeWebhook(payload, headers['stripe-signature'], endpointSecret)
-    )
-
-    if (!securityValidation.valid) {
-      logWebhookAttempt('stripe', false, securityValidation.error, { ip: clientIp })
-      return NextResponse.json(
-        { error: securityValidation.error },
         { status: 400 }
       )
     }
@@ -56,7 +40,6 @@ export async function POST(request: NextRequest) {
       event = stripe.webhooks.constructEvent(body, sig, endpointSecret)
     } catch (err) {
       const error = err as Error
-      logWebhookAttempt('stripe', false, `Webhook signature verification failed: ${error.message}`, { ip: clientIp })
       console.error('Error verifying webhook signature:', error.message)
       return NextResponse.json(
         { error: `Webhook signature verification failed: ${error.message}` },
@@ -103,8 +86,7 @@ export async function POST(request: NextRequest) {
     }
 
     const processingTime = Date.now() - startTime
-    logWebhookAttempt('stripe', true, undefined, { 
-      ip: clientIp, 
+    console.log('Stripe webhook processed successfully', { 
       eventType: event.type,
       processingTime: `${processingTime}ms`
     })
@@ -114,12 +96,10 @@ export async function POST(request: NextRequest) {
     const processingTime = Date.now() - startTime
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     
-    logWebhookAttempt('stripe', false, `Processing failed: ${errorMessage}`, { 
-      ip: clientIp,
+    console.error('Error processing webhook:', error, {
       processingTime: `${processingTime}ms`
     })
     
-    console.error('Error processing webhook:', error)
     return NextResponse.json(
       { error: 'Webhook processing failed' },
       { status: 500 }
@@ -191,4 +171,3 @@ async function handlePaymentFailed(supabase: any, invoice: Stripe.Invoice) {
   
   // Could send notification to user or update subscription status
 }
-*/

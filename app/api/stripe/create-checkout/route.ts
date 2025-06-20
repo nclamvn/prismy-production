@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-
-// Temporarily disabled all Stripe imports for deployment
+import { cookies } from 'next/headers'
+import { createRouteHandlerClient } from '@/lib/supabase'
+import { validateCSRFMiddleware } from '@/lib/csrf'
+import { getRateLimitForTier } from '@/lib/rate-limiter'
+import { validateRequest, paymentSchema } from '@/lib/validation'
+import { SUBSCRIPTION_PLANS, createCheckoutSession } from '@/lib/stripe'
 
 export async function POST(request: NextRequest) {
-  // Temporarily disabled for deployment
-  return NextResponse.json({ error: 'Stripe temporarily disabled' }, { status: 503 })
-}
-
-/*
   try {
     const supabase = createRouteHandlerClient({ cookies })
     
@@ -31,7 +30,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check payment rate limiting
-    const rateLimitResult = await checkPaymentRateLimit(session.user.id)
+    const rateLimitResult = await getRateLimitForTier(request, 'premium')
     if (!rateLimitResult.success) {
       return NextResponse.json(
         { 
@@ -107,4 +106,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
-  */
+}

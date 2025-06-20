@@ -1,5 +1,23 @@
-// Temporarily disabled for deployment
-// import { createWorker, Worker, RecognizeResult } from 'tesseract.js'
+// Conditional import for serverless compatibility
+let createWorker: any
+let Worker: any
+let RecognizeResult: any
+
+// Only import in non-edge environments
+const initTesseract = async () => {
+  if (typeof window !== 'undefined' || process.env.VERCEL_ENV !== 'production') {
+    try {
+      const tesseract = await import('tesseract.js')
+      createWorker = tesseract.createWorker || tesseract.default?.createWorker
+      // Don't need to assign Worker and RecognizeResult - they're types, not runtime values
+      return true
+    } catch (error) {
+      console.warn('[OCR] Tesseract.js not available in this environment:', error)
+      return false
+    }
+  }
+  return false
+}
 
 export interface OCRProgress {
   status: string
@@ -54,24 +72,76 @@ export interface OCROptions {
 }
 
 class OCRService {
-  // Temporarily disabled for deployment
   private workers: Map<string, any> = new Map()
   private workerPromises: Map<string, Promise<any>> = new Map()
+  private tesseractAvailable: boolean | null = null
+
+  /**
+   * Check if Tesseract is available in current environment
+   */
+  private async ensureTesseractAvailable(): Promise<boolean> {
+    if (this.tesseractAvailable === null) {
+      this.tesseractAvailable = await initTesseract()
+    }
+    return this.tesseractAvailable
+  }
 
   /**
    * Get or create a worker for the specified language
    */
   private async getWorker(language: string = 'eng'): Promise<any> {
-    // Temporarily disabled for deployment
-    throw new Error('OCR service temporarily disabled')
+    const available = await this.ensureTesseractAvailable()
+    if (!available) {
+      throw new Error('OCR not available in serverless environment')
+    }
+
+    // Check if we already have a worker for this language
+    if (this.workers.has(language)) {
+      return this.workers.get(language)!
+    }
+
+    // Check if we're already creating a worker for this language
+    if (this.workerPromises.has(language)) {
+      return this.workerPromises.get(language)!
+    }
+
+    // Create a new worker
+    const workerPromise = this.createWorker(language)
+    this.workerPromises.set(language, workerPromise)
+
+    try {
+      const worker = await workerPromise
+      this.workers.set(language, worker)
+      this.workerPromises.delete(language)
+      return worker
+    } catch (error) {
+      this.workerPromises.delete(language)
+      throw error
+    }
   }
 
   /**
    * Create and initialize a new Tesseract worker
    */
   private async createWorker(language: string): Promise<any> {
-    // Temporarily disabled for deployment
-    throw new Error('OCR service temporarily disabled')
+    const available = await this.ensureTesseractAvailable()
+    if (!available) {
+      throw new Error('OCR not available in serverless environment')
+    }
+
+    const worker = await createWorker({
+      logger: (m: any) => {
+        // Optional: log progress to console in development
+        if (process.env.NODE_ENV === 'development') {
+          console.log('[OCR]', m)
+        }
+      }
+    })
+
+    await worker.loadLanguage(language)
+    await worker.initialize(language)
+
+    return worker
   }
 
   /**
@@ -82,8 +152,73 @@ class OCRService {
     options: OCROptions = {},
     onProgress?: (progress: OCRProgress) => void
   ): Promise<OCRResult> {
-    // Temporarily disabled for deployment
-    throw new Error('OCR service temporarily disabled')
+    const available = await this.ensureTesseractAvailable()
+    if (!available) {
+      // Fallback: return basic file info when OCR not available
+      return {
+        text: `[OCR not available in serverless environment. File: ${file.name}]`,
+        confidence: 0,
+        words: [],
+        lines: [],
+        paragraphs: []
+      }
+    }
+
+    const language = Array.isArray(options.language) 
+      ? options.language.join('+') 
+      : options.language || 'eng'
+
+    try {
+      const worker = await this.getWorker(language)
+
+      // Set Tesseract parameters
+      if (options.psm !== undefined) {
+        await worker.setParameters({
+          tessedit_pageseg_mode: options.psm
+        })
+      }
+
+      if (options.oem !== undefined) {
+        await worker.setParameters({
+          tessedit_ocr_engine_mode: options.oem
+        })
+      }
+
+      if (options.whitelist) {
+        await worker.setParameters({
+          tessedit_char_whitelist: options.whitelist
+        })
+      }
+
+      if (options.blacklist) {
+        await worker.setParameters({
+          tessedit_char_blacklist: options.blacklist
+        })
+      }
+
+      if (options.preserve_interword_spaces) {
+        await worker.setParameters({
+          preserve_interword_spaces: options.preserve_interword_spaces
+        })
+      }
+
+      // Perform OCR
+      const result = await worker.recognize(file, {
+        logger: onProgress ? (m: any) => {
+          onProgress({
+            status: m.status,
+            progress: m.progress || 0,
+            message: m.userJobId || m.status
+          })
+        } : undefined
+      })
+
+      return this.processResult(result)
+
+    } catch (error) {
+      console.error('[OCR] Recognition failed:', error)
+      throw new Error(`OCR recognition failed: ${error}`)
+    }
   }
 
   /**
@@ -94,16 +229,85 @@ class OCRService {
     options: OCROptions = {},
     onProgress?: (progress: OCRProgress) => void
   ): Promise<OCRResult> {
-    // Temporarily disabled for deployment
-    throw new Error('OCR service temporarily disabled')
+    const available = await this.ensureTesseractAvailable()
+    if (!available) {
+      // Fallback when OCR not available
+      return {
+        text: '[OCR not available in serverless environment]',
+        confidence: 0,
+        words: [],
+        lines: [],
+        paragraphs: []
+      }
+    }
+
+    const language = Array.isArray(options.language) 
+      ? options.language.join('+') 
+      : options.language || 'eng'
+
+    try {
+      const worker = await this.getWorker(language)
+
+      const result = await worker.recognize(imageSource, {
+        logger: onProgress ? (m: any) => {
+          onProgress({
+            status: m.status,
+            progress: m.progress || 0,
+            message: m.userJobId || m.status
+          })
+        } : undefined
+      })
+
+      return this.processResult(result)
+
+    } catch (error) {
+      console.error('[OCR] Recognition failed:', error)
+      throw new Error(`OCR recognition failed: ${error}`)
+    }
   }
 
   /**
    * Process Tesseract result into our OCRResult format
    */
   private processResult(result: any): OCRResult {
-    // Temporarily disabled for deployment
-    throw new Error('OCR service temporarily disabled')
+    const { data } = result
+
+    return {
+      text: data.text,
+      confidence: data.confidence,
+      words: data.words.map((word: any) => ({
+        text: word.text,
+        confidence: word.confidence,
+        bbox: {
+          x0: word.bbox.x0,
+          y0: word.bbox.y0,
+          x1: word.bbox.x1,
+          y1: word.bbox.y1
+        }
+      })),
+      lines: data.lines.map((line: any) => ({
+        text: line.text,
+        confidence: line.confidence,
+        bbox: {
+          x0: line.bbox.x0,
+          y0: line.bbox.y0,
+          x1: line.bbox.x1,
+          y1: line.bbox.y1
+        },
+        words: line.words.map((word: any) => ({
+          text: word.text,
+          confidence: word.confidence
+        }))
+      })),
+      paragraphs: data.paragraphs.map((paragraph: any) => ({
+        text: paragraph.text,
+        confidence: paragraph.confidence,
+        lines: paragraph.lines.map((line: any) => ({
+          text: line.text,
+          confidence: line.confidence
+        }))
+      }))
+    }
   }
 
   /**

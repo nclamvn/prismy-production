@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-
-// Temporarily disabled all Stripe imports for deployment
+import { cookies } from 'next/headers'
+import { createRouteHandlerClient } from '@/lib/supabase'
+import { validateCSRFMiddleware } from '@/lib/csrf'
+import { getRateLimitForTier } from '@/lib/rate-limiter'
+import { createBillingPortalSession } from '@/lib/stripe'
 
 export async function POST(request: NextRequest) {
-  // Temporarily disabled for deployment
-  return NextResponse.json({ error: 'Stripe temporarily disabled' }, { status: 503 })
-}
-
-/*
   try {
     const supabase = createRouteHandlerClient({ cookies })
     
@@ -73,4 +71,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
-  */
+}
