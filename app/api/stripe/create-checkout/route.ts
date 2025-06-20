@@ -4,10 +4,18 @@ import { createRouteHandlerClient } from '@/lib/supabase'
 import { validateCSRFMiddleware } from '@/lib/csrf'
 import { getRateLimitForTier } from '@/lib/rate-limiter'
 import { validateRequest, paymentSchema } from '@/lib/validation'
-import { SUBSCRIPTION_PLANS, createCheckoutSession } from '@/lib/stripe'
+import { stripe, SUBSCRIPTION_PLANS, createCheckoutSession } from '@/lib/stripe'
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if Stripe is configured
+    if (!stripe) {
+      return NextResponse.json(
+        { error: 'Payment system not configured' },
+        { status: 503 }
+      )
+    }
+
     const supabase = createRouteHandlerClient({ cookies })
     
     // Check authentication

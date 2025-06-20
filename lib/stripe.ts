@@ -1,14 +1,20 @@
 import Stripe from 'stripe'
 
-// Server-side Stripe instance
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-05-28.basil'
-})
+// Server-side Stripe instance with environment check
+export const stripe = process.env.STRIPE_SECRET_KEY 
+  ? new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2025-05-28.basil'
+    })
+  : null
 
-// Client-side Stripe configuration
+// Client-side Stripe configuration with environment check
 export const getStripe = async () => {
+  if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
+    console.warn('Stripe publishable key not configured')
+    return null
+  }
   const { loadStripe } = await import('@stripe/stripe-js')
-  return loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
+  return loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
 }
 
 // Subscription plans configuration

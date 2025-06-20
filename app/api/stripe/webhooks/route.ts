@@ -13,6 +13,14 @@ export async function POST(request: NextRequest) {
   const clientIp = request.headers.get('x-forwarded-for') || 'unknown'
   
   try {
+    // Check if Stripe is configured
+    if (!stripe) {
+      return NextResponse.json(
+        { error: 'Payment system not configured' },
+        { status: 503 }
+      )
+    }
+
     // Basic rate limiting
     const rateLimitResult = await getRateLimitForTier(request, 'free')
     if (!rateLimitResult.success) {
