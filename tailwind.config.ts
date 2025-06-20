@@ -8,6 +8,10 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        'inter': ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        'ibm-plex-sans': ['var(--font-ibm-plex-sans)', 'system-ui', 'sans-serif'],
+      },
       colors: {
         black: 'var(--black)',
         white: 'var(--white)',

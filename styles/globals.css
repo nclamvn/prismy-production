@@ -138,33 +138,45 @@
     box-shadow: none !important;
   }
   
-  /* Typography */
+  /* Typography - Enhanced Scale with IBM Plex Sans for Headings */
   .heading-1 {
-    @apply text-5xl font-bold tracking-tight leading-[var(--leading-tight)];
+    @apply font-ibm-plex-sans text-[4.5rem] font-bold tracking-tight leading-[1.2];
   }
   
   .heading-2 {
-    @apply text-4xl font-bold tracking-tight leading-[var(--leading-tight)];
+    @apply font-ibm-plex-sans text-[3rem] font-semibold tracking-tight leading-[1.3];
   }
   
   .heading-3 {
-    @apply text-3xl font-semibold tracking-tight leading-[var(--leading-tight)];
+    @apply font-ibm-plex-sans text-[2rem] font-medium tracking-tight leading-[1.4];
   }
   
   .heading-4 {
-    @apply text-2xl font-semibold leading-[var(--leading-tight)];
+    @apply font-ibm-plex-sans text-[1.75rem] font-medium leading-[1.5];
+  }
+  
+  .heading-5 {
+    @apply font-ibm-plex-sans text-xl font-medium leading-[var(--leading-tight)];
+  }
+  
+  .subheadline {
+    @apply font-ibm-plex-sans text-[1.75rem] font-medium leading-[1.5];
   }
   
   .body-lg {
-    @apply text-lg leading-[var(--leading-relaxed)];
+    @apply font-inter text-lg leading-[var(--leading-relaxed)];
   }
   
   .body-base {
-    @apply text-base leading-[var(--leading-normal)];
+    @apply font-inter text-base leading-[var(--leading-normal)];
   }
   
   .body-sm {
-    @apply text-sm leading-[var(--leading-normal)];
+    @apply font-inter text-sm leading-[var(--leading-normal)];
+  }
+  
+  .body-xs {
+    @apply font-inter text-xs leading-[var(--leading-normal)];
   }
   
   /* Rainbow bar animation */

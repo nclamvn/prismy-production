@@ -67,7 +67,7 @@ export default function Hero({ language = 'en' }: HeroProps) {
           {/* Zen Title - Monumental Minimalism */}
           <motion.h1 
             variants={whisperVariants}
-            className="text-display-xl vietnamese-text mb-4"
+            className="heading-1 vietnamese-text mb-4"
           >
             {content[language].title}
           </motion.h1>
@@ -75,7 +75,7 @@ export default function Hero({ language = 'en' }: HeroProps) {
           {/* Subtle Subtitle */}
           <motion.h2 
             variants={whisperVariants}
-            className="text-display-md text-mono-medium mb-12"
+            className="heading-2 text-mono-medium mb-12"
           >
             {content[language].subtitle}
           </motion.h2>
