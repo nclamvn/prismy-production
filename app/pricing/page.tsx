@@ -3,12 +3,21 @@ import { createServerComponentClient } from '@/lib/supabase'
 import { cookies } from 'next/headers'
 
 export default async function Pricing() {
-  const supabase = createServerComponentClient({ cookies })
-  
-  // Get user session for personalized pricing
-  const { data: { session } } = await supabase.auth.getSession()
-  
-  return <PricingPage />
+  try {
+    const supabase = createServerComponentClient({ cookies })
+    
+    // Get user session for personalized pricing with error handling
+    const { data: { session }, error } = await supabase.auth.getSession()
+    
+    if (error) {
+      console.warn('Supabase session error:', error.message)
+    }
+    
+    return <PricingPage />
+  } catch (error) {
+    console.error('Pricing page error:', error)
+    return <PricingPage />
+  }
 }
 
 export const metadata = {

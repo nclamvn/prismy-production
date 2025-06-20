@@ -70,7 +70,7 @@ export default function FeatureCard({
 
         {/* Title - Vietnamese Typography Standards */}
         <h3 
-          className="font-ibm-plex-sans font-bold text-black tracking-tight leading-tight group-hover:text-gray-900 transition-colors duration-200"
+          className="font-optima font-bold text-black tracking-tight leading-tight group-hover:text-gray-900 transition-colors duration-200"
           style={{ 
             color: '#111827',
             fontSize: '1.25rem', // Tăng từ kích thước hiện tại

@@ -75,8 +75,8 @@ export default function Navbar({}: NavbarProps) {
       initial="hidden"
       animate="visible"
     >
-      {/* Rainbow bar */}
-      <div className="rainbow-bar" />
+      {/* Rainbow bar - Only show when scrolled */}
+      {isScrolled && <div className="rainbow-bar" />}
       
       <nav className="w-full" aria-label="Main navigation">
         <div className="content-container">

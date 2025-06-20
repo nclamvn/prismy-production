@@ -53,7 +53,7 @@ export default function DashboardLayout({ children, language = 'en' }: Dashboard
           {/* Logo */}
           <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
             <Link href="/" className="flex items-center">
-              <span className="font-ibm-plex-sans text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+              <span className="font-optima text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
                 Prismy
               </span>
             </Link>

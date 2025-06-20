@@ -10,7 +10,7 @@ const config: Config = {
     extend: {
       fontFamily: {
         'inter': ['var(--font-inter)', 'system-ui', 'sans-serif'],
-        'ibm-plex-sans': ['var(--font-ibm-plex-sans)', 'system-ui', 'sans-serif'],
+        'optima': ['Optima', 'Segoe UI', 'Lucida Grande', 'Helvetica Neue', 'Arial', 'sans-serif'],
       },
       colors: {
         black: 'var(--black)',

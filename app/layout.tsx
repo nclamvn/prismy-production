@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter, IBM_Plex_Sans } from 'next/font/google'
+import { Inter } from 'next/font/google'
 import '@/styles/globals.css'
 import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration'
 import PerformanceMonitor from '@/components/PerformanceMonitor'
@@ -11,12 +11,10 @@ const inter = Inter({
   variable: '--font-inter'
 })
 
-const ibmPlexSans = IBM_Plex_Sans({
-  weight: ['400', '500', '600', '700'],
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-ibm-plex-sans'
-})
+// Optima font configuration with system fallbacks
+const optimaFont = {
+  variable: '--font-optima'
+}
 
 export const metadata: Metadata = {
   title: 'Prismy - AI-Powered Translation Platform',
@@ -112,8 +110,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="vi" className={`${inter.variable} ${ibmPlexSans.variable}`}>
-      <body className="font-inter antialiased bg-white text-gray-900" style={{ fontSize: '18px', lineHeight: '1.6' }}>
+    <html lang="vi" className={`${inter.variable} ${optimaFont.variable}`}>
+      <body className="font-inter antialiased bg-white text-gray-900" style={{ fontSize: '21.6px', lineHeight: '1.6' }}>
         <LanguageProvider>
           {children}
         </LanguageProvider>
