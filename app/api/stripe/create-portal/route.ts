@@ -6,6 +6,11 @@ import { getRateLimitForTier } from '@/lib/rate-limiter'
 import { validateCSRFMiddleware } from '@/lib/csrf'
 
 export async function POST(request: NextRequest) {
+  // Temporarily disabled for deployment
+  return NextResponse.json({ error: 'Stripe temporarily disabled' }, { status: 503 })
+}
+
+/*
   try {
     const supabase = createRouteHandlerClient({ cookies })
     
@@ -71,4 +76,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
-}
+  */

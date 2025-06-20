@@ -8,6 +8,11 @@ import Stripe from 'stripe'
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!
 
 export async function POST(request: NextRequest) {
+  // Temporarily disabled for deployment
+  return NextResponse.json({ error: 'Stripe temporarily disabled' }, { status: 503 })
+}
+
+/*
   const startTime = Date.now()
   const clientIp = request.headers.get('x-forwarded-for') || 'unknown'
   
@@ -191,3 +196,4 @@ async function handlePaymentFailed(supabase: any, invoice: Stripe.Invoice) {
   
   // Could send notification to user or update subscription status
 }
+*/

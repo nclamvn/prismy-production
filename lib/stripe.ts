@@ -1,20 +1,12 @@
-import Stripe from 'stripe'
+// Temporarily disabled Stripe for deployment
+// import Stripe from 'stripe'
 
-// Server-side Stripe instance
-export const stripe = new Stripe(
-  process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder',
-  {
-    apiVersion: '2025-05-28.basil',
-    typescript: true,
-  }
-)
+// Server-side Stripe instance - DISABLED
+export const stripe = null
 
-// Client-side Stripe configuration
+// Client-side Stripe configuration - DISABLED
 export const getStripe = async () => {
-  if (typeof window === 'undefined') return null
-  
-  const { loadStripe } = await import('@stripe/stripe-js')
-  return loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder')
+  return null
 }
 
 // Subscription plans configuration
@@ -116,6 +108,9 @@ export const createCheckoutSession = async (
   successUrl: string,
   cancelUrl: string
 ) => {
+  // Temporarily disabled for deployment
+  throw new Error('Stripe temporarily disabled')
+  /*
   try {
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
@@ -141,12 +136,16 @@ export const createCheckoutSession = async (
     console.error('Error creating checkout session:', error)
     throw error
   }
+  */
 }
 
 export const createBillingPortalSession = async (
   customerId: string,
   returnUrl: string
 ) => {
+  // Temporarily disabled for deployment
+  throw new Error('Stripe temporarily disabled')
+  /*
   try {
     const session = await stripe.billingPortal.sessions.create({
       customer: customerId,
@@ -158,9 +157,13 @@ export const createBillingPortalSession = async (
     console.error('Error creating billing portal session:', error)
     throw error
   }
+  */
 }
 
 export const getCustomerSubscriptions = async (customerId: string) => {
+  // Temporarily disabled for deployment
+  return { data: [] }
+  /*
   try {
     const subscriptions = await stripe.subscriptions.list({
       customer: customerId,
@@ -173,4 +176,5 @@ export const getCustomerSubscriptions = async (customerId: string) => {
     console.error('Error fetching customer subscriptions:', error)
     throw error
   }
+  */
 }
