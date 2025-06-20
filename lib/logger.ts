@@ -35,17 +35,20 @@ const baseConfig = {
   }
 }
 
-// Development logger with pretty printing
+// Development logger with pretty printing (disabled in serverless)
 const developmentLogger = pino({
   ...baseConfig,
-  transport: {
-    target: 'pino-pretty',
-    options: {
-      colorize: true,
-      translateTime: 'HH:MM:ss Z',
-      ignore: 'pid,hostname'
+  // Disable transport in serverless environments to avoid worker threads
+  ...(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME ? {} : {
+    transport: {
+      target: 'pino-pretty',
+      options: {
+        colorize: true,
+        translateTime: 'HH:MM:ss Z',
+        ignore: 'pid,hostname'
+      }
     }
-  }
+  })
 })
 
 // Production logger optimized for structured logging
