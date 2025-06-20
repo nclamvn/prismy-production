@@ -1,34 +1,79 @@
-/* Design System Tokens - 2-Tone Seamless */
+/* Professional SaaS Design Tokens - Vietnamese Market Ready */
 :root {
-  /* Core 2-tone colors */
-  --black: #000000;
+  /* Primary Brand Colors - Modern Blue for Trust */
+  --primary-50: #eff6ff;
+  --primary-100: #dbeafe;
+  --primary-200: #bfdbfe;
+  --primary-300: #93c5fd;
+  --primary-400: #60a5fa;
+  --primary-500: #3b82f6;
+  --primary-600: #2563eb;
+  --primary-700: #1d4ed8;
+  --primary-800: #1e40af;
+  --primary-900: #1e3a8a;
+  
+  /* Secondary Colors - Emerald for Success */
+  --secondary-50: #ecfdf5;
+  --secondary-100: #d1fae5;
+  --secondary-200: #a7f3d0;
+  --secondary-300: #6ee7b7;
+  --secondary-400: #34d399;
+  --secondary-500: #10b981;
+  --secondary-600: #059669;
+  --secondary-700: #047857;
+  --secondary-800: #065f46;
+  --secondary-900: #064e3b;
+  
+  /* Professional Gray Scale */
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+  
+  /* Semantic Colors */
+  --error-50: #fef2f2;
+  --error-500: #ef4444;
+  --error-600: #dc2626;
+  --warning-50: #fffbeb;
+  --warning-500: #f59e0b;
+  --warning-600: #d97706;
+  --success-50: #f0fdf4;
+  --success-500: #22c55e;
+  --success-600: #16a34a;
+  
+  /* Vietnamese Payment Colors */
+  --vnpay-blue: #1a5490;
+  --momo-purple: #a50064;
+  --stripe-purple: #635bff;
+  
+  /* Main Application Colors - Flat Design */
+  --bg-main: var(--gray-50);
+  --bg-secondary: var(--white);
+  --bg-accent: var(--gray-50);
+  --bg-footer: #000000; /* Pure black for visual bookend */
+  
+  /* Text Colors - Refined Hierarchy */
+  --text-primary: #0f172a; /* Softer than pure black for better readability */
+  --text-secondary: #64748b; /* Mid-tone for descriptions */
+  --text-muted: var(--gray-500);
+  --text-inverse: #f8fafc; /* Soft white for dark backgrounds */
+  --text-accent: var(--primary-600);
+  
+  /* Border Colors - Enhanced System */
+  --border-subtle: #e2e8f0; /* Ultra-light for gentle separation */
+  --border-main: var(--gray-300);
+  --border-strong: #94a3b8; /* Strong gray for pricing emphasis */
+  --border-pricing: #0f172a; /* Dark border for premium pricing */
+  
+  /* Core Semantic Variables */
   --white: #ffffff;
-  
-  /* Main backgrounds */
-  --bg-main: var(--white);
-  --bg-footer: var(--black);
-  
-  /* Text colors */
-  --text-primary: var(--black);
-  --text-secondary: rgba(0, 0, 0, 0.6);
-  --text-muted: rgba(0, 0, 0, 0.4);
-  --text-inverse: var(--white);
-  
-  /* Border and divider */
-  --border-subtle: rgba(0, 0, 0, 0.08);
-  --border-main: rgba(0, 0, 0, 0.12);
-  
-  /* Legacy gray scale - mapped to black/white/transparent variations */
-  --gray-900: var(--black);
-  --gray-800: var(--black);
-  --gray-700: var(--black);
-  --gray-600: rgba(0, 0, 0, 0.8);
-  --gray-500: rgba(0, 0, 0, 0.6);
-  --gray-400: rgba(0, 0, 0, 0.4);
-  --gray-300: rgba(0, 0, 0, 0.2);
-  --gray-200: rgba(0, 0, 0, 0.12);
-  --gray-100: rgba(0, 0, 0, 0.08);
-  --gray-50: rgba(0, 0, 0, 0.04);
+  --black: #000000;
 
   /* Accent laser */
   --accent-rainbow: linear-gradient(90deg,
@@ -40,10 +85,10 @@
   --radius-md: 0.75rem;
   --radius-lg: 1.25rem;
 
-  /* Refined shadows for 2-tone design */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 6px 24px rgba(0, 0, 0, 0.05);
+  /* Minimal shadows - Zen Philosophy */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.02);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 3px 6px rgba(0, 0, 0, 0.04);
   
   /* Spacing scale */
   --space-xs: 0.25rem;
@@ -54,11 +99,10 @@
   --space-2xl: 3rem;
   --space-3xl: 4rem;
   
-  /* Container width constraints for full-width design */
-  --container-padding: 1rem;
-  --container-padding-lg: 2rem;
-  --container-padding-xl: 3rem;
-  --max-content-width: 1400px;
+  /* True full-width design - no constraints */
+  --mobile-padding: 1rem;        /* Mobile safety margin only */
+  --tablet-padding: 1.5rem;      /* Tablet breathing room only */
+  --max-content-width: none;      /* No desktop constraints */
   
   /* Font sizes */
   --text-xs: 0.75rem;
@@ -76,21 +120,21 @@
   --leading-normal: 1.5;
   --leading-relaxed: 1.75;
   
-  /* Durations */
-  --duration-fast: 200ms;
-  --duration-normal: 300ms;
-  --duration-slow: 500ms;
+  /* Zen Animation Durations */
+  --duration-instant: 50ms;
+  --duration-breath: 300ms;
+  --duration-meditation: 500ms;
   
-  /* Transitions */
-  --transition-base: all var(--duration-fast) ease-out;
-  --transition-slow: all var(--duration-normal) ease-out;
+  /* Zen Transitions */
+  --transition-base: all var(--duration-breath) cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --transition-slow: all var(--duration-meditation) cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 /* Reduced motion variants */
 @media (prefers-reduced-motion: reduce) {
   :root {
-    --duration-fast: 0ms;
-    --duration-normal: 0ms;
-    --duration-slow: 0ms;
+    --duration-instant: 0ms;
+    --duration-breath: 0ms;
+    --duration-meditation: 0ms;
   }
 }

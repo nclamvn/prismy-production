@@ -1,647 +1,312 @@
+@import '../styles/tokens.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Import Premium Refined Design System */
-@import '../styles/premium-refined-system.css';
-
 /* ============================================================================ */
-/* 1. PRISMY DESIGN SYSTEM - COLOR PALETTE & BRAND */
-/* ============================================================================ */
-
-:root {
-  /* Primary Colors */
-  --prismy-primary-dark: #111111;
-  --prismy-primary-light: #F6F5F3;
-  --prismy-secondary-white: #FBFAF9;
-  --prismy-secondary-dark: #272625;
-  --prismy-secondary-light: #FBFAF9;
-
-  /* Gradient & Effect Colors */
-  --prismy-gradients-violet: #D0B2FF;
-  --prismy-gradients-peach: #FFB3D9;
-  --prismy-gradients-cyan: #99FFF9;
-  --prismy-gradients-beige: #FFEED8;
-  --prismy-complementary-phoenix-orange: #E8400D;
-  --prismy-complementary-mint-green: #4AE5B4;
-  --prismy-complementary-canary-yellow: #FFEF99;
-  --prismy-complementary-midnight-indigo: #2B2A4A;
-
-  /* Neutral Support Colors */
-  --prismy-neutral-01: #F4F4F4;
-  --prismy-neutral-02: #484846;
-  --prismy-neutral-03: #5C5C5A;
-  --prismy-neutral-07: #E5E5E5;
-  --prismy-neutral-08: #F8F8F8;
-
-  /* Border Colors */
-  --prismy-borders-black-medium: rgba(17, 17, 17, 0.15);
-  --prismy-borders-white-medium: rgba(255, 255, 255, 0.15);
-  --prismy-border-white: rgba(255, 255, 255, 0.2);
-
-  /* Transparency Colors */
-  --prismy-primary-dark-transparent: rgba(17, 17, 17, 0.6);
-  --prismy-secondary-white-transparent: rgba(251, 250, 249, 0.85);
-  --prismy-secondary-white-transparent-light: rgba(255, 255, 255, 0.4);
-
-  /* Typography */
-  --prismy-font-primary: "Source Sans 3", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --prismy-font-mono: "Geist Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-
-  /* Font Weights */
-  --prismy-font-regular: 400;
-  --prismy-font-medium: 500;
-  --prismy-font-semibold: 600;
-
-  /* Text rendering optimization */
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* ============================================================================ */
-/* 2. BASE STYLES */
+/* PROFESSIONAL BASE STYLES */
 /* ============================================================================ */
 
 * {
   box-sizing: border-box;
 }
 
-html {
-  font-family: var(--prismy-font-primary);
-  line-height: 1.6;
-  color: var(--prismy-primary-dark);
-  scroll-behavior: smooth;
+::selection {
+  background: var(--primary-100);
+  color: var(--primary-800);
 }
 
-body {
-  font-family: var(--prismy-font-primary);
-  color: var(--prismy-primary-dark);
-  background-color: var(--prismy-secondary-white);
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden;
-  font-size: 1rem;
+html {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   line-height: 1.6;
+  color: var(--text-primary);
+  scroll-behavior: smooth;
+  font-feature-settings: "kern" 1, "liga" 1;
+  text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ============================================================================ */
-/* 3. TYPOGRAPHY SYSTEM */
-/* ============================================================================ */
-
-/* Headings */
-.prismy-heading-84-caps {
-  font-size: 5.25rem;
-  line-height: 0.95;
-  letter-spacing: -2.1px;
-  font-weight: var(--prismy-font-medium);
-  text-transform: uppercase;
-}
-
-.prismy-heading-56 {
-  font-size: 3.5rem;
-  line-height: 1.1;
-  letter-spacing: -1.68px;
-  font-weight: var(--prismy-font-medium);
-}
-
-.prismy-heading-44 {
-  font-size: 2.75rem;
-  line-height: 1.2;
-  letter-spacing: -1.1px;
-  font-weight: var(--prismy-font-medium);
-}
-
-.prismy-heading-36 {
-  font-size: 2.25rem;
-  line-height: 1.2;
-  letter-spacing: -0.9px;
-  font-weight: var(--prismy-font-medium);
-}
-
-.prismy-heading-32 {
-  font-size: 2rem;
-  line-height: 1.25;
-  letter-spacing: -0.64px;
-  font-weight: var(--prismy-font-medium);
-}
-
-.prismy-heading-24 {
-  font-size: 1.5rem;
-  line-height: 1.3;
-  letter-spacing: -0.48px;
-  font-weight: var(--prismy-font-medium);
-}
-
-.prismy-heading-20 {
-  font-size: 1.25rem;
-  line-height: 1.4;
-  letter-spacing: -0.2px;
-  font-weight: var(--prismy-font-medium);
-}
-
-.prismy-heading-16 {
-  font-size: 1rem;
-  line-height: 1.4;
-  letter-spacing: -0.16px;
-  font-weight: var(--prismy-font-medium);
-}
-
-/* Paragraphs */
-.prismy-paragraph-24 {
-  font-size: 1.5rem;
-  line-height: 1.5;
-  font-weight: var(--prismy-font-regular);
-}
-
-.prismy-paragraph-20 {
-  font-size: 1.25rem;
-  line-height: 1.5;
-  font-weight: var(--prismy-font-regular);
-}
-
-.prismy-paragraph-16 {
-  font-size: 1rem;
-  line-height: 1.6;
-  font-weight: var(--prismy-font-regular);
-}
-
-.prismy-paragraph-14 {
-  font-size: 0.875rem;
-  line-height: 1.5;
-  font-weight: var(--prismy-font-regular);
-}
-
-.prismy-paragraph-12 {
-  font-size: 0.75rem;
-  line-height: 1.5;
-  font-weight: var(--prismy-font-regular);
-}
-
-/* Font Features */
-.prismy-alternate {
-  font-feature-settings: "ss02" 1;
-}
-
-.prismy-alternate-caps {
-  font-feature-settings: "ss01" 1;
-}
-
-.prismy-alternate-punctuation {
-  font-feature-settings: "ss04" 1;
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-main);
+  color: var(--text-primary);
+  overflow-x: hidden;
 }
 
 /* ============================================================================ */
-/* 4. BUTTON SYSTEM */
+/* PROFESSIONAL TYPOGRAPHY SYSTEM */
 /* ============================================================================ */
 
-.prismy-btn {
+/* Heading Utilities */
+.heading-1 {
+  font-size: var(--text-5xl);
+  line-height: var(--leading-tight);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+}
+
+.heading-2 {
+  font-size: var(--text-4xl);
+  line-height: var(--leading-tight);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+}
+
+.heading-3 {
+  font-size: var(--text-3xl);
+  line-height: var(--leading-tight);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.heading-4 {
+  font-size: var(--text-2xl);
+  line-height: var(--leading-tight);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.heading-5 {
+  font-size: var(--text-xl);
+  line-height: var(--leading-tight);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Body Text Utilities */
+.body-xl {
+  font-size: var(--text-xl);
+  line-height: var(--leading-relaxed);
+  color: var(--text-secondary);
+}
+
+.body-lg {
+  font-size: var(--text-lg);
+  line-height: var(--leading-relaxed);
+  color: var(--text-secondary);
+}
+
+.body-base {
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--text-secondary);
+}
+
+.body-sm {
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  color: var(--text-muted);
+}
+
+/* ============================================================================ */
+/* PROFESSIONAL COMPONENT SYSTEM */
+/* ============================================================================ */
+
+/* Button System */
+.btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: var(--prismy-font-medium);
-  text-decoration: none;
-  transition: all 0.2s ease;
-  cursor: pointer;
-  border: none;
   gap: 0.5rem;
-  font-family: var(--prismy-font-primary);
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-family: inherit;
+  font-size: var(--text-base);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: var(--transition-base);
+  white-space: nowrap;
+  background: var(--primary-600);
+  color: var(--white);
 }
 
-.prismy-btn-primary {
-  background-color: var(--prismy-primary-dark);
-  color: var(--prismy-secondary-white);
-  box-shadow: 0 6px 2px rgba(17, 17, 17, 0.01), 
-              0 3px 2px rgba(17, 17, 17, 0.05), 
-              0 1px 1px rgba(17, 17, 17, 0.09), 
-              0 0 1px rgba(17, 17, 17, 0.12), 
-              inset 0 6px 12px rgba(255, 255, 255, 0.2), 
-              inset 0 1px 1px rgba(255, 255, 255, 0.2);
+.btn-primary:hover {
+  background: var(--primary-700);
+  transform: translateY(-1px);
 }
 
-.prismy-btn-primary:hover {
-  background-color: var(--prismy-secondary-dark);
-  box-shadow: 0 6px 2px rgba(17, 17, 17, 0.01), 
-              0 3px 2px rgba(17, 17, 17, 0.05), 
-              0 1px 1px rgba(17, 17, 17, 0.09), 
-              0 0 1px rgba(17, 17, 17, 0.12), 
-              inset 0 6px 12px rgba(255, 255, 255, 0.2), 
-              inset 0 1px 1px rgba(255, 255, 255, 0.2);
-}
-
-.prismy-btn-primary:active {
-  box-shadow: 0 6px 2px rgba(17, 17, 17, 0.01), 
-              0 3px 2px rgba(17, 17, 17, 0.05), 
-              0 1px 1px rgba(17, 17, 17, 0.09), 
-              0 0 1px rgba(17, 17, 17, 0.12), 
-              inset 0 6px 12px rgba(17, 17, 17, 0.2), 
-              inset 0 1px 1px rgba(17, 17, 17, 0.95);
-}
-
-.prismy-btn-secondary {
-  background-color: transparent;
-  color: var(--prismy-primary-dark);
-  border: 1px solid var(--prismy-borders-black-medium);
-}
-
-.prismy-btn-secondary:hover {
-  background-color: var(--prismy-neutral-01);
-}
-
-.prismy-btn-secondary:active {
-  box-shadow: inset 0 6px 12px rgba(17, 17, 17, 0.05), 
-              inset 0 1px 1px rgba(17, 17, 17, 0.3);
-}
-
-.prismy-btn-light {
-  background-color: var(--prismy-secondary-white);
-  color: var(--prismy-primary-dark);
-}
-
-.prismy-btn-light:hover {
-  background-color: var(--prismy-neutral-07);
-}
-
-.prismy-btn-light:active {
-  box-shadow: inset 0 6px 12px rgba(17, 17, 17, 0.05), 
-              inset 0 1px 1px rgba(17, 17, 17, 0.2);
-}
-
-/* Button Rocket Animation */
-.prismy-btn-wrapper {
-  position: relative;
+.btn-secondary {
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: 1px solid var(--border-main);
+  border-radius: var(--radius-lg);
+  font-family: inherit;
+  font-size: var(--text-base);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: var(--transition-base);
+  white-space: nowrap;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
 }
 
-.prismy-btn-rocket {
-  position: absolute;
-  top: 0;
-  right: -1rem;
-  opacity: 0;
-  transform: translate3d(0, 0, 0);
-  transition: all 0.3s ease;
-  pointer-events: none;
-  font-size: 1.25rem;
+.btn-secondary:hover {
+  background: var(--gray-50);
+  border-color: var(--border-strong);
 }
 
-.prismy-btn:hover ~ .prismy-btn-rocket {
-  opacity: 1;
-  transform: translate3d(0.375rem, -0.5rem, 0);
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-family: inherit;
+  font-size: var(--text-base);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: var(--transition-base);
+  white-space: nowrap;
+  background: transparent;
+  color: var(--text-secondary);
 }
 
-.prismy-btn:active ~ .prismy-btn-rocket {
-  opacity: 1;
-  transform: translate3d(0.5rem, -0.625rem, 0);
+.btn-ghost:hover {
+  background: var(--gray-100);
+  color: var(--text-primary);
 }
 
-/* ============================================================================ */
-/* 5. FORM SYSTEM */
-/* ============================================================================ */
+/* Button Sizes */
+.btn-lg {
+  padding: 1rem 2rem;
+  font-size: var(--text-lg);
+}
 
-.prismy-form-input {
+.btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: var(--text-sm);
+}
+
+/* Form Elements */
+.input-base {
   width: 100%;
-  padding: 0.875rem 1rem;
-  border: 1px solid var(--prismy-borders-black-medium);
-  border-radius: 0.5rem;
-  background-color: var(--prismy-secondary-white);
-  color: var(--prismy-primary-dark);
-  font-size: 0.875rem;
-  font-family: var(--prismy-font-primary);
-  transition: all 0.2s ease;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-main);
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+  font-family: inherit;
+  font-size: var(--text-base);
+  color: var(--text-primary);
+  transition: var(--transition-base);
 }
 
-.prismy-form-input::placeholder {
-  color: rgba(17, 17, 17, 0.4);
+.input-base::placeholder {
+  color: var(--text-muted);
 }
 
-.prismy-form-input:focus {
+.input-base:focus {
   outline: none;
-  border-color: var(--prismy-primary-dark-transparent);
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px var(--primary-100);
 }
 
-.prismy-form-input.has-error {
-  border-color: #ef4444;
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+/* Card Component */
+.card-base {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  transition: var(--transition-base);
 }
 
-.prismy-form-input-dark {
-  background-color: var(--prismy-secondary-dark);
-  color: var(--prismy-secondary-white);
-  border-color: var(--prismy-borders-white-medium);
-}
-
-.prismy-form-input-dark::placeholder {
-  color: rgba(255, 255, 255, 0.4);
-}
-
-.prismy-form-input-dark:focus {
-  border-color: var(--prismy-secondary-white-transparent);
+.card-base:hover {
+  border-color: var(--border-main);
+  transform: translateY(-1px);
 }
 
 /* ============================================================================ */
-/* 6. NAVIGATION SYSTEM */
+/* PROFESSIONAL LAYOUT SYSTEM */
 /* ============================================================================ */
 
-.prismy-nav {
+/* True Full-Width Container System */
+.content-container {
+  width: 100vw;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Mobile-only padding for readability */
+@media (max-width: 768px) {
+  .content-container {
+    padding: 0 var(--mobile-padding);
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .content-container {
+    padding: 0 var(--tablet-padding);
+  }
+}
+
+/* Desktop: Zero padding - full edge-to-edge */
+@media (min-width: 1025px) {
+  .content-container {
+    padding: 0;
+  }
+}
+
+/* New full-width section utility */
+.full-width-section {
+  width: 100vw;
+  max-width: none;
+  margin-left: calc(-50vw + 50%);
+  margin-right: calc(-50vw + 50%);
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* Navigation Header */
+.glass-header {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 100;
-  padding: 1rem 2rem;
-  transition: all 0.3s ease;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
-.prismy-nav-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  max-width: 80rem;
-  margin: 0 auto;
-  padding: 0.75rem 1.5rem;
-  border: 1px solid var(--prismy-secondary-white-transparent);
-  border-radius: 0.75rem;
-  background: var(--prismy-secondary-white-transparent);
-  backdrop-filter: blur(15px);
-  transition: all 0.3s ease;
+/* Rainbow accent */
+.rainbow-bar {
+  height: 2px;
+  background: var(--accent-rainbow);
 }
 
-.prismy-nav-content.is-minified {
-  max-width: 60rem;
-  border-radius: 0.625rem;
-}
-
-.prismy-nav-link {
-  display: flex;
-  align-items: center;
-  padding: 0.625rem 0.875rem;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  font-weight: var(--prismy-font-medium);
-  color: var(--prismy-primary-dark);
-  text-decoration: none;
-  transition: all 0.2s ease;
-  gap: 0.375rem;
-}
-
-.prismy-nav-link:hover {
-  background-color: var(--prismy-primary-light);
-}
-
-/* ============================================================================ */
-/* 7. GRADIENT & EFFECTS SYSTEM */
-/* ============================================================================ */
-
-.prismy-text-gradient-container {
-  position: relative;
-  display: inline-block;
-}
-
-.prismy-text-gradient {
-  position: relative;
-  color: transparent;
-  background: radial-gradient(80.17% 109.2% at 54.31% 61.46%, 
-              var(--prismy-gradients-violet) 0%, 
-              var(--prismy-gradients-peach) 49.83%, 
-              var(--prismy-complementary-phoenix-orange) 99.99%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  z-index: 2;
-}
-
-.prismy-text-gradient::before {
-  content: attr(data-content);
-  pointer-events: none;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  color: transparent;
-  background: radial-gradient(80.17% 109.2% at 54.31% 61.46%, 
-              var(--prismy-gradients-violet) 0%, 
-              var(--prismy-gradients-peach) 49.83%, 
-              var(--prismy-complementary-phoenix-orange) 99.99%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  filter: blur(6px);
-  opacity: 0.75;
-  z-index: 1;
-}
-
-.prismy-grain-word {
-  position: absolute;
-  top: -6px;
-  left: -6px;
-  width: calc(100% + 12px);
-  height: calc(100% + 12px);
-  background: url('data:image/svg+xml,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" result="noise"/><feColorMatrix in="noise" type="saturate" values="0"/></filter><rect width="100%" height="100%" filter="url(%23noiseFilter)" opacity="0.1"/></svg>');
-  background-size: 60%;
-  mix-blend-mode: overlay;
-  pointer-events: none;
-  z-index: 3;
-}
-
-.prismy-new-label {
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-  font-size: 0.75rem;
-  font-weight: var(--prismy-font-medium);
-  text-transform: uppercase;
-  letter-spacing: 0.025em;
-}
-
-.prismy-new-label.is-dark {
-  background: radial-gradient(144.9% 209.45% at -15.91% -29.17%, 
-              var(--prismy-complementary-phoenix-orange) 0%, 
-              var(--prismy-gradients-beige) 49.5%, 
-              var(--prismy-gradients-violet) 100%);
-  color: white;
-  position: relative;
-  overflow: hidden;
-}
-
-/* ============================================================================ */
-/* 8. LAYOUT SYSTEM */
-/* ============================================================================ */
-
-.prismy-container {
-  width: 100%;
-  max-width: 80rem;
-  margin: 0 auto;
-  padding: 0 2rem;
-}
-
-.prismy-container.is-small {
-  max-width: 70rem;
-}
-
-.prismy-container.is-smaller {
-  max-width: 60rem;
-}
-
-.prismy-section {
-  padding: 3rem 0;
-}
-
-.prismy-padding-144 {
-  padding-top: 9rem;
-  padding-bottom: 9rem;
-}
-
-.prismy-padding-112 {
-  padding-top: 7rem;
-  padding-bottom: 7rem;
-}
-
-.prismy-padding-100 {
-  padding-top: 6.25rem;
-  padding-bottom: 6.25rem;
-}
-
-.prismy-padding-84 {
-  padding-top: 5.25rem;
-  padding-bottom: 5.25rem;
-}
-
-.prismy-padding-44 {
-  padding-top: 2.75rem;
-  padding-bottom: 2.75rem;
-}
-
-.prismy-grid {
-  display: grid;
-  gap: 1.5rem;
-}
-
-.prismy-grid-2 {
-  grid-template-columns: repeat(2, 1fr);
-}
-
-.prismy-grid-3 {
-  grid-template-columns: repeat(3, 1fr);
-}
-
-.prismy-grid-4 {
-  grid-template-columns: repeat(4, 1fr);
-}
-
-/* ============================================================================ */
-/* 9. ANIMATION SYSTEM */
-/* ============================================================================ */
-
-.prismy-hover-float {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.prismy-hover-float:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 
-              0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
-
-.prismy-card {
-  perspective: 1000px;
-}
-
-.prismy-card-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transition: transform 0.6s;
-  transform-style: preserve-3d;
-}
-
-.prismy-card:hover .prismy-card-inner {
-  transform: rotateY(180deg);
-}
-
-.prismy-card-front,
-.prismy-card-back {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  backface-visibility: hidden;
-  border-radius: 0.75rem;
-}
-
-.prismy-card-back {
-  transform: rotateY(180deg);
-}
-
-/* ============================================================================ */
-/* 10. RESPONSIVE DESIGN */
-/* ============================================================================ */
-
-@media (min-width: 62rem) and (max-width: 80rem) {
-  .prismy-heading-84-caps {
-    font-size: 4.75rem;
-  }
-  
-  .prismy-heading-56 {
-    font-size: 3rem;
-  }
-  
-  .prismy-heading-44 {
-    font-size: 2.5rem;
-  }
-  
-  .prismy-heading-36 {
-    font-size: 2rem;
-  }
-  
-  .prismy-heading-32 {
-    font-size: 1.75rem;
-  }
-  
-  .prismy-paragraph-24 {
-    font-size: 1.25rem;
-  }
-  
-  .prismy-paragraph-20 {
-    font-size: 1.125rem;
-  }
-}
-
-@media (max-width: 23.4375rem) {
-  .prismy-heading-84-caps {
-    font-size: 2.5rem;
-    letter-spacing: -1.2px;
-  }
-}
-
-@media (max-width: 47.9375rem) {
-  .prismy-section {
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
-  }
-  
-  .prismy-container {
-    padding: 0 1rem;
-  }
-  
-  .prismy-grid-2,
-  .prismy-grid-3,
-  .prismy-grid-4 {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-}
-
-/* ============================================================================ */
-/* 11. ACCESSIBILITY */
-/* ============================================================================ */
-
-.prismy-focus-visible:focus-visible {
-  outline: 2px solid var(--prismy-complementary-phoenix-orange);
+/* Focus ring utility */
+.focus-visible-ring:focus-visible {
+  outline: 2px solid var(--primary-500);
   outline-offset: 2px;
 }
 
-.prismy-sr-only {
+/* ============================================================================ */
+/* ACCESSIBILITY & RESPONSIVE DESIGN */
+/* ============================================================================ */
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Screen Reader Only */
+.sr-only {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -653,205 +318,168 @@ body {
   border: 0;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .prismy-animation {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+/* Mobile Optimizations - Zen Responsive */
+@media (max-width: 640px) {
+  .content-container {
+    padding: 0 1rem;
+  }
+  
+  .heading-1 {
+    font-size: var(--text-4xl);
+    line-height: var(--leading-tight);
+  }
+  
+  .heading-2 {
+    font-size: var(--text-3xl);
+    line-height: var(--leading-tight);
+  }
+  
+  /* Mobile Icon Adjustments */
+  .zen-icon-hover {
+    transform: none;
+  }
+  
+  .zen-icon-hover:hover {
+    transform: none;
+    opacity: 0.9;
+  }
+  
+  /* Mobile Card Spacing */
+  .zen-card-hover {
+    padding: 1.5rem;
+  }
+  
+  /* Mobile Language Toggle */
+  .zen-language-hover {
+    padding: 0.75rem 1rem;
+  }
+}
+
+/* Loading States */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.loading-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Vietnamese Typography Optimization */
+.vietnamese-text {
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+  text-rendering: optimizeLegibility;
+}
+
+/* ============================================================================ */
+/* BLOG METADATA RESPONSIVE SYSTEM */
+/* ============================================================================ */
+
+/* Blog metadata container for consistent layout */
+.blog-metadata-container {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: start;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .blog-metadata-container {
+    gap: 0.5rem;
+    font-size: 0.75rem;
+  }
+  
+  .blog-metadata-container > div {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  
+  .blog-metadata-container span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 80px;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 768px) {
+  .blog-metadata-container {
+    gap: 0.75rem;
   }
 }
 
 /* ============================================================================ */
-/* 12. TEXT SELECTION */
+/* FEATURE CARDS VERTICAL SYSTEM */
 /* ============================================================================ */
 
-::selection {
-  background: rgba(208, 178, 255, 0.8);
-}
-
-::-moz-selection {
-  background: rgba(208, 178, 255, 0.8);
-}
-
-/* ============================================================================ */
-/* 13. LEGACY COMPATIBILITY */
-/* ============================================================================ */
-
-/* Override previous classes with Prismy design system */
-.btn-primary {
-  @apply prismy-btn prismy-btn-primary;
-}
-
-.btn-secondary {
-  @apply prismy-btn prismy-btn-secondary;
-}
-
-.container {
-  @apply prismy-container;
-}
-
-.text-display-lg,
-.text-display-xl {
-  @apply prismy-heading-56;
-}
-
-.text-display-md {
-  @apply prismy-heading-44;
-}
-
-.text-xl {
-  @apply prismy-paragraph-20;
-}
-
-.text-lg {
-  @apply prismy-paragraph-16;
-}
-
-/* Vietnamese color overrides */
-.vietnamese-gradient,
-.vietnamese-text-gradient,
-.bg-gradient-primary {
-  background: radial-gradient(80.17% 109.2% at 54.31% 61.46%, 
-              var(--prismy-gradients-violet) 0%, 
-              var(--prismy-gradients-peach) 49.83%, 
-              var(--prismy-complementary-phoenix-orange) 99.99%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.vietnamese-red-500,
-.vietnamese-red-600,
-.vietnamese-gold-500,
-.text-primary {
-  color: var(--prismy-primary-dark);
-}
-
-/* ============================================================================ */
-/* 14. DARK MODE SUPPORT */
-/* ============================================================================ */
-
-[data-theme="dark"] {
-  --prismy-primary-dark: #FBFAF9;
-  --prismy-primary-light: #272625;
-  --prismy-secondary-white: #272625;
-  --prismy-secondary-dark: #111111;
-  --prismy-borders-black-medium: rgba(255, 255, 255, 0.15);
-}
-
-[data-theme="dark"] .prismy-nav-content {
-  background: rgba(39, 38, 37, 0.85);
-  border-color: rgba(73, 72, 70, 0.85);
-}
-
-[data-theme="dark"] .prismy-nav-link {
-  color: var(--prismy-secondary-white);
-}
-
-[data-theme="dark"] .prismy-nav-link:hover {
-  background-color: var(--prismy-secondary-dark);
-}
-
-/* ============================================================================ */
-/* 15. SPECIALIZED COMPONENTS */
-/* ============================================================================ */
-
-.prismy-social-proof-stripe {
+/* Feature card vertical layout */
+.feature-card-vertical {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
-  padding: 1rem 0;
-  border-top: 1px solid var(--prismy-borders-black-medium);
-  border-bottom: 1px solid var(--prismy-borders-black-medium);
-}
-
-.prismy-logos-stripe {
-  display: flex;
-  align-items: center;
-  gap: 2.5rem;
-  height: 3rem;
-  animation: scroll-left 30s linear infinite;
-}
-
-@keyframes scroll-left {
-  0% {
-    transform: translateX(100%);
-  }
-  100% {
-    transform: translateX(-100%);
-  }
-}
-
-.prismy-testimonial-big {
-  display: flex;
-  align-items: center;
-  gap: 3rem;
-  max-width: 50rem;
-  margin: 0 auto;
-}
-
-.prismy-testimonial-picture {
-  width: 8rem;
-  height: 8rem;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-}
-
-.prismy-testimonial-text {
-  font-size: 2rem;
-  line-height: 1.4;
-  letter-spacing: -0.64px;
-  font-weight: var(--prismy-font-medium);
-  margin-bottom: 1.5rem;
-}
-
-.prismy-testimonial-caption {
-  font-size: 1rem;
-  opacity: 0.6;
-}
-
-.prismy-accordion-item {
-  border-bottom: 1px solid var(--prismy-borders-black-medium);
-}
-
-.prismy-accordion-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.5rem 0;
+  text-align: center;
+  padding: 2rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 1rem;
+  transition: all 200ms ease-in-out;
   cursor: pointer;
-  font-weight: var(--prismy-font-medium);
-  font-size: 1.125rem;
 }
 
-.prismy-accordion-content {
-  padding-bottom: 1.5rem;
-  opacity: 0;
-  max-height: 0;
-  overflow: hidden;
-  transition: all 0.3s ease;
+.feature-icon-container {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.prismy-accordion-item.is-open .prismy-accordion-content {
-  opacity: 1;
-  max-height: 200px;
+.feature-title {
+  margin-bottom: 0.75rem;
+  font-size: var(--text-xl);
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
-/* Professional Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
+.feature-description {
+  color: var(--text-secondary);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
 }
 
-::-webkit-scrollbar-track {
-  background: var(--prismy-neutral-01);
+/* Enhanced hover effects */
+.zen-card-hover-enhanced {
+  transition: all 200ms ease-in-out;
+  cursor: pointer;
 }
 
-::-webkit-scrollbar-thumb {
-  background: var(--prismy-neutral-03);
-  border-radius: 4px;
+.zen-card-hover-enhanced:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-strong);
+  box-shadow: 0px 2px 8px rgba(0,0,0,0.05);
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--prismy-primary-dark);
+/* ============================================================================ */
+/* ZEN MINIMALIST INTERACTIONS */
+/* ============================================================================ */
+
+/* Icon Hover - Breath-level Opacity Shift */
+.zen-icon-hover:hover {
+  opacity: 0.8;
+  transform: translateY(-1px);
+}
+
+/* Card Hover - Minimal Lift without Shadow */
+.zen-card-hover:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-main);
+}
+
+/* Language Toggle - Bold Text on Hover */
+.zen-language-hover:hover {
+  font-weight: 600;
+  color: var(--text-primary);
+  transform: translateY(-1px);
 }

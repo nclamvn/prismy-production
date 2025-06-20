@@ -1,47 +1,70 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { slideDown, motionSafe } from '@/lib/motion'
 import { useAuth } from '@/contexts/AuthContext'
+import { useLanguage } from '@/contexts/LanguageContext'
 import AuthModal from './auth/AuthModal'
 import UserMenu from './auth/UserMenu'
+import { Globe, ChevronDown } from 'lucide-react'
 
 interface NavbarProps {
-  language?: 'vi' | 'en'
-  setLanguage?: (lang: 'vi' | 'en') => void
+  // Language props are now managed globally
 }
 
-export default function Navbar({ language = 'en', setLanguage }: NavbarProps) {
+export default function Navbar({}: NavbarProps) {
+  const { language, setLanguage } = useLanguage()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
+  const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false)
+  const langDropdownRef = useRef<HTMLDivElement>(null)
   
   const { user, loading } = useAuth()
+  
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (langDropdownRef.current && !langDropdownRef.current.contains(event.target as Node)) {
+        setIsLangDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   const content = {
     vi: {
       navigation: [
-        { name: 'Tính năng', href: '#features' },
+        { name: 'Tính năng', href: '/features' },
         { name: 'Tài liệu', href: '/documents' },
-        { name: 'Giá cả', href: '#pricing' },
-        { name: 'Doanh nghiệp', href: '#enterprise' },
+        { name: 'Giá cả', href: '/pricing' },
+        { name: 'Doanh nghiệp', href: '/enterprise' },
         { name: 'Blog', href: '/blog' },
       ],
       signin: 'Đăng nhập',
-      getStarted: 'Bắt đầu'
+      getStarted: 'Bắt đầu',
+      languages: {
+        vi: 'Tiếng Việt',
+        en: 'English'
+      }
     },
     en: {
       navigation: [
-        { name: 'Features', href: '#features' },
+        { name: 'Features', href: '/features' },
         { name: 'Documents', href: '/documents' },
-        { name: 'Pricing', href: '#pricing' },
-        { name: 'Enterprise', href: '#enterprise' },
+        { name: 'Pricing', href: '/pricing' },
+        { name: 'Enterprise', href: '/enterprise' },
         { name: 'Blog', href: '/blog' },
       ],
       signin: 'Sign In',
-      getStarted: 'Get Started'
+      getStarted: 'Get Started',
+      languages: {
+        vi: 'Tiếng Việt',
+        en: 'English'
+      }
     }
   }
 
@@ -84,29 +107,58 @@ export default function Navbar({ language = 'en', setLanguage }: NavbarProps) {
 
           {/* Right Section: Language Toggle + Auth */}
           <div className="hidden md:flex items-center space-x-2.5">
-            {/* Language Toggle */}
-            {setLanguage && (
-              <div className="flex items-center bg-gray-100 rounded-lg p-1">
+            {/* Language Selector - Custom Dropdown */}
+            {true && (
+              <div className="relative" ref={langDropdownRef}>
                 <button
-                  onClick={() => setLanguage('vi')}
-                  className={`px-3 py-1 rounded-md text-sm font-bold transition-all ${
-                    language === 'vi'
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
+                  onClick={() => setIsLangDropdownOpen(!isLangDropdownOpen)}
+                  className="flex items-center gap-2 px-4 py-2 bg-white border border-border-subtle rounded-md
+                           text-sm font-medium text-text-primary
+                           hover:font-semibold hover:transform hover:-translate-y-px
+                           transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200"
                 >
-                  VN
+                  <Globe size={16} strokeWidth={1.5} />
+                  <span>{content[language].languages[language]}</span>
+                  <ChevronDown 
+                    size={14} 
+                    strokeWidth={1.5}
+                    className={`transition-transform duration-200 ${isLangDropdownOpen ? 'rotate-180' : ''}`}
+                  />
                 </button>
-                <button
-                  onClick={() => setLanguage('en')}
-                  className={`px-3 py-1 rounded-md text-sm font-bold transition-all ${
-                    language === 'en'
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  EN
-                </button>
+                
+                {/* Dropdown Menu */}
+                {isLangDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute right-0 mt-2 w-48 bg-white border border-border-subtle rounded-md overflow-hidden z-50"
+                  >
+                    <button
+                      onClick={() => {
+                        setLanguage('vi')
+                        setIsLangDropdownOpen(false)
+                      }}
+                      className={`w-full text-left px-4 py-2.5 text-sm transition-all duration-300
+                               hover:bg-gray-50 hover:font-semibold hover:transform hover:-translate-y-px
+                               ${language === 'vi' ? 'font-semibold text-text-primary bg-gray-50' : 'text-text-secondary'}`}
+                    >
+                      {content[language].languages.vi}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setLanguage('en')
+                        setIsLangDropdownOpen(false)
+                      }}
+                      className={`w-full text-left px-4 py-2.5 text-sm transition-all duration-300
+                               hover:bg-gray-50 hover:font-semibold hover:transform hover:-translate-y-px
+                               ${language === 'en' ? 'font-semibold text-text-primary bg-gray-50' : 'text-text-secondary'}`}
+                    >
+                      {content[language].languages.en}
+                    </button>
+                  </motion.div>
+                )}
               </div>
             )}
             
@@ -187,29 +239,33 @@ export default function Navbar({ language = 'en', setLanguage }: NavbarProps) {
                 </Link>
               ))}
               
-              {/* Mobile Language Toggle */}
-              {setLanguage && (
-                <div className="flex items-center bg-gray-100 rounded-lg p-1 w-fit">
-                  <button
-                    onClick={() => setLanguage('vi')}
-                    className={`px-3 py-1 rounded-md text-sm font-bold transition-all ${
-                      language === 'vi'
-                        ? 'bg-white text-gray-900 shadow-sm'
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                  >
-                    VN
-                  </button>
-                  <button
-                    onClick={() => setLanguage('en')}
-                    className={`px-3 py-1 rounded-md text-sm font-bold transition-all ${
-                      language === 'en'
-                        ? 'bg-white text-gray-900 shadow-sm'
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                  >
-                    EN
-                  </button>
+              {/* Mobile Language Selector */}
+              {true && (
+                <div className="py-2">
+                  <div className="space-y-1">
+                    <button
+                      onClick={() => setLanguage('vi')}
+                      className={`w-full text-left px-3 py-2 rounded-md text-sm transition-all duration-300
+                               hover:bg-gray-50 hover:font-semibold
+                               ${language === 'vi' ? 'font-semibold text-text-primary bg-gray-50' : 'text-text-secondary'}`}
+                    >
+                      <span className="flex items-center gap-2">
+                        <Globe size={16} strokeWidth={1.5} />
+                        {content[language].languages.vi}
+                      </span>
+                    </button>
+                    <button
+                      onClick={() => setLanguage('en')}
+                      className={`w-full text-left px-3 py-2 rounded-md text-sm transition-all duration-300
+                               hover:bg-gray-50 hover:font-semibold
+                               ${language === 'en' ? 'font-semibold text-text-primary bg-gray-50' : 'text-text-secondary'}`}
+                    >
+                      <span className="flex items-center gap-2">
+                        <Globe size={16} strokeWidth={1.5} />
+                        {content[language].languages.en}
+                      </span>
+                    </button>
+                  </div>
                 </div>
               )}
               

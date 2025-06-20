@@ -3,12 +3,14 @@
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { slideUp, staggerContainer, motionSafe } from '@/lib/motion'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 interface FooterProps {
-  language?: 'vi' | 'en'
+  // Language now managed globally
 }
 
-export default function Footer({ language = 'en' }: FooterProps) {
+export default function Footer({}: FooterProps) {
+  const { language } = useLanguage()
   const content = {
     vi: {
       sections: [
@@ -163,7 +165,7 @@ export default function Footer({ language = 'en' }: FooterProps) {
   ]
 
   return (
-    <footer className="w-full bg-footer text-white">
+    <footer className="w-full bg-black text-text-inverse">
       <div className="content-container py-16">
         <motion.div
           variants={motionSafe(staggerContainer)}
@@ -181,7 +183,7 @@ export default function Footer({ language = 'en' }: FooterProps) {
               <Link href="/" className="mb-6 inline-block">
                 <span className="heading-4 font-bold">Prismy</span>
               </Link>
-              <p className="body-base text-gray-300 mb-6 max-w-sm">
+              <p className="body-base text-text-inverse opacity-80 mb-6 max-w-sm">
                 {content[language].description}
               </p>
               <div className="flex space-x-4">
@@ -189,7 +191,7 @@ export default function Footer({ language = 'en' }: FooterProps) {
                   <Link
                     key={social.name}
                     href={social.href}
-                    className="text-gray-400 hover:text-white transition-colors 
+                    className="text-text-inverse opacity-60 hover:opacity-100 transition-opacity 
                              focus-visible-ring rounded-md p-1"
                     aria-label={social.name}
                   >
@@ -319,20 +321,20 @@ export default function Footer({ language = 'en' }: FooterProps) {
           {/* Newsletter Signup */}
           <motion.div
             variants={motionSafe(slideUp)}
-            className="border-t border-gray-800 pt-8 mb-8"
+            className="border-t border-gray-800/50 pt-8 mb-8"
           >
             <div className="max-w-md">
               <h3 className="heading-4 text-white mb-4">{content[language].newsletter.title}</h3>
-              <p className="body-sm text-gray-300 mb-4">
+              <p className="body-sm text-text-inverse opacity-80 mb-4">
                 {content[language].newsletter.description}
               </p>
               <div className="flex gap-3">
                 <input
                   type="email"
                   placeholder={content[language].newsletter.placeholder}
-                  className="input-base w-72 bg-gray-800 border-gray-700 
-                           text-white placeholder:text-gray-400
-                           focus:border-white"
+                  className="input-base w-72 bg-gray-900 border-gray-700 
+                           text-text-inverse placeholder:text-gray-500
+                           focus:border-text-inverse"
                 />
                 <button className="btn-primary">
                   {content[language].newsletter.subscribe}
@@ -345,18 +347,21 @@ export default function Footer({ language = 'en' }: FooterProps) {
           <motion.div
             variants={motionSafe(slideUp)}
             className="flex flex-col md:flex-row justify-between items-center 
-                     pt-8 border-t border-gray-800"
+                     pt-8 border-t border-gray-800/50"
           >
             <div className="flex flex-col md:flex-row items-center gap-4 mb-4 md:mb-0">
-              <p className="body-sm text-gray-500">
-                © 2025 Prismy. All rights reserved.
+              <p className="body-sm text-text-inverse">
+                {language === 'vi' 
+                  ? '© 2025 Prismy – Đã đăng ký bản quyền.'
+                  : '© 2025 Prismy – All rights reserved.'
+                }
               </p>
             </div>
             
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                <span className="body-sm text-gray-400">All systems operational</span>
+                <span className="body-sm text-text-inverse opacity-60">Enterprise Ready</span>
               </div>
             </div>
           </motion.div>

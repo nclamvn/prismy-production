@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import '@/styles/globals.css'
 import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration'
 import PerformanceMonitor from '@/components/PerformanceMonitor'
+import { LanguageProvider } from '@/contexts/LanguageContext'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -104,9 +105,11 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="vi" className={inter.variable}>
       <body className="font-sans antialiased bg-white text-gray-900">
-        {children}
+        <LanguageProvider>
+          {children}
+        </LanguageProvider>
         <ServiceWorkerRegistration />
         <PerformanceMonitor />
       </body>
