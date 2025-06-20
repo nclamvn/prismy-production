@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createRouteHandlerClient } from '@/lib/supabase'
-import { cookies } from 'next/headers'
-import { createCheckoutSession, SUBSCRIPTION_PLANS } from '@/lib/stripe'
-import { checkPaymentRateLimit } from '@/lib/rate-limiter'
-import { validateRequest, paymentSchema } from '@/lib/validation'
-import { validateCSRFMiddleware } from '@/lib/csrf'
+
+// Temporarily disabled all Stripe imports for deployment
 
 export async function POST(request: NextRequest) {
   // Temporarily disabled for deployment

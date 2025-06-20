@@ -1,11 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { headers } from 'next/headers'
-import { stripe } from '@/lib/stripe'
-import { createServiceRoleClient } from '@/lib/supabase'
-import { validateWebhookSecurity, verifyStripeWebhook, logWebhookAttempt, checkWebhookRateLimit } from '@/lib/webhook-security'
-import Stripe from 'stripe'
 
-const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!
+// Temporarily disabled all Stripe imports for deployment
 
 export async function POST(request: NextRequest) {
   // Temporarily disabled for deployment
