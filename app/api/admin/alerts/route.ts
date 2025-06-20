@@ -89,7 +89,7 @@ export const GET = withLogging(async (request: NextRequest) => {
     const activeOnly = url.searchParams.get('active') === 'true'
     const timeRange = parseInt(url.searchParams.get('timeRange') || '24')
 
-    const filters = {}
+    const filters: any = {}
     if (type) filters.type = type
     if (severity) filters.severity = severity
 

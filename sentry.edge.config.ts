@@ -23,7 +23,7 @@ Sentry.init({
       const error = hint.originalException
       
       // Skip edge runtime limitations
-      if (error?.message?.includes('Dynamic code evaluation')) {
+      if ((error as any)?.message?.includes('Dynamic code evaluation')) {
         return null
       }
     }

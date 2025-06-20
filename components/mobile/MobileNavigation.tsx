@@ -116,7 +116,9 @@ export default function MobileNavigation({
           animate="visible"
           exit="hidden"
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-          {...touchHandlers}
+          onTouchStart={(e) => touchHandlers.onTouchStart(e.nativeEvent)}
+          onTouchMove={(e) => touchHandlers.onTouchMove(e.nativeEvent)}
+          onTouchEnd={(e) => touchHandlers.onTouchEnd(e.nativeEvent)}
         >
           {/* Safe area padding for devices with home indicators */}
           <div className="pb-safe">
@@ -249,7 +251,9 @@ export function MobileMenu({ isOpen, onClose, children, language = 'en' }: Mobil
             animate="visible"
             exit="hidden"
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            {...touchHandlers}
+            onTouchStart={(e) => touchHandlers.onTouchStart(e.nativeEvent)}
+          onTouchMove={(e) => touchHandlers.onTouchMove(e.nativeEvent)}
+          onTouchEnd={(e) => touchHandlers.onTouchEnd(e.nativeEvent)}
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-200">

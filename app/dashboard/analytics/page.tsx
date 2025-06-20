@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { AuthProvider } from '@/contexts/AuthContext'
 import DashboardLayout from '@/components/dashboard/DashboardLayout'
@@ -288,7 +288,7 @@ function AnalyticsPage() {
           <div className="bg-white rounded-xl border border-gray-200 p-6">
             <h3 className="heading-4 text-gray-900 mb-4">{content[language].charts.translationsOverTime}</h3>
             <div className="h-64 flex items-end justify-between space-x-2">
-              {analyticsData.charts.translationsOverTime.map((item, index) => (
+              {analyticsData.charts.translationsOverTime.map((item: any, index: number) => (
                 <div key={index} className="flex-1 flex flex-col items-center">
                   <div
                     className="w-full bg-gradient-to-t from-blue-500 to-blue-400 rounded-t-sm transition-all duration-300 hover:from-blue-600 hover:to-blue-500"
@@ -306,7 +306,7 @@ function AnalyticsPage() {
           <div className="bg-white rounded-xl border border-gray-200 p-6">
             <h3 className="heading-4 text-gray-900 mb-4">{content[language].charts.languageUsage}</h3>
             <div className="space-y-4">
-              {analyticsData.charts.languageUsage.map((item, index) => (
+              {analyticsData.charts.languageUsage.map((item: any, index: number) => (
                 <div key={index} className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <div className={`w-3 h-3 rounded-full ${

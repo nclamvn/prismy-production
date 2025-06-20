@@ -2,7 +2,12 @@
 
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import PerformanceDashboard, { usePerformanceMonitor } from '../src/components/monitoring/PerformanceDashboard'
+// Temporarily disabled for zen build
+// import PerformanceDashboard, { usePerformanceMonitor } from '../src/components/monitoring/PerformanceDashboard'
+
+function usePerformanceMonitor() {
+  return { isVisible: false, toggle: () => {} }
+}
 
 interface PerformanceMetrics {
   LCP?: number // Largest Contentful Paint
@@ -155,11 +160,11 @@ export default function PerformanceMonitor() {
 
   return (
     <>
-      {/* Enhanced Performance Dashboard */}
-      <PerformanceDashboard 
+      {/* Enhanced Performance Dashboard - Temporarily disabled */}
+      {/* <PerformanceDashboard 
         isVisible={isDashboardVisible} 
         onClose={() => toggleDashboard()} 
-      />
+      /> */}
       
       <div className="fixed bottom-4 right-4 z-50">
         <AnimatePresence>

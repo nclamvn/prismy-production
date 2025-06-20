@@ -65,7 +65,7 @@ export default function OfflinePage() {
           variants={motionSafe(slideUp)}
           transition={{ delay: 0.3 }}
         >
-          You're Offline
+          You&apos;re Offline
         </motion.h1>
 
         {/* Description */}
@@ -74,7 +74,7 @@ export default function OfflinePage() {
           variants={motionSafe(slideUp)}
           transition={{ delay: 0.4 }}
         >
-          It looks like you've lost your internet connection. Don't worry - some features are still available offline!
+          It looks like you&apos;ve lost your internet connection. Don&apos;t worry - some features are still available offline!
         </motion.p>
 
         {/* Offline Features */}

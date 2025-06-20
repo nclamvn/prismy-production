@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { Workbench } from '@/components/Workbench'
+import Workbench from '@/components/Workbench'
 import { AuthContext } from '@/contexts/AuthContext'
 
 // Mock the translation API

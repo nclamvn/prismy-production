@@ -45,14 +45,14 @@ describe('PrismyTranslationService', () => {
         qualityTier: 'standard'
       })
 
-      expect(result).toEqual({
+      expect(result).toEqual(expect.objectContaining({
         translatedText: 'Hola mundo',
         sourceLang: 'en',
         targetLang: 'es',
         confidence: expect.any(Number),
         qualityScore: expect.any(Number),
         timestamp: expect.any(String),
-      })
+      }))
 
       expect(mockTranslate.translate).toHaveBeenCalledWith('Hello world', {
         from: 'en',

@@ -90,7 +90,7 @@ class OCRService {
    */
   private async createWorker(language: string): Promise<Worker> {
     const worker = await createWorker({
-      logger: (m) => {
+      logger: (m: any) => {
         // Optional: log progress to console in development
         if (process.env.NODE_ENV === 'development') {
           console.log('[OCR]', m)
@@ -152,7 +152,7 @@ class OCRService {
 
       // Perform OCR
       const result = await worker.recognize(file, {
-        logger: onProgress ? (m) => {
+        logger: onProgress ? (m: any) => {
           onProgress({
             status: m.status,
             progress: m.progress || 0,
@@ -185,7 +185,7 @@ class OCRService {
       const worker = await this.getWorker(language)
 
       const result = await worker.recognize(imageSource, {
-        logger: onProgress ? (m) => {
+        logger: onProgress ? (m: any) => {
           onProgress({
             status: m.status,
             progress: m.progress || 0,
@@ -230,7 +230,7 @@ class OCRService {
           x1: line.bbox.x1,
           y1: line.bbox.y1
         },
-        words: line.words.map(word => ({
+        words: line.words.map((word: any) => ({
           text: word.text,
           confidence: word.confidence
         }))
@@ -238,7 +238,7 @@ class OCRService {
       paragraphs: data.paragraphs.map(paragraph => ({
         text: paragraph.text,
         confidence: paragraph.confidence,
-        lines: paragraph.lines.map(line => ({
+        lines: paragraph.lines.map((line: any) => ({
           text: line.text,
           confidence: line.confidence
         }))

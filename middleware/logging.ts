@@ -6,7 +6,7 @@ export function withLogging<T extends any[]>(
   handler: (...args: T) => Promise<NextResponse>
 ) {
   return async (...args: T): Promise<NextResponse> => {
-    const [request] = args as [NextRequest, ...any[]]
+    const [request] = args as unknown as [NextRequest, ...any[]]
     const startTime = Date.now()
     
     // Generate request ID for tracing

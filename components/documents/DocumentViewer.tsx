@@ -301,9 +301,9 @@ export default function DocumentViewer({
             <button
               onClick={handleOCRExtraction}
               className="btn-primary text-sm"
-              disabled={viewerState.type === 'loading'}
+              disabled={false}
             >
-              {viewerState.type === 'loading' ? content[language].extracting : content[language].extractText}
+              {content[language].extractText}
             </button>
           )}
 

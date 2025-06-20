@@ -78,7 +78,7 @@ export class CachePerformanceBenchmark {
   }
 
   // Run comprehensive benchmark suite
-  async runBenchmarkSuite(configs?: Partial<BenchmarkConfig>[]): Promise<Map<BenchmarkType, BenchmarkResult>> {
+  async runBenchmarkSuite(configs?: BenchmarkConfig[]): Promise<Map<BenchmarkType, BenchmarkResult>> {
     console.log('🚀 Starting comprehensive cache benchmark suite')
     
     const defaultConfigs: BenchmarkConfig[] = [
@@ -669,7 +669,7 @@ export class CachePerformanceBenchmark {
         } else if (op.operation === 'get') {
           const result = await cacheCoordinator.get(op.key)
           if (result) {
-            await cacheCompression.decompress(result)
+            await cacheCompression.decompress(result as any)
           }
         }
         
@@ -710,9 +710,10 @@ export class CachePerformanceBenchmark {
   }
 
   private async runWarmup(config: BenchmarkConfig): Promise<void> {
-    console.log(`🔥 Warming up for ${config.warmupDuration}ms...`)
+    const warmupDuration = config.warmupDuration || 0
+    console.log(`🔥 Warming up for ${warmupDuration}ms...`)
     
-    const warmupOps = Math.floor(config.warmupDuration / 100)
+    const warmupOps = Math.floor(warmupDuration / 100)
     
     for (let i = 0; i < warmupOps; i++) {
       try {

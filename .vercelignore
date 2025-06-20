@@ -1,0 +1,11 @@
+# Vercel ignore file
+.git
+node_modules
+.next
+.cache
+coverage
+test-results
+playwright-report
+*.log
+.env.local
+.DS_Store

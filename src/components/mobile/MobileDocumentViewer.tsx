@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ProcessedDocument, DocumentChunk } from '@/lib/enhanced-document-processor'
-import { useGestures, getGestureCss, isTouchDevice } from '@/hooks/useGestures'
+import { useGestures, getGestureCss, isTouchDevice } from '@/src/hooks/useGestures'
 
 interface MobileDocumentViewerProps {
   document: ProcessedDocument
@@ -131,11 +131,11 @@ export default function MobileDocumentViewer({
   }
 
   const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
+    if (!globalThis.document.fullscreenElement) {
       containerRef.current?.requestFullscreen()
       setIsFullscreen(true)
     } else {
-      document.exitFullscreen()
+      globalThis.document.exitFullscreen()
       setIsFullscreen(false)
     }
   }
@@ -143,12 +143,12 @@ export default function MobileDocumentViewer({
   // Handle fullscreen change
   useEffect(() => {
     const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement)
+      setIsFullscreen(!!globalThis.document.fullscreenElement)
     }
 
-    document.addEventListener('fullscreenchange', handleFullscreenChange)
+    globalThis.document.addEventListener('fullscreenchange', handleFullscreenChange)
     return () => {
-      document.removeEventListener('fullscreenchange', handleFullscreenChange)
+      globalThis.document.removeEventListener('fullscreenchange', handleFullscreenChange)
       if (controlsTimeoutRef.current) {
         clearTimeout(controlsTimeoutRef.current)
       }

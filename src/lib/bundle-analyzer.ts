@@ -1,5 +1,5 @@
 // Bundle Analysis and Performance Monitoring
-import { logger, performanceLogger } from './logger'
+import { useState, useEffect } from 'react'
 
 export interface BundleMetrics {
   bundleSize: number
@@ -67,9 +67,9 @@ class BundleAnalyzer {
       // Monitor Bundle Loading
       this.observeBundleMetrics()
       
-      logger.info('Performance monitoring initialized')
+      console.info('Performance monitoring initialized')
     } catch (error) {
-      logger.error({ error }, 'Failed to initialize performance monitoring')
+      console.error({ error }, 'Failed to initialize performance monitoring')
     }
   }
 
@@ -83,7 +83,7 @@ class BundleAnalyzer {
         
         if (lastEntry) {
           this.recordMetric('lcp', lastEntry.startTime)
-          performanceLogger.info({
+          console.info({
             metric: 'LCP',
             value: lastEntry.startTime,
             element: lastEntry.element?.tagName
@@ -101,7 +101,7 @@ class BundleAnalyzer {
         const entries = list.getEntries()
         entries.forEach((entry: any) => {
           this.recordMetric('fid', entry.processingStart - entry.startTime)
-          performanceLogger.info({
+          console.info({
             metric: 'FID',
             value: entry.processingStart - entry.startTime,
             eventType: entry.name
@@ -125,7 +125,7 @@ class BundleAnalyzer {
         })
         
         this.recordMetric('cls', clsValue)
-        performanceLogger.info({
+        console.info({
           metric: 'CLS',
           value: clsValue
         }, 'Cumulative Layout Shift updated')
@@ -156,7 +156,7 @@ class BundleAnalyzer {
           
           // Log slow resources
           if (resourceInfo.loadTime > 1000) {
-            performanceLogger.warn({
+            console.warn({
               resource: resourceInfo.name,
               loadTime: resourceInfo.loadTime,
               size: resourceInfo.size
@@ -185,7 +185,7 @@ class BundleAnalyzer {
           }
           
           this.recordMetric('navigation', metrics)
-          performanceLogger.info({
+          console.info({
             ...metrics
           }, 'Navigation timing measured')
         })
@@ -220,7 +220,7 @@ class BundleAnalyzer {
       const bundleMetrics = this.calculateBundleMetrics(assets)
       this.recordMetric('bundle', bundleMetrics)
       
-      performanceLogger.info({
+      console.info({
         totalSize: bundleMetrics.bundleSize,
         assetsCount: assets.length,
         totalLoadTime: bundleMetrics.loadTime
@@ -473,4 +473,4 @@ export function usePerformanceMetrics() {
   return { metrics, suggestions }
 }
 
-export type { BundleMetrics, PerformanceMetrics, AssetInfo, ModuleInfo, ChunkInfo }
+// Types are already exported above with their declarations

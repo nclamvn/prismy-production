@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "vercel-build": "next build",
+    "vercel-build": "npm run build",
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
@@ -20,6 +20,7 @@
     "analyze:browser": "BUNDLE_ANALYZE=browser npm run build"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.54.0",
     "@google-cloud/translate": "^9.1.0",
     "@sentry/nextjs": "^9.30.0",
     "@sentry/tracing": "^7.120.3",
@@ -32,13 +33,16 @@
     "@upstash/redis": "^1.35.0",
     "autoprefixer": "^10.4.21",
     "clsx": "^2.1.1",
+    "cohere-ai": "^7.17.1",
     "csrf-csrf": "^4.0.3",
     "dompurify": "^3.2.6",
     "framer-motion": "^12.18.1",
     "isomorphic-dompurify": "^2.25.0",
+    "lucide-react": "^0.518.0",
     "mammoth": "^1.9.1",
     "next": "^15.3.4",
     "next-logger": "^5.0.1",
+    "openai": "^5.5.1",
     "pdfjs-dist": "^5.3.31",
     "pino": "^9.7.0",
     "pino-pretty": "^13.0.0",

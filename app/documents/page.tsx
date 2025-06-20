@@ -137,7 +137,7 @@ function DocumentsPageContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      <Navbar language={language} setLanguage={setLanguage} />
+      <Navbar />
       
       <main className="pt-24 pb-16">
         <motion.div 
@@ -250,7 +250,7 @@ function DocumentsPageContent() {
               {processedDocument && !translatedChunks && (
                 <motion.div variants={motionSafe(slideUp)}>
                   <DocumentTranslator
-                    document={processedDocument}
+                    document={processedDocument as any}
                     sourceLang={sourceLang}
                     targetLang={targetLang}
                     language={language}
@@ -293,7 +293,7 @@ function DocumentsPageContent() {
         </motion.div>
       </main>
 
-      <Footer language={language} />
+      <Footer />
     </div>
   )
 }

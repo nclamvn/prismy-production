@@ -214,7 +214,7 @@ export default function MonitoringDashboard() {
             <div className="space-y-4">
               <div className="flex justify-between">
                 <span className="text-sm text-gray-500">Hit Rate</span>
-                <span className="text-sm font-medium">{formatNumber(metrics?.cache.hitRate * 100 || 0, 1)}%</span>
+                <span className="text-sm font-medium">{formatNumber((metrics?.cache?.hitRate || 0) * 100, 1)}%</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-gray-500">Memory Usage</span>

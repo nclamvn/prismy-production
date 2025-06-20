@@ -86,8 +86,8 @@ export default function DocumentPreview({
       }
     }
 
-    document.addEventListener('selectionchange', handleSelectionChange)
-    return () => document.removeEventListener('selectionchange', handleSelectionChange)
+    window.document.addEventListener('selectionchange', handleSelectionChange)
+    return () => window.document.removeEventListener('selectionchange', handleSelectionChange)
   }, [onTextSelect])
 
   const handleChunkClick = (chunkId: string) => {

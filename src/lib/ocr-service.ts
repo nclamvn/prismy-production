@@ -1,9 +1,9 @@
-import { createWorker, PSM, Worker } from 'tesseract.js'
-import { logger, performanceLogger } from './logger'
+import { createWorker, Worker } from 'tesseract.js'
+// Removed logger imports - using console methods instead
 
 export interface OCROptions {
   languages?: string | string[]
-  psm?: PSM
+  psm?: number
   oem?: number
   whitelist?: string
   blacklist?: string
@@ -74,7 +74,7 @@ class OCRService {
   private maxWorkers = 2
   private defaultOptions: OCROptions = {
     languages: 'vie+eng',
-    psm: PSM.AUTO,
+    psm: 3, // PSM.AUTO equivalent
     oem: 1,
     preserveInterword: true
   }
@@ -82,16 +82,16 @@ class OCRService {
   // Initialize worker pool
   async initializeWorkerPool() {
     try {
-      logger.info('Initializing OCR worker pool...')
+      console.info('Initializing OCR worker pool...')
       
       for (let i = 0; i < this.maxWorkers; i++) {
         const worker = await this.createWorker()
         this.workerPool.push(worker)
       }
       
-      logger.info(`OCR worker pool initialized with ${this.maxWorkers} workers`)
+      console.info(`OCR worker pool initialized with ${this.maxWorkers} workers`)
     } catch (error) {
-      logger.error({ error }, 'Failed to initialize OCR worker pool')
+      console.error('Failed to initialize OCR worker pool', { error })
       throw error
     }
   }
@@ -102,7 +102,7 @@ class OCRService {
     const opts = { ...this.defaultOptions, ...options }
     
     try {
-      const worker = await createWorker(opts.languages, 1, {
+      const worker = await createWorker({
         logger: (m: any) => {
           if (m.status === 'recognizing text') {
             // Emit progress events for UI updates
@@ -115,6 +115,10 @@ class OCRService {
         }
       })
 
+      // Load language first
+      await worker.loadLanguage(opts.languages || 'eng')
+      await worker.initialize(opts.languages || 'eng')
+      
       // Set additional options
       if (opts.psm) {
         await worker.setParameters({ tessedit_pageseg_mode: opts.psm })
@@ -133,15 +137,15 @@ class OCRService {
       }
 
       const duration = Date.now() - startTime
-      performanceLogger.info({
+      console.info('OCR worker created successfully', {
         duration,
         languages: opts.languages,
         psm: opts.psm
-      }, 'OCR worker created successfully')
+      })
 
       return worker
     } catch (error) {
-      logger.error({ error, options: opts }, 'Failed to create OCR worker')
+      console.error('Failed to create OCR worker', { error, options: opts })
       throw error
     }
   }
@@ -169,11 +173,11 @@ class OCRService {
     const startTime = Date.now()
     const jobId = `ocr-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
     
-    logger.info({
+    console.info('Starting OCR processing', {
       jobId,
       imageType: typeof imageData,
       options
-    }, 'Starting OCR processing')
+    })
 
     let worker = this.getAvailableWorker()
     let shouldReturnToPool = true
@@ -201,22 +205,22 @@ class OCRService {
       const result: OCRResult = {
         text: data.text,
         confidence: data.confidence,
-        words: data.words.map(word => ({
+        words: data.words.map((word: any) => ({
           text: word.text,
           confidence: word.confidence,
           bbox: word.bbox
         })),
-        lines: data.lines.map(line => ({
+        lines: data.lines.map((line: any) => ({
           text: line.text,
           confidence: line.confidence,
           bbox: line.bbox,
-          words: line.words.map(word => ({
+          words: line.words.map((word: any) => ({
             text: word.text,
             confidence: word.confidence,
             bbox: word.bbox
           }))
         })),
-        paragraphs: data.paragraphs.map(para => ({
+        paragraphs: data.paragraphs.map((para: any) => ({
           text: para.text,
           confidence: para.confidence,
           bbox: para.bbox
@@ -228,19 +232,19 @@ class OCRService {
       if (data.tsv) result.tsv = data.tsv
 
       const duration = Date.now() - startTime
-      performanceLogger.info({
+      console.info('OCR processing completed', {
         jobId,
         duration,
         textLength: result.text.length,
         confidence: result.confidence,
         wordsCount: result.words.length,
         linesCount: result.lines.length
-      }, 'OCR processing completed')
+      })
 
       return result
 
     } catch (error) {
-      logger.error({ error, jobId }, 'OCR processing failed')
+      console.error('OCR processing failed', { error, jobId })
       throw error
     } finally {
       if (shouldReturnToPool) {
@@ -257,7 +261,7 @@ class OCRService {
     options: Partial<OCROptions> = {},
     onProgress?: (completed: number, total: number, current?: string) => void
   ): Promise<Array<{ filename?: string; result: OCRResult; error?: string }>> {
-    logger.info({ count: images.length }, 'Starting batch OCR processing')
+    console.info('Starting batch OCR processing', { count: images.length })
     
     const results: Array<{ filename?: string; result: OCRResult; error?: string }> = []
     
@@ -272,7 +276,7 @@ class OCRService {
           onProgress(i + 1, images.length, filename)
         }
       } catch (error) {
-        logger.error({ error, filename }, 'Failed to process image in batch')
+        console.error('Failed to process image in batch', { error, filename })
         results.push({ 
           filename, 
           result: { 
@@ -282,7 +286,7 @@ class OCRService {
             lines: [], 
             paragraphs: [] 
           },
-          error: error.message 
+          error: error instanceof Error ? error.message : String(error) 
         })
       }
     }
@@ -296,7 +300,7 @@ class OCRService {
     options: Partial<OCROptions> = {},
     onProgress?: (completed: number, total: number) => void
   ): Promise<Array<{ page: number; result: OCRResult }>> {
-    logger.info({ pages: pdfPages.length }, 'Processing PDF pages with OCR')
+    console.info('Processing PDF pages with OCR', { pages: pdfPages.length })
     
     const results: Array<{ page: number; result: OCRResult }> = []
     
@@ -309,7 +313,7 @@ class OCRService {
           onProgress(i + 1, pdfPages.length)
         }
       } catch (error) {
-        logger.error({ error, page: i + 1 }, 'Failed to process PDF page')
+        console.error('Failed to process PDF page', { error, page: i + 1 })
         results.push({
           page: i + 1,
           result: {
@@ -331,8 +335,12 @@ class OCRService {
     let worker: Worker | null = null
     
     try {
-      worker = await createWorker('eng', 1)
-      await worker.setParameters({ tessedit_pageseg_mode: PSM.AUTO_OSD })
+      worker = await createWorker()
+      if (!worker) throw new Error('Failed to create worker')
+      
+      await worker.loadLanguage('eng')
+      await worker.initialize('eng')
+      await worker.setParameters({ tessedit_pageseg_mode: 0 }) // PSM.AUTO_OSD equivalent
       
       const { data } = await worker.recognize(imageData)
       
@@ -353,7 +361,7 @@ class OCRService {
       return detectedLanguages.length > 0 ? detectedLanguages : ['eng']
       
     } catch (error) {
-      logger.error({ error }, 'Language detection failed')
+      console.error('Language detection failed', { error })
       return ['eng'] // Default fallback
     } finally {
       if (worker) {
@@ -382,7 +390,7 @@ class OCRService {
 
   // Clean up resources
   async cleanup() {
-    logger.info('Cleaning up OCR service...')
+    console.info('Cleaning up OCR service...')
     
     // Terminate all workers in pool
     await Promise.all(this.workerPool.map(worker => worker.terminate()))
@@ -394,7 +402,7 @@ class OCRService {
       this.workers.delete(id)
     }
     
-    logger.info('OCR service cleanup completed')
+    console.info('OCR service cleanup completed')
   }
 
   // Private method to emit progress events
@@ -418,7 +426,7 @@ class OCRService {
       // Quick OCR run to assess quality
       const result = await this.processImage(imageData, {
         languages: 'eng',
-        psm: PSM.AUTO
+        psm: 3 // PSM.AUTO equivalent
       })
 
       const confidence = result.confidence
@@ -446,7 +454,7 @@ class OCRService {
         suitableForOCR: confidence > 30 && wordCount > 5
       }
     } catch (error) {
-      logger.error({ error }, 'Quality assessment failed')
+      console.error('Quality assessment failed', { error })
       return {
         confidence: 0,
         recommendations: ['Failed to assess image quality'],
@@ -462,9 +470,8 @@ export const ocrService = new OCRService()
 // Initialize on first import (if in browser environment)
 if (typeof window !== 'undefined') {
   ocrService.initializeWorkerPool().catch(error => {
-    logger.error({ error }, 'Failed to initialize OCR worker pool')
+    console.error('Failed to initialize OCR worker pool', { error })
   })
 }
 
-// Export types
-export type { OCROptions, OCRResult, ProcessingProgress }
+// Types are already exported above with their declarations

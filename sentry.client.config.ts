@@ -20,12 +20,12 @@ Sentry.init({
       const error = hint.originalException
       
       // Skip network errors that users can't control
-      if (error?.message?.includes('Network request failed')) {
+      if ((error as any)?.message?.includes('Network request failed')) {
         return null
       }
       
       // Skip common browser extension errors
-      if (error?.message?.includes('Non-Error promise rejection')) {
+      if ((error as any)?.message?.includes('Non-Error promise rejection')) {
         return null
       }
     }
@@ -52,14 +52,7 @@ Sentry.init({
   
   // Integration configuration
   integrations: [
-    new Sentry.BrowserTracing({
-      // Track specific interactions
-      tracePropagationTargets: [
-        'localhost',
-        /^https:\/\/prismy-production\.vercel\.app/,
-        /^https:\/\/api\.prismy\.ai/
-      ]
-    })
+    // BrowserTracing integration disabled for build compatibility
   ],
   
   // Debug settings

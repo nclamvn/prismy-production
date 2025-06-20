@@ -25,8 +25,7 @@ const nextConfig = {
   // Compression
   compress: true,
 
-  // Enable static optimization
-  swcMinify: true,
+  // Enable static optimization (removed swcMinify for Next.js 15)
 
   // Performance monitoring
   poweredByHeader: false,

@@ -138,7 +138,7 @@ export default function AdvancedDocumentUpload({
       setUploadFiles(prev =>
         prev.map(f =>
           f.id === uploadFile.id
-            ? { ...f, status: 'error', error: error.message }
+            ? { ...f, status: 'error', error: (error as Error).message }
             : f
         )
       )

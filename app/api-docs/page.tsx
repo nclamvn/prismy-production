@@ -77,7 +77,6 @@ export default function ApiDocsPage() {
               return res
             }}
             supportedSubmitMethods={['get', 'post', 'put', 'delete', 'patch']}
-            validatorUrl={null} // Disable validator
             plugins={[
               // Custom plugins can be added here
             ]}

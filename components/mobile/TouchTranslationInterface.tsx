@@ -191,7 +191,9 @@ export default function TouchTranslationInterface({
       initial="collapsed"
       animate={isExpanded ? 'expanded' : 'collapsed'}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-      {...swipeHandlers}
+      onTouchStart={(e) => swipeHandlers.onTouchStart(e.nativeEvent)}
+      onTouchMove={(e) => swipeHandlers.onTouchMove(e.nativeEvent)}
+      onTouchEnd={(e) => swipeHandlers.onTouchEnd(e.nativeEvent)}
     >
       {/* Handle bar */}
       <motion.div
@@ -244,7 +246,12 @@ export default function TouchTranslationInterface({
       </div>
 
       {/* Input Area */}
-      <div className="flex-1 p-4" {...pinchHandlers}>
+      <div 
+        className="flex-1 p-4"
+        onTouchStart={(e) => pinchHandlers.onTouchStart(e.nativeEvent)}
+        onTouchMove={(e) => pinchHandlers.onTouchMove(e.nativeEvent)}
+        onTouchEnd={(e) => pinchHandlers.onTouchEnd(e.nativeEvent)}
+      >
         <textarea
           ref={textareaRef}
           value={inputText}

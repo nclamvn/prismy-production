@@ -455,7 +455,7 @@ class AnalyticsService {
     }, {} as Record<string, number>)
 
     const mostUsedLanguagePair = Object.entries(languagePairCounts)
-      .sort(([,a], [,b]) => b - a)[0]?.[0] || 'none'
+      .sort(([,a], [,b]) => (b as number) - (a as number))[0]?.[0] || 'none'
 
     return {
       totalTranslations,
@@ -505,12 +505,12 @@ class AnalyticsService {
       return acc
     }, {} as Record<string, number>)
 
-    const totalLanguageUsage = Object.values(languageCounts).reduce((sum, count) => sum + count, 0)
+    const totalLanguageUsage = Object.values(languageCounts).reduce<number>((sum, count) => sum + (count as number), 0)
     const popularLanguages = Object.entries(languageCounts)
       .map(([language, count]) => ({
         language,
-        count,
-        percentage: (count / totalLanguageUsage) * 100
+        count: count as number,
+        percentage: ((count as number) / totalLanguageUsage) * 100
       }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 10)
@@ -524,7 +524,7 @@ class AnalyticsService {
       avgResponseTime,
       errorRate,
       popularLanguages,
-      peakUsageHours: this.calculatePeakHours(events),
+      peakUsageHours: this.calculatePeakHoursDetailed(events),
       userRetention: {
         day1: 75,
         day7: 45,
@@ -584,9 +584,22 @@ class AnalyticsService {
     }, {} as Record<number, number>)
 
     return Object.entries(hourCounts)
-      .sort(([,a], [,b]) => b - a)
+      .sort(([,a], [,b]) => (b as number) - (a as number))
       .slice(0, 3)
       .map(([hour]) => parseInt(hour))
+  }
+
+  private calculatePeakHoursDetailed(events: any[]): Array<{ hour: number; count: number }> {
+    const hourCounts = events.reduce((acc, e) => {
+      const hour = new Date(e.timestamp).getHours()
+      acc[hour] = (acc[hour] || 0) + 1
+      return acc
+    }, {} as Record<number, number>)
+
+    return Object.entries(hourCounts)
+      .sort(([,a], [,b]) => (b as number) - (a as number))
+      .slice(0, 3)
+      .map(([hour, count]) => ({ hour: parseInt(hour), count: count as number }))
   }
 
   private calculateDeviceBreakdown(events: any[]): { mobile: number; tablet: number; desktop: number } {
@@ -596,7 +609,7 @@ class AnalyticsService {
       return acc
     }, {} as Record<string, number>)
 
-    const total = Object.values(deviceCounts).reduce((sum, count) => sum + count, 0)
+    const total = Object.values(deviceCounts).reduce<number>((sum, count) => sum + (count as number), 0)
 
     return {
       mobile: ((deviceCounts.mobile || 0) / total) * 100,
@@ -612,10 +625,10 @@ class AnalyticsService {
       return acc
     }, {} as Record<string, number>)
 
-    const total = Object.values(browserCounts).reduce((sum, count) => sum + count, 0)
+    const total = Object.values(browserCounts).reduce<number>((sum, count) => sum + (count as number), 0)
 
     return Object.entries(browserCounts).reduce((acc, [browser, count]) => {
-      acc[browser] = (count / total) * 100
+      acc[browser] = ((count as number) / total) * 100
       return acc
     }, {} as Record<string, number>)
   }
@@ -627,10 +640,10 @@ class AnalyticsService {
       return acc
     }, {} as Record<string, number>)
 
-    const total = Object.values(countryCounts).reduce((sum, count) => sum + count, 0)
+    const total = Object.values(countryCounts).reduce<number>((sum, count) => sum + (count as number), 0)
 
     return Object.entries(countryCounts).reduce((acc, [country, count]) => {
-      acc[country] = (count / total) * 100
+      acc[country] = ((count as number) / total) * 100
       return acc
     }, {} as Record<string, number>)
   }

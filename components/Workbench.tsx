@@ -1,58 +1,41 @@
 'use client'
 
-import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { slideUp, staggerContainer, motionSafe } from '@/lib/motion'
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { 
+  zenBreathe, 
+  invisiblePresence, 
+  whisperUp, 
+  getCulturalRhythm,
+  whisperHover,
+  breathHover
+} from '@/lib/motion'
 
 interface Language {
   code: string
   name: string
 }
 
+// Simplified language list - Essential languages only
 const getLanguages = (language: 'vi' | 'en'): Language[] => {
-  if (language === 'vi') {
-    return [
-      { code: 'auto', name: 'Tự động' },
-      { code: 'en', name: 'English' },
-      { code: 'es', name: 'Spanish' },
-      { code: 'fr', name: 'French' },
-      { code: 'de', name: 'German' },
-      { code: 'it', name: 'Italian' },
-      { code: 'pt', name: 'Portuguese' },
-      { code: 'ru', name: 'Russian' },
-      { code: 'ja', name: 'Japanese' },
-      { code: 'ko', name: 'Korean' },
-      { code: 'zh', name: 'Chinese' },
-      { code: 'ar', name: 'Arabic' },
-      { code: 'hi', name: 'Hindi' },
-      { code: 'vi', name: 'Tiếng Việt' },
-    ]
-  } else {
-    return [
-      { code: 'auto', name: 'Auto-detect' },
-      { code: 'en', name: 'English' },
-      { code: 'es', name: 'Spanish' },
-      { code: 'fr', name: 'French' },
-      { code: 'de', name: 'German' },
-      { code: 'it', name: 'Italian' },
-      { code: 'pt', name: 'Portuguese' },
-      { code: 'ru', name: 'Russian' },
-      { code: 'ja', name: 'Japanese' },
-      { code: 'ko', name: 'Korean' },
-      { code: 'zh', name: 'Chinese' },
-      { code: 'ar', name: 'Arabic' },
-      { code: 'hi', name: 'Hindi' },
-      { code: 'vi', name: 'Vietnamese' },
-    ]
-  }
+  const essential = language === 'vi' ? [
+    { code: 'auto', name: 'Tự động' },
+    { code: 'vi', name: 'Tiếng Việt' },
+    { code: 'en', name: 'English' },
+    { code: 'zh', name: 'Chinese' },
+    { code: 'ja', name: 'Japanese' },
+    { code: 'ko', name: 'Korean' },
+  ] : [
+    { code: 'auto', name: 'Auto' },
+    { code: 'en', name: 'English' },
+    { code: 'vi', name: 'Vietnamese' },
+    { code: 'zh', name: 'Chinese' },
+    { code: 'ja', name: 'Japanese' },
+    { code: 'ko', name: 'Korean' },
+  ]
+  
+  return essential
 }
-
-const qualityTiers = [
-  { value: 'free', label: 'Free', description: 'Basic translation' },
-  { value: 'standard', label: 'Standard', description: 'Enhanced accuracy' },
-  { value: 'premium', label: 'Premium', description: 'Professional quality' },
-  { value: 'enterprise', label: 'Enterprise', description: 'Maximum precision' },
-]
 
 interface WorkbenchProps {
   language?: 'vi' | 'en'
@@ -63,46 +46,39 @@ export default function Workbench({ language = 'en' }: WorkbenchProps) {
   const [targetText, setTargetText] = useState('')
   const [sourceLang, setSourceLang] = useState('auto')
   const [targetLang, setTargetLang] = useState(language === 'vi' ? 'vi' : 'en')
-  const [qualityTier, setQualityTier] = useState('premium')
   const [isTranslating, setIsTranslating] = useState(false)
-  const [translationQuality, setTranslationQuality] = useState<number | null>(null)
-  const [lastTranslation, setLastTranslation] = useState<any>(null)
+  const [isVisible, setIsVisible] = useState(false)
+  const culturalRhythm = getCulturalRhythm()
 
+  // Zen-level content - Minimal, purposeful
   const content = {
     vi: {
-      title: 'Bảng dịch thuật',
-      subtitle: 'Công cụ dịch thuật chuyên nghiệp được hỗ trợ bởi AI',
-      sourceLabel: 'Ngôn ngữ nguồn',
-      targetLabel: 'Ngôn ngữ đích',
-      sourcePlaceholder: 'Nhập văn bản cần dịch...',
-      targetPlaceholder: 'Bản dịch sẽ xuất hiện ở đây...',
-      uploadDoc: 'Tải tài liệu lên',
-      quality: 'Chất lượng:',
-      translate: 'Dịch',
-      translating: 'Đang dịch...',
-      characters: 'ký tự',
-      poweredBy: 'Được hỗ trợ bởi Prismy AI',
-      accuracy: 'Độ chính xác 99.9%',
-      languages: '150+ ngôn ngữ'
+      from: 'Từ',
+      to: 'Sang',
+      source: 'Nhập văn bản...',
+      target: 'Kết quả...',
+      action: 'Dịch',
+      working: 'Đang dịch...',
+      ready: 'Sẵn sàng'
     },
     en: {
-      title: 'Translation Workbench',
-      subtitle: 'Professional-grade translation tools powered by AI',
-      sourceLabel: 'Source Language',
-      targetLabel: 'Target Language',
-      sourcePlaceholder: 'Enter text to translate...',
-      targetPlaceholder: 'Translation will appear here...',
-      uploadDoc: 'Upload Document',
-      quality: 'Quality:',
-      translate: 'Translate',
-      translating: 'Translating...',
-      characters: 'characters',
-      poweredBy: 'Powered by Prismy AI',
-      accuracy: '99.9% accuracy',
-      languages: '150+ languages'
+      from: 'From',
+      to: 'To', 
+      source: 'Enter text...',
+      target: 'Result...',
+      action: 'Translate',
+      working: 'Translating...',
+      ready: 'Ready'
     }
   }
 
+  // Vietnamese cultural breathing effect
+  useEffect(() => {
+    const timer = setTimeout(() => setIsVisible(true), 100)
+    return () => clearTimeout(timer)
+  }, [])
+
+  // AI-powered instant translation
   const handleTranslate = async () => {
     if (!sourceText.trim()) return
     
@@ -111,14 +87,12 @@ export default function Workbench({ language = 'en' }: WorkbenchProps) {
     try {
       const response = await fetch('/api/translate', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           text: sourceText,
           sourceLang: sourceLang,
           targetLang: targetLang,
-          qualityTier: qualityTier
+          tier: 'instant' // Always instant for zen experience
         })
       })
 
@@ -126,27 +100,24 @@ export default function Workbench({ language = 'en' }: WorkbenchProps) {
 
       if (data.success) {
         setTargetText(data.result.translatedText)
-        setTranslationQuality(data.result.qualityScore)
-        setLastTranslation(data.result)
         
-        // Update detected source language if auto-detect was used
+        // Auto-detect feedback
         if (sourceLang === 'auto' && data.result.sourceLang !== 'auto') {
           setSourceLang(data.result.sourceLang)
         }
       } else {
-        // Handle API errors
-        setTargetText(`Error: ${data.message || 'Translation failed'}`)
+        setTargetText(data.message || 'Unable to translate')
       }
     } catch (error) {
-      console.error('Translation error:', error)
-      setTargetText('Error: Unable to connect to translation service')
+      setTargetText('Translation unavailable')
     } finally {
       setIsTranslating(false)
     }
   }
 
-  const handleSwapLanguages = () => {
-    if (sourceLang !== 'auto') {
+  // Invisible swap - breath-level interaction
+  const handleSwap = () => {
+    if (sourceLang !== 'auto' && targetText) {
       setSourceLang(targetLang)
       setTargetLang(sourceLang)
       setSourceText(targetText)
@@ -155,44 +126,35 @@ export default function Workbench({ language = 'en' }: WorkbenchProps) {
   }
 
   return (
-    <section id="workbench" className="w-full py-24 bg-main" data-testid="workbench">
-      <div className="content-container">
-        <motion.div
-          variants={motionSafe(staggerContainer)}
+    <AnimatePresence>
+      {isVisible && (
+        <motion.section 
+          className="relative"
+          variants={zenBreathe}
           initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
+          animate="visible"
+          exit="hidden"
         >
-          {/* Section Header */}
-          <motion.div 
-            variants={motionSafe(slideUp)}
-            className="text-center mb-12"
-          >
-            <h2 className="heading-2 text-black mb-4">
-              {content[language].title}
-            </h2>
-            <p className="body-lg text-gray-600">
-              {content[language].subtitle}
-            </p>
-          </motion.div>
-
-          {/* Workbench Grid */}
-          <motion.div
-            variants={motionSafe(slideUp)}
-            className="workbench-grid"
-          >
-            {/* Source Panel */}
-            <div className="workbench-panel">
-              <div className="flex items-center justify-between mb-4">
-                <label htmlFor="source-lang" className="heading-4 whitespace-nowrap">
-                  {content[language].sourceLabel}
-                </label>
+          {/* Zen Translation Interface - Single Column Flow */}
+          <div className="space-zen">
+            
+            {/* Language Selectors - Invisible Presence */}
+            <motion.div 
+              className="flex items-center justify-center gap-8 mb-12"
+              variants={invisiblePresence}
+            >
+              {/* Source Language */}
+              <div className="flex items-center gap-3">
+                <span className="text-caption text-mono-medium vietnamese-text">
+                  {content[language].from}
+                </span>
                 <select
-                  id="source-lang"
                   value={sourceLang}
                   onChange={(e) => setSourceLang(e.target.value)}
-                  className="select-base text-sm bg-white hover:bg-gray-50 w-[160px]"
-                  aria-label="Select source language"
+                  className="form-input text-body-sm border-whisper bg-transparent 
+                           focus:border-mono-black transition-all duration-200
+                           hover-whisper cursor-pointer vietnamese-text"
+                  style={{ minWidth: '120px' }}
                 >
                   {getLanguages(language).map((lang) => (
                     <option key={lang.code} value={lang.code}>
@@ -202,149 +164,142 @@ export default function Workbench({ language = 'en' }: WorkbenchProps) {
                 </select>
               </div>
 
-              <textarea
-                value={sourceText}
-                onChange={(e) => setSourceText(e.target.value)}
-                placeholder={content[language].sourcePlaceholder}
-                className="textarea-base h-64 text-left"
-                aria-label="Source text input"
-              />
+              {/* Zen Swap - Invisible Until Needed */}
+              <motion.button
+                onClick={handleSwap}
+                disabled={sourceLang === 'auto' || !targetText}
+                className="w-8 h-8 flex items-center justify-center text-mono-light 
+                         hover:text-mono-black transition-colors duration-200
+                         disabled:opacity-30"
+                {...whisperHover}
+                whileHover={{ rotate: 180 }}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} 
+                        d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                </svg>
+              </motion.button>
 
-              <div className="flex items-center justify-between mt-4">
-                <button className="btn-secondary text-sm">
-                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                  </svg>
-                  {content[language].uploadDoc}
-                </button>
-                <div className="flex items-center gap-2">
-                  <span className={`body-sm ${sourceText.length > 10000 ? 'text-red-500' : 'text-gray-500'}`}>
-                    {sourceText.length}/10,000 {content[language].characters}
-                  </span>
-                  {sourceText.length > 10000 && (
-                    <span className="text-xs text-red-500">Max limit exceeded</span>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Target Panel */}
-            <div className="workbench-panel">
-              <div className="flex items-center justify-between mb-4">
-                <label htmlFor="target-lang" className="heading-4 whitespace-nowrap">
-                  {content[language].targetLabel}
-                </label>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={handleSwapLanguages}
-                    className="btn-ghost p-2"
-                    disabled={sourceLang === 'auto'}
-                    aria-label="Swap languages"
-                    title="Swap languages"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                    </svg>
-                  </button>
-                  <select
-                    id="target-lang"
-                    value={targetLang}
-                    onChange={(e) => setTargetLang(e.target.value)}
-                    className="select-base text-sm bg-white hover:bg-gray-50 w-[160px]"
-                    aria-label="Select target language"
-                  >
-                    {getLanguages(language).filter(lang => lang.code !== 'auto').map((lang) => (
-                      <option key={lang.code} value={lang.code}>
-                        {lang.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <textarea
-                value={targetText}
-                readOnly
-                placeholder={content[language].targetPlaceholder}
-                className="textarea-base h-64 bg-white text-left"
-                aria-label="Target text output"
-              />
-
-              <div className="flex items-center justify-between mt-4">
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2">
-                    <label htmlFor="quality-tier" className="body-sm text-gray-600 whitespace-nowrap">
-                      {content[language].quality}
-                    </label>
-                  <select
-                    id="quality-tier"
-                    value={qualityTier}
-                    onChange={(e) => setQualityTier(e.target.value)}
-                    className="select-base text-sm bg-white hover:bg-gray-50"
-                    aria-label="Select quality tier"
-                  >
-                    {qualityTiers.map((tier) => (
-                      <option key={tier.value} value={tier.value}>
-                        {tier.label}
-                      </option>
-                    ))}
-                  </select>
-                  </div>
-                  
-                  {translationQuality && (
-                    <div className="flex items-center gap-2">
-                      <span className="body-sm text-gray-600">Quality:</span>
-                      <div className="flex items-center gap-1">
-                        <div className={`w-2 h-2 rounded-full ${
-                          translationQuality >= 0.9 ? 'bg-green-500' :
-                          translationQuality >= 0.8 ? 'bg-yellow-500' :
-                          'bg-red-500'
-                        }`}></div>
-                        <span className="text-xs text-gray-500">
-                          {Math.round(translationQuality * 100)}%
-                        </span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                
-                <motion.button
-                  onClick={handleTranslate}
-                  disabled={!sourceText.trim() || isTranslating || sourceText.length > 10000}
-                  className="btn-primary"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+              {/* Target Language */}
+              <div className="flex items-center gap-3">
+                <span className="text-caption text-mono-medium vietnamese-text">
+                  {content[language].to}
+                </span>
+                <select
+                  value={targetLang}
+                  onChange={(e) => setTargetLang(e.target.value)}
+                  className="form-input text-body-sm border-whisper bg-transparent 
+                           focus:border-mono-black transition-all duration-200
+                           hover-whisper cursor-pointer vietnamese-text"
+                  style={{ minWidth: '120px' }}
                 >
-                  {isTranslating ? (
-                    <>
-                      <span className="animate-spin mr-2">⟳</span>
-                      {content[language].translating}
-                    </>
-                  ) : (
-                    content[language].translate
-                  )}
-                </motion.button>
+                  {getLanguages(language).filter(lang => lang.code !== 'auto').map((lang) => (
+                    <option key={lang.code} value={lang.code}>
+                      {lang.name}
+                    </option>
+                  ))}
+                </select>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
 
-          {/* Minimalist info bar - removed redundant "Powered by" */}
-          <motion.div
-            variants={motionSafe(slideUp)}
-            className="flex items-center justify-center mt-8"
-            role="group"
-            aria-label="Translation info"
-          >
-            <div className="flex items-center gap-4 px-6 py-3 
-                          bg-white rounded-full border border-gray-200 
-                          shadow-sm">
-              <span className="body-sm text-gray-600">{content[language].accuracy}</span>
-              <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
-              <span className="body-sm text-gray-600">{content[language].languages}</span>
-            </div>
-          </motion.div>
-        </motion.div>
-      </div>
-    </section>
+            {/* Translation Canvas - Zen Simplicity */}
+            <motion.div 
+              className="grid gap-8 md:grid-cols-2"
+              variants={whisperUp}
+            >
+              {/* Source Input - Breathing Space */}
+              <motion.div 
+                className="relative"
+                variants={invisiblePresence}
+              >
+                <textarea
+                  value={sourceText}
+                  onChange={(e) => setSourceText(e.target.value)}
+                  placeholder={content[language].source}
+                  className="form-input w-full h-64 resize-none text-body 
+                           vietnamese-text placeholder:text-mono-light
+                           border-whisper focus:border-mono-black bg-transparent
+                           transition-all duration-300"
+                  style={{ 
+                    lineHeight: culturalRhythm === 'evening' ? '1.8' : '1.6',
+                    fontSize: culturalRhythm === 'evening' ? '1.125rem' : '1rem'
+                  }}
+                />
+                {sourceText && (
+                  <motion.div 
+                    className="absolute bottom-4 right-4 text-caption text-mono-light"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    {sourceText.length}
+                  </motion.div>
+                )}
+              </motion.div>
+
+              {/* Target Output - Zen Reception */}
+              <motion.div 
+                className="relative"
+                variants={invisiblePresence}
+              >
+                <textarea
+                  value={targetText}
+                  readOnly
+                  placeholder={content[language].target}
+                  className="form-input w-full h-64 resize-none text-body 
+                           vietnamese-text placeholder:text-mono-light
+                           border-whisper bg-mono-white-95 cursor-default
+                           transition-all duration-300"
+                  style={{ 
+                    lineHeight: culturalRhythm === 'evening' ? '1.8' : '1.6',
+                    fontSize: culturalRhythm === 'evening' ? '1.125rem' : '1rem'
+                  }}
+                />
+                {isTranslating && (
+                  <motion.div 
+                    className="absolute inset-0 flex items-center justify-center"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                  >
+                    <div className="text-mono-medium loading-breath">
+                      {content[language].working}
+                    </div>
+                  </motion.div>
+                )}
+              </motion.div>
+            </motion.div>
+
+            {/* Zen Action - Single Purpose */}
+            <motion.div 
+              className="flex justify-center mt-12"
+              variants={invisiblePresence}
+            >
+              <motion.button
+                onClick={handleTranslate}
+                disabled={!sourceText.trim() || isTranslating}
+                className="btn btn-primary px-16 py-4 text-body hover-whisper focus-breath
+                         disabled:opacity-50 disabled:cursor-not-allowed vietnamese-text"
+                {...breathHover}
+              >
+                {isTranslating ? content[language].working : content[language].action}
+              </motion.button>
+            </motion.div>
+
+            {/* Invisible Status - Breath-Level Feedback */}
+            <motion.div 
+              className="flex justify-center mt-8"
+              variants={invisiblePresence}
+            >
+              <div className="text-caption text-mono-light vietnamese-text">
+                {!sourceText.trim() ? content[language].ready : 
+                 targetText ? '✓' : 
+                 isTranslating ? '○' : ''}
+              </div>
+            </motion.div>
+
+          </div>
+        </motion.section>
+      )}
+    </AnimatePresence>
   )
 }

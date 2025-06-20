@@ -224,7 +224,7 @@ export default function EnhancedDocumentPreview({
                     <button
                       onClick={() => {
                         if (onTextSelect) {
-                          onTextSelect(selectedText, selectedChunk)
+                          onTextSelect(selectedText, selectedChunk || undefined)
                         }
                       }}
                       className="px-3 py-1 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition-colors"

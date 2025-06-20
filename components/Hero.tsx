@@ -1,7 +1,6 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { slideUp, staggerContainer, motionSafe } from '@/lib/motion'
 
 interface HeroProps {
   language?: 'vi' | 'en'
@@ -10,82 +9,113 @@ interface HeroProps {
 export default function Hero({ language = 'en' }: HeroProps) {
   const content = {
     vi: {
-      badge: 'Độ chính xác 99.9% cho hơn 150 ngôn ngữ',
-      title: 'Dịch thuật AI',
-      subtitle: 'Xây dựng cho Tương lai',
-      description: 'Trải nghiệm nền tảng dịch thuật AI tiên tiến nhất thế giới. Dịch văn bản và tài liệu ngay lập tức với độ chính xác hoàn hảo và hiểu biết văn hóa.',
-      startButton: 'Bắt đầu dịch',
-      watchDemo: 'Xem demo',
-      stats: {
-        daily: 'Lượt dịch hàng ngày',
-        languages: 'Ngôn ngữ hỗ trợ',
-        accuracy: 'Tỷ lệ chính xác'
-      }
+      title: 'Dịch thuật',
+      subtitle: 'Không giới hạn',
+      description: 'Trí tuệ nhân tạo tiên tiến, dịch thuật tức thì với độ chính xác tuyệt đối.',
+      action: 'Bắt đầu',
     },
     en: {
-      badge: '99.9% accuracy across 150+ languages',
-      title: 'AI-Powered Translation',
-      subtitle: 'Built for the Future',
-      description: 'Experience the world\'s most advanced AI translation platform. Translate text and documents instantly with perfect accuracy and cultural understanding.',
-      startButton: 'Start Translating',
-      watchDemo: 'Watch Demo',
-      stats: {
-        daily: 'Daily Translations',
-        languages: 'Languages Supported',
-        accuracy: 'Accuracy Rate'
+      title: 'Translation',
+      subtitle: 'Without limits',
+      description: 'Advanced AI that translates instantly with absolute precision.',
+      action: 'Begin',
+    }
+  }
+
+  // Zen breathing animation variants
+  const breatheVariants = {
+    hidden: { 
+      opacity: 0, 
+      y: 8,
+      scale: 0.98
+    },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      scale: 1,
+      transition: { 
+        duration: 0.8,
+        ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number],
+        staggerChildren: 0.2
+      }
+    }
+  }
+
+  const whisperVariants = {
+    hidden: { 
+      opacity: 0, 
+      y: 4 
+    },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { 
+        duration: 0.6,
+        ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number]
       }
     }
   }
 
   return (
-    <section className="w-full pt-24 pb-20 bg-main">
-      <div className="w-full">
+    <section className="zen-container">
+      <div className="content-zen space-zen text-center">
         <motion.div
-          className="content-container text-center"
-          variants={motionSafe(staggerContainer)}
+          variants={breatheVariants}
           initial="hidden"
           animate="visible"
         >
-
-          {/* Main Heading */}
-          <motion.h1
-            variants={motionSafe(slideUp)}
-            className="text-black mb-6 text-balance font-bold tracking-tight"
-            style={{ fontSize: 'calc(3rem * 1.5)', lineHeight: '1.1' }}
+          {/* Zen Title - Monumental Minimalism */}
+          <motion.h1 
+            variants={whisperVariants}
+            className="text-display-xl vietnamese-text mb-4"
           >
             {content[language].title}
-            <br />
-            <span className="bg-accent-rainbow bg-clip-text text-transparent">
-              {content[language].subtitle}
-            </span>
           </motion.h1>
 
-          {/* Subtitle */}
-          <motion.p
-            variants={motionSafe(slideUp)}
-            className="text-gray-600 mb-12 max-w-2xl mx-auto text-balance"
-            style={{ fontSize: 'calc(1.125rem * 1.2)', lineHeight: '1.75' }}
+          {/* Subtle Subtitle */}
+          <motion.h2 
+            variants={whisperVariants}
+            className="text-display-md text-mono-medium mb-12"
+          >
+            {content[language].subtitle}
+          </motion.h2>
+
+          {/* Minimal Description */}
+          <motion.p 
+            variants={whisperVariants}
+            className="text-body-lg text-mono-medium mb-16 max-w-md mx-auto"
           >
             {content[language].description}
           </motion.p>
 
-          {/* CTA Buttons */}
-          <motion.div
-            variants={motionSafe(slideUp)}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+          {/* Single Action - Breath-Level Presence */}
+          <motion.div 
+            variants={whisperVariants}
+            className="mb-20"
           >
             <button 
-              className="btn-primary text-lg px-8 py-4"
+              className="btn btn-primary hover-whisper focus-breath px-12 py-4 text-base"
               onClick={() => {
                 const workbench = document.querySelector('#workbench')
                 workbench?.scrollIntoView({ behavior: 'smooth' })
               }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-1px)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)'
+              }}
             >
-              {content[language].startButton}
+              {content[language].action}
             </button>
-            <button className="btn-ghost text-lg px-8 py-4 border border-gray-200 hover:border-black">
-              {content[language].watchDemo}
-            </button>
+          </motion.div>
+
+          {/* Invisible Intelligence Indicator */}
+          <motion.div 
+            variants={whisperVariants}
+            className="text-caption text-mono-light"
+          >
+            AI Ready
           </motion.div>
         </motion.div>
       </div>

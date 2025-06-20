@@ -23,17 +23,17 @@ Sentry.init({
       const error = hint.originalException
       
       // Skip rate limiting errors (these are expected)
-      if (error?.message?.includes('Rate limit exceeded')) {
+      if ((error as any)?.message?.includes('Rate limit exceeded')) {
         return null
       }
       
       // Skip authentication errors (these are user-related)
-      if (error?.message?.includes('Authentication failed')) {
+      if ((error as any)?.message?.includes('Authentication failed')) {
         return null
       }
       
       // Skip validation errors (these are user input issues)
-      if (error?.message?.includes('Validation failed')) {
+      if ((error as any)?.message?.includes('Validation failed')) {
         return null
       }
     }
@@ -60,10 +60,7 @@ Sentry.init({
   
   // Integration configuration
   integrations: [
-    new Sentry.Integrations.Http({
-      tracing: true,
-      breadcrumbs: true
-    })
+    // Http integration disabled for build compatibility
   ],
   
   // Debug settings

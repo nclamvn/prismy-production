@@ -1,5 +1,5 @@
 // Comprehensive Analytics Service for Prismy
-import { logger } from './logger'
+import { logger } from '@/lib/logger'
 
 export interface AnalyticsEvent {
   name: string
@@ -497,12 +497,4 @@ export function useAnalytics() {
   }
 }
 
-// Export types
-export type {
-  AnalyticsEvent,
-  UserProperties,
-  TranslationAnalytics,
-  DocumentAnalytics,
-  PerformanceAnalytics,
-  ConversionAnalytics
-}
+// Types are already exported above with their declarations

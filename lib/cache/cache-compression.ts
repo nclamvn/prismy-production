@@ -188,7 +188,7 @@ export class CacheCompressionManager {
 
     } catch (error) {
       console.error('Decompression failed:', error)
-      throw new Error(`Failed to decompress data: ${error.message}`)
+      throw new Error(`Failed to decompress data: ${error instanceof Error ? error.message : String(error)}`)
     }
   }
 
@@ -246,7 +246,7 @@ export class CacheCompressionManager {
 
   // Compression analytics and optimization suggestions
   getCompressionAnalytics(): {
-    stats: typeof this.compressionStats
+    stats: any
     efficiency: {
       avgCompressionRatio: number
       avgTimePerByte: number

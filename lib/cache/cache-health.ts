@@ -306,8 +306,8 @@ export class CacheHealthMonitor {
     } catch (error) {
       score = 0
       status = 'critical'
-      message = `Cache connectivity failed: ${error.message}`
-      details.error = error.message
+      message = `Cache connectivity failed: ${error instanceof Error ? error.message : String(error)}`
+      details.error = error instanceof Error ? error.message : String(error)
     }
 
     return {
@@ -442,7 +442,7 @@ export class CacheHealthMonitor {
     } catch (error) {
       score = 0
       status = 'critical'
-      message = `Consistency check failed: ${error.message}`
+      message = `Consistency check failed: ${error instanceof Error ? error.message : String(error)}`
     }
 
     return {
@@ -485,7 +485,7 @@ export class CacheHealthMonitor {
     } catch (error) {
       score = 0
       status = 'critical'
-      message = `Availability check failed: ${error.message}`
+      message = `Availability check failed: ${error instanceof Error ? error.message : String(error)}`
     }
 
     return {
