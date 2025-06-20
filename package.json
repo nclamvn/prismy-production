@@ -19,12 +19,15 @@
     "analyze:server": "BUNDLE_ANALYZE=server npm run build",
     "analyze:browser": "BUNDLE_ANALYZE=browser npm run build"
   },
+  "engines": {
+    "node": ">=18.17.0",
+    "npm": ">=9.0.0"
+  },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.54.0",
     "@google-cloud/translate": "^9.1.0",
     "@sentry/nextjs": "^9.30.0",
     "@sentry/tracing": "^7.120.3",
-    "@stripe/stripe-js": "^7.3.1",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.50.0",
     "@types/swagger-jsdoc": "^6.0.4",
@@ -50,11 +53,9 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-pdf": "^9.2.1",
-    "stripe": "^18.2.1",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-react": "^5.25.2",
     "tailwind-merge": "^2.6.0",
-    "tesseract.js": "^5.1.1",
     "validator": "^13.15.15",
     "xlsx": "^0.18.5",
     "zod": "^3.25.67"

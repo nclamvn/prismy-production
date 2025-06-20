@@ -100,25 +100,8 @@ export class DocumentProcessor {
   }
 
   private static async processPdfFile(file: File): Promise<string> {
-    try {
-      // First try to extract text directly from PDF
-      // This would require pdf.js or similar for text-based PDFs
-      
-      // For now, use OCR as fallback for image-based PDFs
-      const { ocrService } = await import('./ocr-service')
-      
-      // Convert PDF to image and perform OCR
-      // Note: In a real implementation, you'd want to render PDF pages to canvas first
-      const result = await ocrService.recognizeFromFile(file, {
-        language: 'eng+vie', // Support both English and Vietnamese
-        psm: 3 // Fully automatic page segmentation
-      })
-      
-      return result.text || `[Could not extract text from PDF: ${file.name}]`
-    } catch (error) {
-      console.error('[Document Processor] PDF processing failed:', error)
-      return `[PDF processing failed for: ${file.name}. Error: ${error}]`
-    }
+    // Temporarily disabled OCR for deployment
+    return `[PDF processing temporarily disabled: ${file.name}]`
   }
 
   private static async processDocxFile(file: File): Promise<string> {
@@ -134,24 +117,8 @@ export class DocumentProcessor {
   }
 
   private static async processImageFile(file: File): Promise<string> {
-    try {
-      const { ocrService } = await import('./ocr-service')
-      
-      // Perform OCR on the image
-      const result = await ocrService.recognizeFromFile(file, {
-        language: 'eng+vie', // Support both English and Vietnamese
-        psm: 3 // Fully automatic page segmentation
-      })
-      
-      if (!result.text || result.text.trim().length === 0) {
-        return `[No text detected in image: ${file.name}]`
-      }
-      
-      return result.text
-    } catch (error) {
-      console.error('[Document Processor] Image OCR failed:', error)
-      return `[OCR processing failed for image: ${file.name}. Error: ${error}]`
-    }
+    // Temporarily disabled OCR for deployment
+    return `[Image processing temporarily disabled: ${file.name}]`
   }
 
   private static createChunks(text: string): DocumentChunk[] {

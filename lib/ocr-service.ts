@@ -1,4 +1,5 @@
-import { createWorker, Worker, RecognizeResult } from 'tesseract.js'
+// Temporarily disabled for deployment
+// import { createWorker, Worker, RecognizeResult } from 'tesseract.js'
 
 export interface OCRProgress {
   status: string
@@ -53,55 +54,24 @@ export interface OCROptions {
 }
 
 class OCRService {
-  private workers: Map<string, Worker> = new Map()
-  private workerPromises: Map<string, Promise<Worker>> = new Map()
+  // Temporarily disabled for deployment
+  private workers: Map<string, any> = new Map()
+  private workerPromises: Map<string, Promise<any>> = new Map()
 
   /**
    * Get or create a worker for the specified language
    */
-  private async getWorker(language: string = 'eng'): Promise<Worker> {
-    // Check if we already have a worker for this language
-    if (this.workers.has(language)) {
-      return this.workers.get(language)!
-    }
-
-    // Check if we're already creating a worker for this language
-    if (this.workerPromises.has(language)) {
-      return this.workerPromises.get(language)!
-    }
-
-    // Create a new worker
-    const workerPromise = this.createWorker(language)
-    this.workerPromises.set(language, workerPromise)
-
-    try {
-      const worker = await workerPromise
-      this.workers.set(language, worker)
-      this.workerPromises.delete(language)
-      return worker
-    } catch (error) {
-      this.workerPromises.delete(language)
-      throw error
-    }
+  private async getWorker(language: string = 'eng'): Promise<any> {
+    // Temporarily disabled for deployment
+    throw new Error('OCR service temporarily disabled')
   }
 
   /**
    * Create and initialize a new Tesseract worker
    */
-  private async createWorker(language: string): Promise<Worker> {
-    const worker = await createWorker({
-      logger: (m: any) => {
-        // Optional: log progress to console in development
-        if (process.env.NODE_ENV === 'development') {
-          console.log('[OCR]', m)
-        }
-      }
-    })
-
-    await worker.loadLanguage(language)
-    await worker.initialize(language)
-
-    return worker
+  private async createWorker(language: string): Promise<any> {
+    // Temporarily disabled for deployment
+    throw new Error('OCR service temporarily disabled')
   }
 
   /**
@@ -112,61 +82,8 @@ class OCRService {
     options: OCROptions = {},
     onProgress?: (progress: OCRProgress) => void
   ): Promise<OCRResult> {
-    const language = Array.isArray(options.language) 
-      ? options.language.join('+') 
-      : options.language || 'eng'
-
-    try {
-      const worker = await this.getWorker(language)
-
-      // Set Tesseract parameters
-      if (options.psm !== undefined) {
-        await worker.setParameters({
-          tessedit_pageseg_mode: options.psm
-        })
-      }
-
-      if (options.oem !== undefined) {
-        await worker.setParameters({
-          tessedit_ocr_engine_mode: options.oem
-        })
-      }
-
-      if (options.whitelist) {
-        await worker.setParameters({
-          tessedit_char_whitelist: options.whitelist
-        })
-      }
-
-      if (options.blacklist) {
-        await worker.setParameters({
-          tessedit_char_blacklist: options.blacklist
-        })
-      }
-
-      if (options.preserve_interword_spaces) {
-        await worker.setParameters({
-          preserve_interword_spaces: options.preserve_interword_spaces
-        })
-      }
-
-      // Perform OCR
-      const result = await worker.recognize(file, {
-        logger: onProgress ? (m: any) => {
-          onProgress({
-            status: m.status,
-            progress: m.progress || 0,
-            message: m.userJobId || m.status
-          })
-        } : undefined
-      })
-
-      return this.processResult(result)
-
-    } catch (error) {
-      console.error('[OCR] Recognition failed:', error)
-      throw new Error(`OCR recognition failed: ${error}`)
-    }
+    // Temporarily disabled for deployment
+    throw new Error('OCR service temporarily disabled')
   }
 
   /**
@@ -177,73 +94,16 @@ class OCRService {
     options: OCROptions = {},
     onProgress?: (progress: OCRProgress) => void
   ): Promise<OCRResult> {
-    const language = Array.isArray(options.language) 
-      ? options.language.join('+') 
-      : options.language || 'eng'
-
-    try {
-      const worker = await this.getWorker(language)
-
-      const result = await worker.recognize(imageSource, {
-        logger: onProgress ? (m: any) => {
-          onProgress({
-            status: m.status,
-            progress: m.progress || 0,
-            message: m.userJobId || m.status
-          })
-        } : undefined
-      })
-
-      return this.processResult(result)
-
-    } catch (error) {
-      console.error('[OCR] Recognition failed:', error)
-      throw new Error(`OCR recognition failed: ${error}`)
-    }
+    // Temporarily disabled for deployment
+    throw new Error('OCR service temporarily disabled')
   }
 
   /**
    * Process Tesseract result into our OCRResult format
    */
-  private processResult(result: RecognizeResult): OCRResult {
-    const { data } = result
-
-    return {
-      text: data.text,
-      confidence: data.confidence,
-      words: data.words.map(word => ({
-        text: word.text,
-        confidence: word.confidence,
-        bbox: {
-          x0: word.bbox.x0,
-          y0: word.bbox.y0,
-          x1: word.bbox.x1,
-          y1: word.bbox.y1
-        }
-      })),
-      lines: data.lines.map(line => ({
-        text: line.text,
-        confidence: line.confidence,
-        bbox: {
-          x0: line.bbox.x0,
-          y0: line.bbox.y0,
-          x1: line.bbox.x1,
-          y1: line.bbox.y1
-        },
-        words: line.words.map((word: any) => ({
-          text: word.text,
-          confidence: word.confidence
-        }))
-      })),
-      paragraphs: data.paragraphs.map(paragraph => ({
-        text: paragraph.text,
-        confidence: paragraph.confidence,
-        lines: paragraph.lines.map((line: any) => ({
-          text: line.text,
-          confidence: line.confidence
-        }))
-      }))
-    }
+  private processResult(result: any): OCRResult {
+    // Temporarily disabled for deployment
+    throw new Error('OCR service temporarily disabled')
   }
 
   /**
@@ -253,37 +113,8 @@ class OCRService {
     imageSource: File | string | HTMLImageElement,
     candidateLanguages: string[] = ['eng', 'vie', 'fra', 'deu', 'spa', 'jpn', 'chi_sim']
   ): Promise<{ language: string; confidence: number }[]> {
-    try {
-      const results: { language: string; confidence: number }[] = []
-
-      // Test each candidate language and measure confidence
-      for (const lang of candidateLanguages) {
-        try {
-          const worker = await this.getWorker(lang)
-          const result = await worker.recognize(imageSource, {
-            logger: () => {} // Silent for language detection
-          })
-
-          results.push({
-            language: lang,
-            confidence: result.data.confidence
-          })
-        } catch (error) {
-          console.warn(`[OCR] Language detection failed for ${lang}:`, error)
-          results.push({
-            language: lang,
-            confidence: 0
-          })
-        }
-      }
-
-      // Sort by confidence (highest first)
-      return results.sort((a, b) => b.confidence - a.confidence)
-
-    } catch (error) {
-      console.error('[OCR] Language detection failed:', error)
-      throw new Error(`Language detection failed: ${error}`)
-    }
+    // Temporarily disabled for deployment
+    throw new Error('OCR service temporarily disabled')
   }
 
   /**
@@ -415,13 +246,7 @@ class OCRService {
    * Cleanup workers to free memory
    */
   async cleanup(): Promise<void> {
-    const cleanupPromises = Array.from(this.workers.values()).map(worker => 
-      worker.terminate().catch(err => 
-        console.warn('[OCR] Worker cleanup error:', err)
-      )
-    )
-
-    await Promise.all(cleanupPromises)
+    // Temporarily disabled for deployment
     this.workers.clear()
     this.workerPromises.clear()
   }
@@ -430,11 +255,8 @@ class OCRService {
    * Cleanup a specific language worker
    */
   async cleanupWorker(language: string): Promise<void> {
-    const worker = this.workers.get(language)
-    if (worker) {
-      await worker.terminate()
-      this.workers.delete(language)
-    }
+    // Temporarily disabled for deployment
+    this.workers.delete(language)
   }
 }
 
