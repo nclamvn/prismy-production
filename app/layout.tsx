@@ -111,7 +111,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="vi" className={`${inter.variable} ${timesFont.variable}`}>
-      <body className="font-inter antialiased bg-white text-gray-900" style={{ fontSize: '21.6px', lineHeight: '1.6' }}>
+      <body className="font-times antialiased bg-white text-gray-900" style={{ fontSize: '21.6px', lineHeight: '1.6' }}>
         <LanguageProvider>
           {children}
         </LanguageProvider>

@@ -168,19 +168,19 @@
   }
   
   .body-lg {
-    @apply font-inter text-[1.35rem] leading-[var(--leading-relaxed)];
+    @apply font-times text-[1.35rem] leading-[var(--leading-relaxed)];
   }
   
   .body-base {
-    @apply font-inter text-[1.2rem] leading-[var(--leading-normal)];
+    @apply font-times text-[1.2rem] leading-[var(--leading-normal)];
   }
   
   .body-sm {
-    @apply font-inter text-[1.05rem] leading-[var(--leading-normal)];
+    @apply font-times text-[1.05rem] leading-[var(--leading-normal)];
   }
   
   .body-xs {
-    @apply font-inter text-[0.9rem] leading-[var(--leading-normal)];
+    @apply font-times text-[0.9rem] leading-[var(--leading-normal)];
   }
   
   /* Rainbow bar animation */
