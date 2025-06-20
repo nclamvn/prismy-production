@@ -97,7 +97,7 @@ export default function Navbar({}: NavbarProps) {
             {/* Language Selector - Universal Dropdown DNA */}
             <UniversalDropdown
               value={language}
-              onChange={setLanguage}
+              onChange={(value) => setLanguage(value as 'vi' | 'en')}
               size="sm"
               options={[
                 {
