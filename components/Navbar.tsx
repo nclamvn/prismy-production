@@ -8,6 +8,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
 import AuthModal from './auth/AuthModal'
 import UserMenu from './auth/UserMenu'
+import UniversalDropdown from './ui/UniversalDropdown'
 import { Globe, ChevronDown } from 'lucide-react'
 
 interface NavbarProps {
@@ -19,21 +20,7 @@ export default function Navbar({}: NavbarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
-  const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false)
-  const langDropdownRef = useRef<HTMLDivElement>(null)
-  
   const { user, loading } = useAuth()
-  
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (langDropdownRef.current && !langDropdownRef.current.contains(event.target as Node)) {
-        setIsLangDropdownOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
 
   const content = {
     vi: {
@@ -107,60 +94,25 @@ export default function Navbar({}: NavbarProps) {
 
           {/* Right Section: Language Toggle + Auth */}
           <div className="hidden md:flex items-center space-x-2.5">
-            {/* Language Selector - Custom Dropdown */}
-            {true && (
-              <div className="relative" ref={langDropdownRef}>
-                <button
-                  onClick={() => setIsLangDropdownOpen(!isLangDropdownOpen)}
-                  className="flex items-center gap-2 px-4 py-2 bg-white border border-border-subtle rounded-md
-                           text-sm font-medium text-text-primary
-                           hover:font-semibold hover:transform hover:-translate-y-px
-                           transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200"
-                >
-                  <Globe size={16} strokeWidth={1.5} />
-                  <span>{content[language].languages[language]}</span>
-                  <ChevronDown 
-                    size={14} 
-                    strokeWidth={1.5}
-                    className={`transition-transform duration-200 ${isLangDropdownOpen ? 'rotate-180' : ''}`}
-                  />
-                </button>
-                
-                {/* Dropdown Menu */}
-                {isLangDropdownOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.2 }}
-                    className="absolute right-0 mt-2 w-48 bg-white border border-border-subtle rounded-md overflow-hidden z-50"
-                  >
-                    <button
-                      onClick={() => {
-                        setLanguage('vi')
-                        setIsLangDropdownOpen(false)
-                      }}
-                      className={`w-full text-left px-4 py-2.5 text-sm transition-all duration-300
-                               hover:bg-gray-50 hover:font-semibold hover:transform hover:-translate-y-px
-                               ${language === 'vi' ? 'font-semibold text-text-primary bg-gray-50' : 'text-text-secondary'}`}
-                    >
-                      {content[language].languages.vi}
-                    </button>
-                    <button
-                      onClick={() => {
-                        setLanguage('en')
-                        setIsLangDropdownOpen(false)
-                      }}
-                      className={`w-full text-left px-4 py-2.5 text-sm transition-all duration-300
-                               hover:bg-gray-50 hover:font-semibold hover:transform hover:-translate-y-px
-                               ${language === 'en' ? 'font-semibold text-text-primary bg-gray-50' : 'text-text-secondary'}`}
-                    >
-                      {content[language].languages.en}
-                    </button>
-                  </motion.div>
-                )}
-              </div>
-            )}
+            {/* Language Selector - Universal Dropdown DNA */}
+            <UniversalDropdown
+              value={language}
+              onChange={setLanguage}
+              size="sm"
+              options={[
+                {
+                  value: 'vi',
+                  label: content[language].languages.vi,
+                  icon: <Globe size={16} strokeWidth={1.5} />
+                },
+                {
+                  value: 'en', 
+                  label: content[language].languages.en,
+                  icon: <Globe size={16} strokeWidth={1.5} />
+                }
+              ]}
+              className="min-w-[140px]"
+            />
             
             {!loading && (
               user ? (

@@ -183,7 +183,7 @@ export default function Footer({}: FooterProps) {
               <Link href="/" className="mb-6 inline-block">
                 <span className="heading-4 font-bold">Prismy</span>
               </Link>
-              <p className="body-base text-text-inverse opacity-80 mb-6 max-w-sm">
+              <p className="body-base text-white mb-6 max-w-sm">
                 {content[language].description}
               </p>
               <div className="flex space-x-4">
@@ -191,7 +191,7 @@ export default function Footer({}: FooterProps) {
                   <Link
                     key={social.name}
                     href={social.href}
-                    className="text-text-inverse opacity-60 hover:opacity-100 transition-opacity 
+                    className="text-white opacity-60 hover:opacity-100 transition-opacity 
                              focus-visible-ring rounded-md p-1"
                     aria-label={social.name}
                   >
@@ -212,19 +212,19 @@ export default function Footer({}: FooterProps) {
               <ul className="space-y-3">
                 {language === 'vi' ? (
                   <>
-                    <li><Link href="/text-translation" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Dịch văn bản</Link></li>
-                    <li><Link href="/document-translation" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Dịch tài liệu</Link></li>
-                    <li><Link href="/api" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Truy cập API</Link></li>
-                    <li><Link href="/enterprise" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Doanh nghiệp</Link></li>
-                    <li><Link href="/pricing" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Bảng giá</Link></li>
+                    <li><Link href="/text-translation" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Dịch văn bản</Link></li>
+                    <li><Link href="/document-translation" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Dịch tài liệu</Link></li>
+                    <li><Link href="/api" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Truy cập API</Link></li>
+                    <li><Link href="/enterprise" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Doanh nghiệp</Link></li>
+                    <li><Link href="/pricing" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Bảng giá</Link></li>
                   </>
                 ) : (
                   <>
-                    <li><Link href="/text-translation" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Text Translation</Link></li>
-                    <li><Link href="/document-translation" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Document Translation</Link></li>
-                    <li><Link href="/api" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">API Access</Link></li>
-                    <li><Link href="/enterprise" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Enterprise</Link></li>
-                    <li><Link href="/pricing" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Pricing</Link></li>
+                    <li><Link href="/text-translation" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Text Translation</Link></li>
+                    <li><Link href="/document-translation" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Document Translation</Link></li>
+                    <li><Link href="/api" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">API Access</Link></li>
+                    <li><Link href="/enterprise" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Enterprise</Link></li>
+                    <li><Link href="/pricing" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Pricing</Link></li>
                   </>
                 )}
               </ul>
@@ -241,19 +241,19 @@ export default function Footer({}: FooterProps) {
               <ul className="space-y-3">
                 {language === 'vi' ? (
                   <>
-                    <li><Link href="/docs" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Tài liệu hướng dẫn</Link></li>
-                    <li><Link href="/api-docs" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Tham khảo API</Link></li>
-                    <li><Link href="/tutorials" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Hướng dẫn sử dụng</Link></li>
-                    <li><Link href="/blog" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Blog</Link></li>
-                    <li><Link href="/community" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Cộng đồng</Link></li>
+                    <li><Link href="/docs" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Tài liệu hướng dẫn</Link></li>
+                    <li><Link href="/api-docs" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Tham khảo API</Link></li>
+                    <li><Link href="/tutorials" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Hướng dẫn sử dụng</Link></li>
+                    <li><Link href="/blog" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Blog</Link></li>
+                    <li><Link href="/community" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Cộng đồng</Link></li>
                   </>
                 ) : (
                   <>
-                    <li><Link href="/docs" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Documentation</Link></li>
-                    <li><Link href="/api-docs" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">API Reference</Link></li>
-                    <li><Link href="/tutorials" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Tutorials</Link></li>
-                    <li><Link href="/blog" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Blog</Link></li>
-                    <li><Link href="/community" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Community</Link></li>
+                    <li><Link href="/docs" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Documentation</Link></li>
+                    <li><Link href="/api-docs" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">API Reference</Link></li>
+                    <li><Link href="/tutorials" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Tutorials</Link></li>
+                    <li><Link href="/blog" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Blog</Link></li>
+                    <li><Link href="/community" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Community</Link></li>
                   </>
                 )}
               </ul>
@@ -270,19 +270,19 @@ export default function Footer({}: FooterProps) {
               <ul className="space-y-3">
                 {language === 'vi' ? (
                   <>
-                    <li><Link href="/about" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Về chúng tôi</Link></li>
-                    <li><Link href="/careers" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Tuyển dụng</Link></li>
-                    <li><Link href="/press" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Bộ công cụ báo chí</Link></li>
-                    <li><Link href="/contact" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Liên hệ</Link></li>
-                    <li><Link href="/partners" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Đối tác</Link></li>
+                    <li><Link href="/about" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Về chúng tôi</Link></li>
+                    <li><Link href="/careers" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Tuyển dụng</Link></li>
+                    <li><Link href="/press" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Bộ công cụ báo chí</Link></li>
+                    <li><Link href="/contact" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Liên hệ</Link></li>
+                    <li><Link href="/partners" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Đối tác</Link></li>
                   </>
                 ) : (
                   <>
-                    <li><Link href="/about" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">About Us</Link></li>
-                    <li><Link href="/careers" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Careers</Link></li>
-                    <li><Link href="/press" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Press Kit</Link></li>
-                    <li><Link href="/contact" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Contact</Link></li>
-                    <li><Link href="/partners" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Partners</Link></li>
+                    <li><Link href="/about" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">About Us</Link></li>
+                    <li><Link href="/careers" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Careers</Link></li>
+                    <li><Link href="/press" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Press Kit</Link></li>
+                    <li><Link href="/contact" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Contact</Link></li>
+                    <li><Link href="/partners" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Partners</Link></li>
                   </>
                 )}
               </ul>
@@ -299,19 +299,19 @@ export default function Footer({}: FooterProps) {
               <ul className="space-y-3">
                 {language === 'vi' ? (
                   <>
-                    <li><Link href="/privacy" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Chính sách bảo mật</Link></li>
-                    <li><Link href="/terms" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Điều khoản dịch vụ</Link></li>
-                    <li><Link href="/cookies" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Chính sách Cookie</Link></li>
-                    <li><Link href="/security" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Bảo mật</Link></li>
-                    <li><Link href="/gdpr" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">GDPR</Link></li>
+                    <li><Link href="/privacy" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Chính sách bảo mật</Link></li>
+                    <li><Link href="/terms" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Điều khoản dịch vụ</Link></li>
+                    <li><Link href="/cookies" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Chính sách Cookie</Link></li>
+                    <li><Link href="/security" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Bảo mật</Link></li>
+                    <li><Link href="/gdpr" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">GDPR</Link></li>
                   </>
                 ) : (
                   <>
-                    <li><Link href="/privacy" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Privacy Policy</Link></li>
-                    <li><Link href="/terms" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Terms of Service</Link></li>
-                    <li><Link href="/cookies" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Cookie Policy</Link></li>
-                    <li><Link href="/security" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">Security</Link></li>
-                    <li><Link href="/gdpr" className="body-sm text-gray-300 hover:text-white transition-colors focus-visible-ring rounded-md">GDPR</Link></li>
+                    <li><Link href="/privacy" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Privacy Policy</Link></li>
+                    <li><Link href="/terms" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Terms of Service</Link></li>
+                    <li><Link href="/cookies" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Cookie Policy</Link></li>
+                    <li><Link href="/security" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">Security</Link></li>
+                    <li><Link href="/gdpr" className="body-sm text-white hover:text-gray-200 transition-colors focus-visible-ring rounded-md">GDPR</Link></li>
                   </>
                 )}
               </ul>
@@ -325,18 +325,18 @@ export default function Footer({}: FooterProps) {
           >
             <div className="max-w-md">
               <h3 className="heading-4 text-white mb-4">{content[language].newsletter.title}</h3>
-              <p className="body-sm text-text-inverse opacity-80 mb-4">
+              <p className="body-sm text-white mb-4">
                 {content[language].newsletter.description}
               </p>
               <div className="flex gap-3">
                 <input
                   type="email"
                   placeholder={content[language].newsletter.placeholder}
-                  className="input-base w-72 bg-gray-900 border-gray-700 
-                           text-text-inverse placeholder:text-gray-500
-                           focus:border-text-inverse"
+                  className="input-base w-72 bg-white border-gray-300 
+                           text-black placeholder:text-gray-500
+                           focus:border-gray-500"
                 />
-                <button className="btn-primary">
+                <button className="bg-white text-black hover:bg-gray-100 px-6 py-3 rounded-lg font-semibold transition-colors">
                   {content[language].newsletter.subscribe}
                 </button>
               </div>
@@ -350,7 +350,7 @@ export default function Footer({}: FooterProps) {
                      pt-8 border-t border-gray-800/50"
           >
             <div className="flex flex-col md:flex-row items-center gap-4 mb-4 md:mb-0">
-              <p className="body-sm text-text-inverse">
+              <p className="body-sm text-white">
                 {language === 'vi' 
                   ? '© 2025 Prismy – Đã đăng ký bản quyền.'
                   : '© 2025 Prismy – All rights reserved.'
@@ -361,7 +361,7 @@ export default function Footer({}: FooterProps) {
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                <span className="body-sm text-text-inverse opacity-60">Enterprise Ready</span>
+                <span className="body-sm text-white opacity-60">Enterprise Ready</span>
               </div>
             </div>
           </motion.div>

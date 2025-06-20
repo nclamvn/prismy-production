@@ -261,7 +261,7 @@ export default function Home() {
                       >
                         <div className="feature-icon-container">
                           <IconComponent 
-                            size={28} 
+                            size={26} 
                             className="text-black zen-icon-hover transition-all duration-300" 
                             strokeWidth={1.5}
                           />
@@ -334,13 +334,6 @@ export default function Home() {
                       variants={motionSafe(slideUp)}
                       className="relative"
                     >
-                      {key === 'standard' && (
-                        <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
-                          <span className="bg-text-primary text-white px-4 py-1.5 rounded-md body-sm font-semibold whitespace-nowrap">
-                            {content[language].pricing.mostPopular}
-                          </span>
-                        </div>
-                      )}
                       <div className={`bg-bg-secondary rounded-xl p-8 border-2 h-full ${
                         key === 'standard' ? 'border-border-pricing' : 'border-border-subtle'
                       }`}>

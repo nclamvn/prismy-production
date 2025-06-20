@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '@/contexts/AuthContext'
+import { useLanguage } from '@/contexts/LanguageContext'
 import { motionSafe } from '@/lib/motion'
 import { 
   UNIFIED_SUBSCRIPTION_PLANS, 
@@ -15,19 +16,20 @@ import {
 } from '@/lib/payments/payment-service'
 
 interface PricingPageProps {
-  language?: 'vi' | 'en'
+  // Language now managed globally
 }
 
-export default function PricingPage({ language = 'en' }: PricingPageProps) {
+export default function PricingPage({}: PricingPageProps) {
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly')
   const [currency, setCurrency] = useState<Currency>('VND')
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod>('vnpay')
   const { user } = useAuth()
+  const { language } = useLanguage()
 
   const content = {
     vi: {
-      title: 'Chọn gói dịch vụ phù hợp',
-      subtitle: 'Bắt đầu miễn phí, nâng cấp khi cần',
+      title: 'Chuyển ngữ không phải gánh nặng chi phí',
+      subtitle: 'Prismy tối ưu hoá ngân sách, tối đa hoá giá trị tài liệu cho doanh nghiệp',
       monthly: 'Hàng tháng',
       yearly: 'Hàng năm',
       yearlyDiscount: 'Tiết kiệm 20%',
@@ -58,8 +60,8 @@ export default function PricingPage({ language = 'en' }: PricingPageProps) {
       }
     },
     en: {
-      title: 'Choose the right plan for you',
-      subtitle: 'Start free, upgrade when you need',
+      title: 'Translation shouldn\'t be a cost burden',
+      subtitle: 'Prismy optimizes budget, maximizes document value for enterprises',
       monthly: 'Monthly',
       yearly: 'Yearly',
       yearlyDiscount: 'Save 20%',
@@ -157,9 +159,9 @@ export default function PricingPage({ language = 'en' }: PricingPageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full">
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-12 px-4 md:px-8 lg:px-12">
           <motion.h1 
             className="heading-1 text-gray-900 mb-4"
             {...motionSafe({

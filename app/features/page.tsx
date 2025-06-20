@@ -288,7 +288,7 @@ export default function Features() {
                           >
                             <div className="feature-icon-container">
                               <IconComponent 
-                                size={28} 
+                                size={26} 
                                 className="text-black zen-icon-hover transition-all duration-300" 
                                 strokeWidth={1.5}
                               />
