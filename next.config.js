@@ -1,14 +1,9 @@
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
-})
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Bundle optimization
+  // Minimal config for stable deployment
   experimental: {
     optimizePackageImports: [
       '@framer-motion',
-      'tesseract.js',
       '@stripe/stripe-js',
       '@supabase/supabase-js'
     ],
@@ -146,4 +141,4 @@ const nextConfig = {
   },
 }
 
-module.exports = withBundleAnalyzer(nextConfig)
+module.exports = nextConfig
