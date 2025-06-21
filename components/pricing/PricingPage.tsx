@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { motionSafe } from '@/lib/motion'
 import Navbar from '@/components/Navbar'
+import Footer from '@/components/Footer'
 import { 
   UNIFIED_SUBSCRIPTION_PLANS, 
   formatPrice, 
@@ -708,8 +709,8 @@ export default function PricingPage({}: PricingPageProps) {
           </motion.div>
         </div>
 
-        {/* Footer */}
-        <div className="text-center mt-16">
+        {/* Bottom Note */}
+        <div className="text-center mt-16 mb-12">
           <p className="body-base text-gray-600">
             {language === 'vi' 
               ? 'Tất cả gói dịch vụ đều bao gồm công cụ dịch thuật cốt lõi và hỗ trợ cơ bản'
@@ -719,6 +720,7 @@ export default function PricingPage({}: PricingPageProps) {
         </div>
       </div>
     </div>
+    <Footer />
     </>
   )
 }

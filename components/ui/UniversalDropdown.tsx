@@ -50,6 +50,22 @@ export default function UniversalDropdown({
       document.removeEventListener('touchstart', handleClickOutside)
     }
   }, [])
+
+  // Unified event handler for cross-platform compatibility
+  const handleToggle = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (!disabled) {
+      setIsOpen(!isOpen)
+    }
+  }
+
+  const handleOptionSelect = (value: string, e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    onChange(value)
+    setIsOpen(false)
+  }
   
   const sizeClasses = {
     sm: 'px-2.5 py-1.5 text-sm',
@@ -67,11 +83,8 @@ export default function UniversalDropdown({
     <div className={`relative mobile-dropdown-rectangular ${className}`} ref={dropdownRef}>
       {/* Dropdown Button */}
       <button
-        onClick={() => !disabled && setIsOpen(!isOpen)}
-        onTouchEnd={(e) => {
-          e.preventDefault()
-          if (!disabled) setIsOpen(!isOpen)
-        }}
+        onClick={handleToggle}
+        onTouchStart={handleToggle}
         disabled={disabled}
         className={`
           flex items-center justify-between w-full
@@ -80,6 +93,7 @@ export default function UniversalDropdown({
           hover:font-semibold hover:border-gray-400
           focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-gray-300
           transition-all duration-200
+          touch-manipulation
           ${sizeClasses[size]}
           ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
         `}
@@ -118,20 +132,14 @@ export default function UniversalDropdown({
               {options.map((option) => (
                 <button
                   key={option.value}
-                  onClick={() => {
-                    onChange(option.value)
-                    setIsOpen(false)
-                  }}
-                  onTouchEnd={(e) => {
-                    e.preventDefault()
-                    onChange(option.value)
-                    setIsOpen(false)
-                  }}
+                  onClick={(e) => handleOptionSelect(option.value, e)}
+                  onTouchStart={(e) => handleOptionSelect(option.value, e)}
                   className={`
                     w-full flex items-center gap-2 px-3 py-2.5 sm:py-2 text-left text-sm
                     font-medium text-gray-900
                     hover:font-semibold hover:bg-gray-50
                     transition-all duration-150
+                    touch-manipulation
                     ${value === option.value ? 'bg-gray-50 font-semibold' : ''}
                   `}
                 >
