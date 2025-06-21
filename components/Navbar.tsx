@@ -21,7 +21,19 @@ export default function Navbar({}: NavbarProps) {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
   const [isScrolled, setIsScrolled] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
   const { user, loading } = useAuth()
+  
+  // Mobile detection
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   // Scroll detection for dynamic border
   useEffect(() => {
@@ -66,10 +78,13 @@ export default function Navbar({}: NavbarProps) {
     }
   }
 
+  // Determine header style - force static when mobile menu is open
+  const shouldUseStaticHeader = !isScrolled || (isMobile && isMenuOpen)
+  
   return (
     <motion.header 
       className={`transition-all duration-500 ${
-        isScrolled ? 'header-pill-capsule' : 'header-static'
+        shouldUseStaticHeader ? 'header-static' : 'header-pill-capsule'
       }`}
       variants={motionSafe(slideDown)}
       initial="hidden"
@@ -77,8 +92,8 @@ export default function Navbar({}: NavbarProps) {
     >
       
       <nav className="w-full" aria-label="Main navigation">
-        <div className={`${isScrolled ? 'px-8' : 'content-container'}`}>
-          <div className={`flex items-center ${isScrolled ? 'h-12' : 'h-16'}`}>
+        <div className={`${shouldUseStaticHeader ? 'content-container' : 'px-8'}`}>
+          <div className={`flex items-center ${shouldUseStaticHeader ? 'h-16' : 'h-12'}`}>
           {/* Logo - Text only */}
           <Link 
             href="/" 
@@ -135,7 +150,7 @@ export default function Navbar({}: NavbarProps) {
                       setAuthMode('signin')
                       setIsAuthModalOpen(true)
                     }}
-                    className={`btn-ghost ${isScrolled ? 'btn-pill-compact-xs' : 'btn-pill-compact-sm'} font-normal hover:font-semibold`}
+                    className={`btn-ghost ${shouldUseStaticHeader ? 'btn-pill-compact-sm' : 'btn-pill-compact-xs'} font-normal hover:font-semibold`}
                   >
                     {content[language].signin}
                   </button>
@@ -144,7 +159,7 @@ export default function Navbar({}: NavbarProps) {
                       setAuthMode('signup')
                       setIsAuthModalOpen(true)
                     }}
-                    className={`btn-primary ${isScrolled ? 'btn-pill-compact-xs' : 'btn-pill-compact-sm'} font-semibold`}
+                    className={`btn-primary ${shouldUseStaticHeader ? 'btn-pill-compact-sm' : 'btn-pill-compact-xs'} font-semibold`}
                   >
                     {content[language].getStarted}
                   </button>
@@ -207,17 +222,19 @@ export default function Navbar({}: NavbarProps) {
                 <div className="space-y-2">
                   <button
                     onClick={() => setLanguage('vi')}
-                    className={`w-full text-left px-4 py-3 text-sm transition-all duration-200
-                             hover:bg-gray-50 hover:font-semibold border border-gray-200 rounded-lg
+                    className={`w-full text-left px-4 py-3 text-sm transition-all duration-300 cubic-bezier(0.25, 0.46, 0.45, 0.94)
+                             hover:bg-gray-50 hover:font-semibold hover:-translate-y-px border border-border-subtle
                              ${language === 'vi' ? 'font-semibold text-gray-900 bg-gray-50 border-gray-300' : 'text-gray-600 bg-white'}`}
+                    style={{ borderRadius: 'var(--radius-md)' }}
                   >
                     {content[language].languages.vi}
                   </button>
                   <button
                     onClick={() => setLanguage('en')}
-                    className={`w-full text-left px-4 py-3 text-sm transition-all duration-200
-                             hover:bg-gray-50 hover:font-semibold border border-gray-200 rounded-lg
+                    className={`w-full text-left px-4 py-3 text-sm transition-all duration-300 cubic-bezier(0.25, 0.46, 0.45, 0.94)
+                             hover:bg-gray-50 hover:font-semibold hover:-translate-y-px border border-border-subtle
                              ${language === 'en' ? 'font-semibold text-gray-900 bg-gray-50 border-gray-300' : 'text-gray-600 bg-white'}`}
+                    style={{ borderRadius: 'var(--radius-md)' }}
                   >
                     {content[language].languages.en}
                   </button>

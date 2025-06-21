@@ -12,13 +12,31 @@ import {
   formatPrice, 
   getAvailablePaymentMethods,
   getPaymentMethodName,
-  getPaymentMethodIcon,
+  getPaymentMethodIconType,
   type PaymentMethod,
   type Currency
 } from '@/lib/payments/payment-service'
+import { CreditCard, Building2, Wallet } from 'lucide-react'
 
 interface PricingPageProps {
   // Premium pricing with full context support
+}
+
+// Helper function to render payment method icons
+const renderPaymentMethodIcon = (method: PaymentMethod) => {
+  const iconProps = { size: 16, strokeWidth: 1.5, className: "text-gray-600" }
+  const iconType = getPaymentMethodIconType(method)
+  
+  switch (iconType) {
+    case 'CreditCard':
+      return <CreditCard {...iconProps} />
+    case 'Building2':
+      return <Building2 {...iconProps} />
+    case 'Wallet':
+      return <Wallet {...iconProps} />
+    default:
+      return <CreditCard {...iconProps} />
+  }
 }
 
 export default function PricingPage({}: PricingPageProps) {
@@ -224,7 +242,7 @@ export default function PricingPage({}: PricingPageProps) {
   return (
     <div className="pricing-page">
       <Navbar />
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-white">
       {/* Hero Section - Prismy Full Width Structure */}
       <section className="py-20 w-full">
         <div className="w-full px-4 sm:px-6 lg:px-8">
@@ -319,7 +337,7 @@ export default function PricingPage({}: PricingPageProps) {
               }`}
             >
               {t('pricing.yearly')}
-              <span className="badge-base bg-green-500 text-white absolute -top-3 left-1/2 transform -translate-x-1/2">
+              <span className="badge-base bg-gray-900 text-white absolute -top-3 left-1/2 transform -translate-x-1/2">
                 {t('pricing.save20')}
               </span>
             </button>
@@ -349,7 +367,7 @@ export default function PricingPage({}: PricingPageProps) {
                       : ''
                   }`}
                 >
-                  <span className="text-lg">{getPaymentMethodIcon(method)}</span>
+                  <span className="flex-shrink-0">{renderPaymentMethodIcon(method)}</span>
                   <span className="hidden sm:inline">
                     {getPaymentMethodName(method, language)}
                   </span>
@@ -380,9 +398,9 @@ export default function PricingPage({}: PricingPageProps) {
                 key={planId}
                 className={`card-base card-hover relative p-8 ${
                   isPopular 
-                    ? 'ring-2 ring-blue-500 ring-offset-2 scale-105' 
+                    ? 'ring-2 ring-gray-900 ring-offset-2 scale-105' 
                     : currentPlan
-                    ? 'ring-2 ring-green-500 ring-offset-2'
+                    ? 'ring-2 ring-gray-700 ring-offset-2'
                     : ''
                 }`}
                 {...motionSafe({
@@ -394,7 +412,7 @@ export default function PricingPage({}: PricingPageProps) {
                 {/* Popular Badge */}
                 {isPopular && (
                   <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <span className="badge-accent">
+                    <span className="badge-primary">
                       {t('pricing.popular')}
                     </span>
                   </div>
@@ -459,7 +477,7 @@ export default function PricingPage({}: PricingPageProps) {
                     currentPlan
                       ? 'btn-secondary opacity-50 cursor-not-allowed'
                       : isPopular
-                      ? 'btn-accent btn-pill-lg'
+                      ? 'btn-primary btn-pill-lg'
                       : planId === 'free'
                       ? 'btn-secondary btn-pill-lg'
                       : 'btn-primary btn-pill-lg'
@@ -484,7 +502,8 @@ export default function PricingPage({}: PricingPageProps) {
         </motion.div>
 
         {/* Feature Comparison Table */}
-        <div className="mt-24 px-4 md:px-8 lg:px-12">
+        <div className="mt-24 w-full px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto">
           <motion.div 
             className="text-center mb-12"
             {...motionSafe({
@@ -574,12 +593,14 @@ export default function PricingPage({}: PricingPageProps) {
               </tbody>
             </table>
           </motion.div>
+          </div>
         </div>
 
         {/* Enterprise Contact Section */}
-        <div className="mt-24 px-4 md:px-8 lg:px-12">
+        <div className="mt-24 w-full px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto">
           <motion.div 
-            className="bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900 rounded-2xl p-8 md:p-12 text-center text-white relative overflow-hidden"
+            className="bg-gray-900 rounded-2xl p-8 md:p-12 text-center text-white relative overflow-hidden"
             {...motionSafe({
               initial: { opacity: 0, y: 30 },
               animate: { opacity: 1, y: 0 },
@@ -590,27 +611,29 @@ export default function PricingPage({}: PricingPageProps) {
               <h2 className="heading-2 mb-6 text-white">
                 {language === 'vi' ? 'Cần giải pháp doanh nghiệp?' : 'Need an Enterprise Solution?'}
               </h2>
-              <p className="body-lg text-blue-100 mb-10 max-w-2xl mx-auto leading-relaxed">
+              <p className="body-lg text-gray-200 mb-10 max-w-2xl mx-auto leading-relaxed">
                 {language === 'vi' 
                   ? 'Liên hệ với đội ngũ chuyên gia để được tư vấn giải pháp dịch thuật tùy chỉnh, tích hợp hệ thống và hỗ trợ 24/7.'
                   : 'Contact our experts for custom translation solutions, system integrations, and 24/7 dedicated support.'
                 }
               </p>
             </div>
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-purple-600/20"></div>
+            <div className="absolute inset-0 bg-gray-800/20"></div>
             <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
-              <button className="bg-white text-gray-900 px-8 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-all duration-200 hover:scale-105 shadow-lg">
+              <button className="btn-secondary btn-pill-lg">
                 {language === 'vi' ? 'Liên hệ tư vấn' : 'Contact Sales'}
               </button>
-              <button className="border-2 border-white text-white px-8 py-3 rounded-xl font-semibold hover:bg-white hover:text-gray-900 transition-all duration-200 hover:scale-105">
+              <button className="btn-ghost btn-pill-lg border-2 border-white text-white hover:bg-white hover:text-gray-900">
                 {language === 'vi' ? 'Đặt lịch demo' : 'Schedule Demo'}
               </button>
             </div>
           </motion.div>
+          </div>
         </div>
 
         {/* FAQ Section */}
-        <div className="mt-24 px-4 md:px-8 lg:px-12">
+        <div className="mt-24 w-full px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto">
           <motion.div 
             className="text-center mb-12"
             {...motionSafe({
@@ -679,10 +702,12 @@ export default function PricingPage({}: PricingPageProps) {
               </div>
             ))}
           </motion.div>
+          </div>
         </div>
 
         {/* Trust Indicators */}
-        <div className="mt-24 px-4 md:px-8 lg:px-12">
+        <div className="mt-24 w-full px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto">
           <motion.div 
             className="text-center"
             {...motionSafe({
@@ -693,25 +718,26 @@ export default function PricingPage({}: PricingPageProps) {
           >
             <div className="flex flex-wrap justify-center items-center gap-8 opacity-60">
               <div className="flex items-center space-x-2">
-                <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 1L5.5 4.5 1 5l2.5 7L10 19l6.5-7L19 5l-4.5-.5L10 1z" clipRule="evenodd" />
                 </svg>
                 <span className="text-sm font-medium text-gray-600">ISO 27001</span>
               </div>
               <div className="flex items-center space-x-2">
-                <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                 </svg>
                 <span className="text-sm font-medium text-gray-600">GDPR {language === 'vi' ? 'Tuân thủ' : 'Compliant'}</span>
               </div>
               <div className="flex items-center space-x-2">
-                <svg className="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
                 <span className="text-sm font-medium text-gray-600">99.9% {language === 'vi' ? 'Thời gian hoạt động' : 'Uptime'}</span>
               </div>
             </div>
           </motion.div>
+          </div>
         </div>
 
         {/* Bottom Note */}

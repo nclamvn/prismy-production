@@ -182,12 +182,12 @@ export const getAvailablePaymentMethods = (): PaymentMethod[] => {
   return ['vnpay', 'momo', 'stripe']
 }
 
-// Get payment method icons
-export const getPaymentMethodIcon = (method: PaymentMethod): string => {
+// Get payment method icon type for rendering
+export const getPaymentMethodIconType = (method: PaymentMethod): string => {
   const icons = {
-    stripe: '💳',
-    vnpay: '🏦',
-    momo: '🟣'
+    stripe: 'CreditCard',
+    vnpay: 'Building2',
+    momo: 'Wallet'
   }
   
   return icons[method]

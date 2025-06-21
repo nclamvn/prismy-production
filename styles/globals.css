@@ -65,6 +65,32 @@
     transition: all 0.3s ease-in-out;
   }
   
+  /* Mobile header improvements - prevent pill overflow when menu open */
+  @media (max-width: 767px) {
+    .header-pill-capsule {
+      /* Override pill behavior on mobile when menu might be open */
+      max-width: 100% !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+      border-radius: 0 !important;
+      top: 0 !important;
+      /* Smooth transition for mobile responsiveness */
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+    }
+    
+    /* Ensure mobile menu container doesn't inherit pill constraints */
+    .header-pill-capsule + nav,
+    .header-pill-capsule nav {
+      max-width: 100% !important;
+      border-radius: 0 !important;
+    }
+    
+    /* Smooth transitions for mobile header state changes */
+    .header-static {
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+    }
+  }
+  
   /* Container - Full width with internal padding */
   .container-base {
     @apply w-full px-4 sm:px-6 lg:px-8;
@@ -325,7 +351,8 @@
   .payment-method-selector {
     @apply inline-flex items-center justify-center gap-2 
            btn-secondary btn-pill-md
-           transition-all duration-300 cubic-bezier(0.25, 0.46, 0.45, 0.94);
+           transition-all duration-300;
+    transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
   
   .payment-method-selector:hover {
@@ -333,7 +360,7 @@
   }
   
   .payment-method-selector-active {
-    @apply border-text-primary bg-text-primary text-white
+    @apply border-gray-900 bg-gray-900 text-white
            hover:bg-gray-700;
   }
   
@@ -559,6 +586,18 @@
     /* Mobile menu spacing improvements */
     #mobile-menu {
       margin-bottom: 2rem;
+    }
+    
+    /* Mobile menu in header context - ensure proper spacing */
+    .header-pill-capsule #mobile-menu,
+    .header-static #mobile-menu {
+      width: 100% !important;
+      max-width: 100% !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+      border-radius: 0 !important;
+      /* Ensure menu animations are independent of header transitions */
+      transform: none !important;
     }
     
     /* Mobile Zen Design Compliance */
