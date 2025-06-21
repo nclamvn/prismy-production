@@ -1,10 +1,12 @@
 'use client'
 
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { slideUp, staggerContainer, motionSafe } from '@/lib/motion'
 import { useLanguage } from '@/contexts/LanguageContext'
 import NewsletterSignup from '@/components/ui/NewsletterSignup'
+import { ChevronDown } from 'lucide-react'
 
 interface FooterProps {
   // Language now managed globally
@@ -12,6 +14,64 @@ interface FooterProps {
 
 export default function Footer({}: FooterProps) {
   const { language } = useLanguage()
+  const [openSection, setOpenSection] = useState<number | null>(null)
+
+  const toggleSection = (index: number) => {
+    setOpenSection(openSection === index ? null : index)
+  }
+
+  // Mobile Accordion Section Component
+  const MobileAccordionSection = ({ section, index }: { section: any, index: number }) => {
+    const isOpen = openSection === index
+    
+    return (
+      <div className="border-b border-gray-800 last:border-b-0">
+        <button
+          onClick={() => toggleSection(index)}
+          className="w-full flex items-center justify-between py-4 text-left focus:outline-none"
+          aria-expanded={isOpen}
+          aria-controls={`mobile-section-${index}`}
+        >
+          <h3 className="heading-5 text-gray-300 font-semibold">
+            {section.title}
+          </h3>
+          <ChevronDown 
+            size={16} 
+            className={`text-gray-400 transition-transform duration-200 ${
+              isOpen ? 'rotate-180' : ''
+            }`}
+          />
+        </button>
+        
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              id={`mobile-section-${index}`}
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2, ease: 'easeInOut' }}
+              className="overflow-hidden"
+            >
+              <ul className="pb-4 space-y-3">
+                {section.links.map((link: any) => (
+                  <li key={link.name}>
+                    <Link
+                      href={link.href}
+                      className="block body-sm text-gray-500 hover:text-white hover:font-semibold 
+                               transition-all focus-visible-ring rounded-md py-1"
+                    >
+                      {link.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    )
+  }
   const content = {
     vi: {
       sections: [
@@ -175,7 +235,9 @@ export default function Footer({}: FooterProps) {
           viewport={{ once: true }}
         >
           {/* Main Footer Content */}
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6 mb-6 sm:mb-8">
+          <div className="mb-6 sm:mb-8">
+            {/* Desktop Grid Layout - Hidden on mobile */}
+            <div className="hidden md:grid md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6">
             {/* Brand Section */}
             <motion.div
               variants={motionSafe(slideUp)}
@@ -328,6 +390,61 @@ export default function Footer({}: FooterProps) {
                 )}
               </ul>
             </motion.div>
+            </div>
+
+            {/* Mobile Accordion Layout - Visible only on mobile */}
+            <div className="md:hidden">
+              {/* Brand Section for Mobile */}
+              <motion.div
+                variants={motionSafe(slideUp)}
+                className="mb-6"
+              >
+                <div>
+                  <Link href="/" className="mb-2 inline-block group">
+                    <span className="heading-4 font-bold text-white transition-colors">Prismy</span>
+                  </Link>
+                  <p className="body-base text-white mt-1 mb-3 max-w-sm">
+                    {content[language].description}
+                  </p>
+                  <div className="flex space-x-4 mt-3">
+                    {socialLinks.map((social) => (
+                      <Link
+                        key={social.name}
+                        href={social.href}
+                        className="text-white opacity-70 hover:opacity-100 hover:scale-105 transition-all duration-150 
+                                 focus-visible-ring rounded-md p-1"
+                        aria-label={social.name}
+                      >
+                        {social.icon}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Newsletter Signup for Mobile */}
+                <div className="mt-4">
+                  <NewsletterSignup 
+                    language={language} 
+                    variant="footer" 
+                    className=""
+                  />
+                </div>
+              </motion.div>
+
+              {/* Mobile Accordion Sections */}
+              <motion.div
+                variants={motionSafe(slideUp)}
+                className="space-y-0"
+              >
+                {content[language].sections.map((section, index) => (
+                  <MobileAccordionSection 
+                    key={section.title} 
+                    section={section} 
+                    index={index} 
+                  />
+                ))}
+              </motion.div>
+            </div>
           </div>
 
           {/* Bottom Bar - Simplified Pure White Text */}
