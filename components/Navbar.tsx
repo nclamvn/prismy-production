@@ -109,7 +109,7 @@ export default function Navbar({}: NavbarProps) {
               <Link
                 key={item.name}
                 href={item.href}
-                className="body-base font-normal hover:font-semibold text-gray-600 hover:text-gray-900 
+                className="body-sm font-medium hover:font-bold text-gray-600 hover:text-gray-900 
                          transition-all duration-200 focus-visible-ring 
                          rounded-md px-2 py-1"
               >
@@ -210,7 +210,7 @@ export default function Navbar({}: NavbarProps) {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className="block py-2 body-base font-normal hover:font-semibold text-gray-600 hover:text-gray-900 focus-visible-ring rounded-md transition-all duration-200"
+                  className="block py-2 body-sm font-medium hover:font-bold text-gray-600 hover:text-gray-900 focus-visible-ring rounded-md transition-all duration-200"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.name}
