@@ -51,14 +51,20 @@ const developmentLogger = pino({
   })
 })
 
-// Production logger optimized for structured logging
+// Production logger optimized for structured logging (disable workers for Vercel)
 const productionLogger = pino({
   ...baseConfig,
   formatters: {
     level: (label) => {
       return { level: label }
     }
-  }
+  },
+  // Disable worker threads in production to avoid Vercel deployment issues
+  ...(process.env.VERCEL || process.env.VERCEL_ENV ? {
+    transport: undefined,
+    worker: undefined,
+    sync: true
+  } : {})
 })
 
 // Export the appropriate logger
