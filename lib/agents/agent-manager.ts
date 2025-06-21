@@ -7,6 +7,15 @@ export interface AgentConfig {
   type: 'translation' | 'ocr' | 'analysis' | 'quality_check'
   active: boolean
   config: Record<string, any>
+  // Extended properties for dashboard compatibility
+  agentId?: string
+  documentId?: string
+  personality?: string
+  state?: string
+  autonomyLevel?: number
+  capabilities?: string[]
+  getAgentStatus?(): Promise<any>
+  sendInstruction?(instruction: string, userId: string): Promise<any>
 }
 
 export interface AgentStatus {
@@ -174,7 +183,127 @@ class AgentManager {
       timestamp: new Date(),
     }
   }
+
+  // Dashboard compatibility methods
+  async getSwarmIntelligence() {
+    return {
+      totalAgents: this.agents.size,
+      activeAgents: this.getActiveAgents().length,
+      averagePerformance: 0.85,
+      collaborationEvents: 0,
+      autonomousDecisions: 0,
+    }
+  }
+
+  getAgentByDocument(documentId: string): AgentConfig | null {
+    // Find agent associated with document
+    for (const agent of this.agents.values()) {
+      if (agent.documentId === documentId) {
+        return agent
+      }
+    }
+    return null
+  }
+
+  getNotifications(unreadOnly: boolean = false) {
+    // Mock notifications for now
+    return []
+  }
+
+  markNotificationAsRead(notificationId: string) {
+    // Mock implementation
+    logger.info(`Notification ${notificationId} marked as read`)
+  }
+
+  async querySwarm(query: string) {
+    // Mock swarm query
+    return {
+      query,
+      agentResponses: [],
+      summary: 'No active agents to query',
+      confidence: 0,
+    }
+  }
+
+  async facilitateCollaboration(
+    initiatorAgentId: string,
+    task: string,
+    targetPersonalities?: string[]
+  ) {
+    // Mock collaboration
+    const collaborationId = `collab_${Date.now()}`
+    logger.info(
+      `Collaboration ${collaborationId} initiated by ${initiatorAgentId}`
+    )
+    return collaborationId
+  }
+
+  async removeAgent(agentId: string) {
+    this.agents.delete(agentId)
+    this.agentStatus.delete(agentId)
+    logger.info(`Agent ${agentId} removed`)
+  }
+
+  async processSwarmLearning() {
+    // Mock swarm learning
+    logger.info('Processing swarm learning')
+  }
+
+  async createAgentForDocument(
+    documentId: string,
+    intelligence: any,
+    options: any
+  ) {
+    const agentId = `agent_${documentId}_${Date.now()}`
+    const agent: AgentConfig = {
+      id: agentId,
+      agentId,
+      documentId,
+      name: `Document Agent for ${documentId}`,
+      type: 'analysis',
+      active: true,
+      personality: 'analytical',
+      state: 'active',
+      autonomyLevel: 3,
+      capabilities: ['analysis', 'monitoring'],
+      config: options,
+      async getAgentStatus() {
+        return {
+          state: 'active',
+          autonomyLevel: 3,
+          lastActivity: new Date(),
+          performance: { successRate: 0.95 },
+        }
+      },
+      async sendInstruction(instruction: string, userId: string) {
+        return {
+          instruction,
+          response: 'Instruction received and processed',
+          timestamp: new Date(),
+        }
+      },
+    }
+
+    this.agents.set(agentId, agent)
+    this.agentStatus.set(agentId, {
+      id: agentId,
+      status: 'idle',
+      lastActivity: new Date(),
+      performance: {
+        successRate: 1.0,
+        averageResponseTime: 500,
+        totalProcessed: 0,
+      },
+    })
+
+    return agent
+  }
 }
 
 export const agentManager = new AgentManager()
-export const getAgentManager = () => agentManager
+
+// Factory function for dashboard compatibility
+export const getAgentManager = (userId?: string) => {
+  // In a full implementation, this would return user-specific agent manager
+  return agentManager
+}

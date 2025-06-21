@@ -1,63 +1,71 @@
 import { NextRequest } from 'next/server'
 import { POST, GET } from '@/app/api/documents/intelligence/route'
 import { createRouteHandlerClient } from '@/lib/supabase'
-import { backgroundQueue } from '@/src/lib/background-processing-queue'
+import { backgroundQueue } from '@/lib/background-processing-queue'
 
 // Mock dependencies
 jest.mock('@/lib/supabase')
-jest.mock('@/src/lib/background-processing-queue')
+jest.mock('@/lib/background-processing-queue')
 jest.mock('@/lib/rate-limiter')
 jest.mock('@/lib/csrf')
-jest.mock('@/src/lib/ai/ai-orchestrator')
-jest.mock('@/src/lib/analytics')
+jest.mock('@/lib/ai/ai-orchestrator')
+jest.mock('@/lib/analytics')
 
 const mockSupabase = {
   auth: {
-    getSession: jest.fn()
+    getSession: jest.fn(),
   },
   from: jest.fn(() => ({
     select: jest.fn(() => ({
       eq: jest.fn(() => ({
-        single: jest.fn()
-      }))
-    }))
-  }))
+        single: jest.fn(),
+      })),
+    })),
+  })),
 }
 
 describe('/api/documents/intelligence', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
-    (createRouteHandlerClient as jest.Mock).mockReturnValue(mockSupabase)
+    jest.clearAllMocks()
+    ;(createRouteHandlerClient as jest.Mock).mockReturnValue(mockSupabase)
   })
 
   describe('POST', () => {
     it('should require authentication', async () => {
       mockSupabase.auth.getSession.mockResolvedValue({
-        data: { session: null }
+        data: { session: null },
       })
 
       const formData = new FormData()
-      formData.append('file', new File(['test'], 'test.pdf', { type: 'application/pdf' }))
+      formData.append(
+        'file',
+        new File(['test'], 'test.pdf', { type: 'application/pdf' })
+      )
 
-      const request = new NextRequest('http://localhost:3000/api/documents/intelligence', {
-        method: 'POST',
-        body: formData
-      })
+      const request = new NextRequest(
+        'http://localhost:3000/api/documents/intelligence',
+        {
+          method: 'POST',
+          body: formData,
+        }
+      )
 
       const response = await POST(request)
       const data = await response.json()
 
       expect(response.status).toBe(401)
-      expect(data.error).toBe('Authentication required for document intelligence')
+      expect(data.error).toBe(
+        'Authentication required for document intelligence'
+      )
     })
 
     it('should validate file type and size', async () => {
       mockSupabase.auth.getSession.mockResolvedValue({
-        data: { 
-          session: { 
-            user: { id: 'test-user-id' } 
-          } 
-        }
+        data: {
+          session: {
+            user: { id: 'test-user-id' },
+          },
+        },
       })
 
       // Mock CSRF validation
@@ -66,28 +74,37 @@ describe('/api/documents/intelligence', () => {
 
       // Mock rate limiting
       const { getRateLimitForTier } = await import('@/lib/rate-limiter')
-      ;(getRateLimitForTier as jest.Mock).mockResolvedValue({ success: true, remaining: 100 })
+      ;(getRateLimitForTier as jest.Mock).mockResolvedValue({
+        success: true,
+        remaining: 100,
+      })
 
       // Mock user profile
       mockSupabase.from.mockReturnValue({
         select: jest.fn().mockReturnValue({
           eq: jest.fn().mockReturnValue({
             single: jest.fn().mockResolvedValue({
-              data: { subscription_tier: 'free' }
-            })
-          })
-        })
+              data: { subscription_tier: 'free' },
+            }),
+          }),
+        }),
       })
 
       // Test with invalid file type
       const formData = new FormData()
-      formData.append('file', new File(['test'], 'test.exe', { type: 'application/exe' }))
+      formData.append(
+        'file',
+        new File(['test'], 'test.exe', { type: 'application/exe' })
+      )
       formData.append('options', JSON.stringify({ analysisDepth: 'standard' }))
 
-      const request = new NextRequest('http://localhost:3000/api/documents/intelligence', {
-        method: 'POST',
-        body: formData
-      })
+      const request = new NextRequest(
+        'http://localhost:3000/api/documents/intelligence',
+        {
+          method: 'POST',
+          body: formData,
+        }
+      )
 
       const response = await POST(request)
       const data = await response.json()
@@ -98,11 +115,11 @@ describe('/api/documents/intelligence', () => {
 
     it('should process valid document and return quick insights', async () => {
       mockSupabase.auth.getSession.mockResolvedValue({
-        data: { 
-          session: { 
-            user: { id: 'test-user-id' } 
-          } 
-        }
+        data: {
+          session: {
+            user: { id: 'test-user-id' },
+          },
+        },
       })
 
       // Mock CSRF validation
@@ -111,17 +128,20 @@ describe('/api/documents/intelligence', () => {
 
       // Mock rate limiting
       const { getRateLimitForTier } = await import('@/lib/rate-limiter')
-      ;(getRateLimitForTier as jest.Mock).mockResolvedValue({ success: true, remaining: 100 })
+      ;(getRateLimitForTier as jest.Mock).mockResolvedValue({
+        success: true,
+        remaining: 100,
+      })
 
       // Mock user profile
       mockSupabase.from.mockReturnValue({
         select: jest.fn().mockReturnValue({
           eq: jest.fn().mockReturnValue({
             single: jest.fn().mockResolvedValue({
-              data: { subscription_tier: 'premium' }
-            })
-          })
-        })
+              data: { subscription_tier: 'premium' },
+            }),
+          }),
+        }),
       })
 
       // Mock background job creation
@@ -129,27 +149,35 @@ describe('/api/documents/intelligence', () => {
 
       // Create a valid PDF file
       const pdfContent = new Uint8Array([0x25, 0x50, 0x44, 0x46]) // PDF header
-      const file = new File([pdfContent], 'test.pdf', { type: 'application/pdf' })
-      
+      const file = new File([pdfContent], 'test.pdf', {
+        type: 'application/pdf',
+      })
+
       // Mock the arrayBuffer method for test environment
       file.arrayBuffer = jest.fn().mockResolvedValue(pdfContent.buffer)
-      
+
       const formData = new FormData()
       formData.append('file', file)
-      formData.append('options', JSON.stringify({ 
-        analysisDepth: 'standard',
-        enablePredictiveInsights: true 
-      }))
+      formData.append(
+        'options',
+        JSON.stringify({
+          analysisDepth: 'standard',
+          enablePredictiveInsights: true,
+        })
+      )
 
       // Create request with manually mocked formData method
-      const request = new NextRequest('http://localhost:3000/api/documents/intelligence', {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'X-CSRF-Token': 'test-token'
+      const request = new NextRequest(
+        'http://localhost:3000/api/documents/intelligence',
+        {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'X-CSRF-Token': 'test-token',
+          },
         }
-      })
-      
+      )
+
       // Mock the formData method to return our test data
       request.formData = jest.fn().mockResolvedValue(formData)
 
@@ -173,12 +201,14 @@ describe('/api/documents/intelligence', () => {
         progress: 50,
         estimatedDuration: 120000,
         result: null,
-        error: null
-      };
+        error: null,
+      }
 
-      (backgroundQueue.getJob as jest.Mock).mockResolvedValue(mockJob)
+      ;(backgroundQueue.getJob as jest.Mock).mockResolvedValue(mockJob)
 
-      const request = new NextRequest('http://localhost:3000/api/documents/intelligence?jobId=job_123')
+      const request = new NextRequest(
+        'http://localhost:3000/api/documents/intelligence?jobId=job_123'
+      )
 
       const response = await GET(request)
       const data = await response.json()
@@ -193,7 +223,9 @@ describe('/api/documents/intelligence', () => {
     it('should return 404 for non-existent job', async () => {
       ;(backgroundQueue.getJob as jest.Mock).mockResolvedValue(null)
 
-      const request = new NextRequest('http://localhost:3000/api/documents/intelligence?jobId=invalid_job')
+      const request = new NextRequest(
+        'http://localhost:3000/api/documents/intelligence?jobId=invalid_job'
+      )
 
       const response = await GET(request)
       const data = await response.json()
@@ -203,7 +235,9 @@ describe('/api/documents/intelligence', () => {
     })
 
     it('should require job ID or document ID parameter', async () => {
-      const request = new NextRequest('http://localhost:3000/api/documents/intelligence')
+      const request = new NextRequest(
+        'http://localhost:3000/api/documents/intelligence'
+      )
 
       const response = await GET(request)
       const data = await response.json()
@@ -216,8 +250,10 @@ describe('/api/documents/intelligence', () => {
 
 describe('Intelligence Job Processing Integration', () => {
   it('should create and process intelligence job', async () => {
-    const { intelligenceJobProcessor } = await import('@/src/lib/ai/intelligence-job-processor')
-    
+    const { intelligenceJobProcessor } = await import(
+      '@/lib/ai/intelligence-job-processor'
+    )
+
     const mockJob = {
       id: 'job_123',
       type: 'document_intelligence' as const,
@@ -237,9 +273,9 @@ describe('Intelligence Job Processing Integration', () => {
             recentDocuments: [],
             queryHistory: [],
             expertiseDomains: [],
-            commonTopics: []
-          }
-        }
+            commonTopics: [],
+          },
+        },
       },
       retryCount: 0,
       maxRetries: 3,
@@ -247,47 +283,50 @@ describe('Intelligence Job Processing Integration', () => {
       metadata: {
         filename: 'test.pdf',
         fileSize: 1024,
-        analysisDepth: 'standard'
-      }
+        analysisDepth: 'standard',
+      },
     }
 
     // Mock AI Orchestrator
-    const { aiOrchestrator } = await import('@/src/lib/ai/ai-orchestrator')
-    ;(aiOrchestrator.processDocumentIntelligence as jest.Mock).mockResolvedValue({
+    const { aiOrchestrator } = await import('@/lib/ai/ai-orchestrator')
+    ;(
+      aiOrchestrator.processDocumentIntelligence as jest.Mock
+    ).mockResolvedValue({
       documentId: 'doc_123',
       structure: {
         metadata: {
           filename: 'test.pdf',
           wordCount: 100,
           pageCount: 1,
-          language: 'en'
-        }
+          language: 'en',
+        },
       },
       content: {
         fullText: 'Test document content',
         keyEntities: [],
         concepts: [],
-        relationships: []
+        relationships: [],
       },
       insights: {
         summary: 'Test summary',
         topics: [],
         classification: {
           documentType: 'document',
-          domain: 'general'
-        }
+          domain: 'general',
+        },
       },
       queryable: {
-        embeddings: [[0.1, 0.2, 0.3]]
-      }
+        embeddings: [[0.1, 0.2, 0.3]],
+      },
     })
 
     // Mock Supabase for saving results
     mockSupabase.from.mockReturnValue({
-      upsert: jest.fn().mockResolvedValue({ data: null, error: null })
+      upsert: jest.fn().mockResolvedValue({ data: null, error: null }),
     })
 
-    const result = await intelligenceJobProcessor.processIntelligenceJob(mockJob)
+    const result =
+      await intelligenceJobProcessor.processIntelligenceJob(mockJob)
 
     expect(result).toBeDefined()
     expect(result.documentId).toBe('doc_123')
