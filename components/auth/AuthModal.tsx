@@ -225,7 +225,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', lan
             <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 lg:p-8 overflow-y-auto pointer-events-none">
               {/* Modal */}
               <motion.div
-                className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden my-auto pointer-events-auto"
+                className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden my-auto pointer-events-auto"
             variants={motionSafe({
               hidden: { opacity: 0, scale: 0.9, y: 20 },
               visible: { 

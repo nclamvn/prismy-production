@@ -355,7 +355,7 @@ export default function PricingPage({}: PricingPageProps) {
               {t('pricing.paymentMethod')}
             </h3>
             <div className="flex justify-center">
-              <div className="grid grid-cols-3 gap-4 max-w-lg">
+              <div className="grid grid-cols-3 gap-6 max-w-2xl">
                 {getAvailablePaymentMethods().map((method) => (
                   <button
                     key={method}

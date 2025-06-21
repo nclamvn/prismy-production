@@ -137,7 +137,7 @@ function DocumentsPageContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-bg-main">
       
       <main className="pt-24 pb-16">
         <motion.div 

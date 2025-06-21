@@ -174,17 +174,17 @@
     @apply btn-base h-8 px-4 text-sm font-semibold; /* 1.3x smaller than btn-pill-md */
   }
   
-  /* Sign In button - 1.3x wider for better visual balance */
+  /* Sign In button - streamlined widths */
   .btn-signin-wide {
-    min-width: calc(1.3 * 80px); /* 104px base width */
+    min-width: 80px; /* Base width - streamlined */
   }
   
   .btn-signin-wide.btn-pill-compact-sm {
-    min-width: calc(1.3 * 90px); /* 117px for compact-sm */
+    min-width: 90px; /* Compact-sm width - streamlined */
   }
   
   .btn-signin-wide.btn-pill-compact-xs {
-    min-width: calc(1.3 * 75px); /* 97.5px for compact-xs */
+    min-width: 75px; /* Compact-xs width - streamlined */
   }
   
   /* Text overflow protection for Vietnamese */
@@ -328,9 +328,10 @@
   /* Email Pill Form - True Capsule Design */
   .email-pill-form {
     @apply flex items-center border border-gray-300 rounded-full overflow-hidden 
-           max-w-sm h-12 bg-gray-50 transition-all duration-200
+           h-12 bg-gray-50 transition-all duration-200
            hover:border-gray-400 hover:shadow-sm focus-within:border-gray-500 
            focus-within:ring-2 focus-within:ring-gray-500 focus-within:ring-offset-1;
+    max-width: 295px; /* Reduced from max-w-sm (384px) by 1.3x */
   }
   
   .email-pill-input {
