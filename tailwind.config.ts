@@ -9,8 +9,8 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        'inter': ['var(--font-inter)', 'system-ui', 'sans-serif'],
-        'times': ['var(--font-times)', 'Times New Roman', 'Times', 'serif'],
+        'inter': ['var(--font-inter)', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        'sans': ['var(--font-inter)', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'], // Make Inter default
       },
       colors: {
         black: 'var(--black)',

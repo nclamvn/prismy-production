@@ -197,15 +197,15 @@ export default function Home() {
                 
                 <motion.h1 
                   variants={motionSafe(slideUp)}
-                  className="heading-1 text-text-primary mb-6"
+                  className="heading-hero text-center mb-6"
                 >
                   {content[language].hero.title}
-                  <span className="text-primary-600"> {content[language].hero.subtitle}</span>
+                  <span className="text-blue-600"> {content[language].hero.subtitle}</span>
                 </motion.h1>
                 
                 <motion.p 
                   variants={motionSafe(slideUp)}
-                  className="body-xl text-text-secondary mb-8"
+                  className="subheadline text-center max-w-4xl mx-auto mb-8"
                 >
                   {content[language].hero.description}
                 </motion.p>
@@ -214,17 +214,17 @@ export default function Home() {
                   variants={motionSafe(slideUp)}
                   className="flex flex-col sm:flex-row gap-4 justify-center mb-8 md:mb-10 lg:mb-12"
                 >
-                  <button className="btn-primary btn-lg">
+                  <button className="btn-primary btn-pill-lg">
                     {content[language].hero.getStarted}
                   </button>
-                  <button className="btn-secondary btn-lg">
+                  <button className="btn-secondary btn-pill-lg">
                     {content[language].hero.watchDemo}
                   </button>
                 </motion.div>
                 
                 <motion.p 
                   variants={motionSafe(slideUp)}
-                  className="body-sm text-text-muted mb-4 md:mb-6 lg:mb-8"
+                  className="body-sm text-gray-500 text-center mb-4 md:mb-6 lg:mb-8"
                 >
                   {content[language].hero.trustIndicator}
                 </motion.p>
@@ -267,10 +267,10 @@ export default function Home() {
                 viewport={{ once: true }}
               >
                 <motion.div variants={motionSafe(slideUp)} className="text-center mb-16">
-                  <h2 className="heading-2 text-text-primary mb-4">
+                  <h2 className="heading-2 mb-4">
                     {content[language].features.title}
                   </h2>
-                  <p className="body-lg text-text-secondary max-w-2xl mx-auto">
+                  <p className="subheadline max-w-2xl mx-auto">
                     {content[language].features.subtitle}
                   </p>
                 </motion.div>
@@ -304,16 +304,16 @@ export default function Home() {
               >
                 <motion.h2 
                   variants={motionSafe(slideUp)}
-                  className="heading-2 text-text-primary mb-12"
+                  className="heading-2 mb-12"
                 >
                   {content[language].social_proof.title}
                 </motion.h2>
                 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-8 px-4 md:px-8 lg:px-12">
                   {content[language].social_proof.stats.map((stat, index) => (
-                    <motion.div key={index} variants={motionSafe(slideUp)}>
-                      <div className="heading-1 text-primary-600 mb-2">{stat.number}</div>
-                      <div className="body-base text-text-secondary">{stat.label}</div>
+                    <motion.div key={index} variants={motionSafe(slideUp)} className="mini-card text-center">
+                      <div className="heading-1 text-blue-600 mb-2">{stat.number}</div>
+                      <div className="body-base">{stat.label}</div>
                     </motion.div>
                   ))}
                 </div>
@@ -333,10 +333,10 @@ export default function Home() {
                 viewport={{ once: true }}
               >
                 <motion.div variants={motionSafe(slideUp)} className="text-center mb-16">
-                  <h2 className="heading-2 text-text-primary mb-4">
+                  <h2 className="heading-2 mb-4">
                     {content[language].pricing.title}
                   </h2>
-                  <p className="body-lg text-text-secondary">
+                  <p className="subheadline">
                     {content[language].pricing.subtitle}
                   </p>
                 </motion.div>
@@ -348,36 +348,44 @@ export default function Home() {
                       variants={motionSafe(slideUp)}
                       className="relative"
                     >
-                      <div className={`bg-bg-secondary rounded-xl p-8 border-2 h-full zen-card-hover-pricing ${
-                        key === 'standard' ? 'border-border-pricing' : 'border-border-subtle'
+                      <div className={`card-base card-hover p-8 h-full ${
+                        key === 'standard' ? 'ring-2 ring-blue-500 ring-offset-2' : ''
                       }`}>
                       
-                      <h3 className="heading-4 text-text-primary mb-2">
+                      {key === 'standard' && (
+                        <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                          <span className="badge-accent">
+                            {content[language].pricing.mostPopular}
+                          </span>
+                        </div>
+                      )}
+                      
+                      <h3 className="heading-4 mb-4">
                         {language === 'vi' ? plan.nameVi : plan.name}
                       </h3>
                       
-                      <div className="mb-4">
-                        <span className="heading-2 text-text-primary">
+                      <div className="mb-6">
+                        <span className="heading-2">
                           {new Intl.NumberFormat('vi-VN', {
                             style: 'currency',
                             currency: 'VND'
                           }).format(plan.priceVND)}
                         </span>
-                        <span className="body-sm text-text-muted">/{content[language].pricing.monthly}</span>
+                        <span className="body-sm text-gray-500">/{content[language].pricing.monthly}</span>
                       </div>
                       
                       <ul className="space-y-3 mb-8">
                         {(language === 'vi' ? plan.featuresVi : plan.features).map((feature, index) => (
                           <li key={index} className="flex items-start space-x-3">
-                            <svg className="w-5 h-5 text-secondary-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                             </svg>
-                            <span className="body-sm text-text-secondary">{feature}</span>
+                            <span className="body-sm">{feature}</span>
                           </li>
                         ))}
                       </ul>
                       
-                      <button className={key === 'standard' ? 'btn-primary w-full' : 'btn-secondary w-full'}>
+                      <button className={`w-full ${key === 'standard' ? 'btn-accent btn-pill-lg' : 'btn-secondary btn-pill-lg'}`}>
                         {content[language].pricing.getStarted}
                       </button>
                       </div>

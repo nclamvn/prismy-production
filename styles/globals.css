@@ -1,4 +1,5 @@
 @import './tokens.css';
+@import './pill-design-system.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -41,22 +42,39 @@
     @apply max-w-[var(--max-content-width)] mx-auto px-4 sm:px-6 lg:px-8;
   }
   
-  /* Buttons */
+  /* Buttons - Viên thuốc style */
   .btn-base {
-    @apply inline-flex items-center justify-center px-5 py-2.5 
-           rounded-[var(--radius-md)] font-medium text-sm
-           transition-[var(--transition-base)] focus:outline-none focus:ring-2 
-           focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center font-inter font-semibold
+           rounded-full transition-all duration-200 focus:outline-none focus:ring-2 
+           focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed
+           hover:transform hover:-translate-y-px hover:shadow-lg;
+  }
+  
+  .btn-pill-lg {
+    @apply btn-base h-12 px-6 text-base;
+  }
+  
+  .btn-pill-md {
+    @apply btn-base h-10 px-5 text-sm;
+  }
+  
+  .btn-pill-sm {
+    @apply btn-base h-8 px-4 text-xs;
   }
   
   .btn-primary {
     @apply btn-base bg-gray-900 text-white hover:bg-gray-800 
-           focus:ring-gray-900 active:scale-[0.98];
+           focus:ring-gray-900 active:scale-[0.98] shadow-md;
   }
   
   .btn-secondary {
     @apply btn-base bg-gray-100 text-gray-900 hover:bg-gray-200 
-           focus:ring-gray-500 active:scale-[0.98];
+           focus:ring-gray-500 active:scale-[0.98] border border-gray-200;
+  }
+  
+  .btn-accent {
+    @apply btn-base bg-blue-600 text-white hover:bg-blue-700 
+           focus:ring-blue-600 active:scale-[0.98] shadow-md;
   }
   
   .btn-ghost {
@@ -64,47 +82,101 @@
            hover:bg-gray-50 focus:ring-gray-500;
   }
   
-  /* Template chips - Monochrome design */
+  /* Template chips - Viên thuốc design */
   .template-chip {
-    @apply inline-flex items-center px-4 py-2 
+    @apply inline-flex items-center px-4 py-2 font-inter
            rounded-full border border-gray-200 
-           text-sm font-medium text-black bg-white
-           hover:border-black hover:bg-gray-50 
-           transition-[var(--transition-base)] cursor-pointer
+           text-sm font-medium text-gray-700 bg-white
+           hover:border-gray-400 hover:bg-gray-50 hover:text-gray-900
+           transition-all duration-200 cursor-pointer
            active:scale-[0.98];
   }
   
   .template-chip-active {
-    @apply border-black bg-black text-white 
-           hover:bg-gray-800 hover:border-gray-800;
+    @apply border-blue-500 bg-blue-500 text-white 
+           hover:bg-blue-600 hover:border-blue-600;
   }
   
-  /* Card styles - Refined for 2-tone design */
+  /* Tags & Badges - Viên thuốc */
+  .tag-base {
+    @apply inline-flex items-center px-3 py-1 font-inter
+           rounded-full text-sm font-medium
+           transition-all duration-200;
+  }
+  
+  .tag-primary {
+    @apply tag-base bg-gray-100 text-gray-800;
+  }
+  
+  .tag-accent {
+    @apply tag-base bg-blue-100 text-blue-800;
+  }
+  
+  .tag-success {
+    @apply tag-base bg-green-100 text-green-800;
+  }
+  
+  .badge-base {
+    @apply inline-flex items-center px-2 py-1 font-inter
+           rounded-full text-xs font-semibold uppercase
+           transition-all duration-200 tracking-wide;
+  }
+  
+  .badge-primary {
+    @apply badge-base bg-gray-900 text-white;
+  }
+  
+  .badge-accent {
+    @apply badge-base bg-blue-600 text-white;
+  }
+  
+  /* Card styles - Viên thuốc design */
   .card-base {
-    @apply bg-white rounded-[16px] 
+    @apply bg-white rounded-3xl 
            border border-gray-100 
-           shadow-[var(--shadow-lg)] 
-           transition-[var(--transition-base)];
+           shadow-md
+           transition-all duration-200;
   }
   
   .card-hover {
-    @apply hover:shadow-[var(--shadow-lg)] hover:-translate-y-1;
+    @apply hover:shadow-xl hover:-translate-y-2;
   }
   
-  /* Input styles */
+  .mini-card {
+    @apply bg-white rounded-2xl 
+           border border-gray-100 
+           shadow-sm p-4
+           transition-all duration-200
+           hover:shadow-md hover:-translate-y-1;
+  }
+  
+  /* Input styles - Viên thuốc */
   .input-base {
-    @apply w-full px-4 py-3 
-           rounded-[var(--radius-md)] 
-           border border-gray-200 
+    @apply w-full h-12 px-4 font-inter text-base
+           rounded-full border border-gray-300 
            bg-white text-gray-900 
-           placeholder:text-gray-400
-           focus:outline-none focus:ring-2 focus:ring-gray-900 
-           focus:border-transparent
-           transition-[var(--transition-base)];
+           placeholder:text-gray-500
+           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1
+           focus:border-blue-500
+           transition-all duration-200;
+  }
+  
+  .input-lg {
+    @apply input-base h-14 px-5 text-lg;
+  }
+  
+  .input-sm {
+    @apply input-base h-10 px-3 text-sm;
   }
   
   .textarea-base {
-    @apply input-base resize-none;
+    @apply w-full px-4 py-3 font-inter text-base
+           rounded-2xl border border-gray-300 
+           bg-white text-gray-900 
+           placeholder:text-gray-500
+           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1
+           focus:border-blue-500
+           transition-all duration-200 resize-none;
   }
   
   /* Select styles - Vietnamese DNA (No Shadow) */
@@ -142,45 +214,53 @@
     box-shadow: none !important;
   }
   
-  /* Typography - Enhanced Scale with Times New Roman for Headings */
+  /* Typography - Chuyển toàn bộ sang Inter font */
+  .heading-hero {
+    @apply font-inter text-[4rem] font-bold tracking-tight leading-[1.1] text-gray-900;
+  }
+  
   .heading-1 {
-    @apply font-times text-[3.75rem] font-bold tracking-tight leading-[1.2];
+    @apply font-inter text-[3rem] font-bold tracking-tight leading-[1.2] text-gray-900;
   }
   
   .heading-2 {
-    @apply font-times text-[2.5rem] font-semibold tracking-tight leading-[1.3];
+    @apply font-inter text-[2rem] font-semibold tracking-tight leading-[1.3] text-gray-900;
   }
   
   .heading-3 {
-    @apply font-times text-[1.67rem] font-medium tracking-tight leading-[1.4];
+    @apply font-inter text-[1.5rem] font-semibold tracking-tight leading-[1.4] text-gray-900;
   }
   
   .heading-4 {
-    @apply font-times text-[1.46rem] font-medium leading-[1.5];
+    @apply font-inter text-[1.25rem] font-medium leading-[1.5] text-gray-900;
   }
   
   .heading-5 {
-    @apply font-times text-[1.04rem] font-medium leading-[var(--leading-tight)];
+    @apply font-inter text-[1rem] font-medium leading-[1.5] text-gray-900;
   }
   
   .subheadline {
-    @apply font-times text-[1.46rem] font-medium leading-[1.5];
+    @apply font-inter text-[1.75rem] font-medium leading-[1.4] text-gray-600;
+  }
+  
+  .body-xl {
+    @apply font-inter text-[1.25rem] leading-[1.6] text-gray-700;
   }
   
   .body-lg {
-    @apply font-times text-[1.35rem] leading-[var(--leading-relaxed)];
+    @apply font-inter text-[1.125rem] leading-[1.6] text-gray-700;
   }
   
   .body-base {
-    @apply font-times text-[1.2rem] leading-[var(--leading-normal)];
+    @apply font-inter text-[1rem] leading-[1.5] text-gray-700;
   }
   
   .body-sm {
-    @apply font-times text-[1.05rem] leading-[var(--leading-normal)];
+    @apply font-inter text-[0.875rem] leading-[1.4] text-gray-600;
   }
   
   .body-xs {
-    @apply font-times text-[0.9rem] leading-[var(--leading-normal)];
+    @apply font-inter text-[0.75rem] leading-[1.4] text-gray-500;
   }
   
   /* Rainbow bar animation */

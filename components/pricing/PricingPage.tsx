@@ -1,10 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-// ULTRATHINK: Remove all context dependencies for SSR-free component
-// import { useAuth } from '@/contexts/AuthContext' // Removed to fix build
-// import { useLanguage } from '@/contexts/LanguageContext' // Removed to fix SSR
+import { useSSRSafeAuth } from '@/src/contexts/SSRSafeAuthContext'
+import { useSSRSafeLanguage } from '@/src/contexts/SSRSafeLanguageContext'
 import { motionSafe } from '@/lib/motion'
 import { 
   UNIFIED_SUBSCRIPTION_PLANS, 
@@ -17,292 +16,284 @@ import {
 } from '@/lib/payments/payment-service'
 
 interface PricingPageProps {
-  // Language now managed globally
+  // Premium pricing with full context support
 }
 
 export default function PricingPage({}: PricingPageProps) {
+  // Restored context hooks with SSR safety
+  const { 
+    user, 
+    userProfile, 
+    subscription, 
+    isLoading: authLoading,
+    isAuthenticated,
+    checkQuotaUsage
+  } = useSSRSafeAuth()
+  
+  const { 
+    language, 
+    t, 
+    formatCurrency,
+    isLoading: langLoading 
+  } = useSSRSafeLanguage()
+
+  // Premium state management
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly')
   const [currency, setCurrency] = useState<Currency>('VND')
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod>('vnpay')
-  // ULTRATHINK: Remove all context dependencies for SSR-free component
-  const user = null // Temporarily set to null to fix build
-  const language = 'vi' // Default to Vietnamese, will be dynamic later
+  const [quotaInfo, setQuotaInfo] = useState<{ canProceed: boolean; usage: number; limit: number } | null>(null)
+  const [isUpgrading, setIsUpgrading] = useState(false)
 
-  const content = {
-    vi: {
-      title: 'Chuyển ngữ không phải gánh nặng chi phí',
-      subtitle: 'Prismy tối ưu hoá ngân sách, tối đa hoá giá trị tài liệu cho doanh nghiệp',
-      monthly: 'Hàng tháng',
-      yearly: 'Hàng năm',
-      yearlyDiscount: 'Tiết kiệm 20%',
-      popular: 'Phổ biến',
-      currentPlan: 'Gói hiện tại',
-      choosePlan: 'Chọn gói này',
-      getStarted: 'Bắt đầu',
-      upgradeNow: 'Nâng cấp ngay',
-      perMonth: '/tháng',
-      perYear: '/năm',
-      billed: 'Thanh toán',
-      billedMonthly: 'hàng tháng',
-      billedYearly: 'hàng năm',
-      paymentMethod: 'Phương thức thanh toán',
-      currency: 'Tiền tệ',
-      vnd: 'Việt Nam Đồng',
-      usd: 'Đô la Mỹ',
-      features: {
-        translations: 'lượt dịch mỗi tháng',
-        documents: 'tài liệu',
-        unlimited: 'Không giới hạn',
-        characters: 'ký tự',
-        support: 'Hỗ trợ',
-        analytics: 'Phân tích nâng cao',
-        collaboration: 'Cộng tác nhóm',
-        integrations: 'Tích hợp tùy chỉnh',
-        sla: 'Đảm bảo SLA'
-      }
-    },
-    en: {
-      title: 'Translation shouldn\'t be a cost burden',
-      subtitle: 'Prismy optimizes budget, maximizes document value for enterprises',
-      monthly: 'Monthly',
-      yearly: 'Yearly',
-      yearlyDiscount: 'Save 20%',
-      popular: 'Popular',
-      currentPlan: 'Current Plan',
-      choosePlan: 'Choose Plan',
-      getStarted: 'Get Started',
-      upgradeNow: 'Upgrade Now',
-      perMonth: '/month',
-      perYear: '/year',
-      billed: 'Billed',
-      billedMonthly: 'monthly',
-      billedYearly: 'yearly',
-      paymentMethod: 'Payment Method',
-      currency: 'Currency',
-      vnd: 'Vietnamese Dong',
-      usd: 'US Dollar',
-      features: {
-        translations: 'translations per month',
-        documents: 'documents',
-        unlimited: 'Unlimited',
-        characters: 'characters',
-        support: 'support',
-        analytics: 'Advanced analytics',
-        collaboration: 'Team collaboration',
-        integrations: 'Custom integrations',
-        sla: 'SLA guarantee'
-      }
+  // Load user quota information
+  useEffect(() => {
+    if (isAuthenticated && !authLoading) {
+      checkQuotaUsage().then(setQuotaInfo)
     }
-  }
+  }, [isAuthenticated, authLoading, checkQuotaUsage])
 
-  const getFeatureText = (feature: string) => {
-    // Features are now already localized in UNIFIED_SUBSCRIPTION_PLANS
-    return feature
-  }
-
-  const handleSubscribe = async (planKey: keyof typeof UNIFIED_SUBSCRIPTION_PLANS) => {
-    if (planKey === 'free') {
-      return // Free plan doesn't need payment
-    }
-    
-    if (!user) {
-      // TODO: Show auth modal or redirect to login
+  // Premium upgrade handler
+  const handleUpgrade = async (planId: string) => {
+    if (!isAuthenticated) {
+      // Redirect to sign up with selected plan
+      window.location.href = `/auth/signup?plan=${planId}&period=${billingPeriod}`
       return
     }
-    
-    try {
-      let response
-      let endpoint = ''
-      
-      // Choose API endpoint based on selected payment method
-      switch (selectedPaymentMethod) {
-        case 'vnpay':
-          endpoint = '/api/payments/vnpay/create'
-          break
-        case 'momo':
-          endpoint = '/api/payments/momo/create'
-          break
-        case 'stripe':
-          endpoint = '/api/stripe/create-checkout'
-          break
-        default:
-          throw new Error('Phương thức thanh toán không được hỗ trợ')
-      }
 
-      response = await fetch(endpoint, {
+    setIsUpgrading(true)
+    try {
+      const response = await fetch('/api/payments/create-checkout', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ planKey }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          planId,
+          billingPeriod,
+          paymentMethod: selectedPaymentMethod,
+          currency
+        })
       })
 
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Không thể tạo phiên thanh toán')
-      }
-
-      // Redirect to payment page
-      if (data.paymentUrl) {
-        window.location.href = data.paymentUrl
-      } else if (data.url) {
-        window.location.href = data.url
-      }
+      const { url, error } = await response.json()
+      if (error) throw new Error(error)
+      
+      window.location.href = url
     } catch (error) {
-      console.error('Error creating payment session:', error)
-      // TODO: Show error message to user
+      console.error('Upgrade failed:', error)
+      // Show error toast
+    } finally {
+      setIsUpgrading(false)
     }
   }
 
-  const getYearlyPrice = (monthlyPrice: number) => {
-    return monthlyPrice * 12 * 0.8 // 20% discount
+  // Show loading state during SSR
+  if (authLoading || langLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-600 border-t-transparent"></div>
+      </div>
+    )
+  }
+
+  // Premium content with translations
+  const getPlanDisplayName = (planId: string) => {
+    const translations = {
+      free: t('pricing.free'),
+      standard: t('pricing.standard'), 
+      premium: t('pricing.premium'),
+      enterprise: t('pricing.enterprise')
+    }
+    return translations[planId as keyof typeof translations] || planId
+  }
+
+  const getFeaturesByPlan = (planId: string) => {
+    const features = {
+      free: [
+        t('pricing.features.basicTranslation'),
+        t('pricing.features.fiveDocuments'),
+        t('pricing.features.communitySupport')
+      ],
+      standard: [
+        t('pricing.features.unlimitedTranslation'),
+        t('pricing.features.ocrSupport'),
+        t('pricing.features.priorityProcessing'),
+        t('pricing.features.emailSupport')
+      ],
+      premium: [
+        t('pricing.features.advancedOcr'),
+        t('pricing.features.batchProcessing'),
+        t('pricing.features.apiAccess'),
+        t('pricing.features.premiumSupport'),
+        t('pricing.features.customModels')
+      ],
+      enterprise: [
+        t('pricing.features.unlimitedEverything'),
+        t('pricing.features.dedicatedSupport'),
+        t('pricing.features.slaGuarantee'),
+        t('pricing.features.customIntegration'),
+        t('pricing.features.onPremise')
+      ]
+    }
+    return features[planId as keyof typeof features] || []
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 py-12">
-      <div className="w-full">
-        {/* Header */}
-        <div className="text-center mb-12 px-4 md:px-8 lg:px-12">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+      {/* Hero Section with Premium Typography */}
+      <div className="container mx-auto px-4 py-16">
+        <div className="text-center mb-16">
           <motion.h1 
-            className="heading-1 text-gray-900 mb-4"
+            className="heading-hero text-center mb-6"
             {...motionSafe({
               initial: { opacity: 0, y: 20 },
               animate: { opacity: 1, y: 0 },
               transition: { duration: 0.6 }
             })}
           >
-            {content[language].title}
+            {t('pricing.title')}
           </motion.h1>
           <motion.p 
-            className="heading-4 text-gray-600 mb-8"
+            className="subheadline text-center max-w-4xl mx-auto"
             {...motionSafe({
               initial: { opacity: 0, y: 20 },
               animate: { opacity: 1, y: 0 },
-              transition: { duration: 0.6, delay: 0.1 }
+              transition: { duration: 0.6 }
             })}
           >
-            {content[language].subtitle}
+            {t('pricing.subtitle')}
           </motion.p>
+        </div>
 
-          {/* Currency Toggle */}
+        {/* User Status Banner (Premium Feature) */}
+        {isAuthenticated && userProfile && (
           <motion.div 
-            className="inline-flex items-center bg-gray-100 rounded-xl p-1 mb-6"
+            className="card-base p-6 mb-12"
             {...motionSafe({
               initial: { opacity: 0, y: 20 },
               animate: { opacity: 1, y: 0 },
-              transition: { duration: 0.6, delay: 0.2 }
+              transition: { duration: 0.6 }
             })}
           >
-            <button
-              onClick={() => setCurrency('VND')}
-              className={`px-6 py-2 rounded-lg font-medium transition-all ${
-                currency === 'VND'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              {content[language].vnd}
-            </button>
-            <button
-              onClick={() => setCurrency('USD')}
-              className={`px-6 py-2 rounded-lg font-medium transition-all ${
-                currency === 'USD'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              {content[language].usd}
-            </button>
-          </motion.div>
-
-          {/* Payment Method Selection */}
-          <motion.div 
-            className="mb-6"
-            {...motionSafe({
-              initial: { opacity: 0, y: 20 },
-              animate: { opacity: 1, y: 0 },
-              transition: { duration: 0.6, delay: 0.25 }
-            })}
-          >
-            <h3 className="body-base font-medium text-gray-900 mb-3 text-center">
-              {content[language].paymentMethod}
-            </h3>
-            <div className="flex justify-center">
-              <div className="grid grid-cols-3 gap-3 bg-gray-100 rounded-xl p-1">
-                {getAvailablePaymentMethods().map((method) => (
-                  <button
-                    key={method}
-                    onClick={() => setSelectedPaymentMethod(method)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center space-x-2 ${
-                      selectedPaymentMethod === method
-                        ? 'bg-white text-gray-900 shadow-sm'
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                  >
-                    <span>{getPaymentMethodIcon(method)}</span>
-                    <span className="hidden sm:inline">
-                      {getPaymentMethodName(method, language)}
-                    </span>
-                  </button>
-                ))}
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="heading-4 mb-2">
+                  {t('pricing.welcome')} {userProfile.full_name || userProfile.email}
+                </h3>
+                <p className="body-base">
+                  {t('pricing.currentTier')}: <span className="badge-accent ml-2">
+                    {getPlanDisplayName(subscription?.tier || 'free')}
+                  </span>
+                </p>
               </div>
+              {quotaInfo && (
+                <div className="text-right">
+                  <div className="body-sm text-gray-500 mb-2">
+                    {t('pricing.usage')}: {quotaInfo.usage.toLocaleString()} / {quotaInfo.limit.toLocaleString()}
+                  </div>
+                  <div className="w-32 bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                      style={{ width: `${Math.min((quotaInfo.usage / quotaInfo.limit) * 100, 100)}%` }}
+                    ></div>
+                  </div>
+                </div>
+              )}
             </div>
           </motion.div>
+        )}
 
-          {/* Billing Toggle */}
-          <motion.div 
-            className="inline-flex items-center bg-gray-100 rounded-xl p-1"
-            {...motionSafe({
-              initial: { opacity: 0, y: 20 },
-              animate: { opacity: 1, y: 0 },
-              transition: { duration: 0.6, delay: 0.3 }
-            })}
-          >
+        {/* Billing Period Toggle */}
+        <motion.div 
+          className="flex justify-center mb-12"
+          {...motionSafe({
+            initial: { opacity: 0, y: 20 },
+            animate: { opacity: 1, y: 0 },
+            transition: { duration: 0.6 }
+          })}
+        >
+          <div className="bg-gray-100 rounded-full p-1 shadow-sm">
             <button
               onClick={() => setBillingPeriod('monthly')}
-              className={`px-6 py-2 rounded-lg font-medium transition-all ${
+              className={`btn-pill-md ${
                 billingPeriod === 'monthly'
                   ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
+                  : 'bg-transparent text-gray-600 hover:text-gray-900'
               }`}
             >
-              {content[language].monthly}
+              {t('pricing.monthly')}
             </button>
             <button
               onClick={() => setBillingPeriod('yearly')}
-              className={`px-6 py-2 rounded-lg font-medium transition-all relative ${
+              className={`btn-pill-md relative ml-1 ${
                 billingPeriod === 'yearly'
                   ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
+                  : 'bg-transparent text-gray-600 hover:text-gray-900'
               }`}
             >
-              {content[language].yearly}
-              <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs px-2 py-0.5 rounded-full">
-                {content[language].yearlyDiscount}
+              {t('pricing.yearly')}
+              <span className="badge-base bg-green-500 text-white absolute -top-2 -right-2">
+                {t('pricing.save20')}
               </span>
             </button>
-          </motion.div>
-        </div>
+          </div>
+        </motion.div>
+        {/* Payment Method Selection */}
+        <motion.div 
+          className="flex justify-center mb-8"
+          {...motionSafe({
+            initial: { opacity: 0, y: 20 },
+            animate: { opacity: 1, y: 0 },
+            transition: { duration: 0.6 }
+          })}
+        >
+          <div className="card-base p-6 max-w-lg">
+            <h3 className="heading-5 text-center mb-4">
+              {t('pricing.paymentMethod')}
+            </h3>
+            <div className="grid grid-cols-3 gap-3">
+              {getAvailablePaymentMethods().map((method) => (
+                <button
+                  key={method}
+                  onClick={() => setSelectedPaymentMethod(method)}
+                  className={`template-chip ${
+                    selectedPaymentMethod === method
+                      ? 'template-chip-active'
+                      : ''
+                  }`}
+                >
+                  <span className="text-lg">{getPaymentMethodIcon(method)}</span>
+                  <span className="hidden sm:inline body-sm">
+                    {getPaymentMethodName(method, language)}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </motion.div>
 
         {/* Pricing Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {Object.entries(UNIFIED_SUBSCRIPTION_PLANS).map(([key, plan], index) => {
-            const planKey = key as keyof typeof UNIFIED_SUBSCRIPTION_PLANS
-            const isPopular = planKey === 'premium'
-            const basePrice = currency === 'VND' ? plan.priceVND : plan.priceUSD
-            const price = billingPeriod === 'yearly' && basePrice > 0 ? getYearlyPrice(basePrice) : basePrice
-            const period = billingPeriod === 'yearly' ? content[language].perYear : content[language].perMonth
-            const planName = language === 'vi' ? plan.nameVi : plan.name
-            const features = language === 'vi' ? plan.featuresVi : plan.features
+        <motion.div 
+          className="grid md:grid-cols-2 lg:grid-cols-4 gap-8"
+          {...motionSafe({
+            initial: { opacity: 0, y: 20 },
+            animate: { opacity: 1, y: 0 },
+            transition: { duration: 0.6 }
+          })}
+        >
+          {Object.entries(UNIFIED_SUBSCRIPTION_PLANS).map(([planId, plan], index) => {
+            const isPopular = planId === 'premium'
+            const currentPlan = subscription?.tier === planId
+            const price = billingPeriod === 'yearly' && plan.priceVND > 0 
+              ? plan.priceVND * 12 * 0.8 // 20% yearly discount
+              : plan.priceVND
             
             return (
               <motion.div
-                key={key}
-                className={`relative bg-white rounded-2xl shadow-lg border-2 p-8 zen-card-hover-pricing ${
+                key={planId}
+                className={`card-base card-hover relative p-8 ${
                   isPopular 
-                    ? 'border-blue-500 ring-2 ring-blue-500/20' 
-                    : 'border-gray-200'
+                    ? 'ring-2 ring-blue-500 ring-offset-2 scale-105' 
+                    : currentPlan
+                    ? 'ring-2 ring-green-500 ring-offset-2'
+                    : ''
                 }`}
                 {...motionSafe({
                   initial: { opacity: 0, y: 30 },
@@ -310,45 +301,61 @@ export default function PricingPage({}: PricingPageProps) {
                   transition: { duration: 0.6, delay: index * 0.1 }
                 })}
               >
+                {/* Popular Badge */}
                 {isPopular && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-blue-500 text-white px-4 py-1 rounded-full text-sm font-medium">
-                      {content[language].popular}
+                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                    <span className="badge-accent">
+                      {t('pricing.popular')}
+                    </span>
+                  </div>
+                )}
+                
+                {/* Current Plan Badge */}
+                {currentPlan && (
+                  <div className="absolute -top-3 right-4">
+                    <span className="badge-base bg-green-500 text-white">
+                      {t('pricing.currentPlan')}
                     </span>
                   </div>
                 )}
 
                 {/* Plan Header */}
                 <div className="text-center mb-8">
-                  <h3 className="heading-3 text-gray-900 mb-2">{planName}</h3>
+                  <h3 className="heading-3 mb-4">
+                    {getPlanDisplayName(planId)}
+                  </h3>
                   <div className="mb-4">
-                    {basePrice === 0 ? (
-                      <span className="heading-2 text-gray-900">
-                        {language === 'vi' ? 'Miễn phí' : 'Free'}
-                      </span>
+                    {price === 0 ? (
+                      <div className="heading-1">
+                        {t('pricing.free')}
+                      </div>
                     ) : (
                       <div>
-                        <span className="heading-2 text-gray-900">{formatPrice(price, currency)}</span>
-                        <span className="body-base text-gray-600">{period}</span>
+                        <span className="heading-1">
+                          {formatCurrency(price)}
+                        </span>
+                        <span className="body-base text-gray-500 ml-2">
+                          {billingPeriod === 'yearly' ? t('pricing.yearly') : t('pricing.monthly')}
+                        </span>
                       </div>
                     )}
                   </div>
-                  {billingPeriod === 'yearly' && basePrice > 0 && (
-                    <p className="body-sm text-gray-600">
-                      {content[language].billed} {content[language].billedYearly}
-                    </p>
+                  {billingPeriod === 'yearly' && price > 0 && (
+                    <span className="tag-success">
+                      {t('pricing.save20')}
+                    </span>
                   )}
                 </div>
 
                 {/* Features */}
                 <ul className="space-y-4 mb-8">
-                  {features.map((feature, featureIndex) => (
+                  {getFeaturesByPlan(planId).map((feature, featureIndex) => (
                     <li key={featureIndex} className="flex items-start">
-                      <svg className="w-5 h-5 text-green-500 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <svg className="w-5 h-5 text-green-500 mt-1 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>
-                      <span className="body-sm text-gray-700">
-                        {getFeatureText(feature)}
+                      <span className="body-base">
+                        {feature}
                       </span>
                     </li>
                   ))}
@@ -356,24 +363,35 @@ export default function PricingPage({}: PricingPageProps) {
 
                 {/* CTA Button */}
                 <button
-                  onClick={() => handleSubscribe(planKey)}
-                  className={`w-full py-3 px-4 rounded-xl font-medium transition-all ${
-                    isPopular
-                      ? 'bg-blue-500 text-white hover:bg-blue-600 shadow-lg hover:shadow-xl'
-                      : planKey === 'free'
-                      ? 'bg-gray-100 text-gray-900 hover:bg-gray-200'
-                      : 'bg-gray-900 text-white hover:bg-gray-800'
+                  onClick={() => handleUpgrade(planId)}
+                  disabled={isUpgrading || currentPlan}
+                  className={`w-full ${
+                    currentPlan
+                      ? 'btn-secondary opacity-50 cursor-not-allowed'
+                      : isPopular
+                      ? 'btn-accent btn-pill-lg'
+                      : planId === 'free'
+                      ? 'btn-secondary btn-pill-lg'
+                      : 'btn-primary btn-pill-lg'
                   }`}
                 >
-                  {planKey === 'free' 
-                    ? content[language].getStarted
-                    : content[language].choosePlan
-                  }
+                  {isUpgrading ? (
+                    <div className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent mr-2"></div>
+                      {t('common.loading')}
+                    </div>
+                  ) : currentPlan ? (
+                    t('pricing.currentPlan')
+                  ) : planId === 'free' ? (
+                    t('pricing.getStarted')
+                  ) : (
+                    t('pricing.choosePlan')
+                  )}
                 </button>
               </motion.div>
             )
           })}
-        </div>
+        </motion.div>
 
         {/* Feature Comparison Table */}
         <div className="mt-24 px-4 md:px-8 lg:px-12">

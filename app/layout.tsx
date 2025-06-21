@@ -6,15 +6,11 @@ import PerformanceMonitor from '@/components/PerformanceMonitor'
 import { LanguageProvider } from '@/contexts/LanguageContext'
 
 const inter = Inter({ 
-  subsets: ['latin'],
+  subsets: ['latin', 'vietnamese'],
   display: 'swap',
-  variable: '--font-inter'
+  variable: '--font-inter',
+  weight: ['400', '500', '600', '700']
 })
-
-// Times New Roman font configuration with system fallbacks
-const timesFont = {
-  variable: '--font-times'
-}
 
 export const metadata: Metadata = {
   title: 'Prismy - AI-Powered Translation Platform',
@@ -110,8 +106,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="vi" className={`${inter.variable} ${timesFont.variable}`}>
-      <body className="font-times antialiased bg-white text-gray-900" style={{ fontSize: '21.6px', lineHeight: '1.6' }}>
+    <html lang="vi" className={inter.variable}>
+      <body className="font-inter antialiased bg-white text-gray-900" style={{ fontSize: '18px', lineHeight: '1.6' }}>
         <LanguageProvider>
           {children}
         </LanguageProvider>
