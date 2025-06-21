@@ -174,18 +174,7 @@
     @apply btn-base h-8 px-4 text-sm font-semibold; /* 1.3x smaller than btn-pill-md */
   }
   
-  /* Sign In button - 1.3x reduction to perfectly match dropdown */
-  .btn-signin-wide {
-    min-width: 46px; /* 60px ÷ 1.3 = perfect dropdown alignment */
-  }
-  
-  .btn-signin-wide.btn-pill-compact-sm {
-    min-width: 50px; /* 65px ÷ 1.3 = streamlined compact-sm */
-  }
-  
-  .btn-signin-wide.btn-pill-compact-xs {
-    min-width: 42px; /* 55px ÷ 1.3 = ultra-compact xs */
-  }
+  /* Sign In button - removed custom width rules to prevent conflicts */
   
   /* Enhanced Sign In button with larger font */
   .btn-signin-enhanced {
