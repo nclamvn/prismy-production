@@ -150,7 +150,7 @@ export default function Navbar({}: NavbarProps) {
                       setAuthMode('signin')
                       setIsAuthModalOpen(true)
                     }}
-                    className={`btn-ghost btn-signin-wide btn-signin-enhanced ${shouldUseStaticHeader ? 'btn-pill-compact-sm' : 'btn-pill-compact-xs'} font-normal hover:font-semibold px-2`}
+                    className={`btn-ghost btn-signin-enhanced ${shouldUseStaticHeader ? 'btn-pill-compact-sm w-[50px]' : 'btn-pill-compact-xs w-[42px]'} font-normal hover:font-semibold !px-2`}
                   >
                     {content[language].signin}
                   </button>
@@ -159,7 +159,7 @@ export default function Navbar({}: NavbarProps) {
                       setAuthMode('signup')
                       setIsAuthModalOpen(true)
                     }}
-                    className={`btn-primary ${shouldUseStaticHeader ? 'btn-pill-compact-sm' : 'btn-pill-compact-xs'} font-semibold px-2`}
+                    className={`btn-primary ${shouldUseStaticHeader ? 'btn-pill-compact-sm w-[50px]' : 'btn-pill-compact-xs w-[42px]'} font-semibold !px-2`}
                   >
                     {content[language].getStarted}
                   </button>
@@ -255,7 +255,7 @@ export default function Navbar({}: NavbarProps) {
                           setIsAuthModalOpen(true)
                           setIsMenuOpen(false)
                         }}
-                        className="block btn-ghost btn-signin-enhanced w-full text-center font-normal hover:font-semibold px-2"
+                        className="block btn-ghost btn-signin-enhanced w-full text-center font-normal hover:font-semibold !px-2"
                       >
                         {content[language].signin}
                       </button>
@@ -265,7 +265,7 @@ export default function Navbar({}: NavbarProps) {
                           setIsAuthModalOpen(true)
                           setIsMenuOpen(false)
                         }}
-                        className="block btn-primary w-full text-center font-semibold px-2"
+                        className="block btn-primary w-full text-center font-semibold !px-2"
                       >
                         {content[language].getStarted}
                       </button>
