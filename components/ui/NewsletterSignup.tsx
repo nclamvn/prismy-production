@@ -64,7 +64,7 @@ export default function NewsletterSignup({
         return {
           container: 'w-full email-pill-form', 
           title: 'heading-5 text-white font-semibold mb-3',
-          description: 'body-sm text-gray-400 mb-3',
+          description: 'body-sm text-gray-400 mb-5',
           form: 'flex items-center bg-white rounded-full overflow-hidden h-10 border border-gray-300',
           input: 'flex-1 px-3 text-sm bg-transparent outline-none placeholder:text-gray-500 text-gray-900',
           button: 'bg-gray-900 text-white px-4 h-full text-sm font-medium hover:bg-gray-800 transition-colors whitespace-nowrap flex items-center justify-center'
