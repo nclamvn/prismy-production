@@ -18,7 +18,10 @@ import {
   HeadphonesIcon,
   Settings,
   Award,
-  CheckCircle
+  CheckCircle,
+  Server,
+  Languages,
+  CreditCard
 } from 'lucide-react'
 
 function EnterpriseContent() {
@@ -290,10 +293,10 @@ function EnterpriseContent() {
                     variants={motionSafe(slideUp)}
                     className="flex flex-col sm:flex-row gap-4 justify-center"
                   >
-                    <button className="btn-primary btn-lg">
+                    <button className="btn-primary btn-pill-compact-lg btn-text-safe">
                       {content[language].hero.cta1}
                     </button>
-                    <button className="btn-secondary btn-lg">
+                    <button className="btn-secondary btn-pill-compact-lg btn-text-safe">
                       {content[language].hero.cta2}
                     </button>
                   </motion.div>
@@ -439,7 +442,7 @@ function EnterpriseContent() {
           </section>
 
           {/* Vietnamese Market Focus */}
-          <section className="py-20 bg-gradient-to-br from-blue-50 to-indigo-50 w-full">
+          <section className="py-20 bg-white w-full">
             <div className="w-full px-4 sm:px-6 lg:px-8">
               <div className="max-w-7xl mx-auto">
                 <motion.div
@@ -467,50 +470,52 @@ function EnterpriseContent() {
                         description: language === 'vi' 
                           ? 'Đáp ứng đầy đủ Luật An toàn thông tin mạng, Nghị định 85/2016, Thông tư 20/2017 và các quy định mới nhất của Bộ TT&TT'
                           : 'Full compliance with Cybersecurity Law, Decree 85/2016, Circular 20/2017 and latest regulations from Ministry of ICT',
-                        icon: '🇻🇳'
+                        icon: Shield
                       },
                       {
                         title: language === 'vi' ? 'Data Center tại Việt Nam' : 'Data Center in Vietnam',
                         description: language === 'vi' 
                           ? 'Máy chủ đặt tại Việt Nam, đảm bảo độ trễ thấp và tuân thủ quy định về lưu trữ dữ liệu trong nước'
                           : 'Servers located in Vietnam, ensuring low latency and compliance with domestic data storage regulations',
-                        icon: '🏢'
+                        icon: Server
                       },
                       {
                         title: language === 'vi' ? 'Hỗ trợ tiếng Việt chuyên sâu' : 'Deep Vietnamese Language Support',
                         description: language === 'vi' 
                           ? 'AI được huấn luyện chuyên biệt cho tiếng Việt, hiểu ngữ cảnh văn hóa và thuật ngữ chuyên ngành Việt Nam'
                           : 'AI specially trained for Vietnamese, understanding cultural context and Vietnamese industry terminology',
-                        icon: '🤖'
+                        icon: Languages
                       },
                       {
                         title: language === 'vi' ? 'Tích hợp hệ thống Việt Nam' : 'Vietnamese System Integration',
                         description: language === 'vi' 
                           ? 'Tích hợp sẵn với các hệ thống phổ biến tại Việt Nam như VNPT, Viettel, FPT và các giải pháp ERP địa phương'
                           : 'Pre-integrated with popular Vietnamese systems like VNPT, Viettel, FPT and local ERP solutions',
-                        icon: '🔗'
+                        icon: Zap
                       },
                       {
                         title: language === 'vi' ? 'Thanh toán nội địa' : 'Local Payment Methods',
                         description: language === 'vi' 
                           ? 'Hỗ trợ đầy đủ các phương thức thanh toán Việt Nam: VNPay, MoMo, chuyển khoản ngân hàng và hóa đơn VAT'
                           : 'Full support for Vietnamese payment methods: VNPay, MoMo, bank transfers and VAT invoicing',
-                        icon: '💳'
+                        icon: CreditCard
                       },
                       {
                         title: language === 'vi' ? 'Đội ngũ hỗ trợ Việt Nam' : 'Vietnamese Support Team',
                         description: language === 'vi' 
                           ? 'Đội ngũ kỹ thuật và CSKH người Việt, hiểu rõ văn hóa làm việc và có thể hỗ trợ 24/7 bằng tiếng Việt'
                           : 'Vietnamese technical and customer support team, understanding work culture and providing 24/7 Vietnamese support',
-                        icon: '👥'
+                        icon: Users
                       }
                     ].map((item, index) => (
                       <motion.div
                         key={index}
                         variants={motionSafe(slideUp)}
-                        className="bg-white rounded-2xl p-6 border border-blue-200 hover:border-blue-300 transition-all duration-300"
+                        className="bg-white rounded-2xl p-6 border border-gray-200 hover:border-gray-300 transition-all duration-300 shadow-sm hover:shadow-md"
                       >
-                        <div className="text-3xl mb-4">{item.icon}</div>
+                        <div className="mb-4">
+                          <item.icon size={32} className="text-gray-700" strokeWidth={1.5} />
+                        </div>
                         <h3 className="heading-4 text-text-primary mb-3">{item.title}</h3>
                         <p className="body-sm text-text-secondary">{item.description}</p>
                       </motion.div>
@@ -646,7 +651,7 @@ function EnterpriseContent() {
                       ))}
                     </div>
                     
-                    <button className="btn-primary btn-lg">
+                    <button className="btn-primary btn-pill-compact-lg btn-text-safe">
                       {content[language].hero.cta1}
                     </button>
                   </motion.div>
@@ -723,7 +728,7 @@ function EnterpriseContent() {
                       />
                       <button
                         type="submit"
-                        className="btn-primary btn-lg md:col-span-2"
+                        className="btn-primary btn-pill-compact-lg btn-text-safe md:col-span-2"
                       >
                         {content[language].contact.form.submit}
                       </button>

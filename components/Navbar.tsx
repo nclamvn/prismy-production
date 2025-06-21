@@ -75,12 +75,10 @@ export default function Navbar({}: NavbarProps) {
       initial="hidden"
       animate="visible"
     >
-      {/* Rainbow bar - Only show when scrolled */}
-      {isScrolled && <div className="rainbow-bar" />}
       
       <nav className="w-full" aria-label="Main navigation">
-        <div className={`${isScrolled ? 'px-6' : 'content-container'}`}>
-          <div className={`flex items-center ${isScrolled ? 'h-14' : 'h-16'}`}>
+        <div className={`${isScrolled ? 'px-8' : 'content-container'}`}>
+          <div className={`flex items-center ${isScrolled ? 'h-12' : 'h-16'}`}>
           {/* Logo - Text only */}
           <Link 
             href="/" 
@@ -116,15 +114,15 @@ export default function Navbar({}: NavbarProps) {
                 {
                   value: 'vi',
                   label: content[language].languages.vi,
-                  icon: <Globe size={16} strokeWidth={1.5} />
+                  icon: <Globe size={14} strokeWidth={1.5} />
                 },
                 {
                   value: 'en', 
                   label: content[language].languages.en,
-                  icon: <Globe size={16} strokeWidth={1.5} />
+                  icon: <Globe size={14} strokeWidth={1.5} />
                 }
               ]}
-              className="min-w-[140px]"
+              className="min-w-[100px] sm:min-w-[120px] dropdown-mobile-safe"
             />
             
             {!loading && (
@@ -137,7 +135,7 @@ export default function Navbar({}: NavbarProps) {
                       setAuthMode('signin')
                       setIsAuthModalOpen(true)
                     }}
-                    className={`btn-ghost ${isScrolled ? 'btn-pill-compact' : ''} font-normal hover:font-semibold`}
+                    className={`btn-ghost ${isScrolled ? 'btn-pill-compact-xs' : 'btn-pill-compact-sm'} font-normal hover:font-semibold`}
                   >
                     {content[language].signin}
                   </button>
@@ -146,7 +144,7 @@ export default function Navbar({}: NavbarProps) {
                       setAuthMode('signup')
                       setIsAuthModalOpen(true)
                     }}
-                    className={`btn-primary ${isScrolled ? 'btn-pill-compact' : ''} font-semibold`}
+                    className={`btn-primary ${isScrolled ? 'btn-pill-compact-xs' : 'btn-pill-compact-sm'} font-semibold`}
                   >
                     {content[language].getStarted}
                   </button>
@@ -186,7 +184,7 @@ export default function Navbar({}: NavbarProps) {
           <div className="content-container">
             <motion.div
               id="mobile-menu"
-              className="md:hidden border-t border-gray-100 pt-4 pb-6"
+              className="md:hidden border-t border-gray-100 pt-4 pb-8 mb-4 z-[50]"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
@@ -205,34 +203,26 @@ export default function Navbar({}: NavbarProps) {
               ))}
               
               {/* Mobile Language Selector */}
-              {true && (
-                <div className="py-2">
-                  <div className="space-y-1">
-                    <button
-                      onClick={() => setLanguage('vi')}
-                      className={`w-full text-left px-3 py-2 rounded-md text-sm transition-all duration-300
-                               hover:bg-gray-50 hover:font-semibold
-                               ${language === 'vi' ? 'font-semibold text-text-primary bg-gray-50' : 'text-text-secondary'}`}
-                    >
-                      <span className="flex items-center gap-2">
-                        <Globe size={16} strokeWidth={1.5} />
-                        {content[language].languages.vi}
-                      </span>
-                    </button>
-                    <button
-                      onClick={() => setLanguage('en')}
-                      className={`w-full text-left px-3 py-2 rounded-md text-sm transition-all duration-300
-                               hover:bg-gray-50 hover:font-semibold
-                               ${language === 'en' ? 'font-semibold text-text-primary bg-gray-50' : 'text-text-secondary'}`}
-                    >
-                      <span className="flex items-center gap-2">
-                        <Globe size={16} strokeWidth={1.5} />
-                        {content[language].languages.en}
-                      </span>
-                    </button>
-                  </div>
+              <div className="py-2 border-t border-gray-100 mt-4">
+                <div className="space-y-2">
+                  <button
+                    onClick={() => setLanguage('vi')}
+                    className={`w-full text-left px-4 py-3 text-sm transition-all duration-200
+                             hover:bg-gray-50 hover:font-semibold border border-gray-200 rounded-lg
+                             ${language === 'vi' ? 'font-semibold text-gray-900 bg-gray-50 border-gray-300' : 'text-gray-600 bg-white'}`}
+                  >
+                    {content[language].languages.vi}
+                  </button>
+                  <button
+                    onClick={() => setLanguage('en')}
+                    className={`w-full text-left px-4 py-3 text-sm transition-all duration-200
+                             hover:bg-gray-50 hover:font-semibold border border-gray-200 rounded-lg
+                             ${language === 'en' ? 'font-semibold text-gray-900 bg-gray-50 border-gray-300' : 'text-gray-600 bg-white'}`}
+                  >
+                    {content[language].languages.en}
+                  </button>
                 </div>
-              )}
+              </div>
               
               <div className="pt-4 space-y-3">
                 {!loading && (

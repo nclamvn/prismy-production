@@ -4,6 +4,7 @@ import '@/styles/globals.css'
 import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration'
 import PerformanceMonitor from '@/components/PerformanceMonitor'
 import { LanguageProvider } from '@/contexts/LanguageContext'
+import { AuthProvider } from '@/contexts/AuthContext'
 
 const inter = Inter({ 
   subsets: ['latin', 'vietnamese'],
@@ -55,16 +56,15 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/icons/icon-16x16.png', sizes: '16x16', type: 'image/png' },
-      { url: '/icons/icon-32x32.png', sizes: '32x32', type: 'image/png' },
-      { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
-      { url: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+      { url: '/favicon.png?v=2', sizes: 'any', type: 'image/png' },
+      { url: '/favicon-16x16.png?v=2', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png?v=2', sizes: '32x32', type: 'image/png' },
+      { url: '/icons/icon-192x192.png?v=2', sizes: '192x192', type: 'image/png' },
+      { url: '/icons/icon-512x512.png?v=2', sizes: '512x512', type: 'image/png' },
     ],
+    shortcut: '/favicon.png?v=2',
     apple: [
-      { url: '/icons/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
-    ],
-    other: [
-      { rel: 'mask-icon', url: '/icons/safari-pinned-tab.svg', color: '#111111' },
+      { url: '/apple-touch-icon.png?v=2', sizes: '180x180', type: 'image/png' },
     ],
   },
   openGraph: {
@@ -109,7 +109,9 @@ export default function RootLayout({
     <html lang="vi" className={inter.variable}>
       <body className="font-inter antialiased bg-white text-gray-900" style={{ fontSize: '18px', lineHeight: '1.6' }}>
         <LanguageProvider>
-          {children}
+          <AuthProvider>
+            {children}
+          </AuthProvider>
         </LanguageProvider>
         <ServiceWorkerRegistration />
         <PerformanceMonitor />

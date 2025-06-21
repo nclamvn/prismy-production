@@ -62,12 +62,12 @@ export default function NewsletterSignup({
     switch (variant) {
       case 'footer':
         return {
-          container: 'max-w-md',
-          title: 'heading-4 text-white font-semibold mb-4',
-          description: 'body-sm text-gray-500 mb-4',
-          form: 'email-pill-form',
-          input: 'email-pill-input',
-          button: 'email-pill-button'
+          container: 'w-full max-w-sm',
+          title: 'heading-5 text-white font-semibold mb-3',
+          description: 'body-sm text-gray-400 mb-3',
+          form: 'flex items-center bg-white rounded-full overflow-hidden h-10 border border-gray-300',
+          input: 'flex-1 px-3 text-sm bg-transparent outline-none placeholder:text-gray-500 text-gray-900',
+          button: 'bg-gray-900 text-white px-4 h-full text-sm font-medium hover:bg-gray-800 transition-colors whitespace-nowrap flex items-center justify-center'
         }
       case 'inline':
         return {
@@ -138,12 +138,7 @@ export default function NewsletterSignup({
           disabled={isSubmitting || !email}
           className={`${styles.button} disabled:opacity-50 disabled:cursor-not-allowed`}
         >
-          {isSubmitting ? content[language].subscribing : (
-            <>
-              {content[language].subscribe}
-              <span className="ml-1.5">→</span>
-            </>
-          )}
+          {isSubmitting ? content[language].subscribing : content[language].subscribe}
         </button>
       </form>
     </motion.div>

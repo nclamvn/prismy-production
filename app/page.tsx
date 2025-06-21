@@ -14,7 +14,11 @@ import {
   CreditCard, 
   Shield, 
   Settings, 
-  Headphones 
+  Headphones,
+  Building2,
+  FileText,
+  Languages,
+  Clock
 } from 'lucide-react'
 
 export default function Home() {
@@ -69,10 +73,10 @@ export default function Home() {
       social_proof: {
         title: 'Được tin cậy bởi các doanh nghiệp hàng đầu',
         stats: [
-          { number: '10,000+', label: 'Doanh nghiệp' },
-          { number: '1M+', label: 'Tài liệu đã dịch' },
-          { number: '50+', label: 'Ngôn ngữ' },
-          { number: '99.9%', label: 'Uptime' }
+          { number: '10,000+', label: 'Doanh nghiệp', icon: Building2 },
+          { number: '1M+', label: 'Tài liệu đã dịch', icon: FileText },
+          { number: '50+', label: 'Ngôn ngữ', icon: Languages },
+          { number: '99.9%', label: 'Uptime', icon: Clock }
         ]
       },
       pricing: {
@@ -131,10 +135,10 @@ export default function Home() {
       social_proof: {
         title: 'Trusted by Leading Enterprises',
         stats: [
-          { number: '10,000+', label: 'Businesses' },
-          { number: '1M+', label: 'Documents Translated' },
-          { number: '50+', label: 'Languages' },
-          { number: '99.9%', label: 'Uptime' }
+          { number: '10,000+', label: 'Businesses', icon: Building2 },
+          { number: '1M+', label: 'Documents Translated', icon: FileText },
+          { number: '50+', label: 'Languages', icon: Languages },
+          { number: '99.9%', label: 'Uptime', icon: Clock }
         ]
       },
       pricing: {
@@ -165,8 +169,8 @@ export default function Home() {
         
         <main>
           {/* Hero Section - Full Width */}
-          <section className="relative overflow-hidden bg-white pt-12 md:pt-16 w-full">
-            <div className="w-full py-12 md:py-16">
+          <section className="relative overflow-hidden bg-white pt-6 md:pt-8 w-full">
+            <div className="w-full py-8 md:py-12">
               <div className="w-full">
                 <motion.div
                   variants={motionSafe(staggerContainer)}
@@ -177,7 +181,7 @@ export default function Home() {
                 {/* Hero GIF */}
                 <motion.div 
                   variants={motionSafe(slideUp)}
-                  className="mb-8 md:mb-10 lg:mb-12"
+                  className="mb-4 md:mb-6 lg:mb-8"
                 >
                   <div className="hero-gif-container mx-auto" style={{ maxWidth: '720px' }}>
                     <img 
@@ -292,7 +296,7 @@ export default function Home() {
           </section>
 
           {/* Stats Section - Full Width */}
-          <section className="py-20 bg-gray-50 w-full">
+          <section className="py-20 bg-gradient-to-br from-blue-50 via-white to-indigo-50 w-full">
             <div className="w-full">
               <div className="w-full">
               <motion.div
@@ -310,12 +314,18 @@ export default function Home() {
                 </motion.h2>
                 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-8 px-4 md:px-8 lg:px-12">
-                  {content[language].social_proof.stats.map((stat, index) => (
-                    <motion.div key={index} variants={motionSafe(slideUp)} className="mini-card text-center">
-                      <div className="heading-1 text-blue-600 mb-2">{stat.number}</div>
-                      <div className="body-base">{stat.label}</div>
-                    </motion.div>
-                  ))}
+                  {content[language].social_proof.stats.map((stat, index) => {
+                    const IconComponent = stat.icon
+                    return (
+                      <motion.div key={index} variants={motionSafe(slideUp)} className="mini-card text-center">
+                        <div className="flex justify-center mb-3">
+                          <IconComponent size={32} className="text-blue-600" strokeWidth={1.5} />
+                        </div>
+                        <div className="heading-1 text-blue-600 mb-2">{stat.number}</div>
+                        <div className="body-base">{stat.label}</div>
+                      </motion.div>
+                    )
+                  })}
                 </div>
               </motion.div>
               </div>

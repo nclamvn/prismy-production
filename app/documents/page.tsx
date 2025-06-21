@@ -221,7 +221,7 @@ function DocumentsPageContent() {
               variants={motionSafe(slideUp)}
             >
               <p className="body-lg text-gray-600 mb-6">{content[language].signInRequired}</p>
-              <button className="btn-primary">
+              <button className="btn-primary btn-pill-compact-md btn-text-safe">
                 {content[language].signIn}
               </button>
             </motion.div>

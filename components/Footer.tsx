@@ -166,8 +166,8 @@ export default function Footer({}: FooterProps) {
   ]
 
   return (
-    <footer className="w-full bg-black text-text-inverse">
-      <div className="content-container py-12 pb-16 md:pb-12">
+    <footer className="w-full bg-black text-text-inverse border-0 outline-0">
+      <div className="footer-content-container pt-10 pb-6 md:pb-4">
         <motion.div
           variants={motionSafe(staggerContainer)}
           initial="hidden"
@@ -175,30 +175,41 @@ export default function Footer({}: FooterProps) {
           viewport={{ once: true }}
         >
           {/* Main Footer Content */}
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-8 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6 mb-6 sm:mb-8">
             {/* Brand Section */}
             <motion.div
               variants={motionSafe(slideUp)}
-              className="lg:col-span-2"
+              className="lg:col-span-2 flex flex-col gap-4"
             >
-              <Link href="/" className="mb-2 inline-block group">
-                <span className="heading-4 font-bold text-white transition-colors">Prismy</span>
-              </Link>
-              <p className="body-base text-white mt-1 mb-3 max-w-sm">
-                {content[language].description}
-              </p>
-              <div className="flex space-x-4 mt-3">
-                {socialLinks.map((social) => (
-                  <Link
-                    key={social.name}
-                    href={social.href}
-                    className="text-white opacity-70 hover:opacity-100 hover:scale-105 transition-all duration-150 
-                             focus-visible-ring rounded-md p-1"
-                    aria-label={social.name}
-                  >
-                    {social.icon}
-                  </Link>
-                ))}
+              <div>
+                <Link href="/" className="mb-2 inline-block group">
+                  <span className="heading-4 font-bold text-white transition-colors">Prismy</span>
+                </Link>
+                <p className="body-base text-white mt-1 mb-3 max-w-sm">
+                  {content[language].description}
+                </p>
+                <div className="flex space-x-4 mt-3">
+                  {socialLinks.map((social) => (
+                    <Link
+                      key={social.name}
+                      href={social.href}
+                      className="text-white opacity-70 hover:opacity-100 hover:scale-105 transition-all duration-150 
+                               focus-visible-ring rounded-md p-1"
+                      aria-label={social.name}
+                    >
+                      {social.icon}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Newsletter Signup - Moved here */}
+              <div className="mt-2">
+                <NewsletterSignup 
+                  language={language} 
+                  variant="footer" 
+                  className=""
+                />
               </div>
             </motion.div>
 
@@ -319,18 +330,11 @@ export default function Footer({}: FooterProps) {
             </motion.div>
           </div>
 
-          {/* Newsletter Signup - Optimized Component */}
-          <NewsletterSignup 
-            language={language} 
-            variant="footer" 
-            className="mt-12 mb-8"
-          />
-
           {/* Bottom Bar - Simplified Pure White Text */}
           <motion.div
             variants={motionSafe(slideUp)}
             className="flex flex-col md:flex-row justify-between items-center 
-                     mt-12 md:mt-16"
+                     mt-6 md:mt-8 pt-4 border-t border-gray-800"
           >
             <p className="text-sm text-gray-500">
               {language === 'vi' 

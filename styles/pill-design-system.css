@@ -374,6 +374,34 @@ h1, h2, h3, h4, h5, h6, p, span, div, a, label,
   }
 }
 
+/* ✅ NUCLEAR: MOBILE DROPDOWN ANTI-PILL OVERRIDE */
+@media (max-width: 640px) {
+  /* NUCLEAR OVERRIDE - Maximum specificity */
+  html body div.mobile-dropdown-rectangular button,
+  html body .mobile-dropdown-rectangular > button,
+  html body .mobile-dropdown-rectangular .btn-pill,
+  html body nav .mobile-dropdown-rectangular button,
+  html body header .mobile-dropdown-rectangular button {
+    border-radius: 8px !important;
+    border-top-left-radius: 8px !important;
+    border-top-right-radius: 8px !important;
+    border-bottom-left-radius: 8px !important;
+    border-bottom-right-radius: 8px !important;
+  }
+  
+  /* Override pill system completely on mobile */
+  html body .mobile-dropdown-rectangular * {
+    border-radius: 8px !important;
+  }
+  
+  /* Force all button types */
+  html body button[class*="mobile-dropdown"],
+  html body .mobile-dropdown-rectangular button[class*="btn"],
+  html body .mobile-dropdown-rectangular input[class*="input"] {
+    border-radius: 8px !important;
+  }
+}
+
 /* ✅ 10. ACCESSIBILITY & FOCUS STATES */
 .btn-pill:focus-visible,
 .input-pill:focus-visible {

@@ -47,7 +47,7 @@ export default function UniversalDropdown({
   }, [])
   
   const sizeClasses = {
-    sm: 'px-3 py-2 text-sm',
+    sm: 'px-2.5 py-1.5 text-sm',
     md: 'px-4 py-2.5 text-base',
     lg: 'px-5 py-3 text-lg'
   }
@@ -59,7 +59,7 @@ export default function UniversalDropdown({
   }
   
   return (
-    <div className={`relative ${className}`} ref={dropdownRef}>
+    <div className={`relative mobile-dropdown-rectangular ${className}`} ref={dropdownRef}>
       {/* Dropdown Button */}
       <button
         onClick={() => !disabled && setIsOpen(!isOpen)}
@@ -102,7 +102,7 @@ export default function UniversalDropdown({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -8 }}
             transition={{ duration: 0.15 }}
-            className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg overflow-hidden"
+            className="absolute z-[60] w-full mt-1 bg-white border border-gray-300 rounded-lg overflow-hidden"
             style={{ boxShadow: 'none' }}
           >
             <div className="max-h-60 overflow-y-auto">
@@ -114,18 +114,13 @@ export default function UniversalDropdown({
                     setIsOpen(false)
                   }}
                   className={`
-                    w-full flex items-center gap-2 px-4 py-2.5 text-left
+                    w-full flex items-center gap-2 px-3 py-2.5 sm:py-2 text-left text-sm
                     font-medium text-gray-900
                     hover:font-semibold hover:bg-gray-50
                     transition-all duration-150
                     ${value === option.value ? 'bg-gray-50 font-semibold' : ''}
                   `}
                 >
-                  {option.icon && (
-                    <span className="flex-shrink-0">
-                      {option.icon}
-                    </span>
-                  )}
                   <span className="truncate">
                     {option.label}
                   </span>
