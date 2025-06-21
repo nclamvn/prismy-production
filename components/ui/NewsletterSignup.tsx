@@ -65,9 +65,9 @@ export default function NewsletterSignup({
           container: 'max-w-md',
           title: 'heading-4 text-white font-semibold mb-4',
           description: 'body-sm text-gray-500 mb-4',
-          form: 'flex gap-3',
-          input: 'h-8 sm:h-9 px-4 w-72 bg-white border border-gray-300 rounded-md text-sm text-black placeholder:text-gray-500 focus:border-gray-500 focus:outline-none transition-colors',
-          button: 'h-8 sm:h-9 bg-white text-black hover:bg-gray-100 px-4 rounded-md font-semibold text-sm transition-colors whitespace-nowrap min-w-[88px]'
+          form: 'email-pill-form',
+          input: 'email-pill-input',
+          button: 'email-pill-button'
         }
       case 'inline':
         return {
@@ -138,7 +138,12 @@ export default function NewsletterSignup({
           disabled={isSubmitting || !email}
           className={`${styles.button} disabled:opacity-50 disabled:cursor-not-allowed`}
         >
-          {isSubmitting ? content[language].subscribing : content[language].subscribe}
+          {isSubmitting ? content[language].subscribing : (
+            <>
+              {content[language].subscribe}
+              <span className="ml-1.5">→</span>
+            </>
+          )}
         </button>
       </form>
     </motion.div>

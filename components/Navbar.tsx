@@ -68,8 +68,8 @@ export default function Navbar({}: NavbarProps) {
 
   return (
     <motion.header 
-      className={`glass-header transition-all duration-300 ${
-        isScrolled ? 'border-b border-gray-200 bg-white/95 backdrop-blur-md' : 'bg-white/90'
+      className={`transition-all duration-500 ${
+        isScrolled ? 'header-pill-capsule' : 'header-static'
       }`}
       variants={motionSafe(slideDown)}
       initial="hidden"
@@ -79,8 +79,8 @@ export default function Navbar({}: NavbarProps) {
       {isScrolled && <div className="rainbow-bar" />}
       
       <nav className="w-full" aria-label="Main navigation">
-        <div className="content-container">
-          <div className="flex items-center h-16">
+        <div className={`${isScrolled ? 'px-6' : 'content-container'}`}>
+          <div className={`flex items-center ${isScrolled ? 'h-14' : 'h-16'}`}>
           {/* Logo - Text only */}
           <Link 
             href="/" 
@@ -137,7 +137,7 @@ export default function Navbar({}: NavbarProps) {
                       setAuthMode('signin')
                       setIsAuthModalOpen(true)
                     }}
-                    className="btn-ghost font-normal hover:font-semibold"
+                    className={`btn-ghost ${isScrolled ? 'btn-pill-compact' : ''} font-normal hover:font-semibold`}
                   >
                     {content[language].signin}
                   </button>
@@ -146,7 +146,7 @@ export default function Navbar({}: NavbarProps) {
                       setAuthMode('signup')
                       setIsAuthModalOpen(true)
                     }}
-                    className="btn-primary font-semibold"
+                    className={`btn-primary ${isScrolled ? 'btn-pill-compact' : ''} font-semibold`}
                   >
                     {content[language].getStarted}
                   </button>

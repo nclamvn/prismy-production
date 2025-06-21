@@ -167,7 +167,7 @@ export default function Footer({}: FooterProps) {
 
   return (
     <footer className="w-full bg-black text-text-inverse">
-      <div className="content-container py-16 pb-24 md:pb-16">
+      <div className="content-container py-12 pb-16 md:pb-12">
         <motion.div
           variants={motionSafe(staggerContainer)}
           initial="hidden"
@@ -330,7 +330,7 @@ export default function Footer({}: FooterProps) {
           <motion.div
             variants={motionSafe(slideUp)}
             className="flex flex-col md:flex-row justify-between items-center 
-                     mt-16 md:mt-20"
+                     mt-12 md:mt-16"
           >
             <p className="text-sm text-gray-500">
               {language === 'vi' 

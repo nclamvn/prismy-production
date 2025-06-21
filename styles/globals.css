@@ -32,6 +32,27 @@
     backdrop-filter: blur(25px);
   }
   
+  /* Smart header pill capsule transitions */
+  .header-pill-capsule {
+    @apply sticky top-2 z-50 mx-auto max-w-4xl;
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(25px);
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .header-static {
+    @apply sticky top-0 z-50;
+    background-color: rgba(255, 255, 255, 0.90);
+    backdrop-filter: blur(20px);
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
   /* Container - Full width with internal padding */
   .container-base {
     @apply w-full px-4 sm:px-6 lg:px-8;
@@ -60,6 +81,10 @@
   
   .btn-pill-sm {
     @apply btn-base h-8 px-4 text-xs;
+  }
+  
+  .btn-pill-compact {
+    @apply btn-base h-9 px-3 text-sm font-semibold;
   }
   
   .btn-primary {
@@ -212,6 +237,41 @@
   .dropdown-vietnamese:focus {
     @apply ring-2 ring-gray-300 ring-offset-1;
     box-shadow: none !important;
+  }
+  
+  /* Email Pill Form - Viên thuốc design */
+  .email-pill-form {
+    @apply flex items-center border border-gray-300 rounded-full overflow-hidden 
+           max-w-md h-12 bg-gray-50 transition-all duration-200
+           hover:border-gray-400 focus-within:border-gray-500 focus-within:ring-2 
+           focus-within:ring-gray-500 focus-within:ring-offset-1;
+  }
+  
+  .email-pill-input {
+    @apply flex-1 px-4 text-base bg-transparent outline-none 
+           placeholder:text-gray-500 text-gray-900 font-inter;
+  }
+  
+  .email-pill-button {
+    @apply bg-gray-900 text-white px-5 h-full font-medium 
+           hover:bg-gray-800 transition-colors rounded-full
+           focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-1
+           active:scale-[0.98] whitespace-nowrap;
+  }
+  
+  /* Mobile responsive for email pill */
+  @media (max-width: 640px) {
+    .email-pill-form {
+      @apply h-10 max-w-xs;
+    }
+    
+    .email-pill-input {
+      @apply text-sm px-3;
+    }
+    
+    .email-pill-button {
+      @apply px-4 text-sm;
+    }
   }
   
   /* Typography - Chuyển toàn bộ sang Inter font */
