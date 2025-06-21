@@ -411,6 +411,19 @@ h1, h2, h3, h4, h5, h6, p, span, div, a, label,
   html body .mobile-dropdown-rectangular input[class*="input"] {
     border-radius: 8px !important;
   }
+  
+  /* Mobile navigation menu anti-pill override */
+  html body .mobile-nav-container,
+  html body .mobile-nav-rectangular,
+  html body nav .mobile-nav-rectangular,
+  html body header .mobile-nav-rectangular,
+  html body div#mobile-menu {
+    border-radius: 8px !important;
+    border-top-left-radius: 8px !important;
+    border-top-right-radius: 8px !important;
+    border-bottom-left-radius: 8px !important;
+    border-bottom-right-radius: 8px !important;
+  }
 }
 
 /* ✅ 10. ACCESSIBILITY & FOCUS STATES */

@@ -581,6 +581,28 @@
       html body .navbar button[class*="dropdown"] {
         border-radius: 8px !important;
       }
+      
+      /* Mobile navigation menu anti-pill override */
+      html body .mobile-nav-container,
+      html body .mobile-nav-rectangular,
+      html body nav .mobile-nav-rectangular,
+      html body header .mobile-nav-rectangular,
+      html body div#mobile-menu,
+      html body .content-container .mobile-nav-rectangular {
+        border-radius: 8px !important;
+        border-top-left-radius: 8px !important;
+        border-top-right-radius: 8px !important;
+        border-bottom-left-radius: 8px !important;
+        border-bottom-right-radius: 8px !important;
+      }
+      
+      /* Mobile nav menu container background and styling */
+      html body .mobile-nav-rectangular {
+        background-color: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(10px) !important;
+        border: 1px solid rgba(229, 231, 235, 0.5) !important;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
+      }
     }
   }
 }
