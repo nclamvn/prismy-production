@@ -5,7 +5,6 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { slideUp, staggerContainer, motionSafe } from '@/lib/motion'
 import { useLanguage } from '@/contexts/LanguageContext'
-import NewsletterSignup from '@/components/ui/NewsletterSignup'
 import { ChevronDown } from 'lucide-react'
 
 interface FooterProps {
@@ -264,15 +263,6 @@ export default function Footer({}: FooterProps) {
                   ))}
                 </div>
               </div>
-              
-              {/* Newsletter Signup - Moved here */}
-              <div className="mt-2">
-                <NewsletterSignup 
-                  language={language} 
-                  variant="footer" 
-                  className=""
-                />
-              </div>
             </motion.div>
 
             {/* Product Column - FORCE RENDER */}
@@ -419,15 +409,6 @@ export default function Footer({}: FooterProps) {
                       </Link>
                     ))}
                   </div>
-                </div>
-                
-                {/* Newsletter Signup for Mobile */}
-                <div className="mt-4">
-                  <NewsletterSignup 
-                    language={language} 
-                    variant="footer" 
-                    className=""
-                  />
                 </div>
               </motion.div>
 
