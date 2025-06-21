@@ -158,11 +158,11 @@
   
   /* Compact button classes - 1.5x size reduction */
   .btn-pill-compact-sm {
-    @apply btn-base h-9 px-4 text-sm font-semibold;
+    @apply btn-base h-12 px-4 text-sm font-semibold;
   }
   
   .btn-pill-compact-xs {
-    @apply btn-base h-8 px-3 text-xs font-semibold;
+    @apply btn-base h-11 px-3 text-xs font-semibold;
   }
   
   /* Compact button classes for 1.3x reduction */

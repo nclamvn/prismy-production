@@ -122,7 +122,7 @@ export default function Footer({}: FooterProps) {
         placeholder: 'Nhập email của bạn',
         subscribe: 'Đăng ký'
       },
-      description: 'AI Agent for Document Intelligence - Chuyên gia AI thông minh cho xử lý tài liệu doanh nghiệp.'
+      description: 'Con dao Thụy Sĩ của thế giới tài liệu'
     },
     en: {
       sections: [
@@ -173,7 +173,7 @@ export default function Footer({}: FooterProps) {
         placeholder: 'Enter your email',
         subscribe: 'Subscribe'
       },
-      description: 'AI Agent for Document Intelligence - Intelligent AI specialist for enterprise document processing.'
+      description: 'The Swiss Army knife for documents'
     }
   }
 
@@ -247,7 +247,7 @@ export default function Footer({}: FooterProps) {
                 <Link href="/" className="mb-2 inline-block group">
                   <span className="heading-4 font-bold text-white transition-colors">Prismy</span>
                 </Link>
-                <p className="body-base text-white mt-1 mb-3 max-w-sm">
+                <p className="text-sm text-gray-400 italic mt-1 mb-3 max-w-sm">
                   {content[language].description}
                 </p>
                 <div className="flex space-x-4 mt-3">
@@ -403,7 +403,7 @@ export default function Footer({}: FooterProps) {
                   <Link href="/" className="mb-2 inline-block group">
                     <span className="heading-4 font-bold text-white transition-colors">Prismy</span>
                   </Link>
-                  <p className="body-base text-white mt-1 mb-3 max-w-sm">
+                  <p className="text-sm text-gray-400 italic mt-1 mb-3 max-w-sm">
                     {content[language].description}
                   </p>
                   <div className="flex space-x-4 mt-3">
