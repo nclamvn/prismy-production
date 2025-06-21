@@ -563,6 +563,18 @@
         border-radius: 8px !important;
       }
       
+      /* Mobile dropdown menu container anti-pill override */
+      html body .mobile-dropdown-rectangular .mobile-dropdown-menu,
+      html body nav .mobile-dropdown-rectangular .mobile-dropdown-menu,
+      html body header .mobile-dropdown-rectangular .mobile-dropdown-menu,
+      html body div.mobile-dropdown-rectangular div[class*="absolute"] {
+        border-radius: 8px !important;
+        border-top-left-radius: 8px !important;
+        border-top-right-radius: 8px !important;
+        border-bottom-left-radius: 8px !important;
+        border-bottom-right-radius: 8px !important;
+      }
+      
       /* Force all mobile language selectors */
       html body nav button[class*="dropdown"],
       html body header button[class*="dropdown"],

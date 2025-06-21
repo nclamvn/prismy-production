@@ -394,6 +394,17 @@ h1, h2, h3, h4, h5, h6, p, span, div, a, label,
     border-radius: 8px !important;
   }
   
+  /* Mobile dropdown menu container specific override */
+  html body .mobile-dropdown-rectangular .mobile-dropdown-menu,
+  html body nav .mobile-dropdown-rectangular .mobile-dropdown-menu,
+  html body header .mobile-dropdown-rectangular .mobile-dropdown-menu {
+    border-radius: 8px !important;
+    border-top-left-radius: 8px !important;
+    border-top-right-radius: 8px !important;
+    border-bottom-left-radius: 8px !important;
+    border-bottom-right-radius: 8px !important;
+  }
+  
   /* Force all button types */
   html body button[class*="mobile-dropdown"],
   html body .mobile-dropdown-rectangular button[class*="btn"],
