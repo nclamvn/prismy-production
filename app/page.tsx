@@ -240,7 +240,7 @@ export default function Home() {
           <section className="py-4 md:py-6 lg:py-8 border-b border-border-subtle w-full">
             <div className="w-full">
               <div className="w-full">
-              <div className="flex flex-wrap justify-center items-center gap-16 px-4 md:px-8 lg:px-12 llm-logos-container">
+              <div className="flex flex-wrap justify-center items-center gap-x-16 gap-y-2 px-4 md:px-8 lg:px-12 llm-logos-container">
                 {llmCompanies.map((company) => (
                   <div key={company.name} className="llm-logo-container">
                     <img 

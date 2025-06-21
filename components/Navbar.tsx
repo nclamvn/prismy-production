@@ -150,7 +150,7 @@ export default function Navbar({}: NavbarProps) {
                       setAuthMode('signin')
                       setIsAuthModalOpen(true)
                     }}
-                    className={`btn-ghost ${shouldUseStaticHeader ? 'btn-pill-compact-sm' : 'btn-pill-compact-xs'} font-normal hover:font-semibold`}
+                    className={`btn-ghost btn-signin-wide ${shouldUseStaticHeader ? 'btn-pill-compact-sm' : 'btn-pill-compact-xs'} font-normal hover:font-semibold`}
                   >
                     {content[language].signin}
                   </button>
