@@ -174,17 +174,23 @@
     @apply btn-base h-8 px-4 text-sm font-semibold; /* 1.3x smaller than btn-pill-md */
   }
   
-  /* Sign In button - streamlined widths */
+  /* Sign In button - streamlined widths to match dropdown */
   .btn-signin-wide {
-    min-width: 70px; /* Reduced base width for streamlined look */
+    min-width: 60px; /* Further reduced to match English dropdown */
   }
   
   .btn-signin-wide.btn-pill-compact-sm {
-    min-width: 75px; /* Reduced compact-sm width */
+    min-width: 65px; /* Reduced compact-sm width */
   }
   
   .btn-signin-wide.btn-pill-compact-xs {
-    min-width: 65px; /* Reduced compact-xs width */
+    min-width: 55px; /* Reduced compact-xs width */
+  }
+  
+  /* Enhanced Sign In button with larger font */
+  .btn-signin-enhanced {
+    font-size: 0.9rem; /* Slightly larger than default */
+    font-weight: 500;
   }
   
   /* Auth Modal Sign In button - enhanced height */
