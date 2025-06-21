@@ -1,6 +1,6 @@
 // Simple logger for the minimalist system
 export class Logger {
-  info(data: any, message?: string) {
+  info(data: any, message?: any) {
     if (typeof data === 'string') {
       if (process.env.NODE_ENV === 'development') {
         console.log(`[INFO] ${data}`, message || '')
@@ -12,7 +12,7 @@ export class Logger {
     }
   }
   
-  warn(data: any, message?: string) {
+  warn(data: any, message?: any) {
     if (typeof data === 'string') {
       console.warn(`[WARN] ${data}`, message || '')
     } else {
@@ -20,7 +20,7 @@ export class Logger {
     }
   }
   
-  error(data: any, message?: string) {
+  error(data: any, message?: any) {
     if (typeof data === 'string') {
       console.error(`[ERROR] ${data}`, message || '')
     } else {
@@ -28,7 +28,7 @@ export class Logger {
     }
   }
   
-  debug(data: any, message?: string) {
+  debug(data: any, message?: any) {
     if (typeof data === 'string') {
       if (process.env.NODE_ENV === 'development') {
         console.log(`[DEBUG] ${data}`, message || '')
@@ -43,10 +43,10 @@ export class Logger {
   // Create a child logger for components
   child(context: any) {
     return {
-      info: (data: any, message?: string) => this.info(data, message),
-      warn: (data: any, message?: string) => this.warn(data, message),
-      error: (data: any, message?: string) => this.error(data, message),
-      debug: (data: any, message?: string) => this.debug(data, message)
+      info: (data: any, message?: any) => this.info(data, message),
+      warn: (data: any, message?: any) => this.warn(data, message),
+      error: (data: any, message?: any) => this.error(data, message),
+      debug: (data: any, message?: any) => this.debug(data, message)
     }
   }
 }

@@ -502,7 +502,7 @@ export class IntelligenceJobProcessor {
           updated_at: new Date().toISOString()
         })
 
-      logger.info('Intelligence results saved', { documentId, userId })
+      logger.info({ documentId, userId }, 'Intelligence results saved')
     } catch (error) {
       logger.error({ error, documentId, userId }, 'Failed to save intelligence results')
       throw error

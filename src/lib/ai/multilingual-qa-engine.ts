@@ -158,7 +158,7 @@ export class MultilingualQAEngine {
   }
 
   private async initializeModels(): Promise<void> {
-    logger.info('Initializing multilingual QA engine')
+    logger.info({}, 'Initializing multilingual QA engine')
 
     try {
       // Initialize language-specific models
@@ -206,7 +206,7 @@ export class MultilingualQAEngine {
       }
 
       this.isInitialized = true
-      logger.info('Multilingual QA engine initialized successfully')
+      logger.info({}, 'Multilingual QA engine initialized successfully')
 
     } catch (error) {
       logger.error({ error }, 'Failed to initialize multilingual QA engine')
@@ -221,12 +221,12 @@ export class MultilingualQAEngine {
 
     const startTime = Date.now()
     
-    logger.info('Processing multilingual question', {
+    logger.info({
       question: request.question.substring(0, 100),
       questionLanguage: request.questionLanguage,
       answerLanguage: request.answerLanguage,
       documentIds: request.documentIds?.length || 0
-    })
+    }, 'Processing multilingual question')
 
     try {
       // Classify the question
@@ -358,11 +358,11 @@ export class MultilingualQAEngine {
 
     this.sessions.set(sessionId, session)
     
-    logger.info('Conversation session created', {
+    logger.info({
       sessionId,
       userId,
       language
-    })
+    }, 'Conversation session created')
 
     return session
   }
@@ -402,7 +402,7 @@ export class MultilingualQAEngine {
       culturallyAppropriate: feedback.culturallyAppropriate
     })
 
-    logger.info('User feedback recorded', {
+    logger.info({
       sessionId,
       questionId,
       feedback: {
@@ -411,7 +411,7 @@ export class MultilingualQAEngine {
         complete: feedback.complete,
         culturallyAppropriate: feedback.culturallyAppropriate
       }
-    })
+    }, 'User feedback recorded')
   }
 
   // Private helper methods
@@ -1013,7 +1013,7 @@ Category:`
   ): Promise<void> {
     const session = this.sessions.get(sessionId)
     if (!session) {
-      logger.warn('Session not found for update', { sessionId })
+      logger.warn({ sessionId }, 'Session not found for update')
       return
     }
 
@@ -1074,7 +1074,7 @@ Category:`
 
   clearSession(sessionId: string): void {
     this.sessions.delete(sessionId)
-    logger.info('Conversation session cleared', { sessionId })
+    logger.info({ sessionId }, 'Conversation session cleared')
   }
 }
 

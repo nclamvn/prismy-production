@@ -34,6 +34,44 @@ const nextConfig = {
 
   // Bundle analysis
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
+    // CRITICAL: Replace problematic modules with stubs in production
+    if (!dev) {
+      // Use stub modules instead of real ones
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        'pdfjs-dist': require.resolve('./lib/stubs/pdfjs-stub.ts'),
+        'tesseract.js': require.resolve('./lib/stubs/tesseract-stub.ts'),
+      }
+
+      // Exclude worker threads and problematic modules
+      config.externals = config.externals || []
+      if (isServer) {
+        config.externals.push({
+          'worker_threads': 'commonjs worker_threads',
+          'tesseract.js': 'commonjs tesseract.js',
+          'child_process': 'commonjs child_process'
+        })
+      }
+
+      // Ignore worker imports completely
+      config.plugins.push(
+        new webpack.IgnorePlugin({
+          resourceRegExp: /\.worker\.js$/,
+        }),
+        new webpack.IgnorePlugin({
+          resourceRegExp: /worker_threads/,
+        }),
+        new webpack.IgnorePlugin({
+          resourceRegExp: /tesseract\.js/,
+          contextRegExp: /node_modules/,
+        }),
+        new webpack.NormalModuleReplacementPlugin(
+          /pdfjs-dist\/build\/pdf\.worker\.min\.js/,
+          require.resolve('./lib/stubs/pdfjs-stub.ts')
+        )
+      )
+    }
+
     // Bundle analysis in development
     if (dev && process.env.BUNDLE_ANALYZE) {
       const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
@@ -46,13 +84,21 @@ const nextConfig = {
       )
     }
 
-    // Optimize tesseract.js loading
+    // Optimize fallbacks for serverless
     if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
         fs: false,
         path: false,
         os: false,
+        worker_threads: false,
+        child_process: false,
+      }
+    } else {
+      // Server-side fallbacks for serverless
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        worker_threads: false,
       }
     }
 

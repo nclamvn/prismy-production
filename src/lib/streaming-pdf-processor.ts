@@ -1,19 +1,21 @@
-// Conditional import for serverless compatibility
-let pdfjsLib: any = null
+// Import PDF.js - will be stubbed in production by webpack
+import * as pdfjsLib from 'pdfjs-dist'
 
-// Only import PDF.js in non-production environments
+// Configure PDF.js worker - only in development
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js'
+}
+
+// Check if PDF.js is available (stubbed in production)
 const initPDFjs = async () => {
-  if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production') {
-    try {
-      pdfjsLib = await import('pdfjs-dist')
-      pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js'
-      return true
-    } catch (error) {
-      console.warn('[PDF] PDF.js not available in this environment:', error)
-      return false
-    }
+  try {
+    // This will throw in production due to our stub
+    const test = await pdfjsLib.getDocument({ data: new Uint8Array() })
+    return true
+  } catch (error) {
+    console.warn('[PDF] PDF.js not available in this environment:', error)
+    return false
   }
-  return false
 }
 
 import { ocrService } from './ocr-service'

@@ -1,29 +1,15 @@
-import PricingPage from '@/components/pricing/PricingPage'
-import { createServerComponentClient } from '@/lib/supabase'
-import { cookies } from 'next/headers'
+'use client'
 
-// Force dynamic rendering since we use cookies
-export const dynamic = 'force-dynamic'
+import dynamicImport from 'next/dynamic'
 
-export default async function Pricing() {
-  try {
-    const supabase = createServerComponentClient({ cookies })
-    
-    // Get user session for personalized pricing with error handling
-    const { data: { session }, error } = await supabase.auth.getSession()
-    
-    if (error) {
-      console.warn('Supabase session error:', error.message)
-    }
-    
-    return <PricingPage />
-  } catch (error) {
-    console.error('Pricing page error:', error)
-    return <PricingPage />
-  }
-}
+// Force client-side rendering to avoid SSR auth issues
+const PricingPage = dynamicImport(() => import('@/components/pricing/PricingPage'), {
+  ssr: false,
+  loading: () => <div className="min-h-screen flex items-center justify-center">
+    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+  </div>
+})
 
-export const metadata = {
-  title: 'Pricing - Prismy',
-  description: 'Choose the perfect translation plan for your needs. Start free and upgrade as you grow.',
+export default function Pricing() {
+  return <PricingPage />
 }
