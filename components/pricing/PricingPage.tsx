@@ -222,7 +222,7 @@ export default function PricingPage({}: PricingPageProps) {
   }
 
   return (
-    <>
+    <div className="pricing-page">
       <Navbar />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
       {/* Hero Section with Premium Typography */}
@@ -317,7 +317,7 @@ export default function PricingPage({}: PricingPageProps) {
               }`}
             >
               {t('pricing.yearly')}
-              <span className="badge-base bg-green-500 text-white absolute -top-2 -right-2">
+              <span className="badge-base bg-green-500 text-white absolute -top-3 left-1/2 transform -translate-x-1/2">
                 {t('pricing.save20')}
               </span>
             </button>
@@ -341,14 +341,14 @@ export default function PricingPage({}: PricingPageProps) {
                 <button
                   key={method}
                   onClick={() => setSelectedPaymentMethod(method)}
-                  className={`template-chip ${
+                  className={`payment-method-button ${
                     selectedPaymentMethod === method
-                      ? 'template-chip-active'
+                      ? 'payment-method-button-active'
                       : ''
                   }`}
                 >
                   <span className="text-lg">{getPaymentMethodIcon(method)}</span>
-                  <span className="hidden sm:inline body-sm">
+                  <span className="hidden sm:inline">
                     {getPaymentMethodName(method, language)}
                   </span>
                 </button>
@@ -510,7 +510,7 @@ export default function PricingPage({}: PricingPageProps) {
               transition: { duration: 0.6, delay: 0.2 }
             })}
           >
-            <table className="w-full min-w-[800px]">
+            <table className="w-full min-w-[800px] lg:min-w-full">
               <thead>
                 <tr className="border-b border-gray-200 bg-gray-50">
                   <th className="text-left py-4 px-6 font-semibold text-gray-900">
@@ -577,27 +577,30 @@ export default function PricingPage({}: PricingPageProps) {
         {/* Enterprise Contact Section */}
         <div className="mt-24 px-4 md:px-8 lg:px-12">
           <motion.div 
-            className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-8 md:p-12 text-center text-white"
+            className="bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900 rounded-2xl p-8 md:p-12 text-center text-white relative overflow-hidden"
             {...motionSafe({
               initial: { opacity: 0, y: 30 },
               animate: { opacity: 1, y: 0 },
               transition: { duration: 0.6 }
             })}
           >
-            <h2 className="heading-2 mb-4">
-              {language === 'vi' ? 'Cần giải pháp doanh nghiệp?' : 'Need an Enterprise Solution?'}
-            </h2>
-            <p className="body-lg text-gray-300 mb-8 max-w-2xl mx-auto">
-              {language === 'vi' 
-                ? 'Liên hệ với đội ngũ chuyên gia để được tư vấn giải pháp dịch thuật tùy chỉnh, tích hợp hệ thống và hỗ trợ 24/7.'
-                : 'Contact our experts for custom translation solutions, system integrations, and 24/7 dedicated support.'
-              }
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-white text-gray-900 px-8 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-colors">
+            <div className="relative z-10">
+              <h2 className="heading-2 mb-6 text-white">
+                {language === 'vi' ? 'Cần giải pháp doanh nghiệp?' : 'Need an Enterprise Solution?'}
+              </h2>
+              <p className="body-lg text-blue-100 mb-10 max-w-2xl mx-auto leading-relaxed">
+                {language === 'vi' 
+                  ? 'Liên hệ với đội ngũ chuyên gia để được tư vấn giải pháp dịch thuật tùy chỉnh, tích hợp hệ thống và hỗ trợ 24/7.'
+                  : 'Contact our experts for custom translation solutions, system integrations, and 24/7 dedicated support.'
+                }
+              </p>
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-purple-600/20"></div>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
+              <button className="bg-white text-gray-900 px-8 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-all duration-200 hover:scale-105 shadow-lg">
                 {language === 'vi' ? 'Liên hệ tư vấn' : 'Contact Sales'}
               </button>
-              <button className="border border-white text-white px-8 py-3 rounded-xl font-semibold hover:bg-white hover:text-gray-900 transition-colors">
+              <button className="border-2 border-white text-white px-8 py-3 rounded-xl font-semibold hover:bg-white hover:text-gray-900 transition-all duration-200 hover:scale-105">
                 {language === 'vi' ? 'Đặt lịch demo' : 'Schedule Demo'}
               </button>
             </div>
@@ -668,7 +671,7 @@ export default function PricingPage({}: PricingPageProps) {
                 a: 'We support over 100 different languages, including all major languages in Vietnam and Southeast Asia.'
               }
             ]).map((faq, index) => (
-              <div key={index} className="bg-white rounded-xl border border-gray-200 p-6">
+              <div key={index} className="bg-white rounded-xl border border-gray-200 p-6 transition-all duration-200 hover:border-gray-300 hover:bg-gray-50 hover:-translate-y-1 hover:shadow-md cursor-pointer">
                 <h3 className="font-semibold text-gray-900 mb-3">{faq.q}</h3>
                 <p className="text-gray-600 leading-relaxed">{faq.a}</p>
               </div>
@@ -721,6 +724,6 @@ export default function PricingPage({}: PricingPageProps) {
       </div>
     </div>
     <Footer />
-    </>
+    </div>
   )
 }

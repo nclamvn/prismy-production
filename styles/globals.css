@@ -42,7 +42,8 @@
     border-radius: 9999px;
     border: 1px solid rgba(255, 255, 255, 0.4);
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.20), inset 0 1px 0 rgba(255, 255, 255, 0.6);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, background-color, border-radius;
   }
   
   .header-static {
@@ -52,7 +53,14 @@
     border-radius: 0;
     border: none;
     box-shadow: none;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, background-color, border-radius;
+  }
+  
+  /* Prevent header flash during pricing interactions */
+  .pricing-page .header-pill-capsule,
+  .pricing-page .header-static {
+    transition: all 0.3s ease-in-out;
   }
   
   /* Container - Full width with internal padding */
@@ -309,6 +317,21 @@
     .email-pill-button {
       @apply px-4 text-sm gap-1;
     }
+  }
+  
+  /* Payment Method Buttons - Rectangular Design */
+  .payment-method-button {
+    @apply inline-flex items-center justify-center px-4 py-3 font-inter
+           rounded-lg border-2 border-gray-200 
+           text-sm font-medium text-gray-700 bg-white
+           hover:border-gray-400 hover:bg-gray-50 hover:text-gray-900
+           transition-all duration-200 cursor-pointer
+           active:scale-[0.98] min-h-[48px] gap-2;
+  }
+  
+  .payment-method-button-active {
+    @apply border-blue-500 bg-blue-500 text-white 
+           hover:bg-blue-600 hover:border-blue-600;
   }
   
   /* Typography - Chuyển toàn bộ sang Inter font */
