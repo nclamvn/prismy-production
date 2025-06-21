@@ -7,19 +7,13 @@ import { AuthProvider } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
 import Footer from '@/components/Footer'
 import { slideUp, staggerContainer, motionSafe } from '@/lib/motion'
-import { 
-  Calendar,
-  Clock,
-  User,
-  ArrowRight,
-  Tag
-} from 'lucide-react'
-import { 
-  AITranslationIcon, 
-  BusinessIcon, 
-  CultureIcon, 
-  TechnicalIcon, 
-  AIIcon 
+import { Calendar, Clock, User, ArrowRight, Tag } from 'lucide-react'
+import {
+  AITranslationIcon,
+  BusinessIcon,
+  CultureIcon,
+  TechnicalIcon,
+  AIIcon,
 } from '@/components/ui/ArtlineIcons'
 
 export default function Blog() {
@@ -31,7 +25,8 @@ export default function Blog() {
       hero: {
         title: 'Blog Prismy',
         subtitle: 'Insights về AI, dịch thuật và văn hóa',
-        description: 'Khám phá những xu hướng mới nhất trong công nghệ dịch thuật AI, case study từ khách hàng và insights về ngành ngôn ngữ.'
+        description:
+          'Khám phá những xu hướng mới nhất trong công nghệ dịch thuật AI, case study từ khách hàng và insights về ngành ngôn ngữ.',
       },
       categories: [
         { id: 'all', name: 'Tất cả' },
@@ -39,83 +34,90 @@ export default function Blog() {
         { id: 'translation', name: 'Dịch thuật' },
         { id: 'culture', name: 'Văn hóa' },
         { id: 'business', name: 'Kinh doanh' },
-        { id: 'technical', name: 'Kỹ thuật' }
+        { id: 'technical', name: 'Kỹ thuật' },
       ],
       articles: [
         {
           id: 1,
           title: 'Tương lai của AI Translation trong thời đại số',
-          excerpt: 'Khám phá cách AI đang thay đổi cách chúng ta giao tiếp qua các rào cản ngôn ngữ và tác động đến doanh nghiệp toàn cầu.',
+          excerpt:
+            'Khám phá cách AI đang thay đổi cách chúng ta giao tiếp qua các rào cản ngôn ngữ và tác động đến doanh nghiệp toàn cầu.',
           category: 'ai',
           author: 'Dr. Nguyễn Minh Anh',
           date: '15 Tháng 12, 2024',
           readTime: '8 phút đọc',
           image: '/api/placeholder/600/400',
           artlineIcon: AITranslationIcon,
-          featured: true
+          featured: true,
         },
         {
           id: 2,
           title: 'Case Study: VinGroup tối ưu quy trình dịch thuật với AI',
-          excerpt: 'Tìm hiểu cách VinGroup giảm 80% thời gian dịch thuật và tiết kiệm $2.3M mỗi năm với giải pháp AI translation của Prismy.',
+          excerpt:
+            'Tìm hiểu cách VinGroup giảm 80% thời gian dịch thuật và tiết kiệm $2.3M mỗi năm với giải pháp AI translation của Prismy.',
           category: 'business',
           author: 'Trần Văn Nam',
           date: '12 Tháng 12, 2024',
           readTime: '6 phút đọc',
           image: '/api/placeholder/600/400',
-          artlineIcon: BusinessIcon
+          artlineIcon: BusinessIcon,
         },
         {
           id: 3,
           title: 'Những thách thức trong dịch thuật tiếng Việt với AI',
-          excerpt: 'Phân tích sâu về đặc thù ngôn ngữ Việt Nam và cách AI hiện đại xử lý các nét văn hóa tinh tế trong dịch thuật.',
+          excerpt:
+            'Phân tích sâu về đặc thù ngôn ngữ Việt Nam và cách AI hiện đại xử lý các nét văn hóa tinh tế trong dịch thuật.',
           category: 'culture',
           author: 'Lê Thị Hương',
           date: '10 Tháng 12, 2024',
           readTime: '10 phút đọc',
           image: '/api/placeholder/600/400',
-          artlineIcon: CultureIcon
+          artlineIcon: CultureIcon,
         },
         {
           id: 4,
           title: 'API Integration Best Practices cho Enterprise',
-          excerpt: 'Hướng dẫn chi tiết cách tích hợp Prismy API vào hệ thống doanh nghiệp hiện tại một cách hiệu quả và bảo mật.',
+          excerpt:
+            'Hướng dẫn chi tiết cách tích hợp Prismy API vào hệ thống doanh nghiệp hiện tại một cách hiệu quả và bảo mật.',
           category: 'technical',
           author: 'Phạm Quang Huy',
           date: '8 Tháng 12, 2024',
           readTime: '12 phút đọc',
           image: '/api/placeholder/600/400',
-          artlineIcon: TechnicalIcon
+          artlineIcon: TechnicalIcon,
         },
         {
           id: 5,
           title: 'Xu hướng localization tại Đông Nam Á 2024',
-          excerpt: 'Báo cáo toàn diện về thị trường localization tại khu vực ASEAN và cơ hội cho các doanh nghiệp Việt Nam.',
+          excerpt:
+            'Báo cáo toàn diện về thị trường localization tại khu vực ASEAN và cơ hội cho các doanh nghiệp Việt Nam.',
           category: 'business',
           author: 'Hoàng Thị Mai',
           date: '5 Tháng 12, 2024',
           readTime: '7 phút đọc',
           image: '/api/placeholder/600/400',
-          artlineIcon: BusinessIcon
+          artlineIcon: BusinessIcon,
         },
         {
           id: 6,
           title: 'Machine Learning trong xử lý ngôn ngữ tự nhiên',
-          excerpt: 'Đi sâu vào các thuật toán ML hiện đại được Prismy sử dụng để đạt độ chính xác 99.8% trong dịch thuật.',
+          excerpt:
+            'Đi sâu vào các thuật toán ML hiện đại được Prismy sử dụng để đạt độ chính xác 99.8% trong dịch thuật.',
           category: 'ai',
           author: 'Dr. Vũ Hoàng Long',
           date: '2 Tháng 12, 2024',
           readTime: '15 phút đọc',
           image: '/api/placeholder/600/400',
-          artlineIcon: AIIcon
-        }
-      ]
+          artlineIcon: AIIcon,
+        },
+      ],
     },
     en: {
       hero: {
         title: 'Prismy Blog',
         subtitle: 'Insights on AI, Translation and Culture',
-        description: 'Discover the latest trends in AI translation technology, customer case studies and insights about the language industry.'
+        description:
+          'Discover the latest trends in AI translation technology, customer case studies and insights about the language industry.',
       },
       categories: [
         { id: 'all', name: 'All' },
@@ -123,85 +125,97 @@ export default function Blog() {
         { id: 'translation', name: 'Translation' },
         { id: 'culture', name: 'Culture' },
         { id: 'business', name: 'Business' },
-        { id: 'technical', name: 'Technical' }
+        { id: 'technical', name: 'Technical' },
       ],
       articles: [
         {
           id: 1,
           title: 'The Future of AI Translation in the Digital Age',
-          excerpt: 'Explore how AI is changing the way we communicate across language barriers and its impact on global business.',
+          excerpt:
+            'Explore how AI is changing the way we communicate across language barriers and its impact on global business.',
           category: 'ai',
           author: 'Dr. Nguyen Minh Anh',
           date: 'December 15, 2024',
           readTime: '8 min read',
           image: '/api/placeholder/600/400',
-          featured: true
+          featured: true,
         },
         {
           id: 2,
           title: 'Case Study: VinGroup Optimizes Translation Workflow with AI',
-          excerpt: 'Learn how VinGroup reduced translation time by 80% and saved $2.3M annually with Prismy\'s AI translation solution.',
+          excerpt:
+            "Learn how VinGroup reduced translation time by 80% and saved $2.3M annually with Prismy's AI translation solution.",
           category: 'business',
           author: 'Tran Van Nam',
           date: 'December 12, 2024',
           readTime: '6 min read',
-          image: '/api/placeholder/600/400'
+          image: '/api/placeholder/600/400',
         },
         {
           id: 3,
           title: 'Challenges in Vietnamese Translation with AI',
-          excerpt: 'Deep analysis of Vietnamese language specifics and how modern AI handles subtle cultural nuances in translation.',
+          excerpt:
+            'Deep analysis of Vietnamese language specifics and how modern AI handles subtle cultural nuances in translation.',
           category: 'culture',
           author: 'Le Thi Huong',
           date: 'December 10, 2024',
           readTime: '10 min read',
-          image: '/api/placeholder/600/400'
+          image: '/api/placeholder/600/400',
         },
         {
           id: 4,
           title: 'API Integration Best Practices for Enterprise',
-          excerpt: 'Detailed guide on how to integrate Prismy API into existing enterprise systems efficiently and securely.',
+          excerpt:
+            'Detailed guide on how to integrate Prismy API into existing enterprise systems efficiently and securely.',
           category: 'technical',
           author: 'Pham Quang Huy',
           date: 'December 8, 2024',
           readTime: '12 min read',
-          image: '/api/placeholder/600/400'
+          image: '/api/placeholder/600/400',
         },
         {
           id: 5,
           title: 'Southeast Asia Localization Trends 2024',
-          excerpt: 'Comprehensive report on the ASEAN localization market and opportunities for Vietnamese businesses.',
+          excerpt:
+            'Comprehensive report on the ASEAN localization market and opportunities for Vietnamese businesses.',
           category: 'business',
           author: 'Hoang Thi Mai',
           date: 'December 5, 2024',
           readTime: '7 min read',
-          image: '/api/placeholder/600/400'
+          image: '/api/placeholder/600/400',
         },
         {
           id: 6,
           title: 'Machine Learning in Natural Language Processing',
-          excerpt: 'Deep dive into modern ML algorithms used by Prismy to achieve 99.8% accuracy in translation.',
+          excerpt:
+            'Deep dive into modern ML algorithms used by Prismy to achieve 99.8% accuracy in translation.',
           category: 'ai',
           author: 'Dr. Vu Hoang Long',
           date: 'December 2, 2024',
           readTime: '15 min read',
-          image: '/api/placeholder/600/400'
-        }
-      ]
-    }
+          image: '/api/placeholder/600/400',
+        },
+      ],
+    },
   }
 
-  const filteredArticles = selectedCategory === 'all' 
-    ? content[language].articles 
-    : content[language].articles.filter(article => article.category === selectedCategory)
+  const filteredArticles =
+    selectedCategory === 'all'
+      ? content[language].articles
+      : content[language].articles.filter(
+          article => article.category === selectedCategory
+        )
 
-  const featuredArticle = content[language].articles.find(article => article.featured)
-  const regularArticles = content[language].articles.filter(article => !article.featured)
+  const featuredArticle = content[language].articles.find(
+    article => article.featured
+  )
+  const regularArticles = content[language].articles.filter(
+    article => !article.featured
+  )
 
   return (
     <AuthProvider>
       <div className="min-h-screen bg-bg-main">
-        
         <main>
           {/* Hero Section */}
           <section className="relative overflow-hidden bg-white pt-20 w-full">
@@ -213,21 +227,45 @@ export default function Blog() {
                   animate="visible"
                   className="text-center"
                 >
-                  <motion.h1 
+                  {/* Blog GIF */}
+                  <motion.div
+                    variants={motionSafe(slideUp)}
+                    className="mb-8 md:mb-12 lg:mb-16"
+                  >
+                    <div
+                      className="hero-gif-container mx-auto"
+                      style={{ maxWidth: '720px' }}
+                    >
+                      <img
+                        src="/assets/blog.gif"
+                        alt=""
+                        aria-hidden="true"
+                        loading="lazy"
+                        className="hero-gif w-full"
+                        style={{
+                          width: '100%',
+                          height: 'auto',
+                          display: 'block',
+                        }}
+                      />
+                    </div>
+                  </motion.div>
+
+                  <motion.h1
                     variants={motionSafe(slideUp)}
                     className="heading-1 text-text-primary mb-6"
                   >
                     {content[language].hero.title}
                   </motion.h1>
-                  
-                  <motion.p 
+
+                  <motion.p
                     variants={motionSafe(slideUp)}
                     className="body-xl text-text-secondary mb-8"
                   >
                     {content[language].hero.subtitle}
                   </motion.p>
-                  
-                  <motion.p 
+
+                  <motion.p
                     variants={motionSafe(slideUp)}
                     className="body-lg text-text-muted max-w-2xl mx-auto"
                   >
@@ -243,7 +281,7 @@ export default function Blog() {
             <div className="w-full px-4 sm:px-6 lg:px-8">
               <div className="max-w-6xl mx-auto">
                 <div className="flex flex-wrap justify-center gap-4">
-                  {content[language].categories.map((category) => (
+                  {content[language].categories.map(category => (
                     <button
                       key={category.id}
                       onClick={() => setSelectedCategory(category.id)}
@@ -281,31 +319,37 @@ export default function Blog() {
                             {language === 'vi' ? 'Nổi bật' : 'Featured'}
                           </span>
                         </div>
-                        
+
                         <h2 className="heading-3 font-bold text-text-primary mb-4">
                           {featuredArticle.title}
                         </h2>
-                        
+
                         <p className="body-base text-text-secondary mb-6">
                           {featuredArticle.excerpt}
                         </p>
-                        
+
                         <div className="blog-metadata-container mb-6 text-text-muted">
                           <div className="flex items-center gap-2">
                             <User size={16} />
-                            <span className="body-sm">{featuredArticle.author}</span>
+                            <span className="body-sm">
+                              {featuredArticle.author}
+                            </span>
                           </div>
                           <div className="flex items-center gap-2">
                             <Calendar size={16} />
-                            <span className="body-sm">{featuredArticle.date}</span>
+                            <span className="body-sm">
+                              {featuredArticle.date}
+                            </span>
                           </div>
                           <div className="flex items-center gap-2">
                             <Clock size={16} />
-                            <span className="body-sm">{featuredArticle.readTime}</span>
+                            <span className="body-sm">
+                              {featuredArticle.readTime}
+                            </span>
                           </div>
                         </div>
-                        
-                        <Link 
+
+                        <Link
                           href={`/blog/${featuredArticle.id}`}
                           className="inline-flex items-center gap-2 text-text-primary hover:text-text-accent transition-colors"
                         >
@@ -315,7 +359,7 @@ export default function Blog() {
                           <ArrowRight size={16} />
                         </Link>
                       </div>
-                      
+
                       <div className="bg-gray-200 rounded-xl aspect-video flex items-center justify-center">
                         <span className="text-text-muted">Featured Image</span>
                       </div>
@@ -337,7 +381,10 @@ export default function Blog() {
                   viewport={{ once: true }}
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {(selectedCategory === 'all' ? regularArticles : filteredArticles).map((article) => (
+                    {(selectedCategory === 'all'
+                      ? regularArticles
+                      : filteredArticles
+                    ).map(article => (
                       <motion.article
                         key={article.id}
                         variants={motionSafe(slideUp)}
@@ -347,24 +394,28 @@ export default function Blog() {
                         <div className="bg-gray-200 aspect-video flex items-center justify-center">
                           <span className="text-text-muted">Article Image</span>
                         </div>
-                        
+
                         {/* Article Content */}
                         <div className="p-6">
                           <div className="flex items-center gap-2 mb-3">
                             <Tag size={14} className="text-text-muted" />
                             <span className="body-sm text-text-muted uppercase tracking-wide">
-                              {content[language].categories.find(cat => cat.id === article.category)?.name}
+                              {
+                                content[language].categories.find(
+                                  cat => cat.id === article.category
+                                )?.name
+                              }
                             </span>
                           </div>
-                          
+
                           <h3 className="heading-5 font-bold text-text-primary mb-3 line-clamp-2">
                             {article.title}
                           </h3>
-                          
+
                           <p className="body-sm text-text-secondary mb-4 line-clamp-3">
                             {article.excerpt}
                           </p>
-                          
+
                           <div className="blog-metadata-container mb-4 text-text-muted">
                             <div className="flex items-center gap-1">
                               <User size={14} />
@@ -376,11 +427,13 @@ export default function Blog() {
                             </div>
                             <div className="flex items-center gap-1">
                               <Clock size={14} />
-                              <span className="body-xs">{article.readTime}</span>
+                              <span className="body-xs">
+                                {article.readTime}
+                              </span>
                             </div>
                           </div>
-                          
-                          <Link 
+
+                          <Link
                             href={`/blog/${article.id}`}
                             className="inline-flex items-center gap-2 text-text-primary hover:text-text-accent transition-colors"
                           >
@@ -397,7 +450,6 @@ export default function Blog() {
               </div>
             </div>
           </section>
-
         </main>
 
         <Footer />
