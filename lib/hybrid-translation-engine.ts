@@ -1,5 +1,5 @@
 // import { logger, performanceLogger } from './logger' // Replaced with console methods
-import { translationService } from '../../lib/translation-service'
+import { translationService } from './translation-service'
 
 export interface TranslationProvider {
   name: string
@@ -45,47 +45,75 @@ class LibreTranslateProvider {
     quality: 0.75,
     speed: 'medium',
     maxCharacters: 500000, // 500K characters per request
-    languages: ['en', 'es', 'fr', 'de', 'it', 'pt', 'ru', 'ja', 'ko', 'zh', 'vi', 'ar']
+    languages: [
+      'en',
+      'es',
+      'fr',
+      'de',
+      'it',
+      'pt',
+      'ru',
+      'ja',
+      'ko',
+      'zh',
+      'vi',
+      'ar',
+    ],
   }
 
-  async translate(text: string, from: string, to: string): Promise<TranslationResult> {
+  async translate(
+    text: string,
+    from: string,
+    to: string
+  ): Promise<TranslationResult> {
     const startTime = Date.now()
-    
+
     try {
       // Mock implementation - replace with actual LibreTranslate API call
       const translatedText = await this.mockTranslate(text, from, to)
       const processingTime = Date.now() - startTime
-      
+
       return {
         translatedText,
         provider: this.provider,
         confidence: this.calculateConfidence(text),
         processingTime,
         qualityScore: this.provider.quality,
-        cost: 0
+        cost: 0,
       }
     } catch (error) {
-      console.error('LibreTranslate failed', { error, text: text.substring(0, 100) })
+      console.error('LibreTranslate failed', {
+        error,
+        text: text.substring(0, 100),
+      })
       throw error
     }
   }
 
-  private async mockTranslate(text: string, from: string, to: string): Promise<string> {
+  private async mockTranslate(
+    text: string,
+    from: string,
+    to: string
+  ): Promise<string> {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 100 + Math.random() * 200))
-    
+
     // Mock translation (in production, replace with actual LibreTranslate API)
     return `[FREE] ${text} [Translated from ${from} to ${to}]`
   }
 
   private calculateConfidence(text: string): number {
     // Simulate confidence based on text complexity
-    const complexity = text.length / 1000 + (text.match(/[.!?]/g) || []).length / 10
+    const complexity =
+      text.length / 1000 + (text.match(/[.!?]/g) || []).length / 10
     return Math.max(0.6, Math.min(0.85, 0.8 - complexity * 0.1))
   }
 
   isSupported(from: string, to: string): boolean {
-    return this.provider.languages.includes(from) && this.provider.languages.includes(to)
+    return (
+      this.provider.languages.includes(from) &&
+      this.provider.languages.includes(to)
+    )
   }
 
   getProvider(): TranslationProvider {
@@ -101,35 +129,58 @@ class GoogleTranslateProvider {
     quality: 0.95,
     speed: 'fast',
     maxCharacters: 1000000, // 1M characters per request
-    languages: ['auto', 'en', 'es', 'fr', 'de', 'it', 'pt', 'ru', 'ja', 'ko', 'zh', 'vi', 'ar', 'hi'] // and many more
+    languages: [
+      'auto',
+      'en',
+      'es',
+      'fr',
+      'de',
+      'it',
+      'pt',
+      'ru',
+      'ja',
+      'ko',
+      'zh',
+      'vi',
+      'ar',
+      'hi',
+    ], // and many more
   }
 
-  async translate(text: string, from: string, to: string, qualityTier: string = 'standard'): Promise<TranslationResult> {
+  async translate(
+    text: string,
+    from: string,
+    to: string,
+    qualityTier: string = 'standard'
+  ): Promise<TranslationResult> {
     const startTime = Date.now()
-    
+
     try {
       const result = await translationService.translateText({
         text,
         sourceLang: from,
         targetLang: to,
-        qualityTier: qualityTier as any
+        qualityTier: qualityTier as any,
       })
-      
+
       const processingTime = Date.now() - startTime
-      
+
       // Calculate cost (approximate)
       const cost = this.calculateCost(text.length, qualityTier)
-      
+
       return {
         translatedText: result.translatedText,
         provider: this.provider,
         confidence: result.confidence,
         processingTime,
         qualityScore: result.qualityScore,
-        cost
+        cost,
       }
     } catch (error) {
-      console.error('Google Translate failed', { error, text: text.substring(0, 100) })
+      console.error('Google Translate failed', {
+        error,
+        text: text.substring(0, 100),
+      })
       throw error
     }
   }
@@ -137,13 +188,14 @@ class GoogleTranslateProvider {
   private calculateCost(characterCount: number, qualityTier: string): number {
     // Google Translate pricing (approximate)
     const baseRate = 0.00002 // $20 per million characters
-    const tierMultiplier = {
-      'free': 0.5,
-      'standard': 1.0,
-      'premium': 1.5,
-      'enterprise': 2.0
-    }[qualityTier] || 1.0
-    
+    const tierMultiplier =
+      {
+        free: 0.5,
+        standard: 1.0,
+        premium: 1.5,
+        enterprise: 2.0,
+      }[qualityTier] || 1.0
+
     return characterCount * baseRate * tierMultiplier
   }
 
@@ -159,38 +211,56 @@ class GoogleTranslateProvider {
 export class HybridTranslationEngine {
   private freeProvider: LibreTranslateProvider
   private premiumProvider: GoogleTranslateProvider
-  private userUsage: Map<string, { characters: number; resetDate: Date }> = new Map()
+  private userUsage: Map<string, { characters: number; resetDate: Date }> =
+    new Map()
 
   constructor() {
     this.freeProvider = new LibreTranslateProvider()
     this.premiumProvider = new GoogleTranslateProvider()
   }
 
-  async translate(request: HybridTranslationRequest): Promise<HybridTranslationResponse> {
+  async translate(
+    request: HybridTranslationRequest
+  ): Promise<HybridTranslationResponse> {
     const startTime = Date.now()
-    const { text, sourceLang, targetLang, useFreeTier, includePremiumComparison, userId } = request
+    const {
+      text,
+      sourceLang,
+      targetLang,
+      useFreeTier,
+      includePremiumComparison,
+      userId,
+    } = request
 
     console.info('Hybrid translation request', {
       textLength: text.length,
       sourceLang,
       targetLang,
       useFreeTier,
-      userId
+      userId,
     })
 
     try {
       // Check user's free tier usage
-      const freeUsageAvailable = this.checkFreeUsageAvailable(userId, text.length)
-      const shouldUseFree = (useFreeTier || freeUsageAvailable) && 
-                           this.freeProvider.isSupported(sourceLang, targetLang)
+      const freeUsageAvailable = this.checkFreeUsageAvailable(
+        userId,
+        text.length
+      )
+      const shouldUseFree =
+        (useFreeTier || freeUsageAvailable) &&
+        this.freeProvider.isSupported(sourceLang, targetLang)
 
       let primary: TranslationResult
       let comparison: TranslationResult | undefined
 
       if (shouldUseFree) {
         // Use free provider as primary
-        primary = await this.freeProvider.translate(text, sourceLang, targetLang)
-        
+        primary = await this.freeProvider.translate(
+          text,
+          sourceLang,
+          targetLang
+        )
+
         // Update usage tracking
         if (userId) {
           this.updateUsage(userId, text.length)
@@ -199,19 +269,36 @@ export class HybridTranslationEngine {
         // Get premium comparison if requested
         if (includePremiumComparison) {
           try {
-            comparison = await this.premiumProvider.translate(text, sourceLang, targetLang, 'standard')
+            comparison = await this.premiumProvider.translate(
+              text,
+              sourceLang,
+              targetLang,
+              'standard'
+            )
           } catch (error) {
             console.warn('Premium comparison failed', { error })
           }
         }
       } else {
         // Use premium provider as primary
-        primary = await this.premiumProvider.translate(text, sourceLang, targetLang, 'standard')
-        
+        primary = await this.premiumProvider.translate(
+          text,
+          sourceLang,
+          targetLang,
+          'standard'
+        )
+
         // Optionally show what free version would look like
-        if (includePremiumComparison && this.freeProvider.isSupported(sourceLang, targetLang)) {
+        if (
+          includePremiumComparison &&
+          this.freeProvider.isSupported(sourceLang, targetLang)
+        ) {
           try {
-            comparison = await this.freeProvider.translate(text, sourceLang, targetLang)
+            comparison = await this.freeProvider.translate(
+              text,
+              sourceLang,
+              targetLang
+            )
           } catch (error) {
             console.warn('Free comparison failed', { error })
           }
@@ -219,7 +306,11 @@ export class HybridTranslationEngine {
       }
 
       // Generate recommendation and upgrade reasons
-      const recommendation = this.generateRecommendation(primary, comparison, text.length)
+      const recommendation = this.generateRecommendation(
+        primary,
+        comparison,
+        text.length
+      )
       const upgradeReasons = this.generateUpgradeReasons(primary, comparison)
       const savings = this.calculateSavings(userId, text.length)
 
@@ -228,7 +319,7 @@ export class HybridTranslationEngine {
         comparison,
         recommendation,
         savings,
-        upgradeReasons
+        upgradeReasons,
       }
 
       const totalTime = Date.now() - startTime
@@ -237,18 +328,20 @@ export class HybridTranslationEngine {
         comparisonProvider: comparison?.provider.name,
         textLength: text.length,
         totalTime,
-        recommendation
+        recommendation,
       })
 
       return response
-
     } catch (error) {
       console.error('Hybrid translation failed', { error, request })
       throw error
     }
   }
 
-  private checkFreeUsageAvailable(userId?: string, charactersNeeded: number = 0): boolean {
+  private checkFreeUsageAvailable(
+    userId?: string,
+    charactersNeeded: number = 0
+  ): boolean {
     if (!userId) return true // Anonymous users get free tier
 
     const usage = this.userUsage.get(userId)
@@ -259,19 +352,23 @@ export class HybridTranslationEngine {
     if (now >= usage.resetDate) {
       this.userUsage.set(userId, {
         characters: 0,
-        resetDate: new Date(now.getFullYear(), now.getMonth() + 1, 1)
+        resetDate: new Date(now.getFullYear(), now.getMonth() + 1, 1),
       })
       return true
     }
 
     const FREE_TIER_LIMIT = 600000 // 100K words ≈ 600K characters
-    return (usage.characters + charactersNeeded) <= FREE_TIER_LIMIT
+    return usage.characters + charactersNeeded <= FREE_TIER_LIMIT
   }
 
   private updateUsage(userId: string, characters: number): void {
     const usage = this.userUsage.get(userId) || {
       characters: 0,
-      resetDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1)
+      resetDate: new Date(
+        new Date().getFullYear(),
+        new Date().getMonth() + 1,
+        1
+      ),
     }
 
     usage.characters += characters
@@ -279,7 +376,7 @@ export class HybridTranslationEngine {
   }
 
   private generateRecommendation(
-    primary: TranslationResult, 
+    primary: TranslationResult,
     comparison?: TranslationResult,
     textLength: number = 0
   ): 'free' | 'premium' {
@@ -289,8 +386,10 @@ export class HybridTranslationEngine {
     }
 
     // Compare quality scores
-    const qualityDifference = Math.abs(primary.qualityScore - comparison.qualityScore)
-    
+    const qualityDifference = Math.abs(
+      primary.qualityScore - comparison.qualityScore
+    )
+
     // For professional/business content, recommend premium if quality difference > 0.1
     if (qualityDifference > 0.1 && comparison.provider.cost === 'premium') {
       return 'premium'
@@ -305,7 +404,10 @@ export class HybridTranslationEngine {
     return primary.provider.cost === 'free' ? 'free' : 'premium'
   }
 
-  private generateUpgradeReasons(primary: TranslationResult, comparison?: TranslationResult): string[] {
+  private generateUpgradeReasons(
+    primary: TranslationResult,
+    comparison?: TranslationResult
+  ): string[] {
     const reasons: string[] = []
 
     if (!comparison || primary.provider.cost === 'premium') {
@@ -316,18 +418,24 @@ export class HybridTranslationEngine {
     const confidenceDiff = comparison.confidence - primary.confidence
 
     if (qualityDiff > 0.1) {
-      reasons.push(`${Math.round(qualityDiff * 100)}% higher translation quality`)
+      reasons.push(
+        `${Math.round(qualityDiff * 100)}% higher translation quality`
+      )
     }
 
     if (confidenceDiff > 0.1) {
-      reasons.push(`${Math.round(confidenceDiff * 100)}% more confident translations`)
+      reasons.push(
+        `${Math.round(confidenceDiff * 100)}% more confident translations`
+      )
     }
 
     if (comparison.processingTime < primary.processingTime * 0.8) {
       reasons.push('Faster translation speed')
     }
 
-    if (comparison.provider.languages.length > primary.provider.languages.length) {
+    if (
+      comparison.provider.languages.length > primary.provider.languages.length
+    ) {
       reasons.push('Support for more language pairs')
     }
 
@@ -337,7 +445,10 @@ export class HybridTranslationEngine {
     return reasons
   }
 
-  private calculateSavings(userId?: string, charactersUsed: number = 0): number {
+  private calculateSavings(
+    userId?: string,
+    charactersUsed: number = 0
+  ): number {
     if (!userId) return 0
 
     const usage = this.userUsage.get(userId)
@@ -348,26 +459,31 @@ export class HybridTranslationEngine {
   }
 
   // Get user's current usage stats
-  getUserUsageStats(userId: string): { used: number; remaining: number; resetDate: Date } {
+  getUserUsageStats(userId: string): {
+    used: number
+    remaining: number
+    resetDate: Date
+  } {
     const usage = this.userUsage.get(userId) || {
       characters: 0,
-      resetDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1)
+      resetDate: new Date(
+        new Date().getFullYear(),
+        new Date().getMonth() + 1,
+        1
+      ),
     }
 
     const FREE_TIER_LIMIT = 600000
     return {
       used: usage.characters,
       remaining: Math.max(0, FREE_TIER_LIMIT - usage.characters),
-      resetDate: usage.resetDate
+      resetDate: usage.resetDate,
     }
   }
 
   // Get available providers
   getAvailableProviders(): TranslationProvider[] {
-    return [
-      this.freeProvider.getProvider(),
-      this.premiumProvider.getProvider()
-    ]
+    return [this.freeProvider.getProvider(), this.premiumProvider.getProvider()]
   }
 
   // Check if language pair is supported by free tier

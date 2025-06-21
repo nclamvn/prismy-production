@@ -1,33 +1,39 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { logger } from '@/lib/logger'
-import type { OCRProvider, OCRConfig, OCRResult } from '@/src/lib/ocr/hybrid-ocr-service'
+import type {
+  OCRProvider,
+  OCRConfig,
+  OCRResult,
+} from '@/lib/ocr/hybrid-ocr-service'
 
 // Cloud OCR Provider Configurations
 const PROVIDER_CONFIGS = {
   'google-vision': {
     apiKey: process.env.GOOGLE_VISION_API_KEY,
     endpoint: 'https://vision.googleapis.com/v1/images:annotate',
-    enabled: !!process.env.GOOGLE_VISION_API_KEY
+    enabled: !!process.env.GOOGLE_VISION_API_KEY,
   },
   'azure-cv': {
     apiKey: process.env.AZURE_CV_API_KEY,
     endpoint: process.env.AZURE_CV_ENDPOINT,
-    enabled: !!(process.env.AZURE_CV_API_KEY && process.env.AZURE_CV_ENDPOINT)
+    enabled: !!(process.env.AZURE_CV_API_KEY && process.env.AZURE_CV_ENDPOINT),
   },
   'aws-textract': {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     region: process.env.AWS_REGION || 'us-east-1',
-    enabled: !!(process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY)
-  }
+    enabled: !!(
+      process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY
+    ),
+  },
 } as const
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now()
-  
+
   try {
     const { provider, config, imageData } = await request.json()
-    
+
     if (!provider || !imageData) {
       return NextResponse.json(
         { error: 'Missing required parameters: provider, imageData' },
@@ -50,7 +56,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const providerConfig = PROVIDER_CONFIGS[provider as keyof typeof PROVIDER_CONFIGS]
+    const providerConfig =
+      PROVIDER_CONFIGS[provider as keyof typeof PROVIDER_CONFIGS]
     if (!providerConfig.enabled) {
       return NextResponse.json(
         { error: `Provider ${provider} is not configured` },
@@ -58,14 +65,26 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    logger.info({ provider, configuredProviders: Object.keys(PROVIDER_CONFIGS).filter(p => PROVIDER_CONFIGS[p as keyof typeof PROVIDER_CONFIGS].enabled) }, 'Processing cloud OCR request')
+    logger.info(
+      {
+        provider,
+        configuredProviders: Object.keys(PROVIDER_CONFIGS).filter(
+          p => PROVIDER_CONFIGS[p as keyof typeof PROVIDER_CONFIGS].enabled
+        ),
+      },
+      'Processing cloud OCR request'
+    )
 
     // Process based on provider
     let result: OCRResult
-    
+
     switch (provider) {
       case 'google-vision':
-        result = await processWithGoogleVision(imageData, config, providerConfig)
+        result = await processWithGoogleVision(
+          imageData,
+          config,
+          providerConfig
+        )
         break
       case 'azure-cv':
         result = await processWithAzureCV(imageData, config, providerConfig)
@@ -80,23 +99,25 @@ export async function POST(request: NextRequest) {
     const processingTime = Date.now() - startTime
     result.processingTime = processingTime
 
-    logger.info({ 
-      provider, 
-      confidence: result.confidence, 
-      processingTime, 
-      textLength: result.text.length 
-    }, 'Cloud OCR completed successfully')
+    logger.info(
+      {
+        provider,
+        confidence: result.confidence,
+        processingTime,
+        textLength: result.text.length,
+      },
+      'Cloud OCR completed successfully'
+    )
 
     return NextResponse.json(result)
-
   } catch (error) {
     const processingTime = Date.now() - startTime
     logger.error({ error, processingTime }, 'Cloud OCR processing failed')
-    
+
     return NextResponse.json(
-      { 
-        error: 'OCR processing failed', 
-        message: error instanceof Error ? error.message : 'Unknown error' 
+      {
+        error: 'OCR processing failed',
+        message: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     )
@@ -107,34 +128,43 @@ export async function POST(request: NextRequest) {
  * Google Vision API Processing
  */
 async function processWithGoogleVision(
-  imageData: string, 
-  config: OCRConfig, 
+  imageData: string,
+  config: OCRConfig,
   providerConfig: any
 ): Promise<OCRResult> {
   const base64Image = imageData.replace(/^data:image\/[a-z]+;base64,/, '')
-  
+
   const requestBody = {
-    requests: [{
-      image: {
-        content: base64Image
+    requests: [
+      {
+        image: {
+          content: base64Image,
+        },
+        features: [
+          {
+            type: 'DOCUMENT_TEXT_DETECTION',
+            maxResults: 1,
+          },
+        ],
+        imageContext: {
+          languageHints: Array.isArray(config.language)
+            ? config.language
+            : [config.language],
+        },
       },
-      features: [{
-        type: 'DOCUMENT_TEXT_DETECTION',
-        maxResults: 1
-      }],
-      imageContext: {
-        languageHints: Array.isArray(config.language) ? config.language : [config.language]
-      }
-    }]
+    ],
   }
 
-  const response = await fetch(`${providerConfig.endpoint}?key=${providerConfig.apiKey}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(requestBody)
-  })
+  const response = await fetch(
+    `${providerConfig.endpoint}?key=${providerConfig.apiKey}`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody),
+    }
+  )
 
   if (!response.ok) {
     throw new Error(`Google Vision API error: ${response.statusText}`)
@@ -148,20 +178,25 @@ async function processWithGoogleVision(
   }
 
   // Convert Google Vision format to our format
-  const words = annotation.pages?.[0]?.blocks?.flatMap((block: any) =>
-    block.paragraphs?.flatMap((para: any) =>
-      para.words?.map((word: any) => ({
-        text: word.symbols?.map((s: any) => s.text).join('') || '',
-        confidence: word.confidence || 0,
-        bbox: {
-          x: Math.min(...word.boundingBox.vertices.map((v: any) => v.x || 0)),
-          y: Math.min(...word.boundingBox.vertices.map((v: any) => v.y || 0)),
-          width: Math.max(...word.boundingBox.vertices.map((v: any) => v.x || 0)) - Math.min(...word.boundingBox.vertices.map((v: any) => v.x || 0)),
-          height: Math.max(...word.boundingBox.vertices.map((v: any) => v.y || 0)) - Math.min(...word.boundingBox.vertices.map((v: any) => v.y || 0))
-        }
-      }))
-    )
-  ) || []
+  const words =
+    annotation.pages?.[0]?.blocks?.flatMap((block: any) =>
+      block.paragraphs?.flatMap((para: any) =>
+        para.words?.map((word: any) => ({
+          text: word.symbols?.map((s: any) => s.text).join('') || '',
+          confidence: word.confidence || 0,
+          bbox: {
+            x: Math.min(...word.boundingBox.vertices.map((v: any) => v.x || 0)),
+            y: Math.min(...word.boundingBox.vertices.map((v: any) => v.y || 0)),
+            width:
+              Math.max(...word.boundingBox.vertices.map((v: any) => v.x || 0)) -
+              Math.min(...word.boundingBox.vertices.map((v: any) => v.x || 0)),
+            height:
+              Math.max(...word.boundingBox.vertices.map((v: any) => v.y || 0)) -
+              Math.min(...word.boundingBox.vertices.map((v: any) => v.y || 0)),
+          },
+        }))
+      )
+    ) || []
 
   return {
     text: annotation.text || '',
@@ -174,8 +209,8 @@ async function processWithGoogleVision(
       imageWidth: 0,
       imageHeight: 0,
       detectedLanguages: config.language as string[],
-      processingSteps: ['google-vision-api']
-    }
+      processingSteps: ['google-vision-api'],
+    },
   }
 }
 
@@ -183,21 +218,24 @@ async function processWithGoogleVision(
  * Azure Computer Vision Processing
  */
 async function processWithAzureCV(
-  imageData: string, 
-  config: OCRConfig, 
+  imageData: string,
+  config: OCRConfig,
   providerConfig: any
 ): Promise<OCRResult> {
   const base64Image = imageData.replace(/^data:image\/[a-z]+;base64,/, '')
   const imageBuffer = Buffer.from(base64Image, 'base64')
 
-  const response = await fetch(`${providerConfig.endpoint}/vision/v3.2/read/analyze`, {
-    method: 'POST',
-    headers: {
-      'Ocp-Apim-Subscription-Key': providerConfig.apiKey,
-      'Content-Type': 'application/octet-stream',
-    },
-    body: imageBuffer
-  })
+  const response = await fetch(
+    `${providerConfig.endpoint}/vision/v3.2/read/analyze`,
+    {
+      method: 'POST',
+      headers: {
+        'Ocp-Apim-Subscription-Key': providerConfig.apiKey,
+        'Content-Type': 'application/octet-stream',
+      },
+      body: imageBuffer,
+    }
+  )
 
   if (!response.ok) {
     throw new Error(`Azure CV API error: ${response.statusText}`)
@@ -216,24 +254,26 @@ async function processWithAzureCV(
 
   while (attempts < maxAttempts) {
     await new Promise(resolve => setTimeout(resolve, 1000))
-    
+
     const statusResponse = await fetch(operationLocation, {
       headers: {
         'Ocp-Apim-Subscription-Key': providerConfig.apiKey,
-      }
+      },
     })
 
     if (!statusResponse.ok) {
-      throw new Error(`Azure CV status check failed: ${statusResponse.statusText}`)
+      throw new Error(
+        `Azure CV status check failed: ${statusResponse.statusText}`
+      )
     }
 
     result = await statusResponse.json()
-    
+
     if (result.status === 'succeeded') break
     if (result.status === 'failed') {
       throw new Error('Azure CV processing failed')
     }
-    
+
     attempts++
   }
 
@@ -258,8 +298,8 @@ async function processWithAzureCV(
         x: word.boundingBox[0],
         y: word.boundingBox[1],
         width: word.boundingBox[4] - word.boundingBox[0],
-        height: word.boundingBox[5] - word.boundingBox[1]
-      }
+        height: word.boundingBox[5] - word.boundingBox[1],
+      },
     })),
     lines: lines.map((line: any) => ({
       text: line.text,
@@ -268,15 +308,15 @@ async function processWithAzureCV(
         x: line.boundingBox[0],
         y: line.boundingBox[1],
         width: line.boundingBox[4] - line.boundingBox[0],
-        height: line.boundingBox[5] - line.boundingBox[1]
-      }
+        height: line.boundingBox[5] - line.boundingBox[1],
+      },
     })),
     metadata: {
       imageWidth: pages[0]?.width || 0,
       imageHeight: pages[0]?.height || 0,
       detectedLanguages: config.language as string[],
-      processingSteps: ['azure-computer-vision']
-    }
+      processingSteps: ['azure-computer-vision'],
+    },
   }
 }
 
@@ -284,8 +324,8 @@ async function processWithAzureCV(
  * AWS Textract Processing (Premium Feature)
  */
 async function processWithAWSTextract(
-  imageData: string, 
-  config: OCRConfig, 
+  imageData: string,
+  config: OCRConfig,
   providerConfig: any
 ): Promise<OCRResult> {
   // Note: This would require AWS SDK implementation
@@ -302,10 +342,13 @@ export async function GET(request: NextRequest) {
 
   if (!provider) {
     // Return overall health status
-    const health = Object.entries(PROVIDER_CONFIGS).reduce((acc, [key, config]) => {
-      acc[key] = config.enabled
-      return acc
-    }, {} as Record<string, boolean>)
+    const health = Object.entries(PROVIDER_CONFIGS).reduce(
+      (acc, [key, config]) => {
+        acc[key] = config.enabled
+        return acc
+      },
+      {} as Record<string, boolean>
+    )
 
     return NextResponse.json(health)
   }
@@ -314,6 +357,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid provider' }, { status: 400 })
   }
 
-  const isEnabled = PROVIDER_CONFIGS[provider as keyof typeof PROVIDER_CONFIGS]?.enabled || false
+  const isEnabled =
+    PROVIDER_CONFIGS[provider as keyof typeof PROVIDER_CONFIGS]?.enabled ||
+    false
   return NextResponse.json({ [provider]: isEnabled })
 }

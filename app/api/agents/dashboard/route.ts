@@ -2,16 +2,18 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createRouteHandlerClient } from '@/lib/supabase'
-import { getAgentManager } from '@/src/lib/agents/agent-manager'
+import { getAgentManager } from '@/lib/agents/agent-manager'
 import { logger } from '@/lib/logger'
-import { analytics } from '@/src/lib/analytics'
+import { analytics } from '@/lib/analytics'
 import { cookies } from 'next/headers'
 
 export async function GET(request: NextRequest) {
   try {
     const supabase = createRouteHandlerClient({ cookies })
-    const { data: { session } } = await supabase.auth.getSession()
-    
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
+
     if (!session?.user) {
       return NextResponse.json(
         { error: 'Authentication required' },
@@ -29,7 +31,7 @@ export async function GET(request: NextRequest) {
         const swarmIntelligence = await agentManager.getSwarmIntelligence()
         return NextResponse.json({
           success: true,
-          swarm: swarmIntelligence
+          swarm: swarmIntelligence,
         })
 
       case 'agent_status':
@@ -39,7 +41,7 @@ export async function GET(request: NextRequest) {
             { status: 400 }
           )
         }
-        
+
         const agent = agentManager.getAgentByDocument(agentId)
         if (!agent) {
           return NextResponse.json(
@@ -47,11 +49,11 @@ export async function GET(request: NextRequest) {
             { status: 404 }
           )
         }
-        
+
         const status = await agent.getAgentStatus()
         return NextResponse.json({
           success: true,
-          agent: status
+          agent: status,
         })
 
       case 'notifications':
@@ -59,7 +61,7 @@ export async function GET(request: NextRequest) {
         const notifications = agentManager.getNotifications(unreadOnly)
         return NextResponse.json({
           success: true,
-          notifications
+          notifications,
         })
 
       case 'list_agents':
@@ -70,14 +72,14 @@ export async function GET(request: NextRequest) {
               documentId: agent.documentId,
               personality: agent.personality,
               state: agent.state,
-              status: await agent.getAgentStatus()
+              status: await agent.getAgentStatus(),
             }
           })
         )
-        
+
         return NextResponse.json({
           success: true,
-          agents
+          agents,
         })
 
       default:
@@ -86,7 +88,6 @@ export async function GET(request: NextRequest) {
           { status: 400 }
         )
     }
-
   } catch (error) {
     logger.error({ error }, 'Agent dashboard GET request failed')
     return NextResponse.json(
@@ -99,8 +100,10 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const supabase = createRouteHandlerClient({ cookies })
-    const { data: { session } } = await supabase.auth.getSession()
-    
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
+
     if (!session?.user) {
       return NextResponse.json(
         { error: 'Authentication required' },
@@ -129,38 +132,38 @@ export async function POST(request: NextRequest) {
           )
         }
 
-        const response = await agent.sendInstruction(payload.instruction, session.user.id)
-        
+        const response = await agent.sendInstruction(
+          payload.instruction,
+          session.user.id
+        )
+
         analytics.track('agent_instruction_sent', {
           agentId,
           userId: session.user.id,
-          instructionLength: payload.instruction.length
+          instructionLength: payload.instruction.length,
         })
 
         return NextResponse.json({
           success: true,
-          response
+          response,
         })
 
       case 'query_swarm':
         if (!payload?.query) {
-          return NextResponse.json(
-            { error: 'Query required' },
-            { status: 400 }
-          )
+          return NextResponse.json({ error: 'Query required' }, { status: 400 })
         }
 
         const swarmResponse = await agentManager.querySwarm(payload.query)
-        
+
         analytics.track('swarm_query_executed', {
           userId: session.user.id,
           queryLength: payload.query.length,
-          agentResponses: swarmResponse.agentResponses
+          agentResponses: swarmResponse.agentResponses,
         })
 
         return NextResponse.json({
           success: true,
-          swarmResponse
+          swarmResponse,
         })
 
       case 'mark_notification_read':
@@ -172,10 +175,10 @@ export async function POST(request: NextRequest) {
         }
 
         agentManager.markNotificationAsRead(payload.notificationId)
-        
+
         return NextResponse.json({
           success: true,
-          message: 'Notification marked as read'
+          message: 'Notification marked as read',
         })
 
       case 'initiate_collaboration':
@@ -195,7 +198,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
           success: true,
           collaborationId,
-          message: 'Collaboration initiated'
+          message: 'Collaboration initiated',
         })
 
       case 'configure_agent':
@@ -208,10 +211,10 @@ export async function POST(request: NextRequest) {
 
         // TODO: Implement agent configuration
         // This would allow users to adjust agent autonomy, notification preferences, etc.
-        
+
         return NextResponse.json({
           success: true,
-          message: 'Agent configuration updated'
+          message: 'Agent configuration updated',
         })
 
       case 'remove_agent':
@@ -223,15 +226,15 @@ export async function POST(request: NextRequest) {
         }
 
         await agentManager.removeAgent(agentId)
-        
+
         analytics.track('agent_removed', {
           agentId,
-          userId: session.user.id
+          userId: session.user.id,
         })
 
         return NextResponse.json({
           success: true,
-          message: 'Agent removed successfully'
+          message: 'Agent removed successfully',
         })
 
       default:
@@ -240,7 +243,6 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         )
     }
-
   } catch (error) {
     logger.error({ error }, 'Agent dashboard POST request failed')
     return NextResponse.json(
@@ -254,8 +256,10 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const supabase = createRouteHandlerClient({ cookies })
-    const { data: { session } } = await supabase.auth.getSession()
-    
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
+
     if (!session?.user) {
       return NextResponse.json(
         { error: 'Authentication required' },
@@ -274,21 +278,21 @@ export async function PUT(request: NextRequest) {
         const currentState = {
           swarm: await agentManager.getSwarmIntelligence(),
           notifications: agentManager.getNotifications(true), // Unread only
-          timestamp: new Date()
+          timestamp: new Date(),
         }
 
         return NextResponse.json({
           success: true,
           currentState,
-          pollInterval: 5000 // Suggest 5-second polling
+          pollInterval: 5000, // Suggest 5-second polling
         })
 
       case 'trigger_swarm_learning':
         await agentManager.processSwarmLearning()
-        
+
         return NextResponse.json({
           success: true,
-          message: 'Swarm learning process triggered'
+          message: 'Swarm learning process triggered',
         })
 
       default:
@@ -297,7 +301,6 @@ export async function PUT(request: NextRequest) {
           { status: 400 }
         )
     }
-
   } catch (error) {
     logger.error({ error }, 'Agent dashboard PUT request failed')
     return NextResponse.json(

@@ -1,4 +1,4 @@
-import { aiProviderManager } from '@/src/lib/ai/providers/provider-manager'
+import { aiProviderManager } from '@/lib/ai/providers/provider-manager'
 
 describe('AI Providers Integration', () => {
   beforeEach(async () => {
@@ -20,11 +20,11 @@ describe('AI Providers Integration', () => {
         prompt: 'Test prompt',
         systemPrompt: 'You are a helpful assistant',
         maxTokens: 100,
-        temperature: 0.7
+        temperature: 0.7,
       }
 
       const response = await aiProviderManager.generateCompletion(request)
-      
+
       expect(response).toHaveProperty('content')
       expect(response).toHaveProperty('usage')
       expect(response.content).toBe('Test response')
@@ -33,11 +33,11 @@ describe('AI Providers Integration', () => {
     it('should handle embedding requests', async () => {
       const request = {
         text: 'Test text for embedding',
-        model: 'text-embedding-3-small'
+        model: 'text-embedding-3-small',
       }
 
       const response = await aiProviderManager.generateEmbeddings(request)
-      
+
       expect(response).toHaveProperty('embeddings')
       expect(response.embeddings).toBeInstanceOf(Array)
       expect(response.embeddings[0]).toBeInstanceOf(Array)
@@ -50,16 +50,16 @@ describe('AI Providers Integration', () => {
       mockProvider.OpenAI.mockImplementationOnce(() => ({
         chat: {
           completions: {
-            create: jest.fn().mockRejectedValue(new Error('Provider error'))
-          }
-        }
+            create: jest.fn().mockRejectedValue(new Error('Provider error')),
+          },
+        },
       }))
 
       const request = {
         prompt: 'Test prompt',
         systemPrompt: 'You are a helpful assistant',
         maxTokens: 100,
-        temperature: 0.7
+        temperature: 0.7,
       }
 
       // Should still work due to fallback providers
@@ -82,7 +82,7 @@ describe('AI Providers Integration', () => {
     it('should track provider metrics', () => {
       const metrics = aiProviderManager.getProviderMetrics()
       expect(metrics).toBeInstanceOf(Array)
-      
+
       if (metrics.length > 0) {
         const metric = metrics[0]
         expect(metric).toHaveProperty('provider')
