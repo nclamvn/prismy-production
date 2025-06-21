@@ -297,7 +297,7 @@ export default function PricingPage({}: PricingPageProps) {
             transition: { duration: 0.6 }
           })}
         >
-          <div className="bg-gray-100 rounded-full p-1 shadow-sm">
+          <div className="bg-gray-100 p-1 shadow-sm" style={{ borderRadius: '2rem' }}>
             <button
               onClick={() => setBillingPeriod('monthly')}
               className={`btn-pill-md ${
@@ -305,6 +305,7 @@ export default function PricingPage({}: PricingPageProps) {
                   ? 'bg-white text-gray-900 shadow-sm'
                   : 'bg-transparent text-gray-600 hover:text-gray-900'
               }`}
+              style={{ borderRadius: '1.75rem' }}
             >
               {t('pricing.monthly')}
             </button>
@@ -315,9 +316,10 @@ export default function PricingPage({}: PricingPageProps) {
                   ? 'bg-white text-gray-900 shadow-sm'
                   : 'bg-transparent text-gray-600 hover:text-gray-900'
               }`}
+              style={{ borderRadius: '1.75rem' }}
             >
               {t('pricing.yearly')}
-              <span className="badge-base bg-green-500 text-white absolute -top-3 left-1/2 transform -translate-x-1/2">
+              <span className="badge-base bg-green-500 text-white absolute -top-3 left-1/2 transform -translate-x-1/2" style={{ borderRadius: '1rem' }}>
                 {t('pricing.save20')}
               </span>
             </button>

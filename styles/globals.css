@@ -4,6 +4,8 @@
 @tailwind components;
 @tailwind utilities;
 
+/* NUCLEAR OVERRIDES - Must be last to ensure maximum specificity */
+
 /* Base styles */
 @layer base {
   :root {
@@ -322,16 +324,126 @@
   /* Payment Method Buttons - Rectangular Design */
   .payment-method-button {
     @apply inline-flex items-center justify-center px-4 py-3 font-inter
-           rounded-lg border-2 border-gray-200 
+           border-2 border-gray-200 
            text-sm font-medium text-gray-700 bg-white
            hover:border-gray-400 hover:bg-gray-50 hover:text-gray-900
            transition-all duration-200 cursor-pointer
            active:scale-[0.98] min-h-[48px] gap-2;
+    border-radius: 8px !important;
+    border-top-left-radius: 8px !important;
+    border-top-right-radius: 8px !important;
+    border-bottom-left-radius: 8px !important;
+    border-bottom-right-radius: 8px !important;
   }
   
   .payment-method-button-active {
     @apply border-blue-500 bg-blue-500 text-white 
            hover:bg-blue-600 hover:border-blue-600;
+    border-radius: 8px !important;
+    border-top-left-radius: 8px !important;
+    border-top-right-radius: 8px !important;
+    border-bottom-left-radius: 8px !important;
+    border-bottom-right-radius: 8px !important;
+  }
+  
+  /* Pricing page button consistency fixes */
+  .pricing-page .payment-method-button,
+  .pricing-page .payment-method-button-active {
+    box-shadow: none !important;
+    border-radius: 8px !important;
+  }
+  
+  /* Pricing Page Background & Color Consistency */
+  .pricing-page {
+    --pricing-bg: #ffffff;
+    --pricing-card-bg: #ffffff;
+    --pricing-border: #e5e7eb;
+  }
+  
+  .pricing-page .card-base,
+  .pricing-page [class*="card-"],
+  .pricing-page .bg-white {
+    background-color: var(--pricing-card-bg) !important;
+    border-color: var(--pricing-border) !important;
+  }
+  
+  /* Pricing page unified card styling */
+  .pricing-page .card-base {
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 1.5rem !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  }
+  
+  /* Pricing card hover states consistency */
+  .pricing-page .card-hover:hover {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+    transform: translateY(-2px) !important;
+    background-color: #ffffff !important;
+  }
+  
+  /* FAQ blocks consistency */
+  .pricing-page [class*="faq"] div,
+  .pricing-page .rounded-xl {
+    background-color: #ffffff !important;
+    border-color: #e5e7eb !important;
+  }
+  
+  /* Layout Alignment Fixes */
+  .pricing-page .grid {
+    gap: 1.5rem !important;
+  }
+  
+  .pricing-page .grid > div {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  
+  /* Pricing cards equal height */
+  .pricing-page .grid > div > div {
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  
+  /* CTA buttons alignment */
+  .pricing-page .grid button {
+    margin-top: auto !important;
+    width: 100% !important;
+  }
+  
+  /* Comparison table alignment */
+  .pricing-page table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+  }
+  
+  .pricing-page table th,
+  .pricing-page table td {
+    text-align: left !important;
+    vertical-align: top !important;
+    padding: 1rem 1.5rem !important;
+  }
+  
+  .pricing-page table th:not(:first-child),
+  .pricing-page table td:not(:first-child) {
+    text-align: center !important;
+  }
+  
+  /* Payment method buttons grid alignment */
+  .pricing-page .grid-cols-3 {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 0.75rem !important;
+    align-items: stretch !important;
+  }
+  
+  .pricing-page .grid-cols-3 > button {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 3rem !important;
   }
   
   /* Typography - Chuyển toàn bộ sang Inter font */
@@ -626,6 +738,85 @@
         border: 1px solid rgba(229, 231, 235, 0.5) !important;
         box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
       }
+      
+      /* NUCLEAR: Universal mobile dropdown fix - Maximum specificity */
+      html body nav [class*="dropdown"],
+      html body header [class*="dropdown"],
+      html body .navbar [class*="dropdown"],
+      html body nav button[role="button"],
+      html body header button[role="button"],
+      html body nav .mobile-dropdown-rectangular,
+      html body header .mobile-dropdown-rectangular {
+        border-radius: 8px !important;
+        border-top-left-radius: 8px !important;
+        border-top-right-radius: 8px !important;
+        border-bottom-left-radius: 8px !important;
+        border-bottom-right-radius: 8px !important;
+      }
+      
+      /* NUCLEAR: Universal mobile dropdown menu containers */
+      html body nav [class*="dropdown"] [class*="absolute"],
+      html body header [class*="dropdown"] [class*="absolute"],
+      html body nav [class*="dropdown"] div,
+      html body header [class*="dropdown"] div,
+      html body .mobile-dropdown-rectangular > div,
+      html body .dropdown-mobile-safe > div {
+        border-radius: 8px !important;
+        border-top-left-radius: 8px !important;
+        border-top-right-radius: 8px !important;
+        border-bottom-left-radius: 8px !important;
+        border-bottom-right-radius: 8px !important;
+      }
     }
   }
 }
+
+/* ========================================================================== */
+/* NUCLEAR OVERRIDES - MAXIMUM SPECIFICITY - DO NOT MODIFY ORDER */
+/* ========================================================================== */
+
+/* Mobile Dropdown Nuclear Override - Final Authority */
+@media (max-width: 768px) {
+  html body nav *[class*="dropdown"],
+  html body header *[class*="dropdown"],
+  html body *[class*="UniversalDropdown"],
+  html body *[class*="mobile-dropdown"],
+  html body nav button,
+  html body header button,
+  html body .navbar button,
+  html body nav div[class*="absolute"],
+  html body header div[class*="absolute"] {
+    border-radius: 8px !important;
+    border-top-left-radius: 8px !important;
+    border-top-right-radius: 8px !important;
+    border-bottom-left-radius: 8px !important;
+    border-bottom-right-radius: 8px !important;
+  }
+}
+
+/* Pricing Page Nuclear Override - Final Authority */
+html body .pricing-page .payment-method-button,
+html body .pricing-page .payment-method-button-active,
+html body .pricing-page [class*="payment"] {
+  border-radius: 8px !important;
+  border-top-left-radius: 8px !important;
+  border-top-right-radius: 8px !important;
+  border-bottom-left-radius: 8px !important;
+  border-bottom-right-radius: 8px !important;
+  box-shadow: none !important;
+}
+
+/* Background Consistency Nuclear Override */
+html body .pricing-page .bg-white,
+html body .pricing-page [class*="card"],
+html body .pricing-page .rounded-xl {
+  background-color: #ffffff !important;
+  border-color: #e5e7eb !important;
+}
+
+/* Final Pill System Override for Pricing Page */
+html body .pricing-page *[class*="pill"]:not(.btn-pill-md) {
+  border-radius: 8px !important;
+}
+
+/* End Nuclear Overrides */
