@@ -88,17 +88,15 @@ export default function UniversalDropdown({
         disabled={disabled}
         className={`
           flex items-center justify-between w-full
-          bg-white border border-gray-300 
+          bg-white border border-border-subtle rounded-md
           font-medium text-gray-900
-          hover:font-semibold hover:border-gray-400
+          hover:font-semibold hover:border-gray-400 hover:-translate-y-px
           focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-gray-300
-          transition-all duration-200
-          touch-manipulation
-          mobile-dropdown-rectangular
+          transition-all duration-300 cubic-bezier(0.25, 0.46, 0.45, 0.94)
+          touch-manipulation mobile-dropdown-zen
           ${sizeClasses[size]}
           ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
         `}
-        style={{ borderRadius: '8px' }}
       >
         <div className="flex items-center gap-2">
           {selectedOption?.icon && (
@@ -127,8 +125,11 @@ export default function UniversalDropdown({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -8 }}
             transition={{ duration: 0.15 }}
-            className="absolute z-[60] w-full mt-1 bg-white border border-gray-300 overflow-hidden mobile-dropdown-menu mobile-dropdown-rectangular"
-            style={{ boxShadow: 'none', borderRadius: '8px' }}
+            className="absolute z-[60] w-full mt-1 bg-white border border-border-subtle rounded-md overflow-hidden mobile-dropdown-zen"
+            style={{ 
+              boxShadow: 'var(--shadow-lg)',
+              borderColor: 'var(--border-subtle)' 
+            }}
           >
             <div className="max-h-60 overflow-y-auto">
               {options.map((option) => (

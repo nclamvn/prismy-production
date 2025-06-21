@@ -224,9 +224,11 @@ export default function PricingPage({}: PricingPageProps) {
   return (
     <div className="pricing-page">
       <Navbar />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
-      {/* Hero Section with Premium Typography */}
-      <div className="container mx-auto px-4 py-16">
+      <div className="min-h-screen bg-gray-50">
+      {/* Hero Section - Prismy Full Width Structure */}
+      <section className="py-20 w-full">
+        <div className="w-full px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <motion.h1 
             className="heading-hero text-center mb-6"
@@ -297,29 +299,27 @@ export default function PricingPage({}: PricingPageProps) {
             transition: { duration: 0.6 }
           })}
         >
-          <div className="bg-gray-100 p-1 shadow-sm" style={{ borderRadius: '2rem' }}>
+          <div className="bg-gray-100 rounded-full p-1 shadow-sm">
             <button
               onClick={() => setBillingPeriod('monthly')}
-              className={`btn-pill-md ${
+              className={`btn-pill-md transition-all duration-300 cubic-bezier(0.25, 0.46, 0.45, 0.94) ${
                 billingPeriod === 'monthly'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'bg-transparent text-gray-600 hover:text-gray-900'
+                  ? 'bg-white text-gray-900 shadow-sm font-semibold'
+                  : 'bg-transparent text-gray-600 hover:text-gray-900 hover:font-semibold hover:-translate-y-px'
               }`}
-              style={{ borderRadius: '1.75rem' }}
             >
               {t('pricing.monthly')}
             </button>
             <button
               onClick={() => setBillingPeriod('yearly')}
-              className={`btn-pill-md relative ml-1 ${
+              className={`btn-pill-md relative ml-1 transition-all duration-300 cubic-bezier(0.25, 0.46, 0.45, 0.94) ${
                 billingPeriod === 'yearly'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'bg-transparent text-gray-600 hover:text-gray-900'
+                  ? 'bg-white text-gray-900 shadow-sm font-semibold'
+                  : 'bg-transparent text-gray-600 hover:text-gray-900 hover:font-semibold hover:-translate-y-px'
               }`}
-              style={{ borderRadius: '1.75rem' }}
             >
               {t('pricing.yearly')}
-              <span className="badge-base bg-green-500 text-white absolute -top-3 left-1/2 transform -translate-x-1/2" style={{ borderRadius: '1rem' }}>
+              <span className="badge-base bg-green-500 text-white absolute -top-3 left-1/2 transform -translate-x-1/2">
                 {t('pricing.save20')}
               </span>
             </button>
@@ -343,9 +343,9 @@ export default function PricingPage({}: PricingPageProps) {
                 <button
                   key={method}
                   onClick={() => setSelectedPaymentMethod(method)}
-                  className={`payment-method-button ${
+                  className={`payment-method-selector ${
                     selectedPaymentMethod === method
-                      ? 'payment-method-button-active'
+                      ? 'payment-method-selector-active'
                       : ''
                   }`}
                 >
@@ -673,7 +673,7 @@ export default function PricingPage({}: PricingPageProps) {
                 a: 'We support over 100 different languages, including all major languages in Vietnam and Southeast Asia.'
               }
             ]).map((faq, index) => (
-              <div key={index} className="bg-white rounded-xl border border-gray-200 p-6 transition-all duration-200 hover:border-gray-300 hover:bg-gray-50 hover:-translate-y-1 hover:shadow-md cursor-pointer">
+              <div key={index} className="bg-white rounded-xl border border-border-subtle p-6 transition-all duration-300 cubic-bezier(0.25, 0.46, 0.45, 0.94) hover:border-gray-300 hover:-translate-y-px hover:shadow-md cursor-pointer">
                 <h3 className="font-semibold text-gray-900 mb-3">{faq.q}</h3>
                 <p className="text-gray-600 leading-relaxed">{faq.a}</p>
               </div>
@@ -715,7 +715,7 @@ export default function PricingPage({}: PricingPageProps) {
         </div>
 
         {/* Bottom Note */}
-        <div className="text-center mt-16 mb-12">
+        <div className="text-center mt-16">
           <p className="body-base text-gray-600">
             {language === 'vi' 
               ? 'Tất cả gói dịch vụ đều bao gồm công cụ dịch thuật cốt lõi và hỗ trợ cơ bản'
@@ -723,7 +723,9 @@ export default function PricingPage({}: PricingPageProps) {
             }
           </p>
         </div>
-      </div>
+          </div>
+        </div>
+      </section>
     </div>
     <Footer />
     </div>

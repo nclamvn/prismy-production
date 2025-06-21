@@ -181,10 +181,10 @@ export default function Navbar({}: NavbarProps) {
 
         {/* Mobile menu */}
         {isMenuOpen && (
-          <div className="content-container mobile-nav-container">
+          <div className="w-full px-4 sm:px-6 lg:px-8">
             <motion.div
               id="mobile-menu"
-              className="md:hidden border-t border-gray-100 pt-4 pb-8 mb-4 z-[50] mobile-nav-rectangular"
+              className="md:hidden border-t border-gray-100 pt-4 pb-8 mb-4 z-[50] mobile-nav-zen"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
