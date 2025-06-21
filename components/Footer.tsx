@@ -122,7 +122,7 @@ export default function Footer({}: FooterProps) {
         placeholder: 'Nhập email của bạn',
         subscribe: 'Đăng ký'
       },
-      description: 'Dịch thuật chuyên nghiệp với AI tiên tiến cho doanh nghiệp toàn cầu.'
+      description: 'AI Agent for Document Intelligence - Chuyên gia AI thông minh cho xử lý tài liệu doanh nghiệp.'
     },
     en: {
       sections: [
@@ -173,7 +173,7 @@ export default function Footer({}: FooterProps) {
         placeholder: 'Enter your email',
         subscribe: 'Subscribe'
       },
-      description: 'Professional AI-powered translation for global enterprises.'
+      description: 'AI Agent for Document Intelligence - Intelligent AI specialist for enterprise document processing.'
     }
   }
 

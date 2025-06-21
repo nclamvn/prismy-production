@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
-import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import UniversalDropdown from '@/components/ui/UniversalDropdown'
 import { slideUp, staggerContainer, motionSafe } from '@/lib/motion'
@@ -255,7 +254,6 @@ function EnterpriseContent() {
 
   return (
     <div className="min-h-screen bg-bg-main">
-      <Navbar />
       
       <main>
           {/* Hero Section */}

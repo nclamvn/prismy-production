@@ -1,9 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { AuthProvider } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
-import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { slideUp, staggerContainer, motionSafe } from '@/lib/motion'
 import { UNIFIED_SUBSCRIPTION_PLANS } from '@/lib/payments/payment-service'
@@ -163,9 +161,7 @@ export default function Home() {
   const getFinalLogoSize = (baseSize: number) => Math.round(baseSize / 2.5)
 
   return (
-    <AuthProvider>
-      <div className="min-h-screen bg-bg-main">
-        <Navbar />
+    <div className="min-h-screen bg-bg-main">
         
         <main>
           {/* Hero Section - Full Width */}
@@ -410,6 +406,5 @@ export default function Home() {
 
         <Footer />
       </div>
-    </AuthProvider>
   )
 }

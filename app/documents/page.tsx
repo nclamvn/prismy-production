@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { AuthProvider, useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
-import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import DocumentUpload from '@/components/documents/DocumentUpload'
 import DocumentTranslator from '@/components/documents/DocumentTranslator'
@@ -139,7 +138,6 @@ function DocumentsPageContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      <Navbar />
       
       <main className="pt-24 pb-16">
         <motion.div 

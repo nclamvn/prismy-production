@@ -5,7 +5,6 @@ import { motion } from 'framer-motion'
 import { useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { motionSafe } from '@/lib/motion'
-import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { 
   UNIFIED_SUBSCRIPTION_PLANS, 
@@ -241,7 +240,6 @@ export default function PricingPage({}: PricingPageProps) {
 
   return (
     <div className="pricing-page">
-      <Navbar />
       <div className="min-h-screen bg-white">
       {/* Hero Section - Prismy Full Width Structure */}
       <section className="py-20 w-full">

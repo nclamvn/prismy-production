@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { AuthProvider, useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
-import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import IntelligentDocumentUpload from '@/components/documents/IntelligentDocumentUpload'
 import { motionSafe, slideUp, staggerContainer, fadeIn } from '@/lib/motion'
@@ -297,7 +296,6 @@ function IntelligenceDashboardContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      <Navbar />
       
       <main className="pt-24 pb-16">
         <motion.div 

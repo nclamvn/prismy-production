@@ -5,6 +5,7 @@ import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration'
 import PerformanceMonitor from '@/components/PerformanceMonitor'
 import { LanguageProvider } from '@/contexts/LanguageContext'
 import { AuthProvider } from '@/contexts/AuthContext'
+import Navbar from '@/components/Navbar'
 
 const inter = Inter({ 
   subsets: ['latin', 'vietnamese'],
@@ -110,6 +111,7 @@ export default function RootLayout({
       <body className="font-inter antialiased bg-white text-gray-900" style={{ fontSize: '18px', lineHeight: '1.6' }}>
         <LanguageProvider>
           <AuthProvider>
+            <Navbar />
             {children}
           </AuthProvider>
         </LanguageProvider>

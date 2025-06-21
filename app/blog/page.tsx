@@ -5,7 +5,6 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
-import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { slideUp, staggerContainer, motionSafe } from '@/lib/motion'
 import { 
@@ -202,7 +201,6 @@ export default function Blog() {
   return (
     <AuthProvider>
       <div className="min-h-screen bg-bg-main">
-        <Navbar />
         
         <main>
           {/* Hero Section */}
