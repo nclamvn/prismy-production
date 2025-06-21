@@ -79,10 +79,10 @@ export class DocumentAgentManager extends EventEmitter {
 
     this.initializeManager()
     
-    logger.info('Agent Manager initialized', {
+    logger.info({
       userId: this.userId,
       config: this.config
-    })
+    }, 'Agent Manager initialized')
   }
 
   // Agent Lifecycle Management
@@ -114,11 +114,11 @@ export class DocumentAgentManager extends EventEmitter {
     // Introduce agent to the swarm
     await this.introduceAgentToSwarm(agent)
     
-    logger.info('Agent created for document', {
+    logger.info({
       documentId,
       agentId: agent.agentId,
       personality: agent.personality
-    })
+    }, 'Agent created for document')
     
     return agent
   }
@@ -159,7 +159,7 @@ export class DocumentAgentManager extends EventEmitter {
     const collaborators = await this.findCollaborators(initiator, task, targetPersonalities)
     
     if (collaborators.length === 0) {
-      logger.warn('No suitable collaborators found', { initiatorAgentId, task })
+      logger.warn({ initiatorAgentId, task }, 'No suitable collaborators found')
       return ''
     }
 
@@ -377,10 +377,10 @@ export class DocumentAgentManager extends EventEmitter {
 
     await this.removeAgent(oldestAgent.agentId)
     
-    logger.info('Retired oldest agent due to limit', {
+    logger.info({
       retiredAgentId: oldestAgent.agentId,
       totalAgents: this.agents.size
-    })
+    }, 'Retired oldest agent due to limit')
   }
 
   private async findCollaborators(
@@ -571,7 +571,7 @@ export class DocumentAgentManager extends EventEmitter {
     
     this.removeAllListeners()
     
-    logger.info('Agent Manager destroyed', { userId: this.userId })
+    logger.info({ userId: this.userId }, 'Agent Manager destroyed')
   }
 }
 

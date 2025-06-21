@@ -252,10 +252,10 @@ export class AIOrchestrator {
       this.providers.set(provider.name, provider)
     })
 
-    logger.info('AI Orchestrator initialized with providers', { 
+    logger.info({ 
       providerCount: providers.length,
       capabilities: providers.flatMap(p => p.capabilities)
-    })
+    }, 'AI Orchestrator initialized with providers')
   }
 
   // Main processing method

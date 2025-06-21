@@ -3,7 +3,7 @@ import Stripe from 'stripe'
 // Server-side Stripe instance with environment check
 export const stripe = process.env.STRIPE_SECRET_KEY 
   ? new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2025-05-28.basil'
+      apiVersion: '2023-10-16'
     })
   : null
 

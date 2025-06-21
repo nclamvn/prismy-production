@@ -127,7 +127,7 @@ export async function POST(request: NextRequest) {
 
     const documentId = `doc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     
-    logger.info('Starting intelligent document processing', {
+    logger.info({
       documentId,
       filename: file.name,
       size: file.size,
@@ -135,7 +135,7 @@ export async function POST(request: NextRequest) {
       userId: session.user.id,
       tier: userTier,
       options
-    })
+    }, 'Starting intelligent document processing')
 
     // Stage 1: Instant Intelligence (< 2 seconds)
     const quickAnalysisStart = Date.now()

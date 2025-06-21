@@ -1,74 +1,57 @@
-import pino from 'pino'
-
-// Create different loggers for different environments
-const isDevelopment = process.env.NODE_ENV === 'development'
-const isProduction = process.env.NODE_ENV === 'production'
-
-// Base logger configuration
-const baseConfig = {
-  level: process.env.LOG_LEVEL || (isDevelopment ? 'debug' : 'info'),
+// Simple logger for the minimalist system
+export class Logger {
+  info(data: any, message?: string) {
+    if (typeof data === 'string') {
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`[INFO] ${data}`, message || '')
+      }
+    } else {
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`[INFO] ${message || 'Info'}`, data || '')
+      }
+    }
+  }
   
-  // Add custom fields for Prismy context
-  base: {
-    service: 'prismy-translation',
-    version: process.env.APP_VERSION || '1.0.0',
-    environment: process.env.NODE_ENV || 'development'
-  },
+  warn(data: any, message?: string) {
+    if (typeof data === 'string') {
+      console.warn(`[WARN] ${data}`, message || '')
+    } else {
+      console.warn(`[WARN] ${message || 'Warning'}`, data || '')
+    }
+  }
   
-  // Format timestamps
-  timestamp: pino.stdTimeFunctions.isoTime,
+  error(data: any, message?: string) {
+    if (typeof data === 'string') {
+      console.error(`[ERROR] ${data}`, message || '')
+    } else {
+      console.error(`[ERROR] ${message || 'Error occurred'}`, data || '')
+    }
+  }
   
-  // Redact sensitive information
-  redact: {
-    paths: [
-      'password',
-      'token',
-      'apiKey',
-      'authorization',
-      'secret',
-      'key',
-      'req.headers.authorization',
-      'req.headers.cookie',
-      'res.headers["set-cookie"]'
-    ],
-    remove: true
+  debug(data: any, message?: string) {
+    if (typeof data === 'string') {
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`[DEBUG] ${data}`, message || '')
+      }
+    } else {
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`[DEBUG] ${message || 'Debug'}`, data || '')
+      }
+    }
+  }
+  
+  // Create a child logger for components
+  child(context: any) {
+    return {
+      info: (data: any, message?: string) => this.info(data, message),
+      warn: (data: any, message?: string) => this.warn(data, message),
+      error: (data: any, message?: string) => this.error(data, message),
+      debug: (data: any, message?: string) => this.debug(data, message)
+    }
   }
 }
 
-// Development logger with pretty printing (disabled in serverless)
-const developmentLogger = pino({
-  ...baseConfig,
-  // Disable transport in serverless environments to avoid worker threads
-  ...(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME ? {} : {
-    transport: {
-      target: 'pino-pretty',
-      options: {
-        colorize: true,
-        translateTime: 'HH:MM:ss Z',
-        ignore: 'pid,hostname'
-      }
-    }
-  })
-})
-
-// Production logger optimized for structured logging (disable workers for Vercel)
-const productionLogger = pino({
-  ...baseConfig,
-  formatters: {
-    level: (label) => {
-      return { level: label }
-    }
-  },
-  // Disable worker threads in production to avoid Vercel deployment issues
-  ...(process.env.VERCEL || process.env.VERCEL_ENV ? {
-    transport: undefined,
-    worker: undefined,
-    sync: true
-  } : {})
-})
-
-// Export the appropriate logger
-export const logger = isDevelopment ? developmentLogger : productionLogger
+export const logger = new Logger()
 
 // Specialized loggers for different components
 export const createLogger = (component: string) => {
@@ -101,7 +84,7 @@ export const performanceLogger = createLogger('performance')
 
 // Utility functions for common logging patterns
 export const logApiRequest = (req: any, extra?: object) => {
-  apiLogger.info({
+  logger.info({
     method: req.method,
     url: req.url,
     userAgent: req.headers?.['user-agent'],
@@ -113,7 +96,7 @@ export const logApiRequest = (req: any, extra?: object) => {
 export const logApiResponse = (req: any, res: any, duration: number, extra?: object) => {
   const level = res.statusCode >= 400 ? 'error' : 'info'
   
-  apiLogger[level]({
+  logger[level]({
     method: req.method,
     url: req.url,
     statusCode: res.statusCode,
@@ -123,7 +106,7 @@ export const logApiResponse = (req: any, res: any, duration: number, extra?: obj
 }
 
 export const logTranslation = (sourceText: string, targetLang: string, success: boolean, extra?: object) => {
-  translationLogger.info({
+  logger.info({
     sourceTextLength: sourceText.length,
     targetLanguage: targetLang,
     success,
@@ -132,7 +115,7 @@ export const logTranslation = (sourceText: string, targetLang: string, success: 
 }
 
 export const logPayment = (paymentMethod: string, amount: number, currency: string, success: boolean, extra?: object) => {
-  paymentLogger.info({
+  logger.info({
     paymentMethod,
     amount,
     currency,
@@ -142,7 +125,7 @@ export const logPayment = (paymentMethod: string, amount: number, currency: stri
 }
 
 export const logCacheOperation = (operation: string, key: string, hit: boolean, duration?: number, extra?: object) => {
-  cacheLogger.debug({
+  logger.debug({
     operation,
     key: key.substring(0, 50), // Truncate long keys
     hit,
@@ -154,7 +137,7 @@ export const logCacheOperation = (operation: string, key: string, hit: boolean, 
 export const logSecurityEvent = (event: string, severity: 'low' | 'medium' | 'high' | 'critical', extra?: object) => {
   const level = severity === 'critical' ? 'error' : severity === 'high' ? 'warn' : 'info'
   
-  securityLogger[level]({
+  logger[level]({
     event,
     severity,
     timestamp: new Date().toISOString(),
@@ -165,7 +148,7 @@ export const logSecurityEvent = (event: string, severity: 'low' | 'medium' | 'hi
 export const logPerformance = (operation: string, duration: number, extra?: object) => {
   const level = duration > 1000 ? 'warn' : 'info'
   
-  performanceLogger[level]({
+  logger[level]({
     operation,
     duration: `${duration}ms`,
     ...extra

@@ -111,11 +111,11 @@ export class DocumentAgent extends EventEmitter {
     this.initializeAgent(documentIntelligence)
     this.startAutonomousLoop()
     
-    logger.info('Document Agent created', {
+    logger.info({
       agentId: this.agentId,
       documentId: this.documentId,
       personality: this.personality
-    })
+    }, 'Document Agent created')
   }
 
   // Core Agent Intelligence
@@ -322,10 +322,10 @@ export class DocumentAgent extends EventEmitter {
     this.emit('agent:destroy')
     this.removeAllListeners()
     
-    logger.info('Document Agent destroyed', {
+    logger.info({
       agentId: this.agentId,
       documentId: this.documentId
-    })
+    }, 'Document Agent destroyed')
   }
 
   // Private Helper Methods
@@ -474,11 +474,11 @@ export class DocumentAgent extends EventEmitter {
   }
 
   private async executeGoal(goal: AgentGoal) {
-    logger.info('Agent executing goal', {
+    logger.info({
       agentId: this.agentId,
       goalId: goal.id,
       goalType: goal.type
-    })
+    }, 'Agent executing goal')
     
     // Goal execution logic will be implemented based on goal type
     goal.progress = 100

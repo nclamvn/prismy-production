@@ -105,7 +105,7 @@ class AlertingSystem {
 
     // Check rate limiting
     if (!this.checkRateLimit()) {
-      logger.warn('Alert rate limit exceeded, dropping alert', { title, severity })
+      logger.warn({ title, severity }, 'Alert rate limit exceeded, dropping alert')
       return null
     }
 
@@ -347,7 +347,7 @@ class AlertingSystem {
         if (handler) {
           await handler(alert, channel)
         } else {
-          logger.warn(`No handler for notification type: ${channel.type}`)
+          logger.warn({ channelType: channel.type }, `No handler for notification type: ${channel.type}`)
         }
       } catch (error) {
         logger.error({ error, channel, alert }, 'Failed to send notification')
