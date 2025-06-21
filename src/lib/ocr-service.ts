@@ -380,7 +380,7 @@ class OCRService {
 
   // Detect language in image
   async detectLanguage(imageData: string | ImageData | Buffer | File): Promise<string[]> {
-    let worker: Worker | null = null
+    let worker: any = null
     
     try {
       worker = await createWorker()
