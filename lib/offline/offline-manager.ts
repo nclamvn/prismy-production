@@ -23,7 +23,7 @@ export interface OfflineStorageItem {
 }
 
 export class OfflineManager {
-  private isOnline = navigator.onlineDetector
+  private isOnline = typeof navigator !== 'undefined' ? navigator.onLine : true
   private syncQueue: OfflineOperation[] = []
   private subscribers = new Set<(isOnline: boolean) => void>()
   private dbName = 'prismy-offline'
@@ -31,10 +31,12 @@ export class OfflineManager {
   private db: IDBDatabase | null = null
 
   constructor() {
-    this.initializeIndexedDB()
-    this.setupOnlineDetection()
-    this.setupPeriodicSync()
-    this.loadSyncQueue()
+    if (typeof window !== 'undefined') {
+      this.initializeIndexedDB()
+      this.setupOnlineDetection()
+      this.setupPeriodicSync()
+      this.loadSyncQueue()
+    }
   }
 
   // IndexedDB initialization
@@ -53,15 +55,19 @@ export class OfflineManager {
         resolve()
       }
 
-      request.onupgradeneeded = (event) => {
+      request.onupgradeneeded = event => {
         const db = (event.target as IDBOpenDBRequest).result
 
         // Create object stores
         if (!db.objectStoreNames.contains('operations')) {
-          const operationsStore = db.createObjectStore('operations', { keyPath: 'id' })
+          const operationsStore = db.createObjectStore('operations', {
+            keyPath: 'id',
+          })
           operationsStore.createIndex('type', 'type', { unique: false })
           operationsStore.createIndex('status', 'status', { unique: false })
-          operationsStore.createIndex('timestamp', 'timestamp', { unique: false })
+          operationsStore.createIndex('timestamp', 'timestamp', {
+            unique: false,
+          })
         }
 
         if (!db.objectStoreNames.contains('cache')) {
@@ -70,9 +76,13 @@ export class OfflineManager {
         }
 
         if (!db.objectStoreNames.contains('translations')) {
-          const translationsStore = db.createObjectStore('translations', { keyPath: 'id' })
+          const translationsStore = db.createObjectStore('translations', {
+            keyPath: 'id',
+          })
           translationsStore.createIndex('hash', 'hash', { unique: true })
-          translationsStore.createIndex('timestamp', 'timestamp', { unique: false })
+          translationsStore.createIndex('timestamp', 'timestamp', {
+            unique: false,
+          })
         }
 
         logger.info('IndexedDB schema updated')
@@ -82,6 +92,9 @@ export class OfflineManager {
 
   // Online detection setup
   private setupOnlineDetection(): void {
+    if (typeof window === 'undefined' || typeof navigator === 'undefined')
+      return
+
     this.isOnline = navigator.onLine
 
     const updateOnlineStatus = () => {
@@ -111,14 +124,14 @@ export class OfflineManager {
     try {
       const response = await fetch('/api/health', {
         method: 'HEAD',
-        cache: 'no-cache'
+        cache: 'no-cache',
       })
-      
+
       const isConnected = response.ok
       if (this.isOnline !== isConnected) {
         this.isOnline = isConnected
         this.notifySubscribers()
-        
+
         if (isConnected) {
           this.syncPendingOperations()
         }
@@ -134,10 +147,10 @@ export class OfflineManager {
   // Subscription management
   subscribeToOnlineStatus(callback: (isOnline: boolean) => void): () => void {
     this.subscribers.add(callback)
-    
+
     // Immediately call with current status
     callback(this.isOnline)
-    
+
     return () => {
       this.subscribers.delete(callback)
     }
@@ -166,15 +179,15 @@ export class OfflineManager {
       timestamp: Date.now(),
       status: 'pending',
       retryCount: 0,
-      maxRetries
+      maxRetries,
     }
 
     this.syncQueue.push(operation)
     await this.storeOperation(operation)
 
-    logger.info('Added offline operation', { 
-      id: operation.id, 
-      type: operation.type 
+    logger.info('Added offline operation', {
+      id: operation.id,
+      type: operation.type,
     })
 
     // Try to sync immediately if online
@@ -229,12 +242,14 @@ export class OfflineManager {
   private async syncPendingOperations(): Promise<void> {
     if (!this.isOnline || this.syncQueue.length === 0) return
 
-    logger.info('Starting sync of pending operations', { 
-      count: this.syncQueue.length 
+    logger.info('Starting sync of pending operations', {
+      count: this.syncQueue.length,
     })
 
-    const pendingOperations = this.syncQueue.filter(op => op.status === 'pending')
-    
+    const pendingOperations = this.syncQueue.filter(
+      op => op.status === 'pending'
+    )
+
     for (const operation of pendingOperations) {
       await this.syncOperation(operation)
     }
@@ -265,19 +280,18 @@ export class OfflineManager {
         operation.status = 'synced'
         this.syncQueue = this.syncQueue.filter(op => op.id !== operation.id)
         await this.removeOperation(operation.id)
-        
-        logger.info('Operation synced successfully', { 
-          id: operation.id, 
-          type: operation.type 
+
+        logger.info('Operation synced successfully', {
+          id: operation.id,
+          type: operation.type,
         })
       } else {
         await this.handleSyncFailure(operation)
       }
-
     } catch (error) {
-      logger.error('Sync operation failed', { 
-        id: operation.id, 
-        error 
+      logger.error('Sync operation failed', {
+        id: operation.id,
+        error,
       })
       await this.handleSyncFailure(operation)
     }
@@ -285,18 +299,18 @@ export class OfflineManager {
 
   private async handleSyncFailure(operation: OfflineOperation): Promise<void> {
     operation.retryCount++
-    
+
     if (operation.retryCount >= operation.maxRetries) {
       operation.status = 'failed'
-      logger.error('Operation failed permanently', { 
-        id: operation.id, 
-        retryCount: operation.retryCount 
+      logger.error('Operation failed permanently', {
+        id: operation.id,
+        retryCount: operation.retryCount,
       })
     } else {
       operation.status = 'pending'
-      logger.warn('Operation retry scheduled', { 
-        id: operation.id, 
-        retryCount: operation.retryCount 
+      logger.warn('Operation retry scheduled', {
+        id: operation.id,
+        retryCount: operation.retryCount,
       })
     }
 
@@ -308,9 +322,9 @@ export class OfflineManager {
       const response = await fetch('/api/translate', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       })
 
       return response.ok
@@ -324,9 +338,9 @@ export class OfflineManager {
       const response = await fetch('/api/documents', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       })
 
       return response.ok
@@ -340,9 +354,9 @@ export class OfflineManager {
       const response = await fetch('/api/user/actions', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       })
 
       return response.ok
@@ -372,7 +386,7 @@ export class OfflineManager {
       key,
       value,
       timestamp: Date.now(),
-      ttl
+      ttl,
     }
 
     return new Promise((resolve, reject) => {
@@ -395,7 +409,7 @@ export class OfflineManager {
 
       request.onsuccess = () => {
         const item = request.result as OfflineStorageItem
-        
+
         if (!item) {
           resolve(null)
           return
@@ -437,7 +451,7 @@ export class OfflineManager {
     result: any
   ): Promise<void> {
     const hash = this.createTranslationHash(sourceText, sourceLang, targetLang)
-    
+
     const translation = {
       id: hash,
       hash,
@@ -445,7 +459,7 @@ export class OfflineManager {
       sourceLang,
       targetLang,
       result,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     }
 
     if (!this.db) return
@@ -541,13 +555,13 @@ export class OfflineManager {
     const transaction = this.db.transaction(['cache'], 'readwrite')
     const store = transaction.objectStore('cache')
     const index = store.index('timestamp')
-    
-    const cutoff = Date.now() - (7 * 24 * 60 * 60 * 1000) // 7 days ago
+
+    const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000 // 7 days ago
     const range = IDBKeyRange.upperBound(cutoff)
-    
+
     const request = index.openCursor(range)
-    
-    request.onsuccess = (event) => {
+
+    request.onsuccess = event => {
       const cursor = (event.target as IDBRequest).result
       if (cursor) {
         const item = cursor.value as OfflineStorageItem
@@ -563,7 +577,7 @@ export class OfflineManager {
     if (!this.db) return
 
     const storeNames = ['operations', 'cache', 'translations']
-    
+
     for (const storeName of storeNames) {
       await new Promise<void>((resolve, reject) => {
         const transaction = this.db!.transaction([storeName], 'readwrite')
