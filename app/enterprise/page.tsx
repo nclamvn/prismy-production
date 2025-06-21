@@ -722,7 +722,7 @@ function EnterpriseContent() {
                       <textarea
                         placeholder={content[language].contact.form.requirements}
                         rows={4}
-                        className="input-base md:col-span-2"
+                        className="textarea-base md:col-span-2"
                       />
                       <button
                         type="submit"

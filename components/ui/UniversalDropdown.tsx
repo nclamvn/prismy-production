@@ -68,9 +68,9 @@ export default function UniversalDropdown({
   }
   
   const sizeClasses = {
-    sm: 'px-2.5 py-1.5 text-sm',
-    md: 'px-4 py-2.5 text-base',
-    lg: 'px-5 py-3 text-lg'
+    sm: 'px-2.5 py-1.5 text-sm min-h-[40px]',
+    md: 'px-4 py-2.5 text-base min-h-[44px]',
+    lg: 'px-5 py-3 text-lg min-h-[48px]'
   }
   
   const iconSizes = {
@@ -88,7 +88,7 @@ export default function UniversalDropdown({
         disabled={disabled}
         className={`
           flex items-center justify-between w-full
-          bg-white border border-border-subtle rounded-md
+          bg-white border border-border-subtle rounded-full
           font-medium text-gray-900
           hover:font-semibold hover:border-gray-400 hover:-translate-y-px
           focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-gray-300

@@ -23,7 +23,7 @@ interface PricingPageProps {
 
 // Helper function to render payment method icons
 const renderPaymentMethodIcon = (method: PaymentMethod) => {
-  const iconProps = { size: 16, strokeWidth: 1.5, className: "text-gray-600" }
+  const iconProps = { size: 18, strokeWidth: 1.5, className: "text-current" }
   const iconType = getPaymentMethodIconType(method)
   
   switch (iconType) {
@@ -335,7 +335,7 @@ export default function PricingPage({}: PricingPageProps) {
               }`}
             >
               {t('pricing.yearly')}
-              <span className="absolute -top-2 -right-2 bg-gray-900 text-white text-xs font-bold px-2 py-1 rounded-full">
+              <span className="absolute -top-4 right-3 bg-gray-900 text-white text-xs font-bold px-2 py-1 rounded-full">
                 {t('pricing.save20')}
               </span>
             </button>
@@ -442,7 +442,7 @@ export default function PricingPage({}: PricingPageProps) {
                         <span className="heading-1">
                           {formatCurrency(price)}
                         </span>
-                        <span className="body-base text-gray-500 ml-2">
+                        <span className="body-base text-gray-500 ml-3">
                           {billingPeriod === 'yearly' ? t('pricing.yearly') : t('pricing.monthly')}
                         </span>
                       </div>

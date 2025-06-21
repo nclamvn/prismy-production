@@ -25,7 +25,7 @@ export default function Home() {
   const content = {
     vi: {
       hero: {
-        title: 'Dịch thuật AI chuyên nghiệp',
+        title: 'AI Agent tiên phong trong xử lý tài liệu thông minh',
         subtitle: '',
         description: 'Giải pháp dịch thuật thông minh với độ chính xác cao, hỗ trợ hơn 100 ngôn ngữ',
         getStarted: 'Bắt đầu ngay',
@@ -87,7 +87,7 @@ export default function Home() {
     },
     en: {
       hero: {
-        title: 'Professional AI Translation',
+        title: 'Pioneering AI Agent for Document Intelligence',
         subtitle: '',
         description: 'Intelligent translation solution with high accuracy, supporting 100+ languages',
         getStarted: 'Get Started',
