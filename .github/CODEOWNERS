@@ -1,0 +1,33 @@
+# Global owners
+* @nclamvn
+
+# Core configuration files
+/.github/ @nclamvn
+/package.json @nclamvn
+/tsconfig.json @nclamvn
+/.eslintrc.json @nclamvn
+/.prettierrc.json @nclamvn
+/next.config.js @nclamvn
+/tailwind.config.js @nclamvn
+
+# Infrastructure and deployment
+/app/api/ @nclamvn
+/lib/ @nclamvn
+/middleware/ @nclamvn
+/supabase/ @nclamvn
+
+# Security sensitive files
+/.env.example @nclamvn
+/lib/csrf.ts @nclamvn
+/lib/webhook-security.ts @nclamvn
+/lib/rate-limiter.ts @nclamvn
+
+# UI Components
+/components/ @nclamvn
+/styles/ @nclamvn
+
+# Tests
+/__tests__/ @nclamvn
+/tests/ @nclamvn
+/jest.config.js @nclamvn
+/playwright.config.ts @nclamvn

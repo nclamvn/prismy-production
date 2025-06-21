@@ -185,6 +185,8 @@ prismy-deploy/
 *.md.backup
 archive/
 test-results/
+src/
+*.old
 
 # AI and ML models
 *.model
@@ -201,3 +203,9 @@ test-results/
 .env.local
 .env.production
 *.private.key
+
+# Development tools
+.husky/_/
+
+# Prettier cache
+.prettierignore

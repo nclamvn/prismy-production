@@ -15,6 +15,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://prismy.in'),
   title: 'Prismy - AI-Powered Translation Platform',
   description: 'The world\'s most advanced AI translation platform. Translate text and documents instantly with 99.9% accuracy across 150+ languages.',
   keywords: 'translation, AI translation, document translation, language translation, multilingual',

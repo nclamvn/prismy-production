@@ -113,7 +113,7 @@ export const GET = withLogging(async (request: NextRequest) => {
     })
 
   } catch (error) {
-    logger.error({ error }, 'Failed to retrieve alerts')
+    logger.error('Failed to retrieve alerts', error)
     return NextResponse.json(
       { error: 'Failed to retrieve alerts' },
       { status: 500 }
@@ -173,7 +173,7 @@ export const POST = withLogging(async (request: NextRequest) => {
       )
     }
 
-    logger.info({ alert }, 'Manual alert created via API')
+    logger.info('Manual alert created via API', alert)
 
     return NextResponse.json(
       { 
