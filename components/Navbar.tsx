@@ -93,7 +93,7 @@ export default function Navbar({}: NavbarProps) {
       
       <nav className="w-full" aria-label="Main navigation">
         <div className={`${shouldUseStaticHeader ? 'content-container' : 'px-8'}`}>
-          <div className={`flex items-center ${shouldUseStaticHeader ? 'h-16' : 'h-12'}`}>
+          <div className={`flex items-center ${shouldUseStaticHeader ? 'h-12' : 'h-10'}`}>
           {/* Logo - Text only */}
           <Link 
             href="/" 
