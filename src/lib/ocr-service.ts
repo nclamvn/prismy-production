@@ -1,5 +1,21 @@
-import { createWorker, Worker } from 'tesseract.js'
-// Removed logger imports - using console methods instead
+// Conditional import for serverless compatibility
+let createWorker: any
+let Worker: any
+
+// Only import in non-edge environments
+const initTesseract = async () => {
+  if (typeof window !== 'undefined' || process.env.VERCEL_ENV !== 'production') {
+    try {
+      const tesseract = await import('tesseract.js')
+      createWorker = tesseract.createWorker || tesseract.default?.createWorker
+      return true
+    } catch (error) {
+      console.warn('[OCR] Tesseract.js not available in this environment:', error)
+      return false
+    }
+  }
+  return false
+}
 
 export interface OCROptions {
   languages?: string | string[]
@@ -69,9 +85,10 @@ export interface ProcessingProgress {
 }
 
 class OCRService {
-  private workers: Map<string, Worker> = new Map()
-  private workerPool: Worker[] = []
+  private workers: Map<string, any> = new Map()
+  private workerPool: any[] = []
   private maxWorkers = 2
+  private isInitialized = false
   private defaultOptions: OCROptions = {
     languages: 'vie+eng',
     psm: 3, // PSM.AUTO equivalent
@@ -82,6 +99,20 @@ class OCRService {
   // Initialize worker pool
   async initializeWorkerPool() {
     try {
+      // Don't initialize in production Vercel environment
+      if (process.env.VERCEL_ENV === 'production') {
+        console.warn('OCR service disabled in production environment')
+        this.isInitialized = false
+        return false
+      }
+
+      const tesseractAvailable = await initTesseract()
+      if (!tesseractAvailable) {
+        console.warn('Tesseract.js not available, OCR service disabled')
+        this.isInitialized = false
+        return false
+      }
+
       console.info('Initializing OCR worker pool...')
       
       for (let i = 0; i < this.maxWorkers; i++) {
@@ -90,14 +121,17 @@ class OCRService {
       }
       
       console.info(`OCR worker pool initialized with ${this.maxWorkers} workers`)
+      this.isInitialized = true
+      return true
     } catch (error) {
       console.error('Failed to initialize OCR worker pool', { error })
-      throw error
+      this.isInitialized = false
+      return false
     }
   }
 
   // Create a new worker
-  private async createWorker(options: Partial<OCROptions> = {}): Promise<Worker> {
+  private async createWorker(options: Partial<OCROptions> = {}): Promise<any> {
     const startTime = Date.now()
     const opts = { ...this.defaultOptions, ...options }
     
@@ -151,17 +185,19 @@ class OCRService {
   }
 
   // Get available worker from pool
-  private getAvailableWorker(): Worker | null {
+  private getAvailableWorker(): any | null {
     return this.workerPool.pop() || null
   }
 
   // Return worker to pool
-  private returnWorkerToPool(worker: Worker) {
+  private returnWorkerToPool(worker: any) {
     if (this.workerPool.length < this.maxWorkers) {
       this.workerPool.push(worker)
     } else {
       // Pool is full, terminate excess worker
-      worker.terminate()
+      if (worker && worker.terminate) {
+        worker.terminate()
+      }
     }
   }
 
@@ -170,6 +206,18 @@ class OCRService {
     imageData: string | ImageData | Buffer | File,
     options: Partial<OCROptions> = {}
   ): Promise<OCRResult> {
+    // Return fallback result if OCR is not initialized
+    if (!this.isInitialized) {
+      console.warn('OCR service not initialized, returning empty result')
+      return {
+        text: '',
+        confidence: 0,
+        words: [],
+        lines: [],
+        paragraphs: []
+      }
+    }
+
     const startTime = Date.now()
     const jobId = `ocr-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
     
@@ -393,15 +441,23 @@ class OCRService {
     console.info('Cleaning up OCR service...')
     
     // Terminate all workers in pool
-    await Promise.all(this.workerPool.map(worker => worker.terminate()))
+    await Promise.all(this.workerPool.map(worker => {
+      if (worker && worker.terminate) {
+        return worker.terminate()
+      }
+      return Promise.resolve()
+    }))
     this.workerPool = []
     
     // Clear worker registry
     for (const [id, worker] of this.workers) {
-      await worker.terminate()
+      if (worker && worker.terminate) {
+        await worker.terminate()
+      }
       this.workers.delete(id)
     }
     
+    this.isInitialized = false
     console.info('OCR service cleanup completed')
   }
 
@@ -467,8 +523,8 @@ class OCRService {
 // Singleton instance
 export const ocrService = new OCRService()
 
-// Initialize on first import (if in browser environment)
-if (typeof window !== 'undefined') {
+// Initialize on first import (only if in browser environment and not in production)
+if (typeof window !== 'undefined' && process.env.VERCEL_ENV !== 'production') {
   ocrService.initializeWorkerPool().catch(error => {
     console.error('Failed to initialize OCR worker pool', { error })
   })
