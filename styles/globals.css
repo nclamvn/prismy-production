@@ -174,17 +174,17 @@
     @apply btn-base h-8 px-4 text-sm font-semibold; /* 1.3x smaller than btn-pill-md */
   }
   
-  /* Sign In button - streamlined widths to match dropdown */
+  /* Sign In button - 1.3x reduction to perfectly match dropdown */
   .btn-signin-wide {
-    min-width: 60px; /* Further reduced to match English dropdown */
+    min-width: 46px; /* 60px ÷ 1.3 = perfect dropdown alignment */
   }
   
   .btn-signin-wide.btn-pill-compact-sm {
-    min-width: 65px; /* Reduced compact-sm width */
+    min-width: 50px; /* 65px ÷ 1.3 = streamlined compact-sm */
   }
   
   .btn-signin-wide.btn-pill-compact-xs {
-    min-width: 55px; /* Reduced compact-xs width */
+    min-width: 42px; /* 55px ÷ 1.3 = ultra-compact xs */
   }
   
   /* Enhanced Sign In button with larger font */
