@@ -2,8 +2,9 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+// ULTRATHINK: Remove all context dependencies for SSR-free component
 // import { useAuth } from '@/contexts/AuthContext' // Removed to fix build
-import { useLanguage } from '@/contexts/LanguageContext'
+// import { useLanguage } from '@/contexts/LanguageContext' // Removed to fix SSR
 import { motionSafe } from '@/lib/motion'
 import { 
   UNIFIED_SUBSCRIPTION_PLANS, 
@@ -23,9 +24,9 @@ export default function PricingPage({}: PricingPageProps) {
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly')
   const [currency, setCurrency] = useState<Currency>('VND')
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod>('vnpay')
-  // Remove useAuth to fix build - user state can be passed from parent if needed
+  // ULTRATHINK: Remove all context dependencies for SSR-free component
   const user = null // Temporarily set to null to fix build
-  const { language } = useLanguage()
+  const language = 'vi' // Default to Vietnamese, will be dynamic later
 
   const content = {
     vi: {

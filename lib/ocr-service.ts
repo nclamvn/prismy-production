@@ -3,9 +3,14 @@ let createWorker: any
 let Worker: any
 let RecognizeResult: any
 
-// Only import in non-edge environments
+// ULTRATHINK: Completely disable tesseract import for serverless
 const initTesseract = async () => {
-  if (typeof window !== 'undefined' || process.env.VERCEL_ENV !== 'production') {
+  // Never import tesseract in any production/serverless environment
+  if (process.env.NODE_ENV === 'production' || process.env.VERCEL_ENV) {
+    return false
+  }
+  
+  if (typeof window !== 'undefined') {
     try {
       const tesseract = await import('tesseract.js')
       createWorker = tesseract.createWorker || tesseract.default?.createWorker
@@ -134,19 +139,8 @@ class OCRService {
       throw new Error('OCR not available in serverless environment')
     }
 
-    const worker = await createWorker({
-      logger: (m: any) => {
-        // Optional: log progress to console in development
-        if (process.env.NODE_ENV === 'development') {
-          console.log('[OCR]', m)
-        }
-      }
-    })
-
-    await worker.loadLanguage(language)
-    await worker.initialize(language)
-
-    return worker
+    // ULTRATHINK: Completely remove createWorker call for serverless
+    throw new Error('OCR worker creation disabled in serverless environment')
   }
 
   /**

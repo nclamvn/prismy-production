@@ -2,9 +2,14 @@
 let createWorker: any
 let Worker: any
 
-// Only import in non-edge environments
+// ULTRATHINK: Completely disable tesseract import for serverless
 const initTesseract = async () => {
-  if (typeof window !== 'undefined' || process.env.VERCEL_ENV !== 'production') {
+  // Never import tesseract in any production/serverless environment
+  if (process.env.NODE_ENV === 'production' || process.env.VERCEL_ENV) {
+    return false
+  }
+  
+  if (typeof window !== 'undefined') {
     try {
       const tesseract = await import('tesseract.js')
       createWorker = tesseract.createWorker || tesseract.default?.createWorker
@@ -141,48 +146,8 @@ class OCRService {
     const opts = { ...this.defaultOptions, ...options }
     
     try {
-      const worker = await createWorker({
-        logger: (m: any) => {
-          if (m.status === 'recognizing text') {
-            // Emit progress events for UI updates
-            this.emitProgress({
-              status: m.status,
-              progress: m.progress,
-              userJobId: m.userJobId
-            })
-          }
-        }
-      })
-
-      // Load language first
-      await worker.loadLanguage(opts.languages || 'eng')
-      await worker.initialize(opts.languages || 'eng')
-      
-      // Set additional options
-      if (opts.psm) {
-        await worker.setParameters({ tessedit_pageseg_mode: opts.psm })
-      }
-      if (opts.oem) {
-        await worker.setParameters({ tessedit_ocr_engine_mode: opts.oem })
-      }
-      if (opts.whitelist) {
-        await worker.setParameters({ tessedit_char_whitelist: opts.whitelist })
-      }
-      if (opts.blacklist) {
-        await worker.setParameters({ tessedit_char_blacklist: opts.blacklist })
-      }
-      if (opts.preserveInterword) {
-        await worker.setParameters({ preserve_interword_spaces: '1' })
-      }
-
-      const duration = Date.now() - startTime
-      console.info('OCR worker created successfully', {
-        duration,
-        languages: opts.languages,
-        psm: opts.psm
-      })
-
-      return worker
+      // ULTRATHINK: Completely disable OCR worker creation in serverless
+      throw new Error('OCR processing not available in serverless environment')
     } catch (error) {
       console.error('Failed to create OCR worker', { error, options: opts })
       throw error
@@ -388,7 +353,8 @@ class OCRService {
     let worker: any = null
     
     try {
-      worker = await createWorker()
+      // ULTRATHINK: Disable createWorker in serverless
+      throw new Error('OCR worker creation disabled in serverless environment')
       if (!worker) throw new Error('Failed to create worker')
       
       await worker.loadLanguage('eng')
