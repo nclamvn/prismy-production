@@ -337,7 +337,7 @@ export default function PricingPage({}: PricingPageProps) {
               }`}
             >
               {t('pricing.yearly')}
-              <span className="badge-base bg-gray-900 text-white absolute -top-3 left-1/2 transform -translate-x-1/2">
+              <span className="absolute -top-2 -right-2 bg-gray-900 text-white text-xs font-bold px-2 py-1 rounded-full">
                 {t('pricing.save20')}
               </span>
             </button>
@@ -345,34 +345,36 @@ export default function PricingPage({}: PricingPageProps) {
         </motion.div>
         {/* Payment Method Selection */}
         <motion.div 
-          className="flex justify-center mb-8"
+          className="w-full px-4 sm:px-6 lg:px-8 mb-8"
           {...motionSafe({
             initial: { opacity: 0, y: 20 },
             animate: { opacity: 1, y: 0 },
             transition: { duration: 0.6 }
           })}
         >
-          <div className="card-base p-6 max-w-lg">
-            <h3 className="heading-5 text-center mb-4">
+          <div className="max-w-6xl mx-auto">
+            <h3 className="heading-5 text-center mb-6">
               {t('pricing.paymentMethod')}
             </h3>
-            <div className="grid grid-cols-3 gap-3">
-              {getAvailablePaymentMethods().map((method) => (
-                <button
-                  key={method}
-                  onClick={() => setSelectedPaymentMethod(method)}
-                  className={`payment-method-selector ${
-                    selectedPaymentMethod === method
-                      ? 'payment-method-selector-active'
-                      : ''
-                  }`}
-                >
-                  <span className="flex-shrink-0">{renderPaymentMethodIcon(method)}</span>
-                  <span className="hidden sm:inline">
-                    {getPaymentMethodName(method, language)}
-                  </span>
-                </button>
-              ))}
+            <div className="flex justify-center">
+              <div className="grid grid-cols-3 gap-4 max-w-lg">
+                {getAvailablePaymentMethods().map((method) => (
+                  <button
+                    key={method}
+                    onClick={() => setSelectedPaymentMethod(method)}
+                    className={`payment-method-selector ${
+                      selectedPaymentMethod === method
+                        ? 'payment-method-selector-active'
+                        : ''
+                    }`}
+                  >
+                    <span className="flex-shrink-0">{renderPaymentMethodIcon(method)}</span>
+                    <span className="hidden sm:inline truncate">
+                      {getPaymentMethodName(method, language)}
+                    </span>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </motion.div>
@@ -740,15 +742,6 @@ export default function PricingPage({}: PricingPageProps) {
           </div>
         </div>
 
-        {/* Bottom Note */}
-        <div className="text-center mt-16">
-          <p className="body-base text-gray-600">
-            {language === 'vi' 
-              ? 'Tất cả gói dịch vụ đều bao gồm công cụ dịch thuật cốt lõi và hỗ trợ cơ bản'
-              : 'All plans include our core translation engine and basic support'
-            }
-          </p>
-        </div>
           </div>
         </div>
       </section>

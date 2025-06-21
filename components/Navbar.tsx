@@ -83,7 +83,7 @@ export default function Navbar({}: NavbarProps) {
   
   return (
     <motion.header 
-      className={`transition-all duration-500 ${
+      className={`transition-all duration-300 ${
         shouldUseStaticHeader ? 'header-static' : 'header-pill-capsule'
       }`}
       variants={motionSafe(slideDown)}

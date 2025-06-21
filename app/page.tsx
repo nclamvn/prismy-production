@@ -28,8 +28,8 @@ export default function Home() {
     vi: {
       hero: {
         title: 'Dịch thuật AI chuyên nghiệp',
-        subtitle: 'cho doanh nghiệp Việt Nam',
-        description: 'Giải pháp dịch thuật thông minh với độ chính xác cao, hỗ trợ hơn 100 ngôn ngữ và tích hợp thanh toán VNPay, MoMo',
+        subtitle: '',
+        description: 'Giải pháp dịch thuật thông minh với độ chính xác cao, hỗ trợ hơn 100 ngôn ngữ',
         getStarted: 'Bắt đầu ngay',
         watchDemo: 'Xem demo',
         trustIndicator: 'Tin cậy bởi 10,000+ doanh nghiệp'
@@ -90,8 +90,8 @@ export default function Home() {
     en: {
       hero: {
         title: 'Professional AI Translation',
-        subtitle: 'for Vietnamese Enterprises',
-        description: 'Intelligent translation solution with high accuracy, supporting 100+ languages and Vietnamese payment integration',
+        subtitle: '',
+        description: 'Intelligent translation solution with high accuracy, supporting 100+ languages',
         getStarted: 'Get Started',
         watchDemo: 'Watch Demo',
         trustIndicator: 'Trusted by 10,000+ businesses'
@@ -181,7 +181,7 @@ export default function Home() {
                 {/* Hero GIF */}
                 <motion.div 
                   variants={motionSafe(slideUp)}
-                  className="mb-4 md:mb-6 lg:mb-8"
+                  className="mb-8 md:mb-12 lg:mb-16"
                 >
                   <div className="hero-gif-container mx-auto" style={{ maxWidth: '720px' }}>
                     <img 
@@ -204,7 +204,6 @@ export default function Home() {
                   className="heading-hero text-center mb-6"
                 >
                   {content[language].hero.title}
-                  <span className="text-blue-600"> {content[language].hero.subtitle}</span>
                 </motion.h1>
                 
                 <motion.p 
@@ -296,7 +295,7 @@ export default function Home() {
           </section>
 
           {/* Stats Section - Full Width */}
-          <section className="py-20 bg-gradient-to-br from-blue-50 via-white to-indigo-50 w-full">
+          <section className="py-20 bg-gray-50 w-full">
             <div className="w-full">
               <div className="w-full">
               <motion.div
@@ -319,9 +318,9 @@ export default function Home() {
                     return (
                       <motion.div key={index} variants={motionSafe(slideUp)} className="mini-card text-center">
                         <div className="flex justify-center mb-3">
-                          <IconComponent size={32} className="text-blue-600" strokeWidth={1.5} />
+                          <IconComponent size={32} className="text-gray-600" strokeWidth={1.5} />
                         </div>
-                        <div className="heading-1 text-blue-600 mb-2">{stat.number}</div>
+                        <div className="heading-1 text-gray-900 mb-2">{stat.number}</div>
                         <div className="body-base">{stat.label}</div>
                       </motion.div>
                     )
@@ -359,12 +358,12 @@ export default function Home() {
                       className="relative"
                     >
                       <div className={`card-base card-hover p-8 h-full ${
-                        key === 'standard' ? 'ring-2 ring-blue-500 ring-offset-2' : ''
+                        key === 'standard' ? 'ring-2 ring-gray-900 ring-offset-2' : ''
                       }`}>
                       
                       {key === 'standard' && (
                         <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                          <span className="badge-accent">
+                          <span className="badge-primary">
                             {content[language].pricing.mostPopular}
                           </span>
                         </div>
@@ -395,7 +394,7 @@ export default function Home() {
                         ))}
                       </ul>
                       
-                      <button className={`w-full ${key === 'standard' ? 'btn-accent btn-pill-lg' : 'btn-secondary btn-pill-lg'}`}>
+                      <button className={`w-full ${key === 'standard' ? 'btn-primary btn-pill-lg' : 'btn-secondary btn-pill-lg'}`}>
                         {content[language].pricing.getStarted}
                       </button>
                       </div>

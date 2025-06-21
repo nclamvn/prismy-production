@@ -350,18 +350,18 @@
   /* Payment Method Selection - Prismy Design System Compliance */
   .payment-method-selector {
     @apply inline-flex items-center justify-center gap-2 
-           btn-secondary btn-pill-md
+           px-4 py-3 text-sm font-medium
+           bg-white border border-gray-200 rounded-lg
+           text-gray-700 hover:text-gray-900
+           hover:border-gray-400 hover:font-semibold hover:-translate-y-px
            transition-all duration-300;
     transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  }
-  
-  .payment-method-selector:hover {
-    @apply hover:font-semibold hover:-translate-y-px;
+    min-height: 44px;
   }
   
   .payment-method-selector-active {
     @apply border-gray-900 bg-gray-900 text-white
-           hover:bg-gray-700;
+           hover:bg-gray-700 hover:border-gray-700;
   }
   
   
