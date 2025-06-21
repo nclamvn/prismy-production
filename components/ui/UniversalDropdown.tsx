@@ -34,16 +34,21 @@ export default function UniversalDropdown({
   
   const selectedOption = options.find(option => option.value === value)
   
-  // Close dropdown when clicking outside
+  // Close dropdown when clicking/touching outside
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
+    function handleClickOutside(event: MouseEvent | TouchEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false)
       }
     }
     
+    // Add both mouse and touch events for mobile compatibility
     document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
+    document.addEventListener('touchstart', handleClickOutside, { passive: true })
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('touchstart', handleClickOutside)
+    }
   }, [])
   
   const sizeClasses = {
@@ -63,6 +68,10 @@ export default function UniversalDropdown({
       {/* Dropdown Button */}
       <button
         onClick={() => !disabled && setIsOpen(!isOpen)}
+        onTouchEnd={(e) => {
+          e.preventDefault()
+          if (!disabled) setIsOpen(!isOpen)
+        }}
         disabled={disabled}
         className={`
           flex items-center justify-between w-full
@@ -110,6 +119,11 @@ export default function UniversalDropdown({
                 <button
                   key={option.value}
                   onClick={() => {
+                    onChange(option.value)
+                    setIsOpen(false)
+                  }}
+                  onTouchEnd={(e) => {
+                    e.preventDefault()
                     onChange(option.value)
                     setIsOpen(false)
                   }}
