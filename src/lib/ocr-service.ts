@@ -132,6 +132,11 @@ class OCRService {
 
   // Create a new worker
   private async createWorker(options: Partial<OCROptions> = {}): Promise<any> {
+    // Completely disable OCR in production/serverless environments
+    if (process.env.NODE_ENV === 'production' || process.env.VERCEL_ENV) {
+      throw new Error('OCR not available in serverless environment')
+    }
+
     const startTime = Date.now()
     const opts = { ...this.defaultOptions, ...options }
     

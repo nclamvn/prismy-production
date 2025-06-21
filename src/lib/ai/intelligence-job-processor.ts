@@ -99,12 +99,12 @@ export class IntelligenceJobProcessor {
     const aiModelsUsed: string[] = []
     let totalTokensConsumed = 0
 
-    logger.info('Starting intelligence job processing', {
+    logger.info({
       jobId: job.id,
       documentId: jobData.documentId,
       analysisDepth: jobData.options.analysisDepth,
       userId: jobData.options.userId
-    })
+    }, 'Starting intelligence job processing')
 
     try {
       // Update job status

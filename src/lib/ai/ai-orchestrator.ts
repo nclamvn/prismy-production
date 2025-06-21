@@ -272,12 +272,12 @@ export class AIOrchestrator {
   ): Promise<DocumentIntelligence> {
     const startTime = Date.now()
     
-    logger.info('Starting document intelligence processing', {
+    logger.info({
       documentId,
       filename,
       size: documentData.length,
       options
-    })
+    }, 'Starting document intelligence processing')
 
     try {
       // 1. Extract document structure and content
@@ -353,11 +353,11 @@ export class AIOrchestrator {
       throw new Error(`Document ${documentId} not found in intelligence store`)
     }
 
-    logger.info('Processing document query', {
+    logger.info({
       documentId,
       query: query.substring(0, 100),
       options
-    })
+    }, 'Processing document query')
 
     try {
       // 1. Find relevant sections using semantic search
@@ -415,10 +415,10 @@ export class AIOrchestrator {
       throw new Error(`Document ${documentId} not found in intelligence store`)
     }
 
-    logger.info('Generating document summary', {
+    logger.info({
       documentId,
       options
-    })
+    }, 'Generating document summary')
 
     try {
       const provider = this.selectBestProvider('summarization', options)
@@ -703,7 +703,7 @@ export class AIOrchestrator {
       const cacheKey = this.generateCacheKey(request)
       const cached = this.responseCache.get(cacheKey)
       if (cached) {
-        logger.debug('Cache hit for request', { requestId: request.id })
+        logger.debug({ requestId: request.id }, 'Cache hit for request')
         return { ...cached, id: request.id }
       }
 

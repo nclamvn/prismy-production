@@ -124,6 +124,11 @@ class OCRService {
    * Create and initialize a new Tesseract worker
    */
   private async createWorker(language: string): Promise<any> {
+    // Completely disable OCR in production/serverless environments
+    if (process.env.NODE_ENV === 'production' || process.env.VERCEL_ENV) {
+      throw new Error('OCR not available in serverless environment')
+    }
+
     const available = await this.ensureTesseractAvailable()
     if (!available) {
       throw new Error('OCR not available in serverless environment')

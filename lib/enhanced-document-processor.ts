@@ -1,12 +1,24 @@
 import mammoth from 'mammoth'
 import * as XLSX from 'xlsx'
-import * as pdfjsLib from 'pdfjs-dist'
 import { ocrService } from '@/lib/ocr-service'
 import { logger, performanceLogger } from './logger'
 
-// Configure PDF.js worker
-if (typeof window !== 'undefined') {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js'
+// Conditional import for serverless compatibility
+let pdfjsLib: any = null
+
+// Only import PDF.js in non-production environments
+const initPDFjs = async () => {
+  if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production') {
+    try {
+      pdfjsLib = await import('pdfjs-dist')
+      pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js'
+      return true
+    } catch (error) {
+      console.warn('[PDF] PDF.js not available in this environment:', error)
+      return false
+    }
+  }
+  return false
 }
 
 export interface DocumentMetadata {

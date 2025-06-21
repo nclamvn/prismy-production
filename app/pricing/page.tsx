@@ -2,6 +2,9 @@ import PricingPage from '@/components/pricing/PricingPage'
 import { createServerComponentClient } from '@/lib/supabase'
 import { cookies } from 'next/headers'
 
+// Force dynamic rendering since we use cookies
+export const dynamic = 'force-dynamic'
+
 export default async function Pricing() {
   try {
     const supabase = createServerComponentClient({ cookies })

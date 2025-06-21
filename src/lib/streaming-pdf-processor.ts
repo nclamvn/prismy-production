@@ -1,10 +1,22 @@
-import * as pdfjsLib from 'pdfjs-dist'
-import { ocrService } from './ocr-service'
+// Conditional import for serverless compatibility
+let pdfjsLib: any = null
 
-// Configure PDF.js worker
-if (typeof window !== 'undefined') {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js'
+// Only import PDF.js in non-production environments
+const initPDFjs = async () => {
+  if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production') {
+    try {
+      pdfjsLib = await import('pdfjs-dist')
+      pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js'
+      return true
+    } catch (error) {
+      console.warn('[PDF] PDF.js not available in this environment:', error)
+      return false
+    }
+  }
+  return false
 }
+
+import { ocrService } from './ocr-service'
 
 export interface PDFProcessingOptions {
   batchSize?: number // Pages to process in each batch
@@ -74,6 +86,12 @@ export class StreamingPDFProcessor {
     options: Partial<PDFProcessingOptions> = {},
     onProgress?: ProgressCallback
   ): Promise<PDFProcessingResult> {
+    // Check if PDF.js is available (disabled in production)
+    const pdfAvailable = await initPDFjs()
+    if (!pdfAvailable) {
+      throw new Error('PDF processing not available in serverless environment')
+    }
+
     const startTime = Date.now()
     const opts = { ...this.defaultOptions, ...options }
     
