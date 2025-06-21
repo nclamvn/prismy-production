@@ -319,7 +319,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin', lan
                 <button
                   type="submit"
                   disabled={loading}
-                  className="btn-primary w-full"
+                  className="btn-primary btn-auth-modal w-full"
                 >
                   {loading ? (
                     <span className="flex items-center justify-center">

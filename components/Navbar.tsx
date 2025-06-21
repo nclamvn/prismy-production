@@ -150,7 +150,7 @@ export default function Navbar({}: NavbarProps) {
                       setAuthMode('signin')
                       setIsAuthModalOpen(true)
                     }}
-                    className={`btn-ghost btn-signin-wide ${shouldUseStaticHeader ? 'btn-pill-compact-sm' : 'btn-pill-compact-xs'} font-normal hover:font-semibold`}
+                    className={`btn-ghost btn-signin-wide ${shouldUseStaticHeader ? 'btn-pill-compact-sm' : 'btn-pill-compact-xs'} font-normal hover:font-semibold px-4`}
                   >
                     {content[language].signin}
                   </button>
@@ -159,7 +159,7 @@ export default function Navbar({}: NavbarProps) {
                       setAuthMode('signup')
                       setIsAuthModalOpen(true)
                     }}
-                    className={`btn-primary ${shouldUseStaticHeader ? 'btn-pill-compact-sm' : 'btn-pill-compact-xs'} font-semibold`}
+                    className={`btn-primary ${shouldUseStaticHeader ? 'btn-pill-compact-sm' : 'btn-pill-compact-xs'} font-semibold px-4`}
                   >
                     {content[language].getStarted}
                   </button>
@@ -255,7 +255,7 @@ export default function Navbar({}: NavbarProps) {
                           setIsAuthModalOpen(true)
                           setIsMenuOpen(false)
                         }}
-                        className="block btn-ghost w-full text-center font-normal hover:font-semibold"
+                        className="block btn-ghost w-full text-center font-normal hover:font-semibold px-4"
                       >
                         {content[language].signin}
                       </button>
@@ -265,7 +265,7 @@ export default function Navbar({}: NavbarProps) {
                           setIsAuthModalOpen(true)
                           setIsMenuOpen(false)
                         }}
-                        className="block btn-primary w-full text-center font-semibold"
+                        className="block btn-primary w-full text-center font-semibold px-4"
                       >
                         {content[language].getStarted}
                       </button>

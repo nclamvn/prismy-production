@@ -176,15 +176,23 @@
   
   /* Sign In button - streamlined widths */
   .btn-signin-wide {
-    min-width: 80px; /* Base width - streamlined */
+    min-width: 70px; /* Reduced base width for streamlined look */
   }
   
   .btn-signin-wide.btn-pill-compact-sm {
-    min-width: 90px; /* Compact-sm width - streamlined */
+    min-width: 75px; /* Reduced compact-sm width */
   }
   
   .btn-signin-wide.btn-pill-compact-xs {
-    min-width: 75px; /* Compact-xs width - streamlined */
+    min-width: 65px; /* Reduced compact-xs width */
+  }
+  
+  /* Auth Modal Sign In button - enhanced height */
+  .btn-auth-modal {
+    min-height: 48px;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
   }
   
   /* Text overflow protection for Vietnamese */
@@ -331,7 +339,7 @@
            h-12 bg-gray-50 transition-all duration-200
            hover:border-gray-400 hover:shadow-sm focus-within:border-gray-500 
            focus-within:ring-2 focus-within:ring-gray-500 focus-within:ring-offset-1;
-    max-width: 295px; /* Reduced from max-w-sm (384px) by 1.3x */
+    max-width: 275px; /* Further reduced for streamlined desktop look */
   }
   
   .email-pill-input {

@@ -62,7 +62,7 @@ export default function NewsletterSignup({
     switch (variant) {
       case 'footer':
         return {
-          container: 'w-full max-w-sm',
+          container: 'w-full email-pill-form', 
           title: 'heading-5 text-white font-semibold mb-3',
           description: 'body-sm text-gray-400 mb-3',
           form: 'flex items-center bg-white rounded-full overflow-hidden h-10 border border-gray-300',
