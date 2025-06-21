@@ -10,6 +10,9 @@ const PricingPage = dynamicImport(() => import('@/components/pricing/PricingPage
   </div>
 })
 
+// Force dynamic rendering and disable static optimization  
+export const dynamic = 'force-dynamic'
+
 export default function Pricing() {
   return <PricingPage />
 }

@@ -53,7 +53,7 @@ class BackgroundProcessingQueue {
   private processingJobs: Set<string> = new Set()
   private eventHandlers: Map<string, JobEventHandler[]> = new Map()
   private progressHandlers: Map<string, ProgressHandler[]> = new Map()
-  private workers: Map<string, Worker> = new Map()
+  private workers: Map<string, any> = new Map() // Serverless compatible - no Worker type
   private config: WorkerConfig
   private isRunning: boolean = false
   private cleanupTimer?: NodeJS.Timeout
