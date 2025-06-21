@@ -1,158 +1,273 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { motionSafe, slideUp } from '@/lib/motion'
+import { 
+  CloudOff, 
+  Wifi, 
+  RefreshCw, 
+  FileText, 
+  Clock,
+  Database,
+  ArrowRight
+} from 'lucide-react'
+import { offlineManager } from '@/lib/offline/offline-manager'
+import { OfflineIndicator } from '@/components/offline/OfflineIndicator'
 
 export default function OfflinePage() {
   const [isOnline, setIsOnline] = useState(false)
+  const [pendingCount, setPendingCount] = useState(0)
+  const [failedCount, setFailedCount] = useState(0)
+  const [storageUsage, setStorageUsage] = useState({ operations: 0, cache: 0, translations: 0 })
+  const [cachedTranslation, setCachedTranslation] = useState('')
+  const [translationResult, setTranslationResult] = useState('')
 
   useEffect(() => {
-    const updateOnlineStatus = () => setIsOnline(navigator.onLine)
+    const unsubscribe = offlineManager.subscribeToOnlineStatus(setIsOnline)
     
-    updateOnlineStatus()
-    window.addEventListener('online', updateOnlineStatus)
-    window.addEventListener('offline', updateOnlineStatus)
-    
+    const updateStats = async () => {
+      setPendingCount(offlineManager.getPendingOperationsCount())
+      setFailedCount(offlineManager.getFailedOperationsCount())
+      const usage = await offlineManager.getStorageUsage()
+      setStorageUsage(usage)
+    }
+
+    updateStats()
+    const interval = setInterval(updateStats, 5000)
+
     return () => {
-      window.removeEventListener('online', updateOnlineStatus)
-      window.removeEventListener('offline', updateOnlineStatus)
+      unsubscribe()
+      clearInterval(interval)
     }
   }, [])
 
-  useEffect(() => {
-    if (isOnline) {
-      // Redirect to homepage when back online
-      window.location.href = '/'
+  const handleOfflineTranslation = async () => {
+    if (!cachedTranslation.trim()) return
+
+    // Check cache first
+    const cached = await offlineManager.getCachedTranslation(
+      cachedTranslation,
+      'en',
+      'vi'
+    )
+
+    if (cached) {
+      setTranslationResult(cached.translatedText)
+    } else {
+      // Add to offline queue
+      const operationId = await offlineManager.addOfflineOperation('translation', {
+        text: cachedTranslation,
+        sourceLang: 'en',
+        targetLang: 'vi'
+      })
+
+      setTranslationResult('Translation queued for when online')
+      
+      // Cache a placeholder result
+      await offlineManager.cacheTranslation(
+        cachedTranslation,
+        'en',
+        'vi',
+        { translatedText: 'Translation pending...', confidence: 0 }
+      )
     }
-  }, [isOnline])
+  }
+
+  const handleRetrySync = () => {
+    if (isOnline) {
+      // Trigger manual sync
+      window.location.reload()
+    }
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
-      <motion.div
-        className="max-w-md w-full text-center"
-        variants={motionSafe(slideUp)}
-        initial="hidden"
-        animate="visible"
-      >
-        {/* Offline Icon */}
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
+      <div className="max-w-2xl w-full space-y-8">
+        {/* Header */}
         <motion.div
-          className="w-24 h-24 mx-auto mb-8 bg-gray-200 rounded-full flex items-center justify-center"
-          variants={motionSafe({
-            hidden: { scale: 0 },
-            visible: { scale: 1 }
-          })}
-          transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center"
         >
-          <svg 
-            className="w-12 h-12 text-gray-600" 
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24"
-          >
-            <path 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              strokeWidth={2} 
-              d="M18.364 5.636l-12.728 12.728m0-12.728l12.728 12.728M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2z" 
-            />
-          </svg>
+          <div className="flex justify-center mb-4">
+            {isOnline ? (
+              <Wifi className="h-16 w-16 text-green-500" />
+            ) : (
+              <CloudOff className="h-16 w-16 text-gray-400" />
+            )}
+          </div>
+          
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            {isOnline ? 'Back Online!' : 'You\'re Offline'}
+          </h1>
+          
+          <p className="text-gray-600 text-lg">
+            {isOnline 
+              ? 'Your connection has been restored. Syncing pending operations...'
+              : 'Don\'t worry! You can still use many features while offline.'
+            }
+          </p>
         </motion.div>
 
-        {/* Heading */}
-        <motion.h1
-          className="heading-3 text-gray-900 mb-4"
-          variants={motionSafe(slideUp)}
+        {/* Status Cards */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-4"
+        >
+          {/* Pending Operations */}
+          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between mb-4">
+              <Clock className="h-8 w-8 text-yellow-500" />
+              <span className="text-2xl font-bold text-gray-900">{pendingCount}</span>
+            </div>
+            <h3 className="font-medium text-gray-900">Pending</h3>
+            <p className="text-sm text-gray-600">Operations waiting to sync</p>
+          </div>
+
+          {/* Failed Operations */}
+          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between mb-4">
+              <RefreshCw className="h-8 w-8 text-red-500" />
+              <span className="text-2xl font-bold text-gray-900">{failedCount}</span>
+            </div>
+            <h3 className="font-medium text-gray-900">Failed</h3>
+            <p className="text-sm text-gray-600">Operations that need attention</p>
+          </div>
+
+          {/* Cached Data */}
+          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between mb-4">
+              <Database className="h-8 w-8 text-blue-500" />
+              <span className="text-2xl font-bold text-gray-900">
+                {storageUsage.translations + storageUsage.cache}
+              </span>
+            </div>
+            <h3 className="font-medium text-gray-900">Cached</h3>
+            <p className="text-sm text-gray-600">Items available offline</p>
+          </div>
+        </motion.div>
+
+        {/* Offline Translation Demo */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-white rounded-lg p-6 shadow-sm border border-gray-200"
+        >
+          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <FileText className="h-5 w-5 mr-2" />
+            Try Offline Translation
+          </h3>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Enter text to translate (cached results will be used)
+              </label>
+              <textarea
+                value={cachedTranslation}
+                onChange={(e) => setCachedTranslation(e.target.value)}
+                placeholder="Type something to translate..."
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                rows={3}
+              />
+            </div>
+            
+            <button
+              onClick={handleOfflineTranslation}
+              disabled={!cachedTranslation.trim()}
+              className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 text-white py-2 px-4 rounded-lg font-medium transition-colors"
+            >
+              Translate
+            </button>
+            
+            {translationResult && (
+              <div className="p-3 bg-gray-50 rounded-lg">
+                <p className="text-sm font-medium text-gray-700 mb-1">Result:</p>
+                <p className="text-gray-900">{translationResult}</p>
+              </div>
+            )}
+          </div>
+        </motion.div>
+
+        {/* Available Features */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
+          className="bg-white rounded-lg p-6 shadow-sm border border-gray-200"
         >
-          You&apos;re Offline
-        </motion.h1>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            What you can do offline:
+          </h3>
+          
+          <div className="space-y-3">
+            <div className="flex items-center space-x-3">
+              <div className="h-2 w-2 bg-green-500 rounded-full"></div>
+              <span className="text-gray-700">View cached translations</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <div className="h-2 w-2 bg-green-500 rounded-full"></div>
+              <span className="text-gray-700">Queue new translations for later</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <div className="h-2 w-2 bg-green-500 rounded-full"></div>
+              <span className="text-gray-700">Browse your translation history</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <div className="h-2 w-2 bg-green-500 rounded-full"></div>
+              <span className="text-gray-700">Access saved documents</span>
+            </div>
+          </div>
+        </motion.div>
 
-        {/* Description */}
-        <motion.p
-          className="body-base text-gray-600 mb-8"
-          variants={motionSafe(slideUp)}
+        {/* Action Buttons */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-        >
-          It looks like you&apos;ve lost your internet connection. Don&apos;t worry - some features are still available offline!
-        </motion.p>
-
-        {/* Offline Features */}
-        <motion.div
-          className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 mb-8"
-          variants={motionSafe(slideUp)}
-          transition={{ delay: 0.5 }}
-        >
-          <h3 className="heading-4 text-gray-900 mb-4">Available Offline:</h3>
-          <ul className="space-y-3 text-left">
-            <li className="flex items-center text-gray-700">
-              <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              View cached translations
-            </li>
-            <li className="flex items-center text-gray-700">
-              <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              Browse your translation history
-            </li>
-            <li className="flex items-center text-gray-700">
-              <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              Access saved documents
-            </li>
-            <li className="flex items-center text-gray-500">
-              <svg className="w-5 h-5 text-gray-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-              </svg>
-              New translations (requires internet)
-            </li>
-          </ul>
-        </motion.div>
-
-        {/* Connection Status */}
-        <motion.div
-          className={`p-4 rounded-lg flex items-center justify-center ${
-            isOnline 
-              ? 'bg-green-50 border border-green-200' 
-              : 'bg-red-50 border border-red-200'
-          }`}
-          variants={motionSafe(slideUp)}
-          transition={{ delay: 0.6 }}
-        >
-          <div className={`w-3 h-3 rounded-full mr-3 ${
-            isOnline ? 'bg-green-500' : 'bg-red-500'
-          }`} />
-          <span className={`font-medium ${
-            isOnline ? 'text-green-800' : 'text-red-800'
-          }`}>
-            {isOnline ? 'Back Online! Redirecting...' : 'No Internet Connection'}
-          </span>
-        </motion.div>
-
-        {/* Actions */}
-        <motion.div
-          className="mt-8 space-y-3"
-          variants={motionSafe(slideUp)}
-          transition={{ delay: 0.7 }}
+          className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4"
         >
           <button
-            onClick={() => window.location.reload()}
-            className="btn-primary w-full"
+            onClick={handleRetrySync}
+            disabled={!isOnline}
+            className="flex-1 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 text-white py-3 px-6 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
           >
-            Try Again
+            <RefreshCw className="h-5 w-5" />
+            <span>{isOnline ? 'Retry Sync' : 'Waiting for Connection'}</span>
           </button>
           
-          <button
-            onClick={() => window.history.back()}
-            className="btn-secondary w-full"
+          <a
+            href="/dashboard"
+            className="flex-1 bg-white hover:bg-gray-50 text-gray-900 py-3 px-6 rounded-lg font-medium border border-gray-300 transition-colors flex items-center justify-center space-x-2"
           >
-            Go Back
-          </button>
+            <span>Go to Dashboard</span>
+            <ArrowRight className="h-5 w-5" />
+          </a>
         </motion.div>
-      </motion.div>
+
+        {/* Storage Details */}
+        {storageUsage.operations + storageUsage.cache + storageUsage.translations > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="bg-blue-50 rounded-lg p-4 border border-blue-200"
+          >
+            <h4 className="font-medium text-blue-900 mb-2">Storage Usage Details</h4>
+            <div className="text-sm text-blue-800 space-y-1">
+              <div>Operations: {storageUsage.operations} items</div>
+              <div>Cache: {storageUsage.cache} items</div>
+              <div>Translations: {storageUsage.translations} items</div>
+            </div>
+          </motion.div>
+        )}
+      </div>
+
+      {/* Offline Indicator */}
+      <OfflineIndicator showDetails={true} />
     </div>
   )
 }

@@ -248,7 +248,7 @@ export class StreamingPDFProcessor {
       let finalText = text
       let confidence = 1.0
       let ocrUsed = false
-      let images: Array<{ data: string; format: string }> = []
+      const images: Array<{ data: string; format: string }> = []
 
       // Check if page is empty and needs OCR
       const isEmpty = text.length < 10

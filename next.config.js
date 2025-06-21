@@ -9,9 +9,12 @@ const nextConfig = {
   },
   experimental: {
     optimizePackageImports: [
-      '@framer-motion',
+      'framer-motion',
       '@stripe/stripe-js',
-      '@supabase/supabase-js'
+      '@supabase/supabase-js',
+      'tesseract.js',
+      'mammoth',
+      'xlsx'
     ],
   },
 
@@ -132,11 +135,24 @@ const nextConfig = {
             chunks: 'all',
             priority: 10,
           },
+          ai: {
+            name: 'ai-providers',
+            test: /[\\/]node_modules[\\/](@anthropic-ai|openai|cohere-ai)[\\/]/,
+            chunks: 'all',
+            priority: 15,
+          },
+          ui: {
+            name: 'ui-components',
+            test: /[\\/]node_modules[\\/](lucide-react|framer-motion)[\\/]/,
+            chunks: 'all',
+            priority: 12,
+          },
           vendor: {
             name: 'vendor',
             test: /[\\/]node_modules[\\/]/,
             chunks: 'all',
             priority: 5,
+            maxSize: 200000, // 200kb chunks
             enforce: true,
           },
         },

@@ -371,7 +371,7 @@ class OCRService {
   async detectLanguage(
     imageData: string | ImageData | Buffer | File
   ): Promise<string[]> {
-    let worker: any = null
+    const worker: any = null
 
     try {
       // ULTRATHINK: Disable createWorker in serverless

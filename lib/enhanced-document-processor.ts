@@ -373,7 +373,7 @@ class EnhancedDocumentProcessor {
       // }
 
       // Auto-detect language if not specified
-      let ocrLanguage = options.ocrLanguage || 'vie+eng'
+      const ocrLanguage = options.ocrLanguage || 'vie+eng'
       // if (options.ocrLanguage === 'auto') {
       //   const detectedLanguages = await ocrService.detectLanguage(buffer)
       //   ocrLanguage = detectedLanguages.join('+')
