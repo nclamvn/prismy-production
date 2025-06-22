@@ -106,6 +106,16 @@
   /* Footer content container - full width */
   .footer-content-container {
     @apply max-w-full mx-auto px-4 sm:px-6 lg:px-8;
+    border-top: none !important;
+  }
+
+  /* Ensure no unwanted borders on main content sections */
+  footer,
+  footer *,
+  main > section:last-child,
+  .footer-content-container,
+  .footer-content-container * {
+    border-top: none !important;
   }
 
   /* Buttons - Viên thuốc style */

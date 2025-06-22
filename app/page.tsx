@@ -285,6 +285,7 @@ export default function Home() {
                   style={{
                     scrollSnapType: 'x mandatory',
                     scrollBehavior: 'smooth',
+                    scrollPaddingInline: 'calc(50vw - 42.5vw)',
                   }}
                 >
                   <div
@@ -295,6 +296,7 @@ export default function Home() {
                       <div
                         key={index}
                         className="snap-center shrink-0 w-[85vw]"
+                        style={{ scrollSnapAlign: 'center' }}
                       >
                         <FeatureCard
                           icon={feature.icon}
@@ -413,6 +415,7 @@ export default function Home() {
                           <div
                             key={key}
                             className="snap-center shrink-0 w-[90vw]"
+                            style={{ scrollSnapAlign: 'center' }}
                           >
                             <div className="card-base card-hover p-6 h-full">
                               <h3 className="heading-4 mb-4">

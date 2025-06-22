@@ -265,8 +265,14 @@ export default function Footer({}: FooterProps) {
   ]
 
   return (
-    <footer className="w-full bg-black text-text-inverse border-0 outline-0">
-      <div className="footer-content-container pt-10 pb-6 md:pb-4">
+    <footer
+      className="w-full bg-black text-text-inverse border-0 outline-0"
+      style={{ borderTop: 'none !important' }}
+    >
+      <div
+        className="footer-content-container pt-10 pb-6 md:pb-4"
+        style={{ borderTop: 'none !important' }}
+      >
         <motion.div
           variants={motionSafe(staggerContainer)}
           initial="hidden"
