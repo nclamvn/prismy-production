@@ -285,16 +285,16 @@ export default function Home() {
                   style={{
                     scrollSnapType: 'x mandatory',
                     scrollBehavior: 'smooth',
-                    paddingLeft: 'calc(50vw - 37.5vw)',
-                    paddingRight: 'calc(50vw - 37.5vw)',
                   }}
                 >
-                  <div className="flex gap-4 pb-4">
+                  <div
+                    className="flex gap-4 pb-4"
+                    style={{ padding: '0 calc(50vw - 42.5vw)' }}
+                  >
                     {content[language].features.items.map((feature, index) => (
                       <div
                         key={index}
                         className="snap-center shrink-0 w-[85vw]"
-                        style={{ scrollSnapAlign: 'center' }}
                       >
                         <FeatureCard
                           icon={feature.icon}
@@ -401,17 +401,18 @@ export default function Home() {
                     style={{
                       scrollSnapType: 'x mandatory',
                       scrollBehavior: 'smooth',
-                      paddingLeft: 'calc(50vw - 40vw)',
-                      paddingRight: 'calc(50vw - 40vw)',
+                      scrollPaddingInline: 'calc(50vw - 45vw)',
                     }}
                   >
-                    <div className="flex gap-4 pb-4">
+                    <div
+                      className="flex gap-4 pb-4"
+                      style={{ padding: '0 calc(50vw - 45vw)' }}
+                    >
                       {Object.entries(UNIFIED_SUBSCRIPTION_PLANS).map(
                         ([key, plan]) => (
                           <div
                             key={key}
                             className="snap-center shrink-0 w-[90vw]"
-                            style={{ scrollSnapAlign: 'center' }}
                           >
                             <div className="card-base card-hover p-6 h-full">
                               <h3 className="heading-4 mb-4">

@@ -528,12 +528,12 @@ export default function PricingPage({}: PricingPageProps) {
                           </h3>
                           <div className="mb-4">
                             {price === 0 ? (
-                              <div className="heading-1">
+                              <div className="text-2xl md:text-3xl font-bold">
                                 {t('pricing.free')}
                               </div>
                             ) : (
                               <div>
-                                <span className="heading-1">
+                                <span className="text-2xl md:text-3xl font-bold">
                                   {formatCurrency(price)}
                                 </span>
                                 <span className="body-base text-gray-500 ml-3">
@@ -661,12 +661,12 @@ export default function PricingPage({}: PricingPageProps) {
                             </h3>
                             <div className="mb-3">
                               {price === 0 ? (
-                                <div className="text-2xl font-bold">
+                                <div className="text-lg font-bold">
                                   {t('pricing.free')}
                                 </div>
                               ) : (
                                 <div>
-                                  <span className="text-2xl font-bold">
+                                  <span className="text-lg font-bold">
                                     {formatCurrency(price)}
                                   </span>
                                   <span className="text-sm text-gray-500 ml-2">
