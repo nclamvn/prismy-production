@@ -1,0 +1,28 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <!-- Rounded background container with strong border-radius for modern, smooth appearance -->
+  <rect width="64" height="64" rx="18" ry="18" fill="#ffffff" stroke="#e5e7eb" stroke-width="0.5"/>
+  
+  <!-- Simplified, modern "P" for favicon clarity -->
+  <g fill="#1f2937">
+    <!-- Main vertical bar of P -->
+    <rect x="16" y="12" width="6" height="40" rx="1"/>
+    
+    <!-- Top horizontal bar -->
+    <rect x="22" y="12" width="20" height="6" rx="1"/>
+    
+    <!-- Middle horizontal bar -->
+    <rect x="22" y="26" width="16" height="6" rx="1"/>
+    
+    <!-- Right vertical connector -->
+    <rect x="36" y="18" width="6" height="8" rx="1"/>
+  </g>
+  
+  <!-- Subtle gradient overlay for depth -->
+  <defs>
+    <linearGradient id="softGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.2"/>
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.05"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="18" ry="18" fill="url(#softGradient)"/>
+</svg>
