@@ -285,12 +285,12 @@ export default function Home() {
                   style={{
                     scrollSnapType: 'x mandatory',
                     scrollBehavior: 'smooth',
-                    scrollPaddingInline: 'calc(50vw - 42.5vw)',
+                    scrollPaddingInline: 'calc(50vw - 42.5vw - 2.5rem)',
                   }}
                 >
                   <div
                     className="flex gap-4 pb-4"
-                    style={{ padding: '0 calc(50vw - 42.5vw)' }}
+                    style={{ padding: '0 calc(50vw - 42.5vw - 2.5rem)' }}
                   >
                     {content[language].features.items.map((feature, index) => (
                       <div
@@ -403,12 +403,12 @@ export default function Home() {
                     style={{
                       scrollSnapType: 'x mandatory',
                       scrollBehavior: 'smooth',
-                      scrollPaddingInline: 'calc(50vw - 45vw)',
+                      scrollPaddingInline: 'calc(50vw - 45vw - 1.5rem)',
                     }}
                   >
                     <div
                       className="flex gap-4 pb-4"
-                      style={{ padding: '0 calc(50vw - 45vw)' }}
+                      style={{ padding: '0 calc(50vw - 45vw - 1.5rem)' }}
                     >
                       {Object.entries(UNIFIED_SUBSCRIPTION_PLANS).map(
                         ([key, plan]) => (

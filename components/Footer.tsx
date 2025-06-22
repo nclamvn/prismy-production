@@ -37,7 +37,7 @@ export default function Footer({}: FooterProps) {
           aria-expanded={isOpen}
           aria-controls={`mobile-section-${index}`}
         >
-          <h3 className="heading-5 text-gray-300 font-semibold">
+          <h3 className="heading-5 text-gray-900 font-semibold">
             {section.title}
           </h3>
           <ChevronDown
@@ -63,7 +63,7 @@ export default function Footer({}: FooterProps) {
                   <li key={link.name}>
                     <Link
                       href={link.href}
-                      className="block body-sm text-gray-500 hover:text-white hover:font-semibold 
+                      className="block body-sm text-gray-600 hover:text-gray-900 hover:font-semibold 
                                transition-all focus-visible-ring rounded-md py-1"
                     >
                       {link.name}
@@ -266,7 +266,7 @@ export default function Footer({}: FooterProps) {
 
   return (
     <footer
-      className="w-full bg-black text-text-inverse border-0 outline-0"
+      className="w-full bg-bg-main text-gray-900 border-0 outline-0"
       style={{ borderTop: 'none !important' }}
     >
       <div
@@ -290,11 +290,11 @@ export default function Footer({}: FooterProps) {
               >
                 <div>
                   <Link href="/" className="mb-2 inline-block group">
-                    <span className="heading-4 font-bold text-white transition-colors">
+                    <span className="heading-4 font-bold text-gray-900 transition-colors">
                       Prismy
                     </span>
                   </Link>
-                  <p className="text-sm text-gray-200 italic mt-1 mb-3 max-w-sm">
+                  <p className="text-sm text-gray-600 italic mt-1 mb-3 max-w-sm">
                     {content[language].description}
                   </p>
                   <div className="flex space-x-5 mt-3">
@@ -302,7 +302,7 @@ export default function Footer({}: FooterProps) {
                       <Link
                         key={social.name}
                         href={social.href}
-                        className="text-white opacity-70 hover:opacity-100 hover:scale-110 transition-all duration-150 
+                        className="text-gray-700 hover:text-gray-900 hover:scale-110 transition-all duration-150 
                                focus-visible-ring rounded-md p-1"
                         aria-label={social.name}
                       >
@@ -318,7 +318,7 @@ export default function Footer({}: FooterProps) {
                 variants={motionSafe(slideUp)}
                 className="lg:col-span-1"
               >
-                <h3 className="heading-4 text-gray-300 mb-4">
+                <h3 className="heading-4 text-gray-900 mb-4">
                   {language === 'vi' ? 'Sản phẩm' : 'Product'}
                 </h3>
                 <ul className="space-y-3">
@@ -327,7 +327,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/text-translation"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Dịch văn bản
                         </Link>
@@ -335,7 +335,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/document-translation"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Dịch tài liệu
                         </Link>
@@ -343,7 +343,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/api"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Truy cập API
                         </Link>
@@ -351,7 +351,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/enterprise"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Doanh nghiệp
                         </Link>
@@ -359,7 +359,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/pricing"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Bảng giá
                         </Link>
@@ -370,7 +370,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/text-translation"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Text Translation
                         </Link>
@@ -378,7 +378,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/document-translation"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Document Translation
                         </Link>
@@ -386,7 +386,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/api"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           API Access
                         </Link>
@@ -394,7 +394,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/enterprise"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Enterprise
                         </Link>
@@ -402,7 +402,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/pricing"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Pricing
                         </Link>
@@ -417,7 +417,7 @@ export default function Footer({}: FooterProps) {
                 variants={motionSafe(slideUp)}
                 className="lg:col-span-1"
               >
-                <h3 className="heading-4 text-gray-300 mb-4">
+                <h3 className="heading-4 text-gray-900 mb-4">
                   {language === 'vi' ? 'Tài nguyên' : 'Resources'}
                 </h3>
                 <ul className="space-y-3">
@@ -426,7 +426,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/docs"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Tài liệu hướng dẫn
                         </Link>
@@ -434,7 +434,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/api-docs"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Tham khảo API
                         </Link>
@@ -442,7 +442,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/tutorials"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Hướng dẫn sử dụng
                         </Link>
@@ -450,7 +450,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/blog"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Blog
                         </Link>
@@ -458,7 +458,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/community"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Cộng đồng
                         </Link>
@@ -469,7 +469,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/docs"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Documentation
                         </Link>
@@ -477,7 +477,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/api-docs"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           API Reference
                         </Link>
@@ -485,7 +485,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/tutorials"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Tutorials
                         </Link>
@@ -493,7 +493,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/blog"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Blog
                         </Link>
@@ -501,7 +501,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/community"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Community
                         </Link>
@@ -516,7 +516,7 @@ export default function Footer({}: FooterProps) {
                 variants={motionSafe(slideUp)}
                 className="lg:col-span-1"
               >
-                <h3 className="heading-4 text-gray-300 mb-4">
+                <h3 className="heading-4 text-gray-900 mb-4">
                   {language === 'vi' ? 'Công ty' : 'Company'}
                 </h3>
                 <ul className="space-y-3">
@@ -525,7 +525,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/about"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Về chúng tôi
                         </Link>
@@ -533,7 +533,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/careers"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Tuyển dụng
                         </Link>
@@ -541,7 +541,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/press"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Bộ công cụ báo chí
                         </Link>
@@ -549,7 +549,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/contact"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Liên hệ
                         </Link>
@@ -557,7 +557,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/partners"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Đối tác
                         </Link>
@@ -568,7 +568,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/about"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           About Us
                         </Link>
@@ -576,7 +576,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/careers"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Careers
                         </Link>
@@ -584,7 +584,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/press"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Press Kit
                         </Link>
@@ -592,7 +592,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/contact"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Contact
                         </Link>
@@ -600,7 +600,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/partners"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Partners
                         </Link>
@@ -615,7 +615,7 @@ export default function Footer({}: FooterProps) {
                 variants={motionSafe(slideUp)}
                 className="lg:col-span-1"
               >
-                <h3 className="heading-4 text-gray-300 mb-4">
+                <h3 className="heading-4 text-gray-900 mb-4">
                   {language === 'vi' ? 'Pháp lý' : 'Legal'}
                 </h3>
                 <ul className="space-y-3">
@@ -624,7 +624,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/privacy"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Chính sách bảo mật
                         </Link>
@@ -632,7 +632,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/terms"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Điều khoản dịch vụ
                         </Link>
@@ -640,7 +640,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/cookies"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Chính sách Cookie
                         </Link>
@@ -648,7 +648,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/security"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Bảo mật
                         </Link>
@@ -656,7 +656,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/gdpr"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           GDPR
                         </Link>
@@ -667,7 +667,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/privacy"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Privacy Policy
                         </Link>
@@ -675,7 +675,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/terms"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Terms of Service
                         </Link>
@@ -683,7 +683,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/cookies"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Cookie Policy
                         </Link>
@@ -691,7 +691,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/security"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           Security
                         </Link>
@@ -699,7 +699,7 @@ export default function Footer({}: FooterProps) {
                       <li>
                         <Link
                           href="/gdpr"
-                          className="body-sm text-gray-500 hover:text-white hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
                           GDPR
                         </Link>
@@ -716,11 +716,11 @@ export default function Footer({}: FooterProps) {
               <motion.div variants={motionSafe(slideUp)} className="mb-6">
                 <div>
                   <Link href="/" className="mb-2 inline-block group">
-                    <span className="heading-4 font-bold text-white transition-colors">
+                    <span className="heading-4 font-bold text-gray-900 transition-colors">
                       Prismy
                     </span>
                   </Link>
-                  <p className="text-sm text-gray-200 italic mt-1 mb-3 max-w-sm">
+                  <p className="text-sm text-gray-600 italic mt-1 mb-3 max-w-sm">
                     {content[language].description}
                   </p>
                   <div className="flex space-x-5 mt-3">
@@ -728,7 +728,7 @@ export default function Footer({}: FooterProps) {
                       <Link
                         key={social.name}
                         href={social.href}
-                        className="text-white opacity-70 hover:opacity-100 hover:scale-110 transition-all duration-150 
+                        className="text-gray-700 hover:text-gray-900 hover:scale-110 transition-all duration-150 
                                  focus-visible-ring rounded-md p-1"
                         aria-label={social.name}
                       >
@@ -758,13 +758,13 @@ export default function Footer({}: FooterProps) {
             className="flex flex-col md:flex-row justify-between items-center 
                      mt-6 md:mt-8 pt-4"
           >
-            <p className="text-sm text-gray-200">
+            <p className="text-sm text-gray-600">
               {language === 'vi' ? '© 2025 Prismy' : '© 2025 Prismy'}
             </p>
 
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-              <span className="text-sm text-gray-200">Enterprise Ready</span>
+              <span className="text-sm text-gray-600">Enterprise Ready</span>
             </div>
           </motion.div>
         </motion.div>
