@@ -34,13 +34,24 @@
     }
   }
 
-  .logo-marquee {
+  /* Perfect Prismy Logo Marquee - Single Line Infinite Scroll */
+  @keyframes prismy-marquee {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  .prismy-logo-marquee {
     display: flex;
-    animation: marquee 25s linear infinite;
+    white-space: nowrap;
+    animation: prismy-marquee 25s linear infinite;
     will-change: transform;
   }
 
-  .logo-marquee:hover {
+  .prismy-logo-marquee:hover {
     animation-play-state: paused;
   }
 
@@ -91,6 +102,13 @@ body {
   background: var(--bg-main);
   color: var(--text-primary);
   overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Prevent any element from causing horizontal overflow */
+* {
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* ============================================================================ */
@@ -600,4 +618,13 @@ body {
   font-weight: 600;
   color: var(--text-primary);
   transform: translateY(-1px);
+}
+
+/* Pricing carousel scrollbar hide */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }

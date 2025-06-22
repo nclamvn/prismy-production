@@ -230,7 +230,7 @@ export default function Blog() {
                   {/* Blog GIF */}
                   <motion.div
                     variants={motionSafe(slideUp)}
-                    className="mb-8 md:mb-12 lg:mb-16"
+                    className="mb-4 md:mb-12 lg:mb-16"
                   >
                     <div
                       className="hero-gif-container mx-auto"

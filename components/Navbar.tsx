@@ -21,21 +21,9 @@ export default function Navbar({}: NavbarProps) {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
   const [isScrolled, setIsScrolled] = useState(false)
-  const [isMobile, setIsMobile] = useState(false)
   const { user, loading } = useAuth()
-  
-  // Mobile detection
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768)
-    }
-    
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [])
 
-  // Scroll detection for dynamic border
+  // Scroll detection for desktop header styling only
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20)
@@ -58,8 +46,8 @@ export default function Navbar({}: NavbarProps) {
       getStarted: 'Bắt đầu',
       languages: {
         vi: 'Tiếng Việt',
-        en: 'English'
-      }
+        en: 'English',
+      },
     },
     en: {
       navigation: [
@@ -73,140 +61,186 @@ export default function Navbar({}: NavbarProps) {
       getStarted: 'Get Started',
       languages: {
         vi: 'Tiếng Việt',
-        en: 'English'
-      }
-    }
+        en: 'English',
+      },
+    },
   }
 
-  // Determine header style - force static when mobile menu is open
-  const shouldUseStaticHeader = !isScrolled || (isMobile && isMenuOpen)
-  
+  // Desktop-only header style switching
+  const shouldUseDesktopPill = isScrolled && !isMenuOpen
+
   return (
-    <motion.header 
-      className={`transition-all duration-300 ${
-        shouldUseStaticHeader ? 'header-static' : 'header-pill-capsule'
-      }`}
+    <motion.header
+      className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
       variants={motionSafe(slideDown)}
       initial="hidden"
       animate="visible"
     >
-      
-      <nav className="w-full" aria-label="Main navigation">
-        <div className={`${shouldUseStaticHeader ? 'content-container' : 'px-8'}`}>
-          <div className={`flex items-center ${shouldUseStaticHeader ? 'h-12' : 'h-10'}`}>
-          {/* Logo - Text only */}
-          <Link 
-            href="/" 
-            className="focus-visible-ring rounded-md mr-5"
-            aria-label="Prismy home"
-          >
-            <span className="heading-4 font-bold">Prismy</span>
-          </Link>
-
-          {/* Desktop Navigation - Moved left close to Prismy */}
-          <div className="hidden md:flex items-center space-x-5 flex-1">
-            {content[language].navigation.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className="body-sm font-medium hover:font-bold text-gray-600 hover:text-gray-900 
-                         transition-all duration-200 focus-visible-ring 
-                         rounded-md px-2 py-1"
-              >
-                {item.name}
-              </Link>
-            ))}
-          </div>
-
-          {/* Right Section: Language Toggle + Auth */}
-          <div className="hidden md:flex items-center space-x-2.5">
-            {/* Language Selector - Universal Dropdown DNA */}
-            <UniversalDropdown
-              value={language}
-              onChange={(value) => setLanguage(value as 'vi' | 'en')}
-              size="sm"
-              options={[
-                {
-                  value: 'vi',
-                  label: content[language].languages.vi,
-                  icon: <Globe size={14} strokeWidth={1.5} />
-                },
-                {
-                  value: 'en', 
-                  label: content[language].languages.en,
-                  icon: <Globe size={14} strokeWidth={1.5} />
-                }
-              ]}
-              className="min-w-[100px] sm:min-w-[120px] dropdown-mobile-safe"
-            />
-            
-            {!loading && (
-              user ? (
-                <UserMenu />
-              ) : (
-                <>
-                  <button
-                    onClick={() => {
-                      setAuthMode('signin')
-                      setIsAuthModalOpen(true)
-                    }}
-                    className={`btn-ghost btn-signin-enhanced ${shouldUseStaticHeader ? 'btn-pill-compact-md' : 'h-8 px-3 text-xs btn-base'} font-normal hover:font-semibold`}
-                  >
-                    {content[language].signin}
-                  </button>
-                  <button
-                    onClick={() => {
-                      setAuthMode('signup')
-                      setIsAuthModalOpen(true)
-                    }}
-                    className={`btn-primary ${shouldUseStaticHeader ? 'btn-pill-compact-md' : 'h-8 px-3 text-xs btn-base'} font-semibold`}
-                  >
-                    {content[language].getStarted}
-                  </button>
-                </>
-              )
-            )}
-          </div>
-
-          {/* Mobile menu button */}
-          <button
-            type="button"
-            className="md:hidden btn-ghost p-2 ml-auto"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-expanded={isMenuOpen}
-            aria-controls="mobile-menu"
-            aria-label="Toggle navigation menu"
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
+      {/* Mobile Navbar - Stable and Simple */}
+      <div className="md:hidden w-full bg-white/95 backdrop-blur-sm border-b border-gray-200">
+        <nav className="w-full px-4 py-3" aria-label="Mobile navigation">
+          <div className="flex items-center justify-between">
+            {/* Mobile Logo */}
+            <Link
+              href="/"
+              className="focus-visible-ring rounded-md"
+              aria-label="Prismy home"
             >
-              {isMenuOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
-          </button>
-          </div>
-        </div>
+              <span className="heading-4 font-bold">Prismy</span>
+            </Link>
 
-        {/* Mobile menu */}
-        {isMenuOpen && (
-          <div className="w-full px-4 sm:px-6 lg:px-8">
-            <motion.div
-              id="mobile-menu"
-              className="md:hidden border-t border-gray-100 pt-4 pb-8 mb-4 z-[50] mobile-nav-zen"
+            {/* Mobile menu button */}
+            <button
+              type="button"
+              className="relative p-2"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-expanded={isMenuOpen}
+              aria-controls="mobile-menu"
+              aria-label="Toggle navigation menu"
+            >
+              {/* Circle background */}
+              <div
+                className="absolute inset-0 rounded-full bg-gray-100 
+                            scale-[1.0] transition-all duration-200
+                            hover:bg-gray-200"
+              />
+
+              {/* Icon */}
+              <svg
+                className="relative w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                {isMenuOpen ? (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                ) : (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                )}
+              </svg>
+            </button>
+          </div>
+        </nav>
+      </div>
+
+      {/* Desktop Navbar - Dynamic Styling */}
+      <div className="hidden md:block w-full">
+        <div
+          className={`transition-all duration-300 ${
+            shouldUseDesktopPill
+              ? 'mx-8 mt-4 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-full shadow-sm'
+              : 'bg-white/95 backdrop-blur-sm border-b border-gray-200'
+          }`}
+        >
+          <nav className="w-full" aria-label="Desktop navigation">
+            <div
+              className={`${shouldUseDesktopPill ? 'px-8' : 'px-4 sm:px-6 lg:px-8'}`}
+            >
+              <div
+                className={`flex items-center ${shouldUseDesktopPill ? 'h-10' : 'h-12'}`}
+              >
+                {/* Desktop Logo */}
+                <Link
+                  href="/"
+                  className="focus-visible-ring rounded-md mr-5"
+                  aria-label="Prismy home"
+                >
+                  <span className="heading-4 font-bold">Prismy</span>
+                </Link>
+
+                {/* Desktop Navigation */}
+                <div className="flex items-center space-x-5 flex-1">
+                  {content[language].navigation.map(item => (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      className="body-sm font-medium hover:font-bold text-gray-600 hover:text-gray-900 
+                               transition-all duration-200 focus-visible-ring 
+                               rounded-md px-2 py-1"
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                </div>
+
+                {/* Desktop Right Section: Language Toggle + Auth */}
+                <div className="flex items-center space-x-2.5">
+                  {/* Language Selector */}
+                  <UniversalDropdown
+                    value={language}
+                    onChange={value => setLanguage(value as 'vi' | 'en')}
+                    size="sm"
+                    options={[
+                      {
+                        value: 'vi',
+                        label: content[language].languages.vi,
+                        icon: <Globe size={14} strokeWidth={1.5} />,
+                      },
+                      {
+                        value: 'en',
+                        label: content[language].languages.en,
+                        icon: <Globe size={14} strokeWidth={1.5} />,
+                      },
+                    ]}
+                    className="min-w-[100px] sm:min-w-[120px]"
+                  />
+
+                  {!loading &&
+                    (user ? (
+                      <UserMenu />
+                    ) : (
+                      <>
+                        <button
+                          onClick={() => {
+                            setAuthMode('signin')
+                            setIsAuthModalOpen(true)
+                          }}
+                          className={`btn-ghost ${shouldUseDesktopPill ? 'h-8 px-3 text-xs' : 'btn-pill-compact-md'} font-normal hover:font-semibold`}
+                        >
+                          {content[language].signin}
+                        </button>
+                        <button
+                          onClick={() => {
+                            setAuthMode('signup')
+                            setIsAuthModalOpen(true)
+                          }}
+                          className={`btn-primary ${shouldUseDesktopPill ? 'h-8 px-3 text-xs' : 'btn-pill-compact-md'} font-semibold`}
+                        >
+                          {content[language].getStarted}
+                        </button>
+                      </>
+                    ))}
+                </div>
+              </div>
+            </div>
+          </nav>
+        </div>
+      </div>
+
+      {/* Mobile menu - Separate and Stable */}
+      {isMenuOpen && (
+        <div className="md:hidden w-full bg-white border-b border-gray-200">
+          <motion.div
+            id="mobile-menu"
+            className="px-4 py-4"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2 }}
           >
             <div className="space-y-3">
-              {content[language].navigation.map((item) => (
+              {content[language].navigation.map(item => (
                 <Link
                   key={item.name}
                   href={item.href}
@@ -216,7 +250,7 @@ export default function Navbar({}: NavbarProps) {
                   {item.name}
                 </Link>
               ))}
-              
+
               {/* Mobile Language Selector */}
               <div className="py-2 border-t border-gray-100 mt-4">
                 <div className="space-y-2">
@@ -240,10 +274,10 @@ export default function Navbar({}: NavbarProps) {
                   </button>
                 </div>
               </div>
-              
+
               <div className="pt-4 space-y-3">
-                {!loading && (
-                  user ? (
+                {!loading &&
+                  (user ? (
                     <div className="flex items-center justify-center py-4">
                       <UserMenu />
                     </div>
@@ -270,14 +304,12 @@ export default function Navbar({}: NavbarProps) {
                         {content[language].getStarted}
                       </button>
                     </>
-                  )
-                )}
+                  ))}
               </div>
             </div>
-            </motion.div>
-          </div>
-        )}
-      </nav>
+          </motion.div>
+        </div>
+      )}
 
       {/* Auth Modal */}
       <AuthModal

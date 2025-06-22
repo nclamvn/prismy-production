@@ -22,7 +22,7 @@ import {
 } from 'lucide-react'
 
 export default function Home() {
-  const { language, setLanguage } = useLanguage()
+  const { language } = useLanguage()
   const [activePricingIndex, setActivePricingIndex] = useState(0)
   const pricingScrollRef = useRef<HTMLDivElement>(null)
 
@@ -94,7 +94,6 @@ export default function Home() {
         subtitle: 'Chọn gói phù hợp với nhu cầu của bạn',
         monthly: 'Hàng tháng',
         getStarted: 'Bắt đầu',
-        mostPopular: 'Phổ biến nhất',
       },
     },
     en: {
@@ -164,7 +163,6 @@ export default function Home() {
         subtitle: 'Choose the plan that fits your needs',
         monthly: 'Monthly',
         getStarted: 'Get Started',
-        mostPopular: 'Most Popular',
       },
     },
   }
@@ -197,10 +195,10 @@ export default function Home() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-bg-main">
-      <main>
+    <div className="min-h-screen bg-bg-main overflow-x-hidden">
+      <main className="overflow-x-hidden">
         {/* Hero Section - Full Width */}
-        <section className="relative overflow-hidden bg-white pt-6 md:pt-8 w-full">
+        <section className="relative overflow-hidden bg-white pt-20 w-full">
           <div className="w-full py-8 md:py-12">
             <div className="w-full">
               <motion.div
@@ -274,14 +272,59 @@ export default function Home() {
         <section className="py-4 md:py-6 lg:py-8 border-b border-border-subtle w-full">
           <div className="w-full">
             <div className="w-full">
-              {/* Mobile: Marquee Animation */}
-              <div className="md:hidden overflow-hidden relative py-2">
-                <div className="logo-marquee gap-x-12">
-                  {/* Duplicate logos for seamless loop */}
-                  {[...llmCompanies, ...llmCompanies].map((company, idx) => (
+              {/* Perfect Single-Line Logo Marquee - All Devices */}
+              <div className="w-full overflow-hidden relative py-2">
+                <div className="prismy-logo-marquee flex items-center">
+                  {/* First set of logos */}
+                  {llmCompanies.map((company, idx) => (
                     <div
-                      key={`${company.name}-${idx}`}
-                      className="flex-shrink-0 inline-flex items-center"
+                      key={`set1-${company.name}-${idx}`}
+                      className="flex-shrink-0 flex items-center cursor-pointer transition-all duration-300 hover:opacity-80 hover:scale-105"
+                      style={{ marginRight: '32px' }}
+                      onMouseEnter={e => {
+                        const marquee = e.currentTarget.closest(
+                          '.prismy-logo-marquee'
+                        )
+                        if (marquee) marquee.style.animationPlayState = 'paused'
+                      }}
+                      onMouseLeave={e => {
+                        const marquee = e.currentTarget.closest(
+                          '.prismy-logo-marquee'
+                        )
+                        if (marquee)
+                          marquee.style.animationPlayState = 'running'
+                      }}
+                    >
+                      <img
+                        src={company.logo}
+                        alt={company.name}
+                        className="llm-logo"
+                        style={{
+                          height: `${getFinalLogoSize(company.baseSize)}px`,
+                          width: 'auto',
+                        }}
+                      />
+                    </div>
+                  ))}
+                  {/* Second set for seamless loop */}
+                  {llmCompanies.map((company, idx) => (
+                    <div
+                      key={`set2-${company.name}-${idx}`}
+                      className="flex-shrink-0 flex items-center cursor-pointer transition-all duration-300 hover:opacity-80 hover:scale-105"
+                      style={{ marginRight: '32px' }}
+                      onMouseEnter={e => {
+                        const marquee = e.currentTarget.closest(
+                          '.prismy-logo-marquee'
+                        )
+                        if (marquee) marquee.style.animationPlayState = 'paused'
+                      }}
+                      onMouseLeave={e => {
+                        const marquee = e.currentTarget.closest(
+                          '.prismy-logo-marquee'
+                        )
+                        if (marquee)
+                          marquee.style.animationPlayState = 'running'
+                      }}
                     >
                       <img
                         src={company.logo}
@@ -295,23 +338,6 @@ export default function Home() {
                     </div>
                   ))}
                 </div>
-              </div>
-
-              {/* Desktop: Current Layout */}
-              <div className="hidden md:flex flex-wrap justify-center items-center gap-x-16 gap-y-2 px-4 md:px-8 lg:px-12 llm-logos-container">
-                {llmCompanies.map(company => (
-                  <div key={company.name} className="llm-logo-container">
-                    <img
-                      src={company.logo}
-                      alt={company.name}
-                      className="llm-logo"
-                      style={{
-                        height: `${getFinalLogoSize(company.baseSize)}px`,
-                        width: 'auto',
-                      }}
-                    />
-                  </div>
-                ))}
               </div>
             </div>
           </div>
@@ -340,12 +366,21 @@ export default function Home() {
                 </motion.div>
 
                 {/* Mobile: Horizontal Carousel */}
-                <div className="md:hidden overflow-x-auto snap-x snap-mandatory -mx-4">
-                  <div className="flex gap-4 px-4 pb-4">
+                <div
+                  className="md:hidden overflow-x-auto snap-x snap-mandatory scrollbar-hide"
+                  style={{
+                    scrollSnapType: 'x mandatory',
+                    scrollBehavior: 'smooth',
+                    paddingLeft: 'calc(50vw - 42.5vw)',
+                    paddingRight: 'calc(50vw - 42.5vw)',
+                  }}
+                >
+                  <div className="flex gap-4 pb-4">
                     {content[language].features.items.map((feature, index) => (
                       <div
                         key={index}
                         className="snap-center shrink-0 w-[85vw]"
+                        style={{ scrollSnapAlign: 'center' }}
                       >
                         <FeatureCard
                           icon={feature.icon}
@@ -448,30 +483,23 @@ export default function Home() {
                 <div className="md:hidden">
                   <div
                     ref={pricingScrollRef}
-                    className="overflow-x-auto snap-x snap-mandatory -mx-4"
+                    className="overflow-x-auto snap-x snap-mandatory scrollbar-hide"
+                    style={{
+                      scrollSnapType: 'x mandatory',
+                      scrollBehavior: 'smooth',
+                      paddingLeft: 'calc(50vw - 45vw)',
+                      paddingRight: 'calc(50vw - 45vw)',
+                    }}
                   >
-                    <div className="flex gap-4 px-4 pb-4">
+                    <div className="flex gap-4 pb-4">
                       {Object.entries(UNIFIED_SUBSCRIPTION_PLANS).map(
-                        ([key, plan], index) => (
+                        ([key, plan]) => (
                           <div
                             key={key}
                             className="snap-center shrink-0 w-[90vw]"
+                            style={{ scrollSnapAlign: 'center' }}
                           >
-                            <div
-                              className={`card-base card-hover p-6 h-full ${
-                                key === 'standard'
-                                  ? 'ring-2 ring-gray-900 ring-offset-2'
-                                  : ''
-                              }`}
-                            >
-                              {key === 'standard' && (
-                                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                                  <span className="badge-primary">
-                                    {content[language].pricing.mostPopular}
-                                  </span>
-                                </div>
-                              )}
-
+                            <div className="card-base card-hover p-6 h-full">
                               <h3 className="heading-4 mb-4">
                                 {language === 'vi' ? plan.nameVi : plan.name}
                               </h3>
@@ -549,21 +577,7 @@ export default function Home() {
                         variants={motionSafe(slideUp)}
                         className="relative"
                       >
-                        <div
-                          className={`card-base card-hover p-8 h-full ${
-                            key === 'standard'
-                              ? 'ring-2 ring-gray-900 ring-offset-2'
-                              : ''
-                          }`}
-                        >
-                          {key === 'standard' && (
-                            <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                              <span className="badge-primary">
-                                {content[language].pricing.mostPopular}
-                              </span>
-                            </div>
-                          )}
-
+                        <div className="card-base card-hover p-8 h-full">
                           <h3 className="heading-4 mb-4">
                             {language === 'vi' ? plan.nameVi : plan.name}
                           </h3>

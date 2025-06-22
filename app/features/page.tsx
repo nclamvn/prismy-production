@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+// import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
@@ -259,7 +259,7 @@ export default function Features() {
                   {/* Features GIF */}
                   <motion.div
                     variants={motionSafe(slideUp)}
-                    className="mb-8 md:mb-12 lg:mb-16"
+                    className="mb-4 md:mb-12 lg:mb-16"
                   >
                     <div
                       className="hero-gif-container mx-auto"

@@ -1,14 +1,14 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { motionSafe } from '@/lib/motion'
 import Footer from '@/components/Footer'
+import UniversalDropdown from '@/components/ui/UniversalDropdown'
 import {
   UNIFIED_SUBSCRIPTION_PLANS,
-  formatPrice,
   getAvailablePaymentMethods,
   getPaymentMethodName,
   getPaymentMethodIconType,
@@ -39,10 +39,22 @@ const renderPaymentMethodIcon = (method: PaymentMethod) => {
 }
 
 export default function PricingPage({}: PricingPageProps) {
-  // Fixed context hooks
-  const { user, loading: authLoading } = useAuth()
+  // Client-side only state
+  const [isClient, setIsClient] = useState(false)
 
-  const { language, setLanguage } = useLanguage()
+  // Context hooks - always call at component top level
+  const authContext = useAuth()
+  const langContext = useLanguage()
+
+  // Extract values with safe fallbacks
+  const user = authContext?.user || null
+  const authLoading = authContext?.loading ?? false
+  const language = langContext?.language ?? 'vi'
+
+  // Ensure we're on client side
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   // Simple currency formatter
   const formatCurrency = (amount: number) => {
@@ -138,9 +150,13 @@ export default function PricingPage({}: PricingPageProps) {
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>(
     'monthly'
   )
-  const [currency, setCurrency] = useState<Currency>('VND')
+  const [currency] = useState<Currency>('VND')
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState<PaymentMethod>('vnpay')
+
+  // Mobile carousel state
+  const [activeTierIndex, setActiveTierIndex] = useState(0)
+  const tierScrollRef = useRef<HTMLDivElement>(null)
   const [quotaInfo, setQuotaInfo] = useState<{
     canProceed: boolean
     usage: number
@@ -156,8 +172,38 @@ export default function PricingPage({}: PricingPageProps) {
     }
   }, [user, authLoading])
 
+  // Mobile carousel scroll detection
+  useEffect(() => {
+    if (!isClient || !tierScrollRef.current) return
+
+    const handleScroll = () => {
+      if (!tierScrollRef.current) return
+
+      const scrollLeft = tierScrollRef.current.scrollLeft
+      const itemWidth =
+        tierScrollRef.current.scrollWidth /
+        Object.keys(UNIFIED_SUBSCRIPTION_PLANS).length
+      const newIndex = Math.round(scrollLeft / itemWidth)
+
+      if (newIndex !== activeTierIndex) {
+        setActiveTierIndex(newIndex)
+      }
+    }
+
+    const scrollContainer = tierScrollRef.current
+    scrollContainer.addEventListener('scroll', handleScroll)
+
+    return () => {
+      if (scrollContainer) {
+        scrollContainer.removeEventListener('scroll', handleScroll)
+      }
+    }
+  }, [isClient, activeTierIndex])
+
   // Premium upgrade handler
   const handleUpgrade = async (planId: string) => {
+    if (!isClient) return
+
     if (!user) {
       // Redirect to sign up with selected plan
       window.location.href = `/auth/signup?plan=${planId}&period=${billingPeriod}`
@@ -189,8 +235,8 @@ export default function PricingPage({}: PricingPageProps) {
     }
   }
 
-  // Show loading state during SSR
-  if (authLoading) {
+  // Show loading state during SSR or auth loading
+  if (!isClient || authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-600 border-t-transparent"></div>
@@ -250,7 +296,7 @@ export default function PricingPage({}: PricingPageProps) {
               <div className="text-center mb-16">
                 {/* Pricing GIF */}
                 <motion.div
-                  className="mb-8 md:mb-12 lg:mb-16"
+                  className="mb-4 md:mb-12 lg:mb-16"
                   {...motionSafe({
                     initial: { opacity: 0, y: 20 },
                     animate: { opacity: 1, y: 0 },
@@ -299,7 +345,7 @@ export default function PricingPage({}: PricingPageProps) {
               </div>
 
               {/* User Status Banner (Premium Feature) */}
-              {user && (
+              {isClient && user && (
                 <motion.div
                   className="card-base p-6 mb-12"
                   {...motionSafe({
@@ -389,7 +435,26 @@ export default function PricingPage({}: PricingPageProps) {
                   <h3 className="heading-5 text-center mb-6">
                     {t('pricing.paymentMethod')}
                   </h3>
-                  <div className="flex justify-center">
+
+                  {/* Mobile: Dropdown */}
+                  <div className="md:hidden flex justify-center">
+                    <UniversalDropdown
+                      value={selectedPaymentMethod}
+                      onChange={value =>
+                        setSelectedPaymentMethod(value as PaymentMethod)
+                      }
+                      size="lg"
+                      options={getAvailablePaymentMethods().map(method => ({
+                        value: method,
+                        label: getPaymentMethodName(method, language),
+                        icon: renderPaymentMethodIcon(method),
+                      }))}
+                      className="w-full max-w-xs"
+                    />
+                  </div>
+
+                  {/* Desktop: Grid */}
+                  <div className="hidden md:flex justify-center">
                     <div className="grid grid-cols-3 gap-6 max-w-2xl">
                       {getAvailablePaymentMethods().map(method => (
                         <button
@@ -415,8 +480,9 @@ export default function PricingPage({}: PricingPageProps) {
               </motion.div>
 
               {/* Pricing Grid */}
+              {/* Desktop: Grid Layout */}
               <motion.div
-                className="grid md:grid-cols-2 lg:grid-cols-4 gap-8"
+                className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-8"
                 {...motionSafe({
                   initial: { opacity: 0, y: 20 },
                   animate: { opacity: 1, y: 0 },
@@ -436,11 +502,9 @@ export default function PricingPage({}: PricingPageProps) {
                       <motion.div
                         key={planId}
                         className={`card-base card-hover relative p-8 ${
-                          isPopular
-                            ? 'ring-2 ring-gray-900 ring-offset-2 scale-105'
-                            : currentPlan
-                              ? 'ring-2 ring-gray-700 ring-offset-2'
-                              : ''
+                          currentPlan
+                            ? 'ring-2 ring-gray-700 ring-offset-2'
+                            : ''
                         }`}
                         {...motionSafe({
                           initial: { opacity: 0, y: 30 },
@@ -448,15 +512,6 @@ export default function PricingPage({}: PricingPageProps) {
                           transition: { duration: 0.6, delay: index * 0.1 },
                         })}
                       >
-                        {/* Popular Badge */}
-                        {isPopular && (
-                          <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                            <span className="badge-primary">
-                              {t('pricing.popular')}
-                            </span>
-                          </div>
-                        )}
-
                         {/* Current Plan Badge */}
                         {currentPlan && (
                           <div className="absolute -top-3 right-4">
@@ -553,6 +608,168 @@ export default function PricingPage({}: PricingPageProps) {
                   }
                 )}
               </motion.div>
+
+              {/* Mobile: Carousel Layout */}
+              <div className="md:hidden">
+                <motion.div
+                  ref={tierScrollRef}
+                  className="flex overflow-x-auto gap-6 pb-4 snap-x snap-mandatory scrollbar-hide"
+                  style={{
+                    scrollSnapType: 'x mandatory',
+                    scrollBehavior: 'smooth',
+                    paddingLeft: 'calc(50vw - 160px)', // Half screen minus half card width
+                    paddingRight: 'calc(50vw - 160px)',
+                  }}
+                  {...motionSafe({
+                    initial: { opacity: 0, y: 20 },
+                    animate: { opacity: 1, y: 0 },
+                    transition: { duration: 0.6 },
+                  })}
+                >
+                  {Object.entries(UNIFIED_SUBSCRIPTION_PLANS).map(
+                    ([planId, plan]) => {
+                      const isPopular = planId === 'premium'
+                      const currentPlan = false // user?.subscription?.tier === planId
+                      const price =
+                        billingPeriod === 'yearly' && (plan as any).priceVND > 0
+                          ? (plan as any).priceVND * 12 * 0.8 // 20% yearly discount
+                          : (plan as any).priceVND
+
+                      return (
+                        <div
+                          key={planId}
+                          className={`flex-none w-80 card-base card-hover relative p-6 snap-center ${
+                            currentPlan
+                              ? 'ring-2 ring-gray-700 ring-offset-2'
+                              : ''
+                          }`}
+                          style={{ scrollSnapAlign: 'center' }}
+                        >
+                          {/* Current Plan Badge */}
+                          {currentPlan && (
+                            <div className="absolute -top-3 right-4">
+                              <span className="badge-base bg-green-500 text-white text-xs px-3 py-1">
+                                {t('pricing.currentPlan')}
+                              </span>
+                            </div>
+                          )}
+
+                          {/* Plan Header */}
+                          <div className="text-center mb-6">
+                            <h3 className="heading-4 mb-3">
+                              {getPlanDisplayName(planId)}
+                            </h3>
+                            <div className="mb-3">
+                              {price === 0 ? (
+                                <div className="text-2xl font-bold">
+                                  {t('pricing.free')}
+                                </div>
+                              ) : (
+                                <div>
+                                  <span className="text-2xl font-bold">
+                                    {formatCurrency(price)}
+                                  </span>
+                                  <span className="text-sm text-gray-500 ml-2">
+                                    {billingPeriod === 'yearly'
+                                      ? t('pricing.yearly')
+                                      : t('pricing.monthly')}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                            {billingPeriod === 'yearly' && price > 0 && (
+                              <span className="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+                                {t('pricing.save20')}
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Features */}
+                          <ul className="space-y-3 mb-6">
+                            {getFeaturesByPlan(planId).map(
+                              (feature, featureIndex) => (
+                                <li
+                                  key={featureIndex}
+                                  className="flex items-start"
+                                >
+                                  <svg
+                                    className="w-4 h-4 text-green-500 mt-1 mr-3 flex-shrink-0"
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
+                                  >
+                                    <path
+                                      fillRule="evenodd"
+                                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                      clipRule="evenodd"
+                                    />
+                                  </svg>
+                                  <span className="text-sm">{feature}</span>
+                                </li>
+                              )
+                            )}
+                          </ul>
+
+                          {/* CTA Button */}
+                          <button
+                            onClick={() => handleUpgrade(planId)}
+                            disabled={isUpgrading || currentPlan}
+                            className={`w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
+                              currentPlan
+                                ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
+                                : isPopular
+                                  ? 'bg-gray-900 text-white hover:bg-gray-800'
+                                  : planId === 'free'
+                                    ? 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+                                    : 'bg-gray-900 text-white hover:bg-gray-800'
+                            }`}
+                          >
+                            {isUpgrading ? (
+                              <div className="flex items-center justify-center">
+                                <div className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent mr-2"></div>
+                                {t('common.loading')}
+                              </div>
+                            ) : currentPlan ? (
+                              t('pricing.currentPlan')
+                            ) : planId === 'free' ? (
+                              t('pricing.getStarted')
+                            ) : (
+                              t('pricing.choosePlan')
+                            )}
+                          </button>
+                        </div>
+                      )
+                    }
+                  )}
+                </motion.div>
+
+                {/* Mobile Carousel Dots */}
+                <div className="flex justify-center mt-6 space-x-2">
+                  {Object.keys(UNIFIED_SUBSCRIPTION_PLANS).map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => {
+                        if (tierScrollRef.current) {
+                          const scrollWidth = tierScrollRef.current.scrollWidth
+                          // const containerWidth = tierScrollRef.current.clientWidth
+                          const scrollPosition =
+                            (scrollWidth /
+                              Object.keys(UNIFIED_SUBSCRIPTION_PLANS).length) *
+                            index
+                          tierScrollRef.current.scrollTo({
+                            left: scrollPosition,
+                            behavior: 'smooth',
+                          })
+                        }
+                      }}
+                      className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                        activeTierIndex === index
+                          ? 'bg-gray-900 w-6'
+                          : 'bg-gray-300 hover:bg-gray-400'
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
 
               {/* Feature Comparison Table */}
               <div className="mt-24 w-full px-4 sm:px-6 lg:px-8">
