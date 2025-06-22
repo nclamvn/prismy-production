@@ -162,8 +162,8 @@ function DocumentsPageContent() {
               className="mb-4 md:mb-12 lg:mb-16"
             >
               <div
-                className="hero-gif-container mx-auto"
-                style={{ maxWidth: '360px' }}
+                className="documents-hero-gif-container mx-auto"
+                style={{ maxWidth: '225px' }}
               >
                 <img
                   src="/assets/documents.gif"

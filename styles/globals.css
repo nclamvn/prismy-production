@@ -483,7 +483,16 @@
     width: 100%;
     overflow: hidden;
     background-color: var(--bg-main);
-    border-radius: 1rem; /* 16px - Modern rounded corners */
+    border-radius: 1.5rem; /* 24px - Enhanced rounded corners for smoother feel */
+  }
+
+  /* Documents page specific - smaller size */
+  .documents-hero-gif-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background-color: var(--bg-main);
+    border-radius: 1.5rem; /* 24px - Enhanced rounded corners for smoother feel */
   }
 
   .hero-gif {
@@ -492,7 +501,7 @@
     object-position: center;
     max-width: 100%;
     height: auto;
-    border-radius: 1rem; /* Match container border-radius */
+    border-radius: 1.5rem; /* Enhanced border-radius for smoother feel */
     /* Optional: Blend với background nếu cần */
     /* mix-blend-mode: multiply; */
   }
@@ -500,7 +509,11 @@
   @media (max-width: 1279px) {
     .hero-gif-container {
       max-width: 70vw !important;
-      border-radius: 0.875rem; /* 14px on tablet */
+      border-radius: 1.25rem; /* 20px on tablet - enhanced */
+    }
+    .documents-hero-gif-container {
+      max-width: 43.75vw !important; /* 70vw ÷ 1.6 for Documents */
+      border-radius: 1.25rem; /* 20px on tablet - enhanced */
     }
     .heading-1 {
       font-size: calc(3rem * 0.9); /* 90% of original size */
@@ -510,7 +523,11 @@
   @media (max-width: 767px) {
     .hero-gif-container {
       max-width: 90vw !important;
-      border-radius: 0.75rem; /* 12px on mobile */
+      border-radius: 1rem; /* 16px on mobile - enhanced */
+    }
+    .documents-hero-gif-container {
+      max-width: 56.25vw !important; /* 90vw ÷ 1.6 for Documents */
+      border-radius: 1rem; /* 16px on mobile - enhanced */
     }
     .hero-gif {
       filter: drop-shadow(none);
@@ -518,7 +535,8 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .hero-gif-container {
+    .hero-gif-container,
+    .documents-hero-gif-container {
       display: none;
     }
   }
