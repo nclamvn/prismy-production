@@ -5,8 +5,9 @@
  * Kiểm tra cấu hình môi trường cho Prismy
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { config } from 'dotenv';
 
 // Colors for console output
 const colors = {
@@ -19,7 +20,7 @@ const colors = {
 };
 
 // Load environment variables
-require('dotenv').config({ path: '.env.local' });
+config({ path: '.env.local' });
 
 console.log(`${colors.blue}🔍 PRISMY CONFIGURATION CHECKER${colors.reset}\n`);
 
