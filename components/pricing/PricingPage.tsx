@@ -288,12 +288,12 @@ export default function PricingPage({}: PricingPageProps) {
 
   return (
     <div className="pricing-page">
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-bg-main">
         {/* Hero Section - Prismy Full Width Structure */}
         <section className="py-20 w-full">
-          <div className="w-full px-4 sm:px-6 lg:px-8">
-            <div className="max-w-6xl mx-auto">
-              <div className="text-center mb-16">
+          <div className="w-full">
+            <div className="w-full">
+              <div className="text-center mb-16 px-4 md:px-8 lg:px-12">
                 {/* Pricing GIF */}
                 <motion.div
                   className="mb-4 md:mb-12 lg:mb-16"
@@ -482,7 +482,7 @@ export default function PricingPage({}: PricingPageProps) {
               {/* Pricing Grid */}
               {/* Desktop: Grid Layout */}
               <motion.div
-                className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-8"
+                className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-8 px-4 md:px-8 lg:px-12"
                 {...motionSafe({
                   initial: { opacity: 0, y: 20 },
                   animate: { opacity: 1, y: 0 },
@@ -772,8 +772,8 @@ export default function PricingPage({}: PricingPageProps) {
               </div>
 
               {/* Feature Comparison Table */}
-              <div className="mt-24 w-full px-4 sm:px-6 lg:px-8">
-                <div className="max-w-6xl mx-auto">
+              <div className="mt-24 w-full">
+                <div className="w-full px-4 md:px-8 lg:px-12">
                   <motion.div
                     className="text-center mb-12"
                     {...motionSafe({
@@ -910,8 +910,8 @@ export default function PricingPage({}: PricingPageProps) {
               </div>
 
               {/* Enterprise Contact Section */}
-              <div className="mt-24 w-full px-4 sm:px-6 lg:px-8">
-                <div className="max-w-6xl mx-auto">
+              <div className="mt-24 w-full">
+                <div className="w-full px-4 md:px-8 lg:px-12">
                   <motion.div
                     className="bg-gray-900 rounded-2xl p-8 md:p-12 text-center text-white relative overflow-hidden"
                     {...motionSafe({
@@ -946,8 +946,8 @@ export default function PricingPage({}: PricingPageProps) {
               </div>
 
               {/* FAQ Section */}
-              <div className="mt-24 w-full px-4 sm:px-6 lg:px-8">
-                <div className="max-w-6xl mx-auto">
+              <div className="mt-24 w-full">
+                <div className="w-full px-4 md:px-8 lg:px-12">
                   <motion.div
                     className="text-center mb-12"
                     {...motionSafe({
@@ -1029,8 +1029,8 @@ export default function PricingPage({}: PricingPageProps) {
               </div>
 
               {/* Trust Indicators */}
-              <div className="mt-24 w-full px-4 sm:px-6 lg:px-8">
-                <div className="max-w-6xl mx-auto">
+              <div className="mt-24 w-full">
+                <div className="w-full px-4 md:px-8 lg:px-12">
                   <motion.div
                     className="text-center"
                     {...motionSafe({

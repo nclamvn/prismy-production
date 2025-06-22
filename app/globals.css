@@ -46,31 +46,6 @@
 }
 
 /* ============================================================================ */
-/* LOGO MARQUEE ANIMATION - ALL DEVICES */
-/* ============================================================================ */
-
-/* Perfect Prismy Logo Marquee - Single Line Infinite Scroll */
-@keyframes prismy-marquee {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-.prismy-logo-marquee {
-  display: flex;
-  white-space: nowrap;
-  animation: prismy-marquee 25s linear infinite;
-  will-change: transform;
-}
-
-.prismy-logo-marquee:hover {
-  animation-play-state: paused;
-}
-
-/* ============================================================================ */
 /* PROFESSIONAL BASE STYLES */
 /* ============================================================================ */
 

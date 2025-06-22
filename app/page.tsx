@@ -167,17 +167,6 @@ export default function Home() {
     },
   }
 
-  const llmCompanies = [
-    { name: 'OpenAI', logo: '/assets/logos/OpenAI.png', baseSize: 66 }, // 44 * 1.5
-    { name: 'Anthropic', logo: '/assets/logos/Anthropic.png', baseSize: 35 }, // Giữ nguyên
-    { name: 'Google', logo: '/assets/logos/Google.png', baseSize: 78 }, // 52 * 1.5
-    { name: 'Cohere', logo: '/assets/logos/Cohere.png', baseSize: 44 }, // Giữ nguyên
-    { name: 'DeepL', logo: '/assets/logos/DeepL.png', baseSize: 75 }, // 50 * 1.5
-  ]
-
-  // Thu nhỏ toàn bộ 2.5 lần
-  const getFinalLogoSize = (baseSize: number) => Math.round(baseSize / 2.5)
-
   // Handle pricing carousel scroll
   useEffect(() => {
     const scrollContainer = pricingScrollRef.current
@@ -264,81 +253,6 @@ export default function Home() {
                   {content[language].hero.trustIndicator}
                 </motion.p>
               </motion.div>
-            </div>
-          </div>
-        </section>
-
-        {/* Company Logos - Full Width */}
-        <section className="py-4 md:py-6 lg:py-8 border-b border-border-subtle w-full">
-          <div className="w-full">
-            <div className="w-full">
-              {/* Perfect Single-Line Logo Marquee - All Devices */}
-              <div className="w-full overflow-hidden relative py-2">
-                <div className="prismy-logo-marquee flex items-center">
-                  {/* First set of logos */}
-                  {llmCompanies.map((company, idx) => (
-                    <div
-                      key={`set1-${company.name}-${idx}`}
-                      className="flex-shrink-0 flex items-center cursor-pointer transition-all duration-300 hover:opacity-80 hover:scale-105"
-                      style={{ marginRight: '32px' }}
-                      onMouseEnter={e => {
-                        const marquee = e.currentTarget.closest(
-                          '.prismy-logo-marquee'
-                        )
-                        if (marquee) marquee.style.animationPlayState = 'paused'
-                      }}
-                      onMouseLeave={e => {
-                        const marquee = e.currentTarget.closest(
-                          '.prismy-logo-marquee'
-                        )
-                        if (marquee)
-                          marquee.style.animationPlayState = 'running'
-                      }}
-                    >
-                      <img
-                        src={company.logo}
-                        alt={company.name}
-                        className="llm-logo"
-                        style={{
-                          height: `${getFinalLogoSize(company.baseSize)}px`,
-                          width: 'auto',
-                        }}
-                      />
-                    </div>
-                  ))}
-                  {/* Second set for seamless loop */}
-                  {llmCompanies.map((company, idx) => (
-                    <div
-                      key={`set2-${company.name}-${idx}`}
-                      className="flex-shrink-0 flex items-center cursor-pointer transition-all duration-300 hover:opacity-80 hover:scale-105"
-                      style={{ marginRight: '32px' }}
-                      onMouseEnter={e => {
-                        const marquee = e.currentTarget.closest(
-                          '.prismy-logo-marquee'
-                        )
-                        if (marquee) marquee.style.animationPlayState = 'paused'
-                      }}
-                      onMouseLeave={e => {
-                        const marquee = e.currentTarget.closest(
-                          '.prismy-logo-marquee'
-                        )
-                        if (marquee)
-                          marquee.style.animationPlayState = 'running'
-                      }}
-                    >
-                      <img
-                        src={company.logo}
-                        alt={company.name}
-                        className="llm-logo"
-                        style={{
-                          height: `${getFinalLogoSize(company.baseSize)}px`,
-                          width: 'auto',
-                        }}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
             </div>
           </div>
         </section>
