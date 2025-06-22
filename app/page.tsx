@@ -238,7 +238,10 @@ export default function Home() {
                   variants={motionSafe(slideUp)}
                   className="flex flex-col sm:flex-row gap-4 justify-center mb-8 md:mb-10 lg:mb-12"
                 >
-                  <button className="btn-primary btn-pill-lg">
+                  <button
+                    onClick={() => (window.location.href = '/workspace')}
+                    className="btn-primary btn-pill-lg"
+                  >
                     {content[language].hero.getStarted}
                   </button>
                   <button className="btn-secondary btn-pill-lg">
