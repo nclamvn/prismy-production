@@ -281,32 +281,28 @@ export default function Home() {
 
                 {/* Mobile: Horizontal Carousel */}
                 <div
-                  className="md:hidden overflow-x-auto snap-x snap-mandatory scrollbar-hide"
+                  className="md:hidden flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory scrollbar-hide"
                   style={{
                     scrollSnapType: 'x mandatory',
                     scrollBehavior: 'smooth',
-                    scrollPaddingInline: 'calc(50vw - 42.5vw - 2.5rem)',
+                    paddingLeft: 'calc(50vw - 160px)',
+                    paddingRight: 'calc(50vw - 160px)',
                   }}
                 >
-                  <div
-                    className="flex gap-4 pb-4"
-                    style={{ padding: '0 calc(50vw - 42.5vw - 2.5rem)' }}
-                  >
-                    {content[language].features.items.map((feature, index) => (
-                      <div
-                        key={index}
-                        className="snap-center shrink-0 w-[85vw]"
-                        style={{ scrollSnapAlign: 'center' }}
-                      >
-                        <FeatureCard
-                          icon={feature.icon}
-                          title={feature.title}
-                          description={feature.description}
-                          delay={0} // No delay for mobile carousel
-                        />
-                      </div>
-                    ))}
-                  </div>
+                  {content[language].features.items.map((feature, index) => (
+                    <div
+                      key={index}
+                      className="snap-center shrink-0 w-80"
+                      style={{ scrollSnapAlign: 'center' }}
+                    >
+                      <FeatureCard
+                        icon={feature.icon}
+                        title={feature.title}
+                        description={feature.description}
+                        delay={0} // No delay for mobile carousel
+                      />
+                    </div>
+                  ))}
                 </div>
 
                 {/* Desktop: Grid Layout */}
@@ -399,76 +395,72 @@ export default function Home() {
                 <div className="md:hidden">
                   <div
                     ref={pricingScrollRef}
-                    className="overflow-x-auto snap-x snap-mandatory scrollbar-hide"
+                    className="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory scrollbar-hide"
                     style={{
                       scrollSnapType: 'x mandatory',
                       scrollBehavior: 'smooth',
-                      scrollPaddingInline: 'calc(50vw - 45vw - 1.5rem)',
+                      paddingLeft: 'calc(50vw - 165px)',
+                      paddingRight: 'calc(50vw - 165px)',
                     }}
                   >
-                    <div
-                      className="flex gap-4 pb-4"
-                      style={{ padding: '0 calc(50vw - 45vw - 1.5rem)' }}
-                    >
-                      {Object.entries(UNIFIED_SUBSCRIPTION_PLANS).map(
-                        ([key, plan]) => (
-                          <div
-                            key={key}
-                            className="snap-center shrink-0 w-[90vw]"
-                            style={{ scrollSnapAlign: 'center' }}
-                          >
-                            <div className="card-base card-hover p-6 h-full">
-                              <h3 className="heading-4 mb-4">
-                                {language === 'vi' ? plan.nameVi : plan.name}
-                              </h3>
+                    {Object.entries(UNIFIED_SUBSCRIPTION_PLANS).map(
+                      ([key, plan]) => (
+                        <div
+                          key={key}
+                          className="snap-center shrink-0 w-80"
+                          style={{ scrollSnapAlign: 'center' }}
+                        >
+                          <div className="card-base card-hover p-6 h-full">
+                            <h3 className="heading-4 mb-4">
+                              {language === 'vi' ? plan.nameVi : plan.name}
+                            </h3>
 
-                              <div className="mb-6">
-                                <span className="text-lg md:text-xl lg:text-2xl font-semibold">
-                                  {new Intl.NumberFormat('vi-VN', {
-                                    style: 'currency',
-                                    currency: 'VND',
-                                  }).format(plan.priceVND)}
-                                </span>
-                                <span className="body-sm text-gray-500">
-                                  /{content[language].pricing.monthly}
-                                </span>
-                              </div>
-
-                              <ul className="space-y-3 mb-8">
-                                {(language === 'vi'
-                                  ? plan.featuresVi
-                                  : plan.features
-                                ).map((feature, index) => (
-                                  <li
-                                    key={index}
-                                    className="flex items-start space-x-3"
-                                  >
-                                    <svg
-                                      className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0"
-                                      fill="currentColor"
-                                      viewBox="0 0 20 20"
-                                    >
-                                      <path
-                                        fillRule="evenodd"
-                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                        clipRule="evenodd"
-                                      />
-                                    </svg>
-                                    <span className="body-sm">{feature}</span>
-                                  </li>
-                                ))}
-                              </ul>
-
-                              <button
-                                className={`w-full ${key === 'standard' ? 'btn-primary btn-pill-lg' : 'btn-secondary btn-pill-lg'}`}
-                              >
-                                {content[language].pricing.getStarted}
-                              </button>
+                            <div className="mb-6">
+                              <span className="text-lg md:text-xl lg:text-2xl font-semibold">
+                                {new Intl.NumberFormat('vi-VN', {
+                                  style: 'currency',
+                                  currency: 'VND',
+                                }).format(plan.priceVND)}
+                              </span>
+                              <span className="body-sm text-gray-500">
+                                /{content[language].pricing.monthly}
+                              </span>
                             </div>
+
+                            <ul className="space-y-3 mb-8">
+                              {(language === 'vi'
+                                ? plan.featuresVi
+                                : plan.features
+                              ).map((feature, index) => (
+                                <li
+                                  key={index}
+                                  className="flex items-start space-x-3"
+                                >
+                                  <svg
+                                    className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0"
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
+                                  >
+                                    <path
+                                      fillRule="evenodd"
+                                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                      clipRule="evenodd"
+                                    />
+                                  </svg>
+                                  <span className="body-sm">{feature}</span>
+                                </li>
+                              ))}
+                            </ul>
+
+                            <button
+                              className={`w-full ${key === 'standard' ? 'btn-primary btn-pill-lg' : 'btn-secondary btn-pill-lg'}`}
+                            >
+                              {content[language].pricing.getStarted}
+                            </button>
                           </div>
-                        )
-                      )}
-                    </div>
+                        </div>
+                      )
+                    )}
                   </div>
 
                   {/* Dot Indicators */}
