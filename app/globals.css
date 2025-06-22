@@ -4,6 +4,58 @@
 @tailwind utilities;
 
 /* ============================================================================ */
+/* MOBILE-SPECIFIC ANIMATIONS & STYLES */
+/* ============================================================================ */
+
+@media (max-width: 767px) {
+  /* Hide scrollbar but maintain scroll functionality */
+  .overflow-x-auto::-webkit-scrollbar {
+    display: none;
+  }
+
+  .overflow-x-auto {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  /* Smooth scroll behavior with snap points */
+  .snap-x {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Logo marquee animation */
+  @keyframes marquee {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  .logo-marquee {
+    display: flex;
+    animation: marquee 25s linear infinite;
+    will-change: transform;
+  }
+
+  .logo-marquee:hover {
+    animation-play-state: paused;
+  }
+
+  /* Carousel dot indicators */
+  .carousel-dot {
+    transition: all 0.3s ease;
+  }
+
+  .carousel-dot-active {
+    background-color: var(--gray-900);
+    transform: scale(1.3);
+  }
+}
+
+/* ============================================================================ */
 /* PROFESSIONAL BASE STYLES */
 /* ============================================================================ */
 
@@ -17,11 +69,17 @@
 }
 
 html {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family:
+    'Inter',
+    system-ui,
+    -apple-system,
+    sans-serif;
   line-height: 1.6;
   color: var(--text-primary);
   scroll-behavior: smooth;
-  font-feature-settings: "kern" 1, "liga" 1;
+  font-feature-settings:
+    'kern' 1,
+    'liga' 1;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -323,32 +381,32 @@ body {
   .content-container {
     padding: 0 1rem;
   }
-  
+
   .heading-1 {
     font-size: var(--text-4xl);
     line-height: var(--leading-tight);
   }
-  
+
   .heading-2 {
     font-size: var(--text-3xl);
     line-height: var(--leading-tight);
   }
-  
+
   /* Mobile Icon Adjustments */
   .zen-icon-hover {
     transform: none;
   }
-  
+
   .zen-icon-hover:hover {
     transform: none;
     opacity: 0.9;
   }
-  
+
   /* Mobile Card Spacing */
   .zen-card-hover {
     padding: 1.5rem;
   }
-  
+
   /* Mobile Language Toggle */
   .zen-language-hover {
     padding: 0.75rem 1rem;
@@ -357,8 +415,13 @@ body {
 
 /* Loading States */
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 .loading-pulse {
@@ -367,7 +430,10 @@ body {
 
 /* Vietnamese Typography Optimization */
 .vietnamese-text {
-  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+  font-feature-settings:
+    'kern' 1,
+    'liga' 1,
+    'calt' 1;
   text-rendering: optimizeLegibility;
 }
 
@@ -389,14 +455,14 @@ body {
     gap: 0.75rem;
     font-size: 0.8rem;
   }
-  
+
   .blog-metadata-container > div {
     display: flex;
     align-items: center;
     gap: 0.25rem;
     flex-shrink: 0;
   }
-  
+
   .blog-metadata-container span {
     white-space: nowrap;
     font-size: 0.75rem;
@@ -448,7 +514,7 @@ body {
 }
 
 .feature-description-horizontal {
-  color: #4B5563;
+  color: #4b5563;
   font-size: var(--text-base);
   line-height: var(--leading-normal);
   margin: 0;
@@ -498,7 +564,7 @@ body {
 .zen-card-hover-enhanced:hover {
   transform: translateY(-2px);
   background: white;
-  box-shadow: 0px 2px 8px rgba(0,0,0,0.05);
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 /* Pricing card hover effects */
@@ -510,7 +576,7 @@ body {
 .zen-card-hover-pricing:hover {
   transform: translateY(-2px);
   background: #ffffff;
-  box-shadow: 0px 4px 10px rgba(0,0,0,0.05);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
 }
 
 /* ============================================================================ */
