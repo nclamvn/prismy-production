@@ -83,9 +83,10 @@ export default function Navbar({}: NavbarProps) {
             {/* Mobile Logo */}
             <Link
               href="/"
-              className="focus-visible-ring rounded-md"
+              className="flex items-center focus-visible-ring rounded-md"
               aria-label="Prismy home"
             >
+              <img src="/logo.svg" alt="Prismy" className="h-7 w-auto mr-2" />
               <span className="heading-4 font-bold">Prismy</span>
             </Link>
 
@@ -153,9 +154,14 @@ export default function Navbar({}: NavbarProps) {
                 {/* Desktop Logo */}
                 <Link
                   href="/"
-                  className="focus-visible-ring rounded-md mr-5"
+                  className="flex items-center focus-visible-ring rounded-md mr-5"
                   aria-label="Prismy home"
                 >
+                  <img
+                    src="/logo.svg"
+                    alt="Prismy"
+                    className="h-7 w-auto mr-2"
+                  />
                   <span className="heading-4 font-bold">Prismy</span>
                 </Link>
 

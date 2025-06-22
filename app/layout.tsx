@@ -67,6 +67,7 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
+      { url: '/logo.ico', sizes: '32x32', type: 'image/x-icon' },
       { url: '/favicon.png?v=2', sizes: 'any', type: 'image/png' },
       { url: '/favicon-16x16.png?v=2', sizes: '16x16', type: 'image/png' },
       { url: '/favicon-32x32.png?v=2', sizes: '32x32', type: 'image/png' },
@@ -81,7 +82,7 @@ export const metadata: Metadata = {
         type: 'image/png',
       },
     ],
-    shortcut: '/favicon.png?v=2',
+    shortcut: '/logo.ico',
     apple: [
       { url: '/apple-touch-icon.png?v=2', sizes: '180x180', type: 'image/png' },
     ],

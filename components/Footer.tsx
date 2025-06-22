@@ -289,7 +289,15 @@ export default function Footer({}: FooterProps) {
                 className="lg:col-span-2 flex flex-col gap-4"
               >
                 <div>
-                  <Link href="/" className="mb-2 inline-block group">
+                  <Link
+                    href="/"
+                    className="mb-2 inline-flex items-center group"
+                  >
+                    <img
+                      src="/logo.svg"
+                      alt="Prismy"
+                      className="h-6 w-auto mr-2"
+                    />
                     <span className="heading-4 font-bold text-gray-900 transition-colors">
                       Prismy
                     </span>
@@ -715,7 +723,15 @@ export default function Footer({}: FooterProps) {
               {/* Brand Section for Mobile */}
               <motion.div variants={motionSafe(slideUp)} className="mb-6">
                 <div>
-                  <Link href="/" className="mb-2 inline-block group">
+                  <Link
+                    href="/"
+                    className="mb-2 inline-flex items-center group"
+                  >
+                    <img
+                      src="/logo.svg"
+                      alt="Prismy"
+                      className="h-6 w-auto mr-2"
+                    />
                     <span className="heading-4 font-bold text-gray-900 transition-colors">
                       Prismy
                     </span>
