@@ -41,8 +41,8 @@ GOOGLE_TRANSLATE_API_KEY=AIzaSyCKvJssc4Ds7SWZWi7uwmg7_-YPVZC5ZlE
 NEXT_PUBLIC_SITE_URL=https://prismy.in
 
 # AI Providers (Optional)
-OPENAI_API_KEY=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
-ANTHROPIC_API_KEY=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
+OPENAI_API_KEY=sk-proj-YOUR_OPENAI_API_KEY_HERE
+ANTHROPIC_API_KEY=sk-ant-api03-YOUR_ANTHROPIC_API_KEY_HERE
 ```
 
 ### 4️⃣ **Cấu hình Domain**
@@ -59,7 +59,7 @@ A Record:
 Name: @
 Value: 76.76.21.21
 
-CNAME Record:  
+CNAME Record:
 Name: www
 Value: cname.vercel-dns.com
 ```
@@ -91,10 +91,12 @@ vercel --prod
 ## 🧪 Test Production
 
 ### URL để test:
+
 - **Nếu DNS đã cấu hình**: https://prismy.in
 - **Deployment URL**: https://prismy-production-[hash].vercel.app
 
 ### Test checklist:
+
 1. ✅ Truy cập được trang chủ
 2. ✅ Click "Get Started" → Auth modal xuất hiện
 3. ✅ Sign in with Google → Redirect to /workspace
@@ -103,16 +105,20 @@ vercel --prod
 ## 🔧 Troubleshooting
 
 ### Lỗi "Password Required"
+
 → Tắt password protection trong Vercel dashboard
 
 ### Lỗi "redirect_uri_mismatch"
+
 → Thêm production URLs vào Google OAuth
 
 ### Domain không hoạt động
+
 → Đợi 24-48h để DNS propagate
 → Kiểm tra DNS records đã đúng chưa
 
 ### Translation API không hoạt động
+
 → Kiểm tra API key trong Vercel env vars
 → Enable billing trong Google Cloud
 
@@ -120,13 +126,15 @@ vercel --prod
 
 Nếu chưa cấu hình xong domain, có thể:
 
-1. **Test trên localhost**: 
+1. **Test trên localhost**:
+
    ```bash
    npm run dev
    # http://localhost:3001
    ```
 
 2. **Share deployment URL**:
+
    - Copy URL từ `vercel ls`
    - Share cho team test
 
@@ -139,6 +147,7 @@ Nếu chưa cấu hình xong domain, có thể:
 ---
 
 **Status hiện tại:**
+
 - ✅ Code đã deploy
 - ✅ Environment variables local OK
 - ⚠️ Cần sync env vars lên Vercel
