@@ -64,7 +64,12 @@ function WorkspaceContent() {
           </motion.p>
           <motion.div variants={motionSafe(slideUp)}>
             <button
-              onClick={() => setIsAuthModalOpen(true)}
+              onClick={() => {
+                console.log('🔘 Sign In button clicked!')
+                console.log('📊 Current modal state:', isAuthModalOpen)
+                setIsAuthModalOpen(true)
+                console.log('📊 Setting modal state to: true')
+              }}
               className="btn-primary btn-pill-lg"
             >
               {language === 'vi' ? 'Đăng nhập' : 'Sign In'}
@@ -116,12 +121,22 @@ function WorkspaceContent() {
 
       {/* Auth Modal - only show when not authenticated */}
       {!user && (
-        <AuthModal
-          isOpen={isAuthModalOpen}
-          onClose={() => setIsAuthModalOpen(false)}
-          initialMode="signin"
-          language={language}
-        />
+        <>
+          {console.log('🎭 Rendering AuthModal:', { 
+            isAuthModalOpen, 
+            user: !!user,
+            shouldShow: !user && isAuthModalOpen 
+          })}
+          <AuthModal
+            isOpen={isAuthModalOpen}
+            onClose={() => {
+              console.log('🚪 AuthModal close requested')
+              setIsAuthModalOpen(false)
+            }}
+            initialMode="signin"
+            language={language}
+          />
+        </>
       )}
     </div>
   )

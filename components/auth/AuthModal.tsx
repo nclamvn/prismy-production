@@ -30,6 +30,25 @@ export default function AuthModal({
 
   const { signIn, signUp, signInWithGoogle, signInWithApple } = useAuth()
 
+  // Debug logs
+  useEffect(() => {
+    console.log('🔍 AuthModal Debug:', {
+      isOpen,
+      initialMode,
+      language,
+      redirectTo,
+      mode
+    })
+  }, [isOpen, initialMode, language, redirectTo, mode])
+
+  useEffect(() => {
+    if (isOpen) {
+      console.log('✅ AuthModal is opening...')
+    } else {
+      console.log('❌ AuthModal is closed')
+    }
+  }, [isOpen])
+
   const content = {
     vi: {
       signin: {
@@ -226,9 +245,12 @@ export default function AuthModal({
 
   return (
     <ModalPortal>
+      {console.log('🎪 ModalPortal rendered')}
       <AnimatePresence>
+        {console.log('🎬 AnimatePresence rendered, isOpen:', isOpen)}
         {isOpen && (
           <>
+            {console.log('🚀 Modal content is rendering!')}
             {/* Backdrop */}
             <motion.div
               className="fixed inset-0 z-[9998] bg-black/60 backdrop-blur-sm cursor-pointer"
