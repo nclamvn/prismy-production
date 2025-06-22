@@ -752,13 +752,13 @@ export default function Footer({}: FooterProps) {
             className="flex flex-col md:flex-row justify-between items-center 
                      mt-6 md:mt-8 pt-4 border-t border-gray-800"
           >
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-200">
               {language === 'vi' ? '© 2025 Prismy' : '© 2025 Prismy'}
             </p>
 
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-              <span className="text-sm text-gray-500">Enterprise Ready</span>
+              <span className="text-sm text-gray-200">Enterprise Ready</span>
             </div>
           </motion.div>
         </motion.div>
