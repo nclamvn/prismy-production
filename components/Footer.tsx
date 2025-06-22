@@ -296,7 +296,7 @@ export default function Footer({}: FooterProps) {
                     <img
                       src="/logo.svg"
                       alt="Prismy"
-                      className="h-9 w-auto mr-2"
+                      className="h-7 w-auto mr-2"
                     />
                     <span className="heading-4 font-bold text-gray-900 transition-colors">
                       Prismy
@@ -730,7 +730,7 @@ export default function Footer({}: FooterProps) {
                     <img
                       src="/logo.svg"
                       alt="Prismy"
-                      className="h-9 w-auto mr-2"
+                      className="h-7 w-auto mr-2"
                     />
                     <span className="heading-4 font-bold text-gray-900 transition-colors">
                       Prismy

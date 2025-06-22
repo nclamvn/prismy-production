@@ -86,7 +86,7 @@ export default function Navbar({}: NavbarProps) {
               className="flex items-center focus-visible-ring rounded-md"
               aria-label="Prismy home"
             >
-              <img src="/logo.svg" alt="Prismy" className="h-10 w-auto mr-2" />
+              <img src="/logo.svg" alt="Prismy" className="h-8 w-auto mr-2" />
               <span className="heading-4 font-bold">Prismy</span>
             </Link>
 
@@ -160,7 +160,7 @@ export default function Navbar({}: NavbarProps) {
                   <img
                     src="/logo.svg"
                     alt="Prismy"
-                    className="h-10 w-auto mr-2"
+                    className="h-8 w-auto mr-2"
                   />
                   <span className="heading-4 font-bold">Prismy</span>
                 </Link>
