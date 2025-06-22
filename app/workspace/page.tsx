@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { AuthProvider, useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { motionSafe, slideUp, staggerContainer, fadeIn } from '@/lib/motion'
+import AuthModal from '@/components/auth/AuthModal'
 import WorkspaceLayout from '@/components/workspace/WorkspaceLayout'
 import DocumentMode from '@/components/workspace/modes/DocumentMode'
 import IntelligenceMode from '@/components/workspace/modes/IntelligenceMode'
@@ -27,14 +28,7 @@ function WorkspaceContent() {
   const { language } = useLanguage()
   const { user, loading } = useAuth()
   const [currentMode, setCurrentMode] = useState<WorkspaceMode>('documents')
-  const [isInitialized, setIsInitialized] = useState(false)
-
-  // Initialize workspace on mount
-  useEffect(() => {
-    if (user && !loading) {
-      setIsInitialized(true)
-    }
-  }, [user, loading])
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
 
   // Redirect to login if not authenticated
   if (loading) {
@@ -70,7 +64,7 @@ function WorkspaceContent() {
           </motion.p>
           <motion.div variants={motionSafe(slideUp)}>
             <button
-              onClick={() => (window.location.href = '/')}
+              onClick={() => setIsAuthModalOpen(true)}
               className="btn-primary btn-pill-lg"
             >
               {language === 'vi' ? 'Đăng nhập' : 'Sign In'}
@@ -119,6 +113,16 @@ function WorkspaceContent() {
           {renderCurrentMode()}
         </WorkspaceLayout>
       </motion.div>
+
+      {/* Auth Modal - only show when not authenticated */}
+      {!user && (
+        <AuthModal
+          isOpen={isAuthModalOpen}
+          onClose={() => setIsAuthModalOpen(false)}
+          initialMode="signin"
+          language={language}
+        />
+      )}
     </div>
   )
 }

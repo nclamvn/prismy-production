@@ -4,7 +4,9 @@
 import { motion } from 'framer-motion'
 import { useState, useEffect, useRef } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { useAuth } from '@/contexts/AuthContext'
 import Footer from '@/components/Footer'
+import AuthModal from '@/components/auth/AuthModal'
 import { slideUp, staggerContainer, motionSafe } from '@/lib/motion'
 import { UNIFIED_SUBSCRIPTION_PLANS } from '@/lib/payments/payment-service'
 import FeatureCard from '@/components/ui/FeatureCard'
@@ -23,7 +25,10 @@ import {
 
 export default function Home() {
   const { language } = useLanguage()
+  const { user } = useAuth()
   const [activePricingIndex, setActivePricingIndex] = useState(0)
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
+  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signup')
   const pricingScrollRef = useRef<HTMLDivElement>(null)
 
   const content = {
@@ -167,6 +172,18 @@ export default function Home() {
     },
   }
 
+  // Handle Get Started button click
+  const handleGetStarted = () => {
+    if (user) {
+      // User is already authenticated, go directly to workspace
+      window.location.href = '/workspace'
+    } else {
+      // User needs to authenticate, open modal with redirect
+      setAuthMode('signup')
+      setIsAuthModalOpen(true)
+    }
+  }
+
   // Handle pricing carousel scroll
   useEffect(() => {
     const scrollContainer = pricingScrollRef.current
@@ -239,7 +256,7 @@ export default function Home() {
                   className="flex flex-col sm:flex-row gap-4 justify-center mb-8 md:mb-10 lg:mb-12"
                 >
                   <button
-                    onClick={() => (window.location.href = '/workspace')}
+                    onClick={handleGetStarted}
                     className="btn-primary btn-pill-lg"
                   >
                     {content[language].hero.getStarted}
@@ -456,6 +473,7 @@ export default function Home() {
                             </ul>
 
                             <button
+                              onClick={handleGetStarted}
                               className={`w-full ${key === 'standard' ? 'btn-primary btn-pill-lg' : 'btn-secondary btn-pill-lg'}`}
                             >
                               {content[language].pricing.getStarted}
@@ -533,6 +551,7 @@ export default function Home() {
                           </ul>
 
                           <button
+                            onClick={handleGetStarted}
                             className={`w-full ${key === 'standard' ? 'btn-primary btn-pill-lg' : 'btn-secondary btn-pill-lg'}`}
                           >
                             {content[language].pricing.getStarted}
@@ -549,6 +568,15 @@ export default function Home() {
       </main>
 
       <Footer />
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        initialMode={authMode}
+        language={language}
+        redirectTo="/workspace"
+      />
     </div>
   )
 }
