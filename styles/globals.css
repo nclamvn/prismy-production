@@ -11,16 +11,16 @@
   :root {
     --font-times: 'Times New Roman', Times, serif;
   }
-  
+
   html {
     @apply antialiased scroll-smooth;
   }
-  
+
   body {
     @apply bg-white text-gray-900;
     min-height: 100vh;
   }
-  
+
   ::selection {
     @apply bg-gray-900 text-white;
   }
@@ -34,7 +34,7 @@
     background-color: rgba(255, 255, 255, 0.75);
     backdrop-filter: blur(25px);
   }
-  
+
   /* Smart header pill capsule transitions */
   .header-pill-capsule {
     @apply sticky top-2 z-50 mx-auto max-w-5xl;
@@ -43,14 +43,16 @@
     -webkit-backdrop-filter: blur(40px);
     border-radius: 9999px;
     border: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.20), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    box-shadow:
+      0 12px 40px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.6);
     transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     will-change: transform, background-color, border-radius;
   }
-  
+
   .header-static {
     @apply sticky top-0 z-50;
-    background-color: rgba(255, 255, 255, 0.90);
+    background-color: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(20px);
     border-radius: 0;
     border: none;
@@ -58,13 +60,13 @@
     transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     will-change: transform, background-color, border-radius;
   }
-  
+
   /* Prevent header flash during pricing interactions */
   .pricing-page .header-pill-capsule,
   .pricing-page .header-static {
     transition: all 0.3s ease-in-out;
   }
-  
+
   /* Mobile header improvements - prevent pill overflow when menu open */
   @media (max-width: 767px) {
     .header-pill-capsule {
@@ -77,35 +79,35 @@
       /* Smooth transition for mobile responsiveness */
       transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
     }
-    
+
     /* Ensure mobile menu container doesn't inherit pill constraints */
     .header-pill-capsule + nav,
     .header-pill-capsule nav {
       max-width: 100% !important;
       border-radius: 0 !important;
     }
-    
+
     /* Smooth transitions for mobile header state changes */
     .header-static {
       transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
     }
   }
-  
+
   /* Container - Full width with internal padding */
   .container-base {
     @apply w-full px-4 sm:px-6 lg:px-8;
   }
-  
+
   /* Content container - constrains content width while maintaining full-width sections */
   .content-container {
     @apply max-w-[var(--max-content-width)] mx-auto px-4 sm:px-6 lg:px-8;
   }
-  
+
   /* Footer content container - full width */
   .footer-content-container {
     @apply max-w-full mx-auto px-4 sm:px-6 lg:px-8;
   }
-  
+
   /* Buttons - Viên thuốc style */
   .btn-base {
     @apply inline-flex items-center justify-center font-inter font-semibold
@@ -114,74 +116,74 @@
            hover:transform hover:-translate-y-px hover:shadow-lg
            whitespace-nowrap min-w-fit;
   }
-  
+
   .btn-pill-lg {
     @apply btn-base h-12 px-6 text-base;
   }
-  
+
   .btn-pill-md {
     @apply btn-base h-10 px-5 text-sm;
   }
-  
+
   .btn-pill-sm {
     @apply btn-base h-8 px-4 text-xs;
   }
-  
+
   .btn-pill-compact {
     @apply btn-base h-9 px-3 text-sm font-semibold;
   }
-  
+
   .btn-primary {
     @apply btn-base bg-gray-900 text-white hover:bg-gray-800 
            focus:ring-gray-900 active:scale-[0.98] shadow-md;
   }
-  
+
   .btn-secondary {
     @apply btn-base bg-gray-100 text-gray-900 hover:bg-gray-200 
            focus:ring-gray-500 active:scale-[0.98] border border-gray-200;
   }
-  
+
   .btn-accent {
     @apply btn-base bg-blue-600 text-white hover:bg-blue-700 
            focus:ring-blue-600 active:scale-[0.98] shadow-md;
   }
-  
+
   .btn-ghost {
     @apply btn-base bg-transparent text-gray-600 hover:text-gray-900 
            hover:bg-gray-50 focus:ring-gray-500;
   }
-  
+
   /* Header specific button sizing */
   .btn-header-compact {
     @apply btn-base h-8 px-3 text-sm font-semibold transition-all duration-200;
   }
-  
+
   /* Compact button classes - 1.5x size reduction */
   .btn-pill-compact-sm {
     @apply btn-base h-12 px-4 text-sm font-semibold;
   }
-  
+
   .btn-pill-compact-xs {
     @apply btn-base h-11 px-3 text-xs font-semibold;
   }
-  
+
   /* Compact button classes for 1.3x reduction */
   .btn-pill-compact-lg {
     @apply btn-base h-10 px-5 text-sm font-semibold; /* 1.3x smaller than btn-pill-lg */
   }
-  
+
   .btn-pill-compact-md {
     @apply btn-base h-8 px-4 text-sm font-semibold; /* 1.3x smaller than btn-pill-md */
   }
-  
+
   /* Sign In button - removed custom width rules to prevent conflicts */
-  
+
   /* Enhanced Sign In button with larger font */
   .btn-signin-enhanced {
     font-size: 0.9rem; /* Slightly larger than default */
     font-weight: 500;
   }
-  
+
   /* Auth Modal Sign In button - enhanced height */
   .btn-auth-modal {
     min-height: 48px;
@@ -189,12 +191,12 @@
     font-size: 16px;
     font-weight: 600;
   }
-  
+
   /* Text overflow protection for Vietnamese */
   .btn-text-safe {
     @apply truncate max-w-full whitespace-nowrap overflow-hidden;
   }
-  
+
   /* Template chips - Viên thuốc design */
   .template-chip {
     @apply inline-flex items-center px-4 py-2 font-inter
@@ -204,45 +206,45 @@
            transition-all duration-200 cursor-pointer
            active:scale-[0.98];
   }
-  
+
   .template-chip-active {
     @apply border-blue-500 bg-blue-500 text-white 
            hover:bg-blue-600 hover:border-blue-600;
   }
-  
+
   /* Tags & Badges - Viên thuốc */
   .tag-base {
     @apply inline-flex items-center px-3 py-1 font-inter
            rounded-full text-sm font-medium
            transition-all duration-200;
   }
-  
+
   .tag-primary {
     @apply tag-base bg-gray-100 text-gray-800;
   }
-  
+
   .tag-accent {
     @apply tag-base bg-blue-100 text-blue-800;
   }
-  
+
   .tag-success {
     @apply tag-base bg-green-100 text-green-800;
   }
-  
+
   .badge-base {
     @apply inline-flex items-center px-2 py-1 font-inter
            rounded-full text-xs font-semibold uppercase
            transition-all duration-200 tracking-wide;
   }
-  
+
   .badge-primary {
     @apply badge-base bg-gray-900 text-white;
   }
-  
+
   .badge-accent {
     @apply badge-base bg-blue-600 text-white;
   }
-  
+
   /* Card styles - Viên thuốc design */
   .card-base {
     @apply bg-white rounded-3xl 
@@ -250,11 +252,11 @@
            shadow-md
            transition-all duration-200;
   }
-  
+
   .card-hover {
     @apply hover:shadow-xl hover:-translate-y-2 hover:scale-[1.02];
   }
-  
+
   .mini-card {
     @apply bg-white rounded-2xl 
            border border-gray-100 
@@ -262,7 +264,7 @@
            transition-all duration-200
            hover:shadow-md hover:-translate-y-1 hover:scale-[1.01];
   }
-  
+
   /* Input styles - Viên thuốc */
   .input-base {
     @apply w-full h-12 px-4 font-inter text-base
@@ -273,15 +275,15 @@
            focus:border-blue-500
            transition-all duration-200;
   }
-  
+
   .input-lg {
     @apply input-base h-14 px-5 text-lg;
   }
-  
+
   .input-sm {
     @apply input-base h-10 px-3 text-sm;
   }
-  
+
   .textarea-base {
     @apply w-full px-4 py-3 font-inter text-base
            rounded-2xl border border-gray-300 
@@ -292,7 +294,7 @@
            transition-all duration-200 resize-none
            leading-relaxed;
   }
-  
+
   /* Select styles - Vietnamese DNA (No Shadow) */
   .select-base {
     @apply input-base appearance-none cursor-pointer pr-10 bg-white;
@@ -302,32 +304,32 @@
     background-repeat: no-repeat;
     box-shadow: none;
   }
-  
+
   .select-base:hover {
     @apply bg-gray-50 font-bold text-gray-900;
     box-shadow: none;
   }
-  
+
   .select-base:focus {
     box-shadow: none;
   }
-  
+
   /* Vietnamese Dropdown DNA - No Shadow Standard */
   .dropdown-vietnamese {
     @apply bg-white border border-gray-300 rounded-lg;
     box-shadow: none !important;
   }
-  
+
   .dropdown-vietnamese:hover {
     @apply border-gray-400;
     box-shadow: none !important;
   }
-  
+
   .dropdown-vietnamese:focus {
     @apply ring-2 ring-gray-300 ring-offset-1;
     box-shadow: none !important;
   }
-  
+
   /* Email Pill Form - True Capsule Design */
   .email-pill-form {
     @apply flex items-center border border-gray-300 rounded-full overflow-hidden 
@@ -336,12 +338,12 @@
            focus-within:ring-2 focus-within:ring-gray-500 focus-within:ring-offset-1;
     max-width: 275px; /* Further reduced for streamlined desktop look */
   }
-  
+
   .email-pill-input {
     @apply flex-1 px-4 text-base bg-transparent outline-none 
            placeholder:text-gray-500 text-gray-900 font-inter;
   }
-  
+
   .email-pill-button {
     @apply bg-gray-800 text-white px-5 h-full font-medium 
            hover:bg-gray-700 transition-all duration-200 rounded-full
@@ -349,22 +351,22 @@
            active:scale-[0.98] whitespace-nowrap flex items-center gap-1.5
            hover:transform hover:translate-x-0.5;
   }
-  
+
   /* Mobile responsive for email pill */
   @media (max-width: 640px) {
     .email-pill-form {
       @apply h-10 max-w-full w-full;
     }
-    
+
     .email-pill-input {
       @apply text-sm px-3;
     }
-    
+
     .email-pill-button {
       @apply px-4 text-sm gap-1;
     }
   }
-  
+
   /* Payment Method Selection - Prismy Design System Compliance */
   .payment-method-selector {
     @apply inline-flex items-center justify-center gap-2 
@@ -377,104 +379,102 @@
     min-height: 44px;
     min-width: 180px;
   }
-  
+
   .payment-method-selector-active {
     @apply border-gray-900 bg-gray-900 text-white
            hover:bg-gray-700 hover:border-gray-700;
   }
-  
-  
+
   /* Typography - Chuyển toàn bộ sang Inter font */
   .heading-hero {
     @apply font-inter text-[1.9rem] sm:text-[2.15rem] lg:text-[2.45rem] font-bold tracking-tight leading-[1.1] text-gray-900 content-overflow-safe;
   }
-  
+
   .heading-1 {
     @apply font-inter text-[2rem] sm:text-[2.5rem] lg:text-[3rem] font-bold tracking-tight leading-[1.2] text-gray-900 content-overflow-safe;
   }
-  
+
   .heading-2 {
     @apply font-inter text-[1.5rem] sm:text-[1.75rem] lg:text-[2rem] font-semibold tracking-tight leading-[1.3] text-gray-900 content-overflow-safe;
   }
-  
+
   .heading-3 {
     @apply font-inter text-[1.5rem] font-semibold tracking-tight leading-[1.4] text-gray-900;
   }
-  
+
   .heading-4 {
     @apply font-inter text-[1.25rem] font-medium leading-[1.5] text-gray-900;
   }
-  
+
   .heading-5 {
     @apply font-inter text-[1rem] font-medium leading-[1.5] text-gray-900;
   }
-  
+
   .subheadline {
-    @apply font-inter text-[0.95rem] sm:text-[1.15rem] lg:text-[1.35rem] font-medium leading-[1.4] text-gray-600 content-overflow-safe;
+    @apply font-inter text-[0.76rem] sm:text-[0.92rem] lg:text-[1.08rem] font-medium leading-[1.4] text-gray-600 content-overflow-safe;
   }
-  
+
   .body-xl {
     @apply font-inter text-[1.25rem] leading-[1.6] text-gray-700;
   }
-  
+
   .body-lg {
     @apply font-inter text-[1.125rem] leading-[1.6] text-gray-700;
   }
-  
+
   .body-base {
     @apply font-inter text-[1rem] leading-[1.5] text-gray-700;
   }
-  
+
   .body-sm {
     @apply font-inter text-[0.875rem] leading-[1.4] text-gray-600;
   }
-  
+
   .body-xs {
     @apply font-inter text-[0.75rem] leading-[1.4] text-gray-500;
   }
-  
-  
+
   /* Workbench grid */
   .workbench-grid {
     @apply grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl mx-auto;
   }
-  
+
   .workbench-panel {
     @apply card-base p-6;
   }
-  
+
   /* Stat card */
   .stat-card {
     @apply text-center space-y-2;
   }
-  
+
   .stat-number {
     @apply text-4xl font-bold text-gray-900;
   }
-  
+
   .stat-label {
     @apply text-sm text-gray-500;
   }
-  
+
   /* Vietnamese Pricing Card Hover Effects */
   .zen-card-hover-pricing {
     @apply transition-all duration-200 ease-in-out;
   }
-  
+
   .zen-card-hover-pricing:hover {
     transform: translateY(-2px);
-    box-shadow: 0px 4px 10px rgba(0,0,0,0.05);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
     background-color: #ffffff;
   }
-  
+
   /* Hero GIF Container & Responsive */
   .hero-gif-container {
     position: relative;
     width: 100%;
     overflow: hidden;
-    background-color: transparent;
+    background-color: var(--bg-main);
   }
-  
+
   .hero-gif {
     display: block;
     object-fit: contain;
@@ -484,7 +484,7 @@
     /* Optional: Blend với background nếu cần */
     /* mix-blend-mode: multiply; */
   }
-  
+
   @media (max-width: 1279px) {
     .hero-gif-container {
       max-width: 70vw !important;
@@ -493,7 +493,7 @@
       font-size: calc(3rem * 0.9); /* 90% of original size */
     }
   }
-  
+
   @media (max-width: 767px) {
     .hero-gif-container {
       max-width: 90vw !important;
@@ -502,42 +502,43 @@
       filter: drop-shadow(none);
     }
   }
-  
+
   @media (prefers-reduced-motion: reduce) {
     .hero-gif-container {
       display: none;
     }
   }
-  
+
   /* LLM Logo Styles */
   .llm-logo-container {
     opacity: 0.8;
     transition: all 200ms ease-in-out;
   }
-  
+
   .llm-logo-container:hover {
     opacity: 1;
     transform: scale(1.05);
   }
-  
+
   .llm-logo {
-    filter: brightness(0) saturate(100%) invert(60%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(60%) contrast(100%);
+    filter: brightness(0) saturate(100%) invert(60%) sepia(0%) saturate(0%)
+      hue-rotate(0deg) brightness(60%) contrast(100%);
     width: auto;
     transition: all 300ms ease-in-out;
     opacity: 0.7;
   }
-  
+
   .llm-logo:hover {
     filter: none;
     opacity: 1;
   }
-  
+
   /* Mobile: giảm thêm 10% và điều chỉnh gap */
   @media (max-width: 767px) {
     .llm-logo {
       transform: scale(0.9);
     }
-    
+
     .llm-logos-container {
       column-gap: 3rem !important; /* 48px thay vì 64px cho column spacing */
       row-gap: 0.5rem !important; /* 8px cho row spacing - compact mobile */
@@ -551,63 +552,63 @@
   .text-balance {
     text-wrap: balance;
   }
-  
+
   /* Focus visible */
   .focus-visible-ring {
     @apply focus-visible:outline-none focus-visible:ring-2 
            focus-visible:ring-gray-900 focus-visible:ring-offset-2
            transition-all duration-200;
   }
-  
+
   /* Premium hover effects */
   .premium-hover {
     @apply transition-all duration-200 hover:scale-[1.02] hover:-translate-y-0.5 
            hover:shadow-lg;
   }
-  
+
   /* Responsive safety and text overflow protection */
   .text-overflow-safe {
     @apply overflow-hidden text-ellipsis whitespace-nowrap;
   }
-  
+
   .content-overflow-safe {
     @apply overflow-hidden break-words hyphens-auto;
   }
-  
+
   .responsive-grid-safe {
     @apply grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
   }
-  
+
   .mobile-stack {
     @apply flex flex-col sm:flex-row;
   }
-  
+
   .safe-margin {
     @apply mx-auto max-w-full px-4 sm:px-6 lg:px-8;
   }
-  
+
   /* Mobile dropdown improvements */
   .dropdown-mobile-safe {
     @apply min-w-[100px] sm:min-w-[120px];
   }
-  
+
   @media (max-width: 640px) {
     .dropdown-mobile-safe .dropdown-menu {
       @apply left-0 right-0 mx-auto max-w-[200px];
     }
-    
+
     /* Ensure dropdown doesn't overlap content below */
-    .dropdown-mobile-safe [role="menu"] {
+    .dropdown-mobile-safe [role='menu'] {
       @apply shadow-lg border-2 border-gray-200 z-[70];
       max-height: 200px;
       border-radius: 8px !important;
     }
-    
+
     /* Mobile menu spacing improvements */
     #mobile-menu {
       margin-bottom: 2rem;
     }
-    
+
     /* Mobile menu in header context - ensure proper spacing */
     .header-pill-capsule #mobile-menu,
     .header-static #mobile-menu {
@@ -619,13 +620,13 @@
       /* Ensure menu animations are independent of header transitions */
       transform: none !important;
     }
-    
+
     /* Mobile Zen Design Compliance */
     #mobile-menu button {
       border-radius: var(--radius-md);
       transition: var(--transition-base);
     }
-    
+
     #mobile-menu button:hover {
       transform: translateY(-1px);
       font-weight: 600;
@@ -640,18 +641,18 @@
 /* Mobile Dropdown - Zen Philosophy Application */
 @media (max-width: 768px) {
   .mobile-dropdown-zen button,
-  .mobile-dropdown-zen [role="button"] {
+  .mobile-dropdown-zen [role='button'] {
     border-radius: var(--radius-md);
     transition: var(--transition-base);
     box-shadow: var(--shadow-sm);
   }
-  
+
   .mobile-dropdown-zen button:hover {
     transform: translateY(-1px);
     box-shadow: var(--shadow-md);
   }
-  
-  .mobile-dropdown-zen [class*="absolute"] {
+
+  .mobile-dropdown-zen [class*='absolute'] {
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-lg);
     border: 1px solid var(--border-subtle);

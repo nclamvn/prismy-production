@@ -78,7 +78,7 @@ export default function Navbar({}: NavbarProps) {
     >
       {/* Mobile Navbar - Stable and Simple */}
       <div className="md:hidden w-full bg-white/95 backdrop-blur-sm border-b border-gray-200">
-        <nav className="w-full px-4 py-3" aria-label="Mobile navigation">
+        <nav className="w-full px-4 py-2" aria-label="Mobile navigation">
           <div className="flex items-center justify-between">
             {/* Mobile Logo */}
             <Link

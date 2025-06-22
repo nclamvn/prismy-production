@@ -285,8 +285,8 @@ export default function Home() {
                   style={{
                     scrollSnapType: 'x mandatory',
                     scrollBehavior: 'smooth',
-                    paddingLeft: 'calc(50vw - 42.5vw)',
-                    paddingRight: 'calc(50vw - 42.5vw)',
+                    paddingLeft: 'calc(50vw - 37.5vw)',
+                    paddingRight: 'calc(50vw - 37.5vw)',
                   }}
                 >
                   <div className="flex gap-4 pb-4">
@@ -401,8 +401,8 @@ export default function Home() {
                     style={{
                       scrollSnapType: 'x mandatory',
                       scrollBehavior: 'smooth',
-                      paddingLeft: 'calc(50vw - 45vw)',
-                      paddingRight: 'calc(50vw - 45vw)',
+                      paddingLeft: 'calc(50vw - 40vw)',
+                      paddingRight: 'calc(50vw - 40vw)',
                     }}
                   >
                     <div className="flex gap-4 pb-4">
@@ -419,7 +419,7 @@ export default function Home() {
                               </h3>
 
                               <div className="mb-6">
-                                <span className="heading-2">
+                                <span className="text-lg md:text-xl lg:text-2xl font-semibold">
                                   {new Intl.NumberFormat('vi-VN', {
                                     style: 'currency',
                                     currency: 'VND',

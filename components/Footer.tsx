@@ -291,7 +291,7 @@ export default function Footer({}: FooterProps) {
                   <p className="text-sm text-gray-200 italic mt-1 mb-3 max-w-sm">
                     {content[language].description}
                   </p>
-                  <div className="flex space-x-4 mt-3">
+                  <div className="flex space-x-5 mt-3">
                     {socialLinks.map(social => (
                       <Link
                         key={social.name}
@@ -717,7 +717,7 @@ export default function Footer({}: FooterProps) {
                   <p className="text-sm text-gray-200 italic mt-1 mb-3 max-w-sm">
                     {content[language].description}
                   </p>
-                  <div className="flex space-x-4 mt-3">
+                  <div className="flex space-x-5 mt-3">
                     {socialLinks.map(social => (
                       <Link
                         key={social.name}
