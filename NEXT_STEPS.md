@@ -26,7 +26,7 @@
    - Update `.env.local`
 
 3. **Test & Deploy** (10 phút)
-   - Chạy `node check-config.js` để kiểm tra
+   - Chạy `node check-config.mjs` để kiểm tra
    - Test local với `npm run dev`
    - Deploy với `vercel --prod`
 
@@ -57,7 +57,7 @@
 
 ```bash
 # Kiểm tra cấu hình
-node check-config.js
+node check-config.mjs
 
 # Chạy development
 npm run dev
@@ -81,7 +81,7 @@ vercel logs
 
 ## 🆘 Nếu gặp vấn đề
 
-1. Chạy `node check-config.js` để xem thiếu gì
+1. Chạy `node check-config.mjs` để xem thiếu gì
 2. Đọc error trong browser console
 3. Check Vercel Function logs
 4. Xem lại `HUONG_DAN_CAU_HINH_PRISMY.md`

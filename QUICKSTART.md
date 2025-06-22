@@ -9,7 +9,7 @@ Giúp bạn cấu hình Prismy chạy được authentication trong 15 phút.
 ### 1. Kiểm tra cấu hình hiện tại
 
 ```bash
-node check-config.js
+node check-config.mjs
 ```
 
 ### 2. Tạo Supabase Project (5 phút)
@@ -79,5 +79,5 @@ vercel --prod
 ## 📞 Support
 
 - Docs: HUONG_DAN_CAU_HINH_PRISMY.md
-- Check: `node check-config.js`
+- Check: `node check-config.mjs`
 - Logs: Browser Console + Vercel Functions
