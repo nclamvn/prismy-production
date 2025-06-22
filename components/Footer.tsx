@@ -750,7 +750,7 @@ export default function Footer({}: FooterProps) {
           <motion.div
             variants={motionSafe(slideUp)}
             className="flex flex-col md:flex-row justify-between items-center 
-                     mt-6 md:mt-8 pt-4 border-t border-gray-800"
+                     mt-6 md:mt-8 pt-4"
           >
             <p className="text-sm text-gray-200">
               {language === 'vi' ? '© 2025 Prismy' : '© 2025 Prismy'}

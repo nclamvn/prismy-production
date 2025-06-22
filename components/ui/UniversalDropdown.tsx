@@ -27,24 +27,29 @@ export default function UniversalDropdown({
   placeholder = 'Select option',
   disabled = false,
   className = '',
-  size = 'md'
+  size = 'md',
 }: UniversalDropdownProps) {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
-  
+
   const selectedOption = options.find(option => option.value === value)
-  
+
   // Close dropdown when clicking/touching outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent | TouchEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false)
       }
     }
-    
+
     // Add both mouse and touch events for mobile compatibility
     document.addEventListener('mousedown', handleClickOutside)
-    document.addEventListener('touchstart', handleClickOutside, { passive: true })
+    document.addEventListener('touchstart', handleClickOutside, {
+      passive: true,
+    })
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
       document.removeEventListener('touchstart', handleClickOutside)
@@ -60,27 +65,33 @@ export default function UniversalDropdown({
     }
   }
 
-  const handleOptionSelect = (value: string, e: React.MouseEvent | React.TouchEvent) => {
+  const handleOptionSelect = (
+    value: string,
+    e: React.MouseEvent | React.TouchEvent
+  ) => {
     e.preventDefault()
     e.stopPropagation()
     onChange(value)
     setIsOpen(false)
   }
-  
+
   const sizeClasses = {
     sm: 'px-2.5 py-1.5 text-sm min-h-[40px]',
     md: 'px-4 py-2.5 text-base min-h-[44px]',
-    lg: 'px-5 py-3 text-lg min-h-[48px]'
+    lg: 'px-5 py-3 text-lg min-h-[48px]',
   }
-  
+
   const iconSizes = {
     sm: 14,
     md: 16,
-    lg: 18
+    lg: 18,
   }
-  
+
   return (
-    <div className={`relative mobile-dropdown-rectangular ${className}`} ref={dropdownRef}>
+    <div
+      className={`relative mobile-dropdown-rectangular ${className}`}
+      ref={dropdownRef}
+    >
       {/* Dropdown Button */}
       <button
         onClick={handleToggle}
@@ -88,9 +99,9 @@ export default function UniversalDropdown({
         disabled={disabled}
         className={`
           flex items-center justify-between w-full
-          bg-white border border-border-subtle rounded-full
+          bg-transparent rounded-full
           font-medium text-gray-900
-          hover:font-semibold hover:border-gray-400 hover:-translate-y-px
+          hover:font-semibold hover:bg-gray-50 hover:-translate-y-px
           focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-gray-300
           transition-all duration-300 cubic-bezier(0.25, 0.46, 0.45, 0.94)
           touch-manipulation mobile-dropdown-zen
@@ -100,23 +111,21 @@ export default function UniversalDropdown({
       >
         <div className="flex items-center gap-2">
           {selectedOption?.icon && (
-            <span className="flex-shrink-0">
-              {selectedOption.icon}
-            </span>
+            <span className="flex-shrink-0">{selectedOption.icon}</span>
           )}
           <span className="truncate">
             {selectedOption?.label || placeholder}
           </span>
         </div>
-        
-        <ChevronDown 
-          size={iconSizes[size]} 
+
+        <ChevronDown
+          size={iconSizes[size]}
           className={`flex-shrink-0 transition-transform duration-200 ${
             isOpen ? 'rotate-180' : ''
           }`}
         />
       </button>
-      
+
       {/* Dropdown Menu */}
       <AnimatePresence>
         {isOpen && (
@@ -126,17 +135,17 @@ export default function UniversalDropdown({
             exit={{ opacity: 0, scale: 0.95, y: -8 }}
             transition={{ duration: 0.15 }}
             className="absolute z-[60] w-full mt-1 bg-white border border-border-subtle rounded-md overflow-hidden mobile-dropdown-zen"
-            style={{ 
+            style={{
               boxShadow: 'var(--shadow-lg)',
-              borderColor: 'var(--border-subtle)' 
+              borderColor: 'var(--border-subtle)',
             }}
           >
             <div className="max-h-60 overflow-y-auto">
-              {options.map((option) => (
+              {options.map(option => (
                 <button
                   key={option.value}
-                  onClick={(e) => handleOptionSelect(option.value, e)}
-                  onTouchStart={(e) => handleOptionSelect(option.value, e)}
+                  onClick={e => handleOptionSelect(option.value, e)}
+                  onTouchStart={e => handleOptionSelect(option.value, e)}
                   className={`
                     w-full flex items-center gap-2 px-3 py-2.5 sm:py-2 text-left text-sm
                     font-medium text-gray-900
@@ -146,9 +155,7 @@ export default function UniversalDropdown({
                     ${value === option.value ? 'bg-gray-50 font-semibold' : ''}
                   `}
                 >
-                  <span className="truncate">
-                    {option.label}
-                  </span>
+                  <span className="truncate">{option.label}</span>
                 </button>
               ))}
             </div>
