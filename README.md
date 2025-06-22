@@ -1,5 +1,9 @@
 # Prismy - Production-Ready AI Translation Platform
 
+> ⚠️ **IMPORTANT:** This is the MAIN project directory. Always work from `/Users/mac/prismy/prismy-production`
+>
+> 🌐 **Live at:** https://prismy.in
+
 ## 🚀 Overview
 
 A clean, token-driven, componentized UI for Prismy's AI-powered translation platform. This production-ready codebase fuses semantic CSS with utility classes, following modern web development best practices.
@@ -8,7 +12,7 @@ A clean, token-driven, componentized UI for Prismy's AI-powered translation plat
 
 - **Framework**: Next.js 15 / React 18 / TypeScript
 - **Styling**: Tailwind CSS v3 with `@apply`, design tokens, semantic classes
-- **Components**: Custom components with shadcn/ui patterns  
+- **Components**: Custom components with shadcn/ui patterns
 - **Animations**: Framer Motion with accessibility-aware variants
 - **Icons**: Radix UI icons
 - **Testing**: Playwright for E2E testing
@@ -17,11 +21,13 @@ A clean, token-driven, componentized UI for Prismy's AI-powered translation plat
 ## 🎨 Design System
 
 ### Color Palette
+
 - **95% Grayscale**: From `#0d0d0d` (black) to `#ffffff` (white)
 - **5% Rainbow Accent**: Gradient laser effect for highlights
 - **Glassmorphism**: Backdrop blur header with 75% opacity
 
 ### Design Tokens
+
 All design decisions are driven by CSS custom properties and Tailwind theme extensions:
 
 ```css
@@ -31,10 +37,18 @@ All design decisions are driven by CSS custom properties and Tailwind theme exte
   --gray-900: #111;
   /* ... */
   --white: #ffffff;
-  
+
   /* Accent laser */
-  --accent-rainbow: linear-gradient(90deg, #ff5757 0%, #ffca46 25%, #34d97b 45%, #45b2ff 65%, #c47bff 85%, #ff5790 100%);
-  
+  --accent-rainbow: linear-gradient(
+    90deg,
+    #ff5757 0%,
+    #ffca46 25%,
+    #34d97b 45%,
+    #45b2ff 65%,
+    #c47bff 85%,
+    #ff5790 100%
+  );
+
   /* Radius, shadows, spacing, typography, durations... */
 }
 ```
@@ -68,6 +82,7 @@ tests/
 ## 🎭 Component Architecture
 
 ### Semantic + Utility Hybrid
+
 Components use semantic wrapper classes powered by `@apply` utilities:
 
 ```css
@@ -87,18 +102,20 @@ Components use semantic wrapper classes powered by `@apply` utilities:
 ```
 
 ### Accessibility Features
+
 - **WCAG 2.1 AA Compliant**: All interactive elements have proper ARIA labels
 - **Keyboard Navigation**: Full tab-through support with focus indicators
 - **Reduced Motion**: `prefers-reduced-motion` disables animations
 - **Screen Reader**: Semantic HTML and descriptive text
 
 ### Animation System
+
 Framer Motion variants with motion-safe wrapper:
 
 ```typescript
 export const slideUp: Variants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.2 } }
+  visible: { opacity: 1, y: 0, transition: { duration: 0.2 } },
 }
 
 // Motion-safe wrapper disables animations for reduced motion users
@@ -111,17 +128,21 @@ export const motionSafe = (variants: Variants): Variants => {
 ## 🌐 Key Features
 
 ### Translation Workbench
+
 - **2-column grid**: Source and target language panels (1-column on mobile)
 - **Language Selection**: Dropdown menus with auto-detect for source
 - **Quality Tiers**: Free, Standard, Premium, Enterprise options
 - **Real-time Features**: Character count, language swap, loading states
 
 ### Template Chips
+
 Interactive category selection for optimized translation models:
+
 - Business, Academic, Legal, Medical, Creative, Technical
 - Staggered animations with hover and tap feedback
 
 ### Performance Optimizations
+
 - **Lazy Loading**: Fonts, images, and code splitting
 - **Static Generation**: Pre-rendered at build time
 - **Optimized Bundle**: 50.7 kB page size, 151 kB First Load JS
@@ -130,6 +151,7 @@ Interactive category selection for optimized translation models:
 ## 🧪 Testing
 
 ### Playwright E2E Tests
+
 Comprehensive test coverage for translation functionality:
 
 ```bash
@@ -138,6 +160,7 @@ npm run test:ui   # Run tests with UI mode
 ```
 
 Test scenarios include:
+
 - Translation workflow (input → translate → output)
 - Character counting and validation
 - Quality tier selection
@@ -148,18 +171,21 @@ Test scenarios include:
 ## 🚀 Getting Started
 
 ### Development
+
 ```bash
 npm install
 npm run dev      # Start development server
 ```
 
 ### Production Build
+
 ```bash
 npm run build    # Build for production
 npm start        # Start production server
 ```
 
 ### Testing
+
 ```bash
 npm run test     # Run Playwright tests
 ```
@@ -167,13 +193,15 @@ npm run test     # Run Playwright tests
 ## 📱 Responsive Design
 
 Breakpoint system optimized for all devices:
+
 - **Mobile**: < 768px (1-column workbench)
-- **Tablet**: 768px - 1023px 
+- **Tablet**: 768px - 1023px
 - **Desktop**: ≥ 1024px (2-column workbench)
 
 ## 🔧 Configuration
 
 ### Tailwind Config
+
 Links design tokens to Tailwind theme:
 
 ```typescript
