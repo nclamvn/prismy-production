@@ -29,7 +29,7 @@ export type WorkspaceMode =
 
 function WorkspaceContent() {
   const { language } = useLanguage()
-  const { user, loading } = useAuth()
+  const { user, loading, sessionRestored } = useAuth()
   const { handleSignIn, isAuthModalOpen } = useUnifiedAuthContext()
   const { isLoading: workspaceLoading, setLoading: setWorkspaceLoading } =
     useWorkspaceLoading()
@@ -43,18 +43,18 @@ function WorkspaceContent() {
   const loadingTimeoutRef = useRef<NodeJS.Timeout>()
   const [loadingTimedOut, setLoadingTimedOut] = useState(false)
 
-  // Loading timeout mechanism to prevent infinite loading on refresh
+  // Enhanced loading timeout mechanism with session restoration awareness
   useEffect(() => {
-    if (loading && !loadingTimedOut) {
-      console.log('🔄 Workspace: Starting loading timeout (10s)')
+    if (loading && !sessionRestored && !loadingTimedOut) {
+      console.log('🔄 Workspace: Starting session restore timeout (12s)')
       loadingTimeoutRef.current = setTimeout(() => {
-        console.log('⏰ Workspace: Loading timeout reached, showing auth modal')
+        console.log(
+          '⏰ Workspace: Session restore timeout - proceeding with auth check'
+        )
         setLoadingTimedOut(true)
-        authTriggeredRef.current = true
-        handleSignIn({ redirectTo: '/workspace' })
-      }, 10000) // 10 second timeout
-    } else if (!loading) {
-      // Clear timeout if loading finishes normally
+      }, 12000) // 12 second timeout to allow for session restoration
+    } else if (!loading || sessionRestored) {
+      // Clear timeout if loading finishes or session is restored
       if (loadingTimeoutRef.current) {
         clearTimeout(loadingTimeoutRef.current)
       }
@@ -66,28 +66,30 @@ function WorkspaceContent() {
         clearTimeout(loadingTimeoutRef.current)
       }
     }
-  }, [loading, loadingTimedOut, handleSignIn])
+  }, [loading, sessionRestored, loadingTimedOut])
 
-  // Debounced auth check to prevent infinite loops
+  // Enhanced auth check with session restoration awareness
   useEffect(() => {
     // Clear any existing timeout
     if (authTimeoutRef.current) {
       clearTimeout(authTimeoutRef.current)
     }
 
-    // Only trigger auth if we haven't already and conditions are met
+    // Only trigger auth after session restoration is complete
     if (
+      sessionRestored && // Wait for session restoration
       !loading &&
       !user &&
       !isAuthModalOpen &&
-      !authTriggeredRef.current &&
-      !loadingTimedOut
+      !authTriggeredRef.current
     ) {
-      console.log('🔐 Workspace: Triggering auth modal (no user found)')
+      console.log(
+        '🔐 Workspace: Session restored, no user found - triggering auth modal'
+      )
       authTimeoutRef.current = setTimeout(() => {
         authTriggeredRef.current = true
         handleSignIn({ redirectTo: '/workspace' })
-      }, 500) // 500ms debounce
+      }, 1000) // 1 second delay after session restoration
     }
 
     // Reset auth trigger when user becomes available
@@ -102,26 +104,35 @@ function WorkspaceContent() {
         clearTimeout(authTimeoutRef.current)
       }
     }
-  }, [loading, user, isAuthModalOpen, handleSignIn, loadingTimedOut])
+  }, [sessionRestored, loading, user, isAuthModalOpen, handleSignIn])
 
   // Coordinate workspace loading state
   useEffect(() => {
     setWorkspaceLoading(loading)
   }, [loading, setWorkspaceLoading])
 
-  // Show loading only while initially checking auth
-  if (loading && !loadingTimedOut) {
+  // Show loading while session is being restored or initial auth check
+  if (
+    (loading && !sessionRestored) ||
+    (sessionRestored && !user && !authTriggeredRef.current && !loadingTimedOut)
+  ) {
+    const loadingMessage = !sessionRestored
+      ? language === 'vi'
+        ? 'Đang khôi phục phiên...'
+        : 'Restoring session...'
+      : language === 'vi'
+        ? 'Đang tải...'
+        : 'Loading...'
+
     return (
       <div className="min-h-screen bg-bg-main flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin w-8 h-8 border-2 border-gray-300 border-t-gray-900 rounded-full mb-4 mx-auto"></div>
-          <p className="body-base text-gray-600">
-            {language === 'vi' ? 'Đang tải...' : 'Loading...'}
-          </p>
+          <p className="body-base text-gray-600">{loadingMessage}</p>
           {process.env.NODE_ENV === 'development' && (
             <p className="body-xs text-gray-400 mt-2">
-              Debug: loading={loading.toString()}, user=
-              {user ? 'present' : 'null'}
+              Debug: loading={loading.toString()}, sessionRestored=
+              {sessionRestored.toString()}, user={user ? 'present' : 'null'}
             </p>
           )}
         </div>
@@ -129,8 +140,8 @@ function WorkspaceContent() {
     )
   }
 
-  // If no user and not loading, return null (auth modal will handle it)
-  if (!user) {
+  // If session is restored but no user, return null (auth modal will handle it)
+  if (sessionRestored && !user) {
     return null
   }
 

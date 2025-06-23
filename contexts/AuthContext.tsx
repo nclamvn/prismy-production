@@ -10,6 +10,7 @@ interface AuthContextType {
   session: Session | null
   profile: UserProfile | null
   loading: boolean
+  sessionRestored: boolean
   signIn: (email: string, password: string) => Promise<{ error: any }>
   signUp: (
     email: string,
@@ -33,6 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
+  const [sessionRestored, setSessionRestored] = useState(false)
 
   // Environment check on initialization
   useEffect(() => {
@@ -56,15 +58,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     let isMounted = true
+    let sessionRestoreTimeout: NodeJS.Timeout
 
-    // Get initial session
+    // Get initial session with enhanced reliability
     const getInitialSession = async () => {
       try {
+        console.log('🔄 AuthContext: Starting session restoration')
+
         const {
           data: { session },
         } = await supabase.auth.getSession()
 
         if (!isMounted) return
+
+        console.log('📦 AuthContext: Session restored', {
+          hasSession: !!session,
+          hasUser: !!session?.user,
+          userId: session?.user?.id,
+        })
 
         setSession(session)
         setUser(session?.user ?? null)
@@ -72,14 +83,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (session?.user) {
           await fetchUserProfile(session.user.id)
         }
+
+        setSessionRestored(true)
       } catch (error) {
-        console.error('Error getting initial session:', error)
+        console.error('❌ AuthContext: Error getting initial session:', error)
+        setSessionRestored(true) // Mark as restored even on error to prevent infinite loading
       } finally {
         if (isMounted) {
           setLoading(false)
+          console.log('✅ AuthContext: Session restoration complete')
         }
       }
     }
+
+    // Session restoration timeout (8 seconds)
+    sessionRestoreTimeout = setTimeout(() => {
+      if (!sessionRestored && isMounted) {
+        console.log(
+          '⏰ AuthContext: Session restoration timeout, proceeding without session'
+        )
+        setSessionRestored(true)
+        setLoading(false)
+      }
+    }, 8000)
 
     getInitialSession()
 
@@ -89,7 +115,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!isMounted) return
 
-      console.log('Auth state change:', event, !!session)
+      console.log('🔄 AuthContext: Auth state change:', event, {
+        hasSession: !!session,
+        hasUser: !!session?.user,
+        sessionRestored,
+      })
 
       setSession(session)
       setUser(session?.user ?? null)
@@ -100,16 +130,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setProfile(null)
       }
 
+      // Mark session as restored on any auth state change
+      if (!sessionRestored) {
+        setSessionRestored(true)
+      }
+
       // Only set loading false after initial load
-      // Subsequent auth changes don't need loading state
       if (event === 'INITIAL_SESSION') {
         setLoading(false)
+        console.log('✅ AuthContext: Initial session processed')
       }
     })
 
     return () => {
       isMounted = false
       subscription.unsubscribe()
+      if (sessionRestoreTimeout) {
+        clearTimeout(sessionRestoreTimeout)
+      }
     }
   }, []) // Remove supabase.auth dependency to prevent re-runs
 
@@ -235,6 +273,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         session,
         profile,
         loading,
+        sessionRestored,
         signIn,
         signUp,
         signInWithGoogle,
