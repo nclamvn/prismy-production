@@ -6,6 +6,10 @@ import PerformanceMonitor from '@/components/PerformanceMonitor'
 import { LanguageProvider } from '@/contexts/LanguageContext'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { UnifiedAuthProvider } from '@/contexts/UnifiedAuthProvider'
+import {
+  LoadingProvider,
+  GlobalLoadingIndicator,
+} from '@/contexts/LoadingContext'
 import Navbar from '@/components/Navbar'
 
 const inter = Inter({
@@ -131,16 +135,18 @@ export default function RootLayout({
         className="font-inter antialiased bg-white text-gray-900 overflow-x-hidden"
         style={{ fontSize: '18px', lineHeight: '1.6' }}
       >
-        <LanguageProvider>
-          <AuthProvider>
-            <UnifiedAuthProvider>
-              <Navbar />
-              {children}
-            </UnifiedAuthProvider>
-          </AuthProvider>
-        </LanguageProvider>
-        {/* Temporarily disabled to fix caching issues
-        <ServiceWorkerRegistration /> */}
+        <LoadingProvider>
+          <LanguageProvider>
+            <AuthProvider>
+              <UnifiedAuthProvider>
+                <GlobalLoadingIndicator />
+                <Navbar />
+                {children}
+              </UnifiedAuthProvider>
+            </AuthProvider>
+          </LanguageProvider>
+        </LoadingProvider>
+        <ServiceWorkerRegistration />
         <PerformanceMonitor />
         <script
           dangerouslySetInnerHTML={{

@@ -3,6 +3,7 @@
 import { createContext, useContext } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useUnifiedAuth, type UnifiedAuthOptions } from '@/hooks/useUnifiedAuth'
+import { AuthErrorBoundary } from '@/components/ErrorBoundary'
 import AuthModal from '@/components/auth/AuthModal'
 
 interface UnifiedAuthContextType {
@@ -34,13 +35,15 @@ export function UnifiedAuthProvider({
       {children}
 
       {/* Single AuthModal instance for the entire app */}
-      <AuthModal
-        isOpen={unifiedAuth.isAuthModalOpen}
-        onClose={unifiedAuth.closeAuthModal}
-        initialMode={unifiedAuth.authMode}
-        language={language}
-        redirectTo={unifiedAuth.redirectTo}
-      />
+      <AuthErrorBoundary>
+        <AuthModal
+          isOpen={unifiedAuth.isAuthModalOpen}
+          onClose={unifiedAuth.closeAuthModal}
+          initialMode={unifiedAuth.authMode}
+          language={language}
+          redirectTo={unifiedAuth.redirectTo}
+        />
+      </AuthErrorBoundary>
     </UnifiedAuthContext.Provider>
   )
 }

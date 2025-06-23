@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 
 export interface UnifiedAuthOptions {
@@ -20,6 +21,7 @@ export function useUnifiedAuth() {
   >()
 
   const { user } = useAuth()
+  const router = useRouter()
 
   // Open auth modal with specific configuration
   const openAuthModal = useCallback((options: UnifiedAuthOptions = {}) => {
@@ -49,9 +51,9 @@ export function useUnifiedAuth() {
   const handleGetStarted = useCallback(
     (options: UnifiedAuthOptions = {}) => {
       if (user) {
-        // User is already authenticated
+        // User is already authenticated - use Next.js router for SPA navigation
         const targetRedirect = options.redirectTo || '/workspace'
-        window.location.href = targetRedirect
+        router.push(targetRedirect)
       } else {
         // User needs to authenticate
         openAuthModal({
@@ -60,7 +62,7 @@ export function useUnifiedAuth() {
         })
       }
     },
-    [user, openAuthModal]
+    [user, openAuthModal, router]
   )
 
   // Handle "Sign In" action

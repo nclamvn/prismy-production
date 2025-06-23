@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
@@ -42,6 +43,7 @@ export default function PricingPage({}: PricingPageProps) {
   // Standard context usage
   const { user, loading } = useAuth()
   const { language } = useLanguage()
+  const router = useRouter()
 
   // Simple currency formatter
   const formatCurrency = (amount: number) => {
@@ -190,8 +192,8 @@ export default function PricingPage({}: PricingPageProps) {
   // Premium upgrade handler
   const handleUpgrade = async (planId: string) => {
     if (!user) {
-      // Redirect to sign up with selected plan
-      window.location.href = `/auth/signup?plan=${planId}&period=${billingPeriod}`
+      // Redirect to sign up with selected plan using Next.js router
+      router.push(`/auth/signup?plan=${planId}&period=${billingPeriod}`)
       return
     }
 

@@ -5,7 +5,9 @@ import { motion } from 'framer-motion'
 import { useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useUnifiedAuthContext } from '@/contexts/UnifiedAuthProvider'
+import { useWorkspaceLoading } from '@/contexts/LoadingContext'
 import { motionSafe, slideUp, staggerContainer, fadeIn } from '@/lib/motion'
+import { WorkspaceErrorBoundary } from '@/components/ErrorBoundary'
 import WorkspaceLayout from '@/components/workspace/WorkspaceLayout'
 import DocumentMode from '@/components/workspace/modes/DocumentMode'
 import IntelligenceMode from '@/components/workspace/modes/IntelligenceMode'
@@ -28,6 +30,8 @@ function WorkspaceContent() {
   const { language } = useLanguage()
   const { user, loading } = useAuth()
   const { handleSignIn, isAuthModalOpen } = useUnifiedAuthContext()
+  const { isLoading: workspaceLoading, setLoading: setWorkspaceLoading } =
+    useWorkspaceLoading()
   const [currentMode, setCurrentMode] = useState<WorkspaceMode>('documents')
 
   // Simple auth check - trigger sign in if needed
@@ -36,6 +40,11 @@ function WorkspaceContent() {
       handleSignIn({ redirectTo: '/workspace' })
     }
   }, [loading, user, isAuthModalOpen, handleSignIn])
+
+  // Coordinate workspace loading state
+  useEffect(() => {
+    setWorkspaceLoading(loading)
+  }, [loading, setWorkspaceLoading])
 
   // Show loading only while initially checking auth
   if (loading) {
@@ -99,5 +108,9 @@ function WorkspaceContent() {
 }
 
 export default function WorkspacePage() {
-  return <WorkspaceContent />
+  return (
+    <WorkspaceErrorBoundary>
+      <WorkspaceContent />
+    </WorkspaceErrorBoundary>
+  )
 }
