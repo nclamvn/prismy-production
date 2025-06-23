@@ -63,19 +63,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Get initial session with enhanced reliability
     const getInitialSession = async () => {
       try {
-        console.log('🔄 AuthContext: Starting session restoration')
-
         const {
           data: { session },
         } = await supabase.auth.getSession()
 
         if (!isMounted) return
-
-        console.log('📦 AuthContext: Session restored', {
-          hasSession: !!session,
-          hasUser: !!session?.user,
-          userId: session?.user?.id,
-        })
 
         setSession(session)
         setUser(session?.user ?? null)
@@ -86,12 +78,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         setSessionRestored(true)
       } catch (error) {
-        console.error('❌ AuthContext: Error getting initial session:', error)
+        // Silent error handling for production
         setSessionRestored(true) // Mark as restored even on error to prevent infinite loading
       } finally {
         if (isMounted) {
           setLoading(false)
-          console.log('✅ AuthContext: Session restoration complete')
         }
       }
     }
@@ -113,12 +104,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!isMounted) return
 
-      console.log('🔄 AuthContext: Auth state change:', event, {
-        hasSession: !!session,
-        hasUser: !!session?.user,
-        sessionRestored,
-      })
-
       setSession(session)
       setUser(session?.user ?? null)
 
@@ -136,7 +121,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Only set loading false after initial load
       if (event === 'INITIAL_SESSION') {
         setLoading(false)
-        console.log('✅ AuthContext: Initial session processed')
       }
     })
 

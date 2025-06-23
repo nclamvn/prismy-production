@@ -83,9 +83,7 @@ export default function Footer({}: FooterProps) {
         {
           title: 'Sản phẩm',
           links: [
-            { name: 'Dịch văn bản', href: '/text-translation' },
-            { name: 'Dịch tài liệu', href: '/document-translation' },
-            { name: 'Truy cập API', href: '/api' },
+            { name: 'Tính năng', href: '/features' },
             { name: 'Doanh nghiệp', href: '/enterprise' },
             { name: 'Bảng giá', href: '/pricing' },
           ],
@@ -93,51 +91,19 @@ export default function Footer({}: FooterProps) {
         {
           title: 'Tài nguyên',
           links: [
-            { name: 'Tài liệu hướng dẫn', href: '/docs' },
-            { name: 'Tham khảo API', href: '/api-docs' },
-            { name: 'Hướng dẫn sử dụng', href: '/tutorials' },
+            { name: 'Tài liệu API', href: '/api-docs' },
             { name: 'Blog', href: '/blog' },
-            { name: 'Cộng đồng', href: '/community' },
-          ],
-        },
-        {
-          title: 'Công ty',
-          links: [
-            { name: 'Về chúng tôi', href: '/about' },
-            { name: 'Tuyển dụng', href: '/careers' },
-            { name: 'Bộ công cụ báo chí', href: '/press' },
-            { name: 'Liên hệ', href: '/contact' },
-            { name: 'Đối tác', href: '/partners' },
-          ],
-        },
-        {
-          title: 'Pháp lý',
-          links: [
-            { name: 'Chính sách bảo mật', href: '/privacy' },
-            { name: 'Điều khoản dịch vụ', href: '/terms' },
-            { name: 'Chính sách Cookie', href: '/cookies' },
-            { name: 'Bảo mật', href: '/security' },
-            { name: 'GDPR', href: '/gdpr' },
           ],
         },
       ],
-      newsletter: {
-        title: 'Cập nhật mới nhất',
-        description:
-          'Nhận thông tin cập nhật mới nhất về các tính năng và cải tiến.',
-        placeholder: 'Nhập email của bạn',
-        subscribe: 'Đăng ký',
-      },
-      description: 'Con dao Thụy Sĩ của thế giới tài liệu',
+      description: 'Nền tảng dịch thuật AI hàng đầu',
     },
     en: {
       sections: [
         {
           title: 'Product',
           links: [
-            { name: 'Text Translation', href: '/text-translation' },
-            { name: 'Document Translation', href: '/document-translation' },
-            { name: 'API Access', href: '/api' },
+            { name: 'Features', href: '/features' },
             { name: 'Enterprise', href: '/enterprise' },
             { name: 'Pricing', href: '/pricing' },
           ],
@@ -145,41 +111,12 @@ export default function Footer({}: FooterProps) {
         {
           title: 'Resources',
           links: [
-            { name: 'Documentation', href: '/docs' },
-            { name: 'API Reference', href: '/api-docs' },
-            { name: 'Tutorials', href: '/tutorials' },
+            { name: 'API Documentation', href: '/api-docs' },
             { name: 'Blog', href: '/blog' },
-            { name: 'Community', href: '/community' },
-          ],
-        },
-        {
-          title: 'Company',
-          links: [
-            { name: 'About Us', href: '/about' },
-            { name: 'Careers', href: '/careers' },
-            { name: 'Press Kit', href: '/press' },
-            { name: 'Contact', href: '/contact' },
-            { name: 'Partners', href: '/partners' },
-          ],
-        },
-        {
-          title: 'Legal',
-          links: [
-            { name: 'Privacy Policy', href: '/privacy' },
-            { name: 'Terms of Service', href: '/terms' },
-            { name: 'Cookie Policy', href: '/cookies' },
-            { name: 'Security', href: '/security' },
-            { name: 'GDPR', href: '/gdpr' },
           ],
         },
       ],
-      newsletter: {
-        title: 'Stay Updated',
-        description: 'Get the latest updates on new features and improvements.',
-        placeholder: 'Enter your email',
-        subscribe: 'Subscribe',
-      },
-      description: 'The Swiss Army knife for documents',
+      description: 'Leading AI translation platform',
     },
   }
 
@@ -281,8 +218,8 @@ export default function Footer({}: FooterProps) {
         >
           {/* Main Footer Content */}
           <div className="mb-6 sm:mb-8">
-            {/* Desktop Grid Layout - Hidden on mobile */}
-            <div className="hidden md:grid md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6">
+            {/* Simplified Desktop Layout - Only existing routes */}
+            <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               {/* Brand Section */}
               <motion.div
                 variants={motionSafe(slideUp)}
@@ -321,401 +258,30 @@ export default function Footer({}: FooterProps) {
                 </div>
               </motion.div>
 
-              {/* Product Column - FORCE RENDER */}
-              <motion.div
-                variants={motionSafe(slideUp)}
-                className="lg:col-span-1"
-              >
-                <h3 className="heading-4 text-gray-900 mb-4">
-                  {language === 'vi' ? 'Sản phẩm' : 'Product'}
-                </h3>
-                <ul className="space-y-3">
-                  {language === 'vi' ? (
-                    <>
-                      <li>
+              {/* Navigation Sections */}
+              {content[language].sections.map(section => (
+                <motion.div
+                  key={section.title}
+                  variants={motionSafe(slideUp)}
+                  className="lg:col-span-1"
+                >
+                  <h3 className="heading-4 text-gray-900 mb-4">
+                    {section.title}
+                  </h3>
+                  <ul className="space-y-3">
+                    {section.links.map(link => (
+                      <li key={link.name}>
                         <Link
-                          href="/text-translation"
+                          href={link.href}
                           className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
                         >
-                          Dịch văn bản
+                          {link.name}
                         </Link>
                       </li>
-                      <li>
-                        <Link
-                          href="/document-translation"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          Dịch tài liệu
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/api"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          Truy cập API
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/enterprise"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          Doanh nghiệp
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/pricing"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          Bảng giá
-                        </Link>
-                      </li>
-                    </>
-                  ) : (
-                    <>
-                      <li>
-                        <Link
-                          href="/text-translation"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          Text Translation
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/document-translation"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          Document Translation
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/api"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          API Access
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/enterprise"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          Enterprise
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/pricing"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          Pricing
-                        </Link>
-                      </li>
-                    </>
-                  )}
-                </ul>
-              </motion.div>
-
-              {/* Resources Column - FORCE RENDER */}
-              <motion.div
-                variants={motionSafe(slideUp)}
-                className="lg:col-span-1"
-              >
-                <h3 className="heading-4 text-gray-900 mb-4">
-                  {language === 'vi' ? 'Tài nguyên' : 'Resources'}
-                </h3>
-                <ul className="space-y-3">
-                  {language === 'vi' ? (
-                    <>
-                      <li>
-                        <Link
-                          href="/docs"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          Tài liệu hướng dẫn
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/api-docs"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          Tham khảo API
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/tutorials"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          Hướng dẫn sử dụng
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/blog"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          Blog
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/community"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          Cộng đồng
-                        </Link>
-                      </li>
-                    </>
-                  ) : (
-                    <>
-                      <li>
-                        <Link
-                          href="/docs"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          Documentation
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/api-docs"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          API Reference
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/tutorials"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          Tutorials
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/blog"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          Blog
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/community"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          Community
-                        </Link>
-                      </li>
-                    </>
-                  )}
-                </ul>
-              </motion.div>
-
-              {/* Company Column - FORCE RENDER */}
-              <motion.div
-                variants={motionSafe(slideUp)}
-                className="lg:col-span-1"
-              >
-                <h3 className="heading-4 text-gray-900 mb-4">
-                  {language === 'vi' ? 'Công ty' : 'Company'}
-                </h3>
-                <ul className="space-y-3">
-                  {language === 'vi' ? (
-                    <>
-                      <li>
-                        <Link
-                          href="/about"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          Về chúng tôi
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/careers"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          Tuyển dụng
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/press"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          Bộ công cụ báo chí
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/contact"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          Liên hệ
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/partners"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          Đối tác
-                        </Link>
-                      </li>
-                    </>
-                  ) : (
-                    <>
-                      <li>
-                        <Link
-                          href="/about"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          About Us
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/careers"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          Careers
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/press"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          Press Kit
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/contact"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          Contact
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/partners"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          Partners
-                        </Link>
-                      </li>
-                    </>
-                  )}
-                </ul>
-              </motion.div>
-
-              {/* Legal Column - FORCE RENDER */}
-              <motion.div
-                variants={motionSafe(slideUp)}
-                className="lg:col-span-1"
-              >
-                <h3 className="heading-4 text-gray-900 mb-4">
-                  {language === 'vi' ? 'Pháp lý' : 'Legal'}
-                </h3>
-                <ul className="space-y-3">
-                  {language === 'vi' ? (
-                    <>
-                      <li>
-                        <Link
-                          href="/privacy"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          Chính sách bảo mật
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/terms"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          Điều khoản dịch vụ
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/cookies"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          Chính sách Cookie
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/security"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          Bảo mật
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/gdpr"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          GDPR
-                        </Link>
-                      </li>
-                    </>
-                  ) : (
-                    <>
-                      <li>
-                        <Link
-                          href="/privacy"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          Privacy Policy
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/terms"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          Terms of Service
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/cookies"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          Cookie Policy
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/security"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          Security
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/gdpr"
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          GDPR
-                        </Link>
-                      </li>
-                    </>
-                  )}
-                </ul>
-              </motion.div>
+                    ))}
+                  </ul>
+                </motion.div>
+              ))}
             </div>
 
             {/* Mobile Accordion Layout - Visible only on mobile */}
