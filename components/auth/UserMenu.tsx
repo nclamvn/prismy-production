@@ -88,12 +88,6 @@ export default function UserMenu() {
                 {profile.full_name || user.email}
               </p>
               <p className="text-xs text-gray-500">{user.email}</p>
-              <div className="flex items-center justify-between mt-2">
-                {getSubscriptionBadge()}
-                <span className="text-xs text-gray-500">
-                  {profile.usage_count}/{profile.usage_limit} used
-                </span>
-              </div>
             </div>
 
             {/* Menu Items */}
