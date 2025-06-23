@@ -8,62 +8,224 @@ const supabaseAnonKey =
 const supabaseServiceKey =
   process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder-service-key'
 
-// Singleton client-side Supabase client to prevent multiple instances
+// Advanced Supabase client configuration for optimal performance
+const supabaseClientConfig = {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true,
+  },
+  db: {
+    schema: 'public',
+  },
+  global: {
+    headers: {
+      'x-client-info': 'prismy-web@1.0.0',
+    },
+  },
+  realtime: {
+    params: {
+      eventsPerSecond: 10,
+    },
+  },
+}
+
+// Connection pool for optimized performance
+const connectionPool = new Map<string, any>()
+const MAX_POOL_SIZE = 10
+const CONNECTION_TIMEOUT = 30000 // 30 seconds
+
+// Singleton client-side Supabase client with enhanced performance
 let browserClient: ReturnType<typeof createBrowserClient> | null = null
+let lastUsed = Date.now()
 
 export const createClientComponentClient = () => {
   if (typeof window === 'undefined') {
-    // Server-side: always create new instance
-    return createBrowserClient(supabaseUrl, supabaseAnonKey)
+    // Server-side: always create new instance with optimizations
+    return createBrowserClient(
+      supabaseUrl,
+      supabaseAnonKey,
+      supabaseClientConfig
+    )
   }
 
-  // Client-side: use singleton pattern
-  if (!browserClient) {
-    browserClient = createBrowserClient(supabaseUrl, supabaseAnonKey)
+  // Client-side: use optimized singleton pattern with connection reuse
+  const now = Date.now()
+
+  // Recreate client if it's been idle for too long (connection freshness)
+  if (!browserClient || now - lastUsed > CONNECTION_TIMEOUT) {
+    if (browserClient) {
+      // Clean up old client
+      browserClient.removeAllChannels()
+    }
+    browserClient = createBrowserClient(
+      supabaseUrl,
+      supabaseAnonKey,
+      supabaseClientConfig
+    )
   }
 
+  lastUsed = now
   return browserClient
 }
 
-// Server-side Supabase client for API routes
+// Server-side Supabase client for API routes with connection pooling
 export const createRouteHandlerClient = ({
   cookies: cookieStore,
 }: {
   cookies: () => any
 }) => {
-  return createServerClient(supabaseUrl, supabaseAnonKey, {
+  const poolKey = 'route-handler'
+
+  // Check connection pool first
+  if (connectionPool.has(poolKey) && connectionPool.size < MAX_POOL_SIZE) {
+    const cached = connectionPool.get(poolKey)
+    if (cached && Date.now() - cached.created < CONNECTION_TIMEOUT) {
+      return cached.client
+    }
+  }
+
+  // Create new optimized client
+  const client = createServerClient(supabaseUrl, supabaseAnonKey, {
+    ...supabaseClientConfig,
     cookies: {
       get(name: string) {
         return cookieStore().get(name)?.value
       },
       set(name: string, value: string, options: Record<string, any>) {
-        cookieStore().set({ name, value, ...options })
+        try {
+          cookieStore().set({ name, value, ...options })
+        } catch (error) {
+          // Silent fail for cookie setting in some contexts
+          console.warn('Cookie setting failed:', error)
+        }
       },
       remove(name: string, options: Record<string, any>) {
-        cookieStore().set({ name, value: '', ...options })
+        try {
+          cookieStore().set({ name, value: '', ...options })
+        } catch (error) {
+          // Silent fail for cookie removal in some contexts
+          console.warn('Cookie removal failed:', error)
+        }
       },
     },
   })
+
+  // Add to connection pool
+  connectionPool.set(poolKey, {
+    client,
+    created: Date.now(),
+  })
+
+  return client
 }
 
-// Server-side Supabase client for Server Components
+// Server-side Supabase client for Server Components with caching
 export const createServerComponentClient = ({
   cookies: cookieStore,
 }: {
   cookies: () => any
 }) => {
-  return createServerClient(supabaseUrl, supabaseAnonKey, {
+  const poolKey = 'server-component'
+
+  // Check connection pool first
+  if (connectionPool.has(poolKey) && connectionPool.size < MAX_POOL_SIZE) {
+    const cached = connectionPool.get(poolKey)
+    if (cached && Date.now() - cached.created < CONNECTION_TIMEOUT) {
+      return cached.client
+    }
+  }
+
+  // Create new optimized read-only client
+  const client = createServerClient(supabaseUrl, supabaseAnonKey, {
+    ...supabaseClientConfig,
     cookies: {
       get(name: string) {
-        return cookieStore().get(name)?.value
+        try {
+          return cookieStore().get(name)?.value
+        } catch (error) {
+          // Silent fail for cookie reading in some contexts
+          console.warn('Cookie reading failed:', error)
+          return undefined
+        }
       },
     },
   })
+
+  // Add to connection pool
+  connectionPool.set(poolKey, {
+    client,
+    created: Date.now(),
+  })
+
+  return client
 }
 
-// Service role client for admin operations
+// Service role client for admin operations with connection pooling
+let serviceRoleClient: ReturnType<typeof createClient> | null = null
+let serviceRoleLastUsed = Date.now()
+
 export const createServiceRoleClient = () => {
-  return createClient(supabaseUrl, supabaseServiceKey)
+  const now = Date.now()
+
+  // Reuse service role client with timeout management
+  if (!serviceRoleClient || now - serviceRoleLastUsed > CONNECTION_TIMEOUT) {
+    serviceRoleClient = createClient(supabaseUrl, supabaseServiceKey, {
+      ...supabaseClientConfig,
+      auth: {
+        autoRefreshToken: false, // Service role doesn't need auth refresh
+        persistSession: false,
+      },
+    })
+  }
+
+  serviceRoleLastUsed = now
+  return serviceRoleClient
+}
+
+// Query optimization helpers
+export const withQueryOptimization = <T>(queryBuilder: any): Promise<T> => {
+  return queryBuilder
+    .limit(1000) // Prevent accidental large queries
+    .timeout(10000) // 10 second query timeout
+}
+
+// Batch query helper for multiple operations
+export const batchQueries = async <T>(
+  queries: Array<() => Promise<T>>,
+  batchSize = 5
+): Promise<T[]> => {
+  const results: T[] = []
+
+  for (let i = 0; i < queries.length; i += batchSize) {
+    const batch = queries.slice(i, i + batchSize)
+    const batchResults = await Promise.all(batch.map(query => query()))
+    results.push(...batchResults)
+  }
+
+  return results
+}
+
+// Connection cleanup utility
+export const cleanupConnections = () => {
+  const now = Date.now()
+
+  for (const [key, value] of connectionPool.entries()) {
+    if (now - value.created > CONNECTION_TIMEOUT) {
+      connectionPool.delete(key)
+    }
+  }
+
+  // Reset browser client if needed
+  if (browserClient && now - lastUsed > CONNECTION_TIMEOUT) {
+    browserClient.removeAllChannels()
+    browserClient = null
+  }
+}
+
+// Auto cleanup every 5 minutes
+if (typeof window !== 'undefined') {
+  setInterval(cleanupConnections, 300000)
 }
 
 // Note: Legacy client removed to prevent multiple GoTrueClient instances
