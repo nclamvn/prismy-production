@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { User, Session } from '@supabase/supabase-js'
 import { createClientComponentClient } from '@/lib/supabase'
 import type { UserProfile } from '@/lib/supabase'
+import { debugAuth } from '@/lib/auth-debug'
 
 interface AuthContextType {
   user: User | null
@@ -11,9 +12,13 @@ interface AuthContextType {
   profile: UserProfile | null
   loading: boolean
   signIn: (email: string, password: string) => Promise<{ error: any }>
-  signUp: (email: string, password: string, fullName: string) => Promise<{ error: any }>
-  signInWithGoogle: () => Promise<{ error: any }>
-  signInWithApple: () => Promise<{ error: any }>
+  signUp: (
+    email: string,
+    password: string,
+    fullName: string
+  ) => Promise<{ error: any }>
+  signInWithGoogle: (redirectTo?: string) => Promise<{ error: any }>
+  signInWithApple: (redirectTo?: string) => Promise<{ error: any }>
   signOut: () => Promise<void>
   updateProfile: (updates: Partial<UserProfile>) => Promise<{ error: any }>
   refreshProfile: () => Promise<void>
@@ -26,40 +31,68 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
-  
+
   const supabase = createClientComponentClient()
+
+  // Environment check on initialization
+  useEffect(() => {
+    const env = {
+      supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+      hasAnonKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      siteUrl: process.env.NEXT_PUBLIC_SITE_URL,
+      origin:
+        typeof window !== 'undefined' ? window.location.origin : 'unknown',
+    }
+
+    debugAuth.environmentCheck(env)
+
+    // Check for common misconfigurations
+    if (!env.supabaseUrl || env.supabaseUrl.includes('placeholder')) {
+      debugAuth.configurationError('Invalid Supabase URL', {
+        url: env.supabaseUrl,
+      })
+    }
+
+    if (!env.hasAnonKey) {
+      debugAuth.configurationError('Missing Supabase Anon Key', {})
+    }
+  }, [])
 
   useEffect(() => {
     // Get initial session
     const getInitialSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
       setSession(session)
       setUser(session?.user ?? null)
-      
+
       if (session?.user) {
         await fetchUserProfile(session.user.id)
       }
-      
+
       setLoading(false)
     }
 
     getInitialSession()
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setSession(session)
-        setUser(session?.user ?? null)
-        
-        if (session?.user) {
-          await fetchUserProfile(session.user.id)
-        } else {
-          setProfile(null)
-        }
-        
-        setLoading(false)
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      debugAuth.sessionUpdate(session?.user, false)
+
+      setSession(session)
+      setUser(session?.user ?? null)
+
+      if (session?.user) {
+        await fetchUserProfile(session.user.id)
+      } else {
+        setProfile(null)
       }
-    )
+
+      setLoading(false)
+    })
 
     return () => subscription.unsubscribe()
   }, [supabase.auth])
@@ -88,7 +121,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email,
       password,
     })
-    
+
     return { error }
   }
 
@@ -102,30 +135,64 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         },
       },
     })
-    
+
     return { error }
   }
 
-  const signInWithGoogle = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/dashboard`
+  const signInWithGoogle = async (redirectTo?: string) => {
+    const intendedRedirect = redirectTo || '/dashboard'
+
+    // Build callback URL with intended redirect as query param
+    const callbackUrl = new URL('/auth/callback', window.location.origin)
+    callbackUrl.searchParams.set('redirectTo', intendedRedirect)
+
+    debugAuth.oauthInitiated('google', intendedRedirect)
+
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: callbackUrl.toString(),
+        },
+      })
+
+      if (error) {
+        debugAuth.oauthError('google', error)
       }
-    })
-    
-    return { error }
+
+      return { error }
+    } catch (err) {
+      debugAuth.supabaseError('Google OAuth', err)
+      return { error: err }
+    }
   }
 
-  const signInWithApple = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'apple',
-      options: {
-        redirectTo: `${window.location.origin}/dashboard`
+  const signInWithApple = async (redirectTo?: string) => {
+    const intendedRedirect = redirectTo || '/dashboard'
+
+    // Build callback URL with intended redirect as query param
+    const callbackUrl = new URL('/auth/callback', window.location.origin)
+    callbackUrl.searchParams.set('redirectTo', intendedRedirect)
+
+    debugAuth.oauthInitiated('apple', intendedRedirect)
+
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'apple',
+        options: {
+          redirectTo: callbackUrl.toString(),
+        },
+      })
+
+      if (error) {
+        debugAuth.oauthError('apple', error)
       }
-    })
-    
-    return { error }
+
+      return { error }
+    } catch (err) {
+      debugAuth.supabaseError('Apple OAuth', err)
+      return { error: err }
+    }
   }
 
   const signOut = async () => {

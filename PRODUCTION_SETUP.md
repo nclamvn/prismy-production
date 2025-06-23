@@ -30,19 +30,19 @@ Thêm các biến sau cho **Production**:
 
 ```env
 # Supabase (Required)
-NEXT_PUBLIC_SUPABASE_URL=https://ziyereoasqiqhjvedgit.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InppeWVyZW9hc3FpcWhqdmVkZ2l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA1OTE3ODUsImV4cCI6MjA2NjE2Nzc4NX0.fnoWBmvKf8L7dFe3sHHOQKvoGINwHmWdMvgpeli8vuk
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InppeWVyZW9hc3FpcWhqdmVkZ2l0Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MDU5MTc4NSwiZXhwIjoyMDY2MTY3Nzg1fQ.7vzfrq6nTyOxJrGJclXjuWYucIUaCMiN5zhsldxNr6U
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 
 # Google Translate (Required)
-GOOGLE_TRANSLATE_API_KEY=AIzaSyCKvJssc4Ds7SWZWi7uwmg7_-YPVZC5ZlE
+GOOGLE_TRANSLATE_API_KEY=your_google_translate_api_key
 
 # Site URL
 NEXT_PUBLIC_SITE_URL=https://prismy.in
 
 # AI Providers (Optional)
-OPENAI_API_KEY=sk-proj-YOUR_OPENAI_API_KEY_HERE
-ANTHROPIC_API_KEY=sk-ant-api03-YOUR_ANTHROPIC_API_KEY_HERE
+OPENAI_API_KEY=your_openai_api_key
+ANTHROPIC_API_KEY=your_anthropic_api_key
 ```
 
 ### 4️⃣ **Cấu hình Domain**
