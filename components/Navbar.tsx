@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 import { slideDown, motionSafe } from '@/lib/motion'
 import { useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
-import AuthModal from './auth/AuthModal'
+import { useUnifiedAuthContext } from '@/contexts/UnifiedAuthProvider'
 import UserMenu from './auth/UserMenu'
 import UniversalDropdown from './ui/UniversalDropdown'
 import { Globe, ChevronDown } from 'lucide-react'
@@ -18,10 +18,9 @@ interface NavbarProps {
 export default function Navbar({}: NavbarProps) {
   const { language, setLanguage } = useLanguage()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
-  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
   const [isScrolled, setIsScrolled] = useState(false)
   const { user, loading } = useAuth()
+  const { handleGetStarted, handleSignIn } = useUnifiedAuthContext()
 
   // Scroll detection for desktop header styling only
   useEffect(() => {
@@ -208,19 +207,13 @@ export default function Navbar({}: NavbarProps) {
                     ) : (
                       <>
                         <button
-                          onClick={() => {
-                            setAuthMode('signin')
-                            setIsAuthModalOpen(true)
-                          }}
+                          onClick={() => handleSignIn()}
                           className={`btn-ghost ${shouldUseDesktopPill ? 'h-8 px-3 text-xs' : 'btn-pill-compact-md'} font-normal hover:font-semibold`}
                         >
                           {content[language].signin}
                         </button>
                         <button
-                          onClick={() => {
-                            setAuthMode('signup')
-                            setIsAuthModalOpen(true)
-                          }}
+                          onClick={() => handleGetStarted()}
                           className={`btn-primary ${shouldUseDesktopPill ? 'h-8 px-3 text-xs' : 'btn-pill-compact-md'} font-semibold`}
                         >
                           {content[language].getStarted}
@@ -291,8 +284,7 @@ export default function Navbar({}: NavbarProps) {
                     <>
                       <button
                         onClick={() => {
-                          setAuthMode('signin')
-                          setIsAuthModalOpen(true)
+                          handleSignIn()
                           setIsMenuOpen(false)
                         }}
                         className="block btn-ghost btn-signin-enhanced w-full text-center font-normal hover:font-semibold h-8 px-3 text-xs"
@@ -301,8 +293,7 @@ export default function Navbar({}: NavbarProps) {
                       </button>
                       <button
                         onClick={() => {
-                          setAuthMode('signup')
-                          setIsAuthModalOpen(true)
+                          handleGetStarted()
                           setIsMenuOpen(false)
                         }}
                         className="block btn-primary w-full text-center font-semibold h-8 px-3 text-xs"
@@ -316,14 +307,6 @@ export default function Navbar({}: NavbarProps) {
           </motion.div>
         </div>
       )}
-
-      {/* Auth Modal */}
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-        initialMode={authMode}
-        language={language}
-      />
     </motion.header>
   )
 }

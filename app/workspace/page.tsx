@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { AuthProvider, useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { useUnifiedAuthContext } from '@/contexts/UnifiedAuthProvider'
 import { motionSafe, slideUp, staggerContainer, fadeIn } from '@/lib/motion'
-import AuthModal from '@/components/auth/AuthModal'
 import WorkspaceLayout from '@/components/workspace/WorkspaceLayout'
 import DocumentMode from '@/components/workspace/modes/DocumentMode'
 import IntelligenceMode from '@/components/workspace/modes/IntelligenceMode'
@@ -27,55 +27,91 @@ export type WorkspaceMode =
 function WorkspaceContent() {
   const { language } = useLanguage()
   const { user, loading } = useAuth()
+  const { handleSignIn } = useUnifiedAuthContext()
   const [currentMode, setCurrentMode] = useState<WorkspaceMode>('documents')
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
+  const [authModalOpened, setAuthModalOpened] = useState(false)
+  const [authTimeout, setAuthTimeout] = useState(false)
 
-  // Redirect to login if not authenticated
+  console.log('🏗️ WorkspaceContent render:', {
+    user: !!user,
+    loading,
+    authModalOpened,
+  })
+
+  // Auto-open sign in modal if user is not authenticated
+  useEffect(() => {
+    if (!loading && !user && !authModalOpened) {
+      console.log('🔐 User not authenticated, opening sign in modal')
+      setAuthModalOpened(true)
+      handleSignIn({
+        redirectTo: '/workspace',
+        onSuccess: () => {
+          console.log('🎉 Authentication successful, staying on workspace')
+        },
+      })
+    }
+  }, [loading, user, authModalOpened, handleSignIn])
+
+  // Set timeout for authentication loading
+  useEffect(() => {
+    if (!user && !loading) {
+      const timer = setTimeout(() => {
+        console.log('⏱️ Auth timeout reached')
+        setAuthTimeout(true)
+      }, 10000) // 10 second timeout
+
+      return () => clearTimeout(timer)
+    }
+  }, [user, loading])
+
+  // Show loading state only while initially checking authentication
   if (loading) {
     return (
       <div className="min-h-screen bg-bg-main flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-gray-300 border-t-gray-900 rounded-full"></div>
+        <div className="text-center">
+          <div className="animate-spin w-8 h-8 border-2 border-gray-300 border-t-gray-900 rounded-full mb-4 mx-auto"></div>
+          <p className="body-base text-gray-600">
+            {language === 'vi' ? 'Đang tải...' : 'Loading...'}
+          </p>
+        </div>
       </div>
     )
   }
 
+  // If not authenticated and timeout reached, show message
+  if (!user && authTimeout) {
+    return (
+      <div className="min-h-screen bg-bg-main flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <h2 className="heading-3 text-gray-900 mb-4">
+            {language === 'vi' ? 'Cần đăng nhập' : 'Authentication Required'}
+          </h2>
+          <p className="body-base text-gray-600 mb-6">
+            {language === 'vi'
+              ? 'Vui lòng đăng nhập để truy cập không gian làm việc'
+              : 'Please sign in to access your workspace'}
+          </p>
+          <button
+            onClick={() => handleSignIn({ redirectTo: '/workspace' })}
+            className="btn-primary btn-pill-lg"
+          >
+            {language === 'vi' ? 'Đăng nhập' : 'Sign In'}
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // If not authenticated but within timeout, show authenticating message
   if (!user) {
     return (
       <div className="min-h-screen bg-bg-main flex items-center justify-center">
-        <motion.div
-          className="text-center max-w-md"
-          variants={motionSafe(staggerContainer)}
-          initial="hidden"
-          animate="visible"
-        >
-          <motion.h1
-            variants={motionSafe(slideUp)}
-            className="heading-2 text-gray-900 mb-4"
-          >
-            {language === 'vi' ? 'Cần đăng nhập' : 'Authentication Required'}
-          </motion.h1>
-          <motion.p
-            variants={motionSafe(slideUp)}
-            className="body-base text-gray-600 mb-6"
-          >
-            {language === 'vi'
-              ? 'Vui lòng đăng nhập để truy cập không gian làm việc Prismy'
-              : 'Please sign in to access your Prismy workspace'}
-          </motion.p>
-          <motion.div variants={motionSafe(slideUp)}>
-            <button
-              onClick={() => {
-                console.log('🔘 Sign In button clicked!')
-                console.log('📊 Current modal state:', isAuthModalOpen)
-                setIsAuthModalOpen(true)
-                console.log('📊 Setting modal state to: true')
-              }}
-              className="btn-primary btn-pill-lg"
-            >
-              {language === 'vi' ? 'Đăng nhập' : 'Sign In'}
-            </button>
-          </motion.div>
-        </motion.div>
+        <div className="text-center">
+          <div className="animate-spin w-8 h-8 border-2 border-gray-300 border-t-gray-900 rounded-full mb-4 mx-auto"></div>
+          <p className="body-base text-gray-600">
+            {language === 'vi' ? 'Đang xác thực...' : 'Authenticating...'}
+          </p>
+        </div>
       </div>
     )
   }
@@ -118,26 +154,6 @@ function WorkspaceContent() {
           {renderCurrentMode()}
         </WorkspaceLayout>
       </motion.div>
-
-      {/* Auth Modal - only show when not authenticated */}
-      {!user && (
-        <>
-          {console.log('🎭 Rendering AuthModal:', { 
-            isAuthModalOpen, 
-            user: !!user,
-            shouldShow: !user && isAuthModalOpen 
-          })}
-          <AuthModal
-            isOpen={isAuthModalOpen}
-            onClose={() => {
-              console.log('🚪 AuthModal close requested')
-              setIsAuthModalOpen(false)
-            }}
-            initialMode="signin"
-            language={language}
-          />
-        </>
-      )}
     </div>
   )
 }

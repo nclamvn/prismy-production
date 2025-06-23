@@ -5,6 +5,7 @@ import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration'
 import PerformanceMonitor from '@/components/PerformanceMonitor'
 import { LanguageProvider } from '@/contexts/LanguageContext'
 import { AuthProvider } from '@/contexts/AuthContext'
+import { UnifiedAuthProvider } from '@/contexts/UnifiedAuthProvider'
 import Navbar from '@/components/Navbar'
 
 const inter = Inter({
@@ -123,8 +124,10 @@ export default function RootLayout({
       >
         <LanguageProvider>
           <AuthProvider>
-            <Navbar />
-            {children}
+            <UnifiedAuthProvider>
+              <Navbar />
+              {children}
+            </UnifiedAuthProvider>
           </AuthProvider>
         </LanguageProvider>
         <ServiceWorkerRegistration />
