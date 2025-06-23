@@ -83,7 +83,6 @@ export function useUnifiedAuth() {
     if (redirectTo) {
       // OAuth providers will handle the redirect automatically
       // For email/password auth, we handle it in the modal
-      console.log('🎯 Auth success, redirecting to:', redirectTo)
     }
 
     closeAuthModal()
@@ -94,8 +93,6 @@ export function useUnifiedAuth() {
     (error: string) => {
       if (onError) {
         onError(error)
-      } else {
-        console.error('🚨 Auth error:', error)
       }
     },
     [onError]

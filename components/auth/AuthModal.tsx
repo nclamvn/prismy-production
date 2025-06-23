@@ -234,7 +234,6 @@ export default function AuthModal({
       const result = await signInWithGoogle(redirectTo)
 
       if (result.error) {
-        console.error('❌ Google OAuth error:', result.error)
         setAuthError({
           type: 'oauth',
           message: content[language].error,
@@ -260,7 +259,6 @@ export default function AuthModal({
         }, 10000)
       }
     } catch (err: any) {
-      console.error('❌ Critical Google OAuth error:', err)
       setAuthError({
         type: 'unknown',
         message: content[language].error,
@@ -280,7 +278,6 @@ export default function AuthModal({
       const result = await signInWithApple(redirectTo)
 
       if (result.error) {
-        console.error('❌ Apple OAuth error:', result.error)
         setAuthError({
           type: 'oauth',
           message: content[language].error,
@@ -305,7 +302,6 @@ export default function AuthModal({
         }, 10000)
       }
     } catch (err: any) {
-      console.error('❌ Critical Apple OAuth error:', err)
       setAuthError({
         type: 'unknown',
         message: content[language].error,
