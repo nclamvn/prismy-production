@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 // Temporarily disabled for zen build
 // import PerformanceDashboard, { usePerformanceMonitor } from '../src/components/monitoring/PerformanceDashboard'
