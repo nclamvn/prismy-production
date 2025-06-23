@@ -29,39 +29,15 @@ function WorkspaceContent() {
   const { user, loading } = useAuth()
   const { handleSignIn, isAuthModalOpen } = useUnifiedAuthContext()
   const [currentMode, setCurrentMode] = useState<WorkspaceMode>('documents')
-  const [authTimeout, setAuthTimeout] = useState(false)
-  const [authInitiated, setAuthInitiated] = useState(false)
 
-  // Auto-open sign in modal if user is not authenticated
+  // Simple auth check - trigger sign in if needed
   useEffect(() => {
-    if (!loading && !user && !authInitiated && !isAuthModalOpen) {
-      setAuthInitiated(true)
-      handleSignIn({
-        redirectTo: '/workspace',
-        onSuccess: () => {
-          // Authentication successful, staying on workspace
-          setAuthInitiated(false)
-        },
-      })
+    if (!loading && !user && !isAuthModalOpen) {
+      handleSignIn({ redirectTo: '/workspace' })
     }
-  }, [loading, user, authInitiated, isAuthModalOpen, handleSignIn])
+  }, [loading, user, isAuthModalOpen, handleSignIn])
 
-  // Set timeout for authentication loading
-  useEffect(() => {
-    if (!user && !loading && !isAuthModalOpen && authInitiated) {
-      const timer = setTimeout(() => {
-        setAuthTimeout(true)
-      }, 10000) // 10 second timeout
-
-      return () => clearTimeout(timer)
-    } else if (user) {
-      // Reset timeout when user is authenticated
-      setAuthTimeout(false)
-      setAuthInitiated(false)
-    }
-  }, [user, loading, isAuthModalOpen, authInitiated])
-
-  // Show loading state only while initially checking authentication
+  // Show loading only while initially checking auth
   if (loading) {
     return (
       <div className="min-h-screen bg-bg-main flex items-center justify-center">
@@ -75,42 +51,9 @@ function WorkspaceContent() {
     )
   }
 
-  // If not authenticated and timeout reached, show message
-  if (!user && authTimeout) {
-    return (
-      <div className="min-h-screen bg-bg-main flex items-center justify-center">
-        <div className="text-center max-w-md">
-          <h2 className="heading-3 text-gray-900 mb-4">
-            {language === 'vi' ? 'Cần đăng nhập' : 'Authentication Required'}
-          </h2>
-          <p className="body-base text-gray-600 mb-6">
-            {language === 'vi'
-              ? 'Vui lòng đăng nhập để truy cập không gian làm việc'
-              : 'Please sign in to access your workspace'}
-          </p>
-          <button
-            onClick={() => handleSignIn({ redirectTo: '/workspace' })}
-            className="btn-primary btn-pill-lg"
-          >
-            {language === 'vi' ? 'Đăng nhập' : 'Sign In'}
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  // If not authenticated but within timeout, show authenticating message
+  // If no user and not loading, return null (auth modal will handle it)
   if (!user) {
-    return (
-      <div className="min-h-screen bg-bg-main flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin w-8 h-8 border-2 border-gray-300 border-t-gray-900 rounded-full mb-4 mx-auto"></div>
-          <p className="body-base text-gray-600">
-            {language === 'vi' ? 'Đang xác thực...' : 'Authenticating...'}
-          </p>
-        </div>
-      </div>
-    )
+    return null
   }
 
   const renderCurrentMode = () => {
