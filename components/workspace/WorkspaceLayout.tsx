@@ -2,9 +2,7 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useSmartNavigation } from '@/hooks/useSmartNavigation'
 import { motionSafe, slideUp, fadeIn } from '@/lib/motion'
 import { WorkspaceMode } from '@/app/workspace/page'
 import UserMenu from '@/components/auth/UserMenu'
@@ -43,36 +41,23 @@ export default function WorkspaceLayout({
 }: WorkspaceLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const router = useRouter()
-  const { handleBackToHome: smartBackToHome, handleLogoClick } =
-    useSmartNavigation()
 
-  // Handle back to home navigation with smart navigation
+  // Direct navigation to homepage - MANDATORY FUNCTIONALITY
   const handleBackToHome = () => {
-    console.log('🏠 WorkspaceLayout: Back to Home clicked', {
-      currentPath:
-        typeof window !== 'undefined' ? window.location.pathname : 'unknown',
-      smartBackToHomeAvailable: typeof smartBackToHome === 'function',
-    })
-    console.log('🏠 WorkspaceLayout: About to call smartBackToHome...')
-    smartBackToHome()
-    console.log('🏠 WorkspaceLayout: smartBackToHome called')
-  }
-
-  // Handle logo click navigation
-  const handleSidebarLogoClick = (e: React.MouseEvent) => {
-    console.log('🔘 WorkspaceLayout: Sidebar logo clicked', {
-      eventType: e.type,
-      target: e.target,
-      currentTarget: e.currentTarget,
-      button: e.button,
-      clientX: e.clientX,
-      clientY: e.clientY,
-    })
-    e.preventDefault()
-    e.stopPropagation()
-    console.log('🔘 WorkspaceLayout: About to call handleLogoClick...')
-    handleLogoClick(e)
-    console.log('🔘 WorkspaceLayout: handleLogoClick called')
+    console.log('🏠 WorkspaceLayout: Back to Home clicked - direct navigation')
+    try {
+      // Direct navigation to homepage without complex logic
+      router.push('/')
+      console.log(
+        '✅ WorkspaceLayout: Direct router.push("/") called successfully'
+      )
+    } catch (error) {
+      console.error(
+        '❌ WorkspaceLayout: Router navigation failed, using fallback'
+      )
+      // Fallback to window navigation
+      window.location.href = '/'
+    }
   }
 
   const content = {
@@ -184,12 +169,9 @@ export default function WorkspaceLayout({
         animate="visible"
         className="hidden lg:flex lg:flex-col lg:w-80 bg-white border-r border-border-subtle"
       >
-        {/* Sidebar Header */}
+        {/* Sidebar Header - Static Branding Only */}
         <div className="p-6 border-b border-border-subtle">
-          <button
-            onClick={handleSidebarLogoClick}
-            className="flex items-center group w-full text-left hover:opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-gray-300 rounded-md"
-          >
+          <div className="flex items-center">
             <img src="/logo.svg" alt="Prismy" className="h-8 w-auto mr-3" />
             <div>
               <span className="heading-4 font-bold text-gray-900">Prismy</span>
@@ -197,7 +179,7 @@ export default function WorkspaceLayout({
                 {content[language].workspace}
               </p>
             </div>
-          </button>
+          </div>
         </div>
 
         {/* Navigation */}
@@ -276,12 +258,9 @@ export default function WorkspaceLayout({
               className="w-80 h-full bg-white border-r border-border-subtle"
               onClick={e => e.stopPropagation()}
             >
-              {/* Mobile sidebar content - same as desktop */}
+              {/* Mobile sidebar content - Static branding */}
               <div className="p-6 border-b border-border-subtle flex items-center justify-between">
-                <button
-                  onClick={handleSidebarLogoClick}
-                  className="flex items-center hover:opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-gray-300 rounded-md"
-                >
+                <div className="flex items-center">
                   <img
                     src="/logo.svg"
                     alt="Prismy"
@@ -295,7 +274,7 @@ export default function WorkspaceLayout({
                       {content[language].workspace}
                     </p>
                   </div>
-                </button>
+                </div>
                 <button
                   onClick={() => setIsSidebarOpen(false)}
                   className="p-2 hover:bg-gray-100 rounded-lg"
