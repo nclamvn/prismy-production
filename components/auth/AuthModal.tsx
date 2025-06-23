@@ -52,18 +52,6 @@ export default function AuthModal({
     }
   }, [isOpen, mode, redirectTo])
 
-  useEffect(() => {
-    console.log('🔍 AuthModal Debug:', {
-      isOpen,
-      initialMode,
-      language,
-      redirectTo,
-      mode,
-      loadingState,
-      hasError: !!authError,
-    })
-  }, [isOpen, initialMode, language, redirectTo, mode, loadingState, authError])
-
   const content = {
     vi: {
       signin: {
@@ -249,11 +237,6 @@ export default function AuthModal({
     setAuthError(null)
 
     try {
-      console.log('🚀 Initiating Google OAuth:', {
-        redirectTo,
-        origin: window.location.origin,
-      })
-
       // Set authenticating state
       setLoadingState('authenticating')
 
@@ -269,7 +252,6 @@ export default function AuthModal({
         })
         setLoadingState('idle')
       } else {
-        console.log('✅ Google OAuth initiated successfully')
         setLoadingState('completing')
         // OAuth will redirect automatically, modal will close when page redirects
         // If redirect doesn't happen in 10s, show error
@@ -303,11 +285,6 @@ export default function AuthModal({
     setAuthError(null)
 
     try {
-      console.log('🍎 Initiating Apple OAuth:', {
-        redirectTo,
-        origin: window.location.origin,
-      })
-
       setLoadingState('authenticating')
 
       const result = await signInWithApple(redirectTo)
@@ -321,7 +298,6 @@ export default function AuthModal({
         })
         setLoadingState('idle')
       } else {
-        console.log('✅ Apple OAuth initiated successfully')
         setLoadingState('completing')
         // OAuth timeout handling
         setTimeout(() => {

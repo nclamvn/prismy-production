@@ -32,21 +32,14 @@ function WorkspaceContent() {
   const [authModalOpened, setAuthModalOpened] = useState(false)
   const [authTimeout, setAuthTimeout] = useState(false)
 
-  console.log('🏗️ WorkspaceContent render:', {
-    user: !!user,
-    loading,
-    authModalOpened,
-  })
-
   // Auto-open sign in modal if user is not authenticated
   useEffect(() => {
     if (!loading && !user && !authModalOpened) {
-      console.log('🔐 User not authenticated, opening sign in modal')
       setAuthModalOpened(true)
       handleSignIn({
         redirectTo: '/workspace',
         onSuccess: () => {
-          console.log('🎉 Authentication successful, staying on workspace')
+          // Authentication successful, staying on workspace
         },
       })
     }
@@ -56,7 +49,6 @@ function WorkspaceContent() {
   useEffect(() => {
     if (!user && !loading) {
       const timer = setTimeout(() => {
-        console.log('⏱️ Auth timeout reached')
         setAuthTimeout(true)
       }, 10000) // 10 second timeout
 

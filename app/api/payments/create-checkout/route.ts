@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClientComponentClient } from '@/lib/supabase'
+import { createRouteHandlerClient } from '@/lib/supabase'
+import { cookies } from 'next/headers'
 import { createVNPayPaymentUrl, generateOrderId } from '@/lib/payments/vnpay'
 import { createMoMoPayment, generateMoMoOrderId } from '@/lib/payments/momo'
-import { UNIFIED_SUBSCRIPTION_PLANS, type PaymentMethod, type UnifiedSubscriptionPlan } from '@/lib/payments/payment-service'
+import {
+  UNIFIED_SUBSCRIPTION_PLANS,
+  type PaymentMethod,
+  type UnifiedSubscriptionPlan,
+} from '@/lib/payments/payment-service'
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,17 +17,17 @@ export async function POST(request: NextRequest) {
     // Validate required fields
     if (!planId || !billingPeriod || !paymentMethod) {
       return NextResponse.json(
-        { error: 'Missing required fields: planId, billingPeriod, paymentMethod' },
+        {
+          error:
+            'Missing required fields: planId, billingPeriod, paymentMethod',
+        },
         { status: 400 }
       )
     }
 
     // Validate plan exists
     if (!(planId in UNIFIED_SUBSCRIPTION_PLANS)) {
-      return NextResponse.json(
-        { error: 'Invalid plan ID' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Invalid plan ID' }, { status: 400 })
     }
 
     // Free plan doesn't need payment
@@ -43,11 +48,16 @@ export async function POST(request: NextRequest) {
 
     // Get user IP for payment providers
     const forwarded = request.headers.get('x-forwarded-for')
-    const ip = forwarded ? forwarded.split(',')[0] : request.headers.get('x-real-ip') || '127.0.0.1'
+    const ip = forwarded
+      ? forwarded.split(',')[0]
+      : request.headers.get('x-real-ip') || '127.0.0.1'
 
     // Get user info from auth header (simplified for demo)
-    const supabase = createClientComponentClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const supabase = createRouteHandlerClient({ cookies })
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser()
 
     if (authError || !user) {
       return NextResponse.json(
@@ -110,19 +120,17 @@ export async function POST(request: NextRequest) {
       }
 
       // Store payment intent in database for tracking
-      const { error: dbError } = await supabase
-        .from('payment_intents')
-        .insert({
-          user_id: user.id,
-          order_id: orderId,
-          plan_id: planId,
-          billing_period: billingPeriod,
-          payment_method: paymentMethod,
-          amount: amount,
-          currency: 'VND',
-          status: 'pending',
-          created_at: new Date().toISOString()
-        })
+      const { error: dbError } = await supabase.from('payment_intents').insert({
+        user_id: user.id,
+        order_id: orderId,
+        plan_id: planId,
+        billing_period: billingPeriod,
+        payment_method: paymentMethod,
+        amount: amount,
+        currency: 'VND',
+        status: 'pending',
+        created_at: new Date().toISOString(),
+      })
 
       if (dbError) {
         console.error('Failed to store payment intent:', dbError)
@@ -131,9 +139,8 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({
         url: paymentUrl,
-        orderId: orderId
+        orderId: orderId,
       })
-
     } catch (error) {
       console.error('Payment creation error:', error)
       return NextResponse.json(
@@ -141,7 +148,6 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       )
     }
-
   } catch (error) {
     console.error('Request processing error:', error)
     return NextResponse.json(
