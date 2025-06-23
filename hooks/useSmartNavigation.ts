@@ -22,12 +22,55 @@ export function useSmartNavigation() {
     (event?: React.MouseEvent, options: SmartNavigationOptions = {}) => {
       const { onNavigationStart, onNavigationComplete } = options
 
-      console.log('🏠 SmartNavigation: Logo click - navigating to homepage')
+      console.log('🏠 SmartNavigation: Logo click - navigating to homepage', {
+        currentPath:
+          typeof window !== 'undefined' ? window.location.pathname : 'unknown',
+        hasRouter: !!router,
+        eventType: event?.type || 'unknown',
+        eventTarget: event?.target || 'unknown',
+        routerAvailable: typeof router?.push === 'function',
+      })
 
       if (onNavigationStart) onNavigationStart()
 
-      // Logo ALWAYS goes to homepage regardless of auth state
-      router.push('/')
+      try {
+        // Prevent default behavior if event exists
+        if (event) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+
+        // Logo ALWAYS goes to homepage regardless of auth state
+        console.log('🔄 SmartNavigation: About to call router.push("/")...')
+        router.push('/')
+        console.log('✅ SmartNavigation: router.push("/") called successfully')
+
+        // Test window navigation as fallback
+        if (typeof window !== 'undefined') {
+          console.log(
+            '🌐 SmartNavigation: Window location available, current:',
+            window.location.href
+          )
+        }
+      } catch (error) {
+        console.error('❌ SmartNavigation: Error in router.push("/")', error)
+
+        // Fallback to window navigation
+        if (typeof window !== 'undefined') {
+          console.log(
+            '🔄 SmartNavigation: Attempting fallback window navigation'
+          )
+          try {
+            window.location.href = '/'
+            console.log('✅ SmartNavigation: Fallback navigation initiated')
+          } catch (fallbackError) {
+            console.error(
+              '❌ SmartNavigation: Fallback navigation failed',
+              fallbackError
+            )
+          }
+        }
+      }
 
       if (onNavigationComplete) onNavigationComplete()
     },
@@ -76,12 +119,48 @@ export function useSmartNavigation() {
     (options: SmartNavigationOptions = {}) => {
       const { onNavigationStart, onNavigationComplete } = options
 
-      console.log('🏠 SmartNavigation: Back to Home click')
+      console.log('🏠 SmartNavigation: Back to Home click', {
+        currentPath:
+          typeof window !== 'undefined' ? window.location.pathname : 'unknown',
+        hasRouter: !!router,
+        routerAvailable: typeof router?.push === 'function',
+      })
 
       if (onNavigationStart) onNavigationStart()
 
-      // Always navigate to homepage
-      router.push('/')
+      try {
+        // Always navigate to homepage
+        console.log(
+          '🔄 SmartNavigation: Back to Home - About to call router.push("/")...'
+        )
+        router.push('/')
+        console.log(
+          '✅ SmartNavigation: Back to Home - router.push("/") called successfully'
+        )
+      } catch (error) {
+        console.error(
+          '❌ SmartNavigation: Back to Home - Error in router.push("/")',
+          error
+        )
+
+        // Fallback to window navigation
+        if (typeof window !== 'undefined') {
+          console.log(
+            '🔄 SmartNavigation: Back to Home - Attempting fallback window navigation'
+          )
+          try {
+            window.location.href = '/'
+            console.log(
+              '✅ SmartNavigation: Back to Home - Fallback navigation initiated'
+            )
+          } catch (fallbackError) {
+            console.error(
+              '❌ SmartNavigation: Back to Home - Fallback navigation failed',
+              fallbackError
+            )
+          }
+        }
+      }
 
       if (onNavigationComplete) onNavigationComplete()
     },

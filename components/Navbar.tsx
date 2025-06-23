@@ -31,8 +31,21 @@ export default function Navbar({}: NavbarProps) {
 
   // Handle logo click with smart navigation
   const handleLogoClick = (e: React.MouseEvent) => {
+    console.log('🔷 Navbar: Logo clicked', {
+      eventType: e.type,
+      target: e.target,
+      currentTarget: e.currentTarget,
+      currentPath: pathname,
+      isAuthenticated,
+      button: e.button,
+      clientX: e.clientX,
+      clientY: e.clientY,
+    })
     e.preventDefault()
+    e.stopPropagation()
+    console.log('🔷 Navbar: About to call smartLogoClick...')
     smartLogoClick(e)
+    console.log('🔷 Navbar: smartLogoClick called')
   }
 
   // Scroll detection for desktop header styling only

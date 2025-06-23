@@ -7,7 +7,7 @@ import { useLanguage } from '@/contexts/LanguageContext'
 import { useWorkspaceLoading } from '@/contexts/LoadingContext'
 import { motionSafe, slideUp, staggerContainer, fadeIn } from '@/lib/motion'
 import { WorkspaceErrorBoundary } from '@/components/ErrorBoundary'
-import AuthenticatedLayout from '@/components/layouts/AuthenticatedLayout'
+import MainLayout from '@/components/layouts/MainLayout'
 import AuthGuard from '@/components/auth/AuthGuard'
 import WorkspaceLayout from '@/components/workspace/WorkspaceLayout'
 import DocumentMode from '@/components/workspace/modes/DocumentMode'
@@ -104,7 +104,7 @@ function WorkspaceContent() {
   }
 
   return (
-    <AuthenticatedLayout>
+    <MainLayout showFooter={false}>
       <motion.div
         variants={motionSafe(fadeIn)}
         initial="hidden"
@@ -120,7 +120,7 @@ function WorkspaceContent() {
           {renderCurrentMode()}
         </WorkspaceLayout>
       </motion.div>
-    </AuthenticatedLayout>
+    </MainLayout>
   )
 }
 

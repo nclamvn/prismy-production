@@ -43,11 +43,36 @@ export default function WorkspaceLayout({
 }: WorkspaceLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const router = useRouter()
-  const { handleBackToHome: smartBackToHome } = useSmartNavigation()
+  const { handleBackToHome: smartBackToHome, handleLogoClick } =
+    useSmartNavigation()
 
   // Handle back to home navigation with smart navigation
   const handleBackToHome = () => {
+    console.log('🏠 WorkspaceLayout: Back to Home clicked', {
+      currentPath:
+        typeof window !== 'undefined' ? window.location.pathname : 'unknown',
+      smartBackToHomeAvailable: typeof smartBackToHome === 'function',
+    })
+    console.log('🏠 WorkspaceLayout: About to call smartBackToHome...')
     smartBackToHome()
+    console.log('🏠 WorkspaceLayout: smartBackToHome called')
+  }
+
+  // Handle logo click navigation
+  const handleSidebarLogoClick = (e: React.MouseEvent) => {
+    console.log('🔘 WorkspaceLayout: Sidebar logo clicked', {
+      eventType: e.type,
+      target: e.target,
+      currentTarget: e.currentTarget,
+      button: e.button,
+      clientX: e.clientX,
+      clientY: e.clientY,
+    })
+    e.preventDefault()
+    e.stopPropagation()
+    console.log('🔘 WorkspaceLayout: About to call handleLogoClick...')
+    handleLogoClick(e)
+    console.log('🔘 WorkspaceLayout: handleLogoClick called')
   }
 
   const content = {
@@ -161,7 +186,10 @@ export default function WorkspaceLayout({
       >
         {/* Sidebar Header */}
         <div className="p-6 border-b border-border-subtle">
-          <Link href="/" className="flex items-center group">
+          <button
+            onClick={handleSidebarLogoClick}
+            className="flex items-center group w-full text-left hover:opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-gray-300 rounded-md"
+          >
             <img src="/logo.svg" alt="Prismy" className="h-8 w-auto mr-3" />
             <div>
               <span className="heading-4 font-bold text-gray-900">Prismy</span>
@@ -169,7 +197,7 @@ export default function WorkspaceLayout({
                 {content[language].workspace}
               </p>
             </div>
-          </Link>
+          </button>
         </div>
 
         {/* Navigation */}
@@ -250,7 +278,10 @@ export default function WorkspaceLayout({
             >
               {/* Mobile sidebar content - same as desktop */}
               <div className="p-6 border-b border-border-subtle flex items-center justify-between">
-                <Link href="/" className="flex items-center">
+                <button
+                  onClick={handleSidebarLogoClick}
+                  className="flex items-center hover:opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-gray-300 rounded-md"
+                >
                   <img
                     src="/logo.svg"
                     alt="Prismy"
@@ -264,7 +295,7 @@ export default function WorkspaceLayout({
                       {content[language].workspace}
                     </p>
                   </div>
-                </Link>
+                </button>
                 <button
                   onClick={() => setIsSidebarOpen(false)}
                   className="p-2 hover:bg-gray-100 rounded-lg"
@@ -350,6 +381,7 @@ export default function WorkspaceLayout({
               <button
                 onClick={handleBackToHome}
                 className="hidden md:flex items-center body-sm text-gray-600 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 rounded-md px-2 py-1"
+                type="button"
               >
                 <Home size={16} className="mr-2" />
                 {content[language].backToHome}
