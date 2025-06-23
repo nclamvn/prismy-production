@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { AuthProvider, useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
 import Footer from '@/components/Footer'
 import DocumentUpload from '@/components/documents/DocumentUpload'
@@ -367,9 +367,5 @@ function DocumentsPageContent() {
 }
 
 export default function DocumentsPage() {
-  return (
-    <AuthProvider>
-      <DocumentsPageContent />
-    </AuthProvider>
-  )
+  return <DocumentsPageContent />
 }

@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { AuthProvider } from '@/contexts/AuthContext'
 import DashboardLayout from '@/components/dashboard/DashboardLayout'
 import { motionSafe, slideUp, staggerContainer } from '@/lib/motion'
 
@@ -34,21 +33,21 @@ function TranslationHistory() {
         document: 'Tài liệu',
         today: 'Hôm nay',
         week: 'Tuần này',
-        month: 'Tháng này'
+        month: 'Tháng này',
       },
       languages: {
         all: 'Tất cả ngôn ngữ',
         'en-vi': 'Anh → Việt',
         'vi-en': 'Việt → Anh',
         'en-es': 'Anh → Tây Ban Nha',
-        'ja-en': 'Nhật → Anh'
+        'ja-en': 'Nhật → Anh',
       },
       export: 'Xuất CSV',
       clear: 'Xóa bộ lọc',
       stats: {
         total: 'Tổng số',
         thisMonth: 'Tháng này',
-        words: 'từ'
+        words: 'từ',
       },
       table: {
         original: 'Văn bản gốc',
@@ -56,13 +55,13 @@ function TranslationHistory() {
         languages: 'Ngôn ngữ',
         date: 'Ngày',
         type: 'Loại',
-        actions: 'Thao tác'
+        actions: 'Thao tác',
       },
       actions: {
         view: 'Xem',
         copy: 'Sao chép',
-        delete: 'Xóa'
-      }
+        delete: 'Xóa',
+      },
     },
     en: {
       title: 'Translation History',
@@ -73,21 +72,21 @@ function TranslationHistory() {
         document: 'Document',
         today: 'Today',
         week: 'This Week',
-        month: 'This Month'
+        month: 'This Month',
       },
       languages: {
         all: 'All Languages',
         'en-vi': 'EN → VI',
         'vi-en': 'VI → EN',
         'en-es': 'EN → ES',
-        'ja-en': 'JA → EN'
+        'ja-en': 'JA → EN',
       },
       export: 'Export CSV',
       clear: 'Clear Filters',
       stats: {
         total: 'Total',
         thisMonth: 'This Month',
-        words: 'words'
+        words: 'words',
       },
       table: {
         original: 'Original Text',
@@ -95,14 +94,14 @@ function TranslationHistory() {
         languages: 'Languages',
         date: 'Date',
         type: 'Type',
-        actions: 'Actions'
+        actions: 'Actions',
       },
       actions: {
         view: 'View',
         copy: 'Copy',
-        delete: 'Delete'
-      }
-    }
+        delete: 'Delete',
+      },
+    },
   }
 
   // Mock data - in production, fetch from API
@@ -115,7 +114,7 @@ function TranslationHistory() {
       targetLang: 'vi',
       createdAt: '2024-01-15T10:30:00Z',
       wordCount: 5,
-      type: 'text'
+      type: 'text',
     },
     {
       id: '2',
@@ -126,7 +125,7 @@ function TranslationHistory() {
       createdAt: '2024-01-14T15:45:00Z',
       wordCount: 1250,
       type: 'document',
-      fileName: 'contract.pdf'
+      fileName: 'contract.pdf',
     },
     {
       id: '3',
@@ -136,18 +135,21 @@ function TranslationHistory() {
       targetLang: 'en',
       createdAt: '2024-01-13T09:15:00Z',
       wordCount: 4,
-      type: 'text'
-    }
+      type: 'text',
+    },
   ]
 
   const filteredData = historyData.filter(item => {
-    const matchesSearch = item.originalText.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         item.translatedText.toLowerCase().includes(searchQuery.toLowerCase())
-    
-    const matchesFilter = selectedFilter === 'all' || item.type === selectedFilter
-    
-    const matchesLanguage = selectedLanguage === 'all' || 
-                           `${item.sourceLang}-${item.targetLang}` === selectedLanguage
+    const matchesSearch =
+      item.originalText.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.translatedText.toLowerCase().includes(searchQuery.toLowerCase())
+
+    const matchesFilter =
+      selectedFilter === 'all' || item.type === selectedFilter
+
+    const matchesLanguage =
+      selectedLanguage === 'all' ||
+      `${item.sourceLang}-${item.targetLang}` === selectedLanguage
 
     return matchesSearch && matchesFilter && matchesLanguage
   })
@@ -162,13 +164,15 @@ function TranslationHistory() {
   }
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(language === 'vi' ? 'vi-VN' : 'en-US')
+    return new Date(dateString).toLocaleDateString(
+      language === 'vi' ? 'vi-VN' : 'en-US'
+    )
   }
 
   const formatLanguage = (lang: string) => {
     const languages: Record<string, Record<string, string>> = {
       vi: { en: 'Anh', vi: 'Việt', es: 'Tây Ban Nha', ja: 'Nhật' },
-      en: { en: 'English', vi: 'Vietnamese', es: 'Spanish', ja: 'Japanese' }
+      en: { en: 'English', vi: 'Vietnamese', es: 'Spanish', ja: 'Japanese' },
     }
     return languages[language][lang] || lang.toUpperCase()
   }
@@ -181,67 +185,105 @@ function TranslationHistory() {
         animate="visible"
       >
         {/* Header */}
-        <motion.div 
-          className="mb-6"
-          variants={motionSafe(slideUp)}
-        >
-          <h1 className="heading-2 text-gray-900 mb-2">{content[language].title}</h1>
+        <motion.div className="mb-6" variants={motionSafe(slideUp)}>
+          <h1 className="heading-2 text-gray-900 mb-2">
+            {content[language].title}
+          </h1>
           <div className="flex items-center space-x-4 text-sm text-gray-600">
-            <span>{content[language].stats.total}: {historyData.length}</span>
-            <span>{content[language].stats.thisMonth}: {historyData.filter(item => 
-              new Date(item.createdAt).getMonth() === new Date().getMonth()).length}</span>
-            <span>{historyData.reduce((sum, item) => sum + item.wordCount, 0).toLocaleString()} {content[language].stats.words}</span>
+            <span>
+              {content[language].stats.total}: {historyData.length}
+            </span>
+            <span>
+              {content[language].stats.thisMonth}:{' '}
+              {
+                historyData.filter(
+                  item =>
+                    new Date(item.createdAt).getMonth() ===
+                    new Date().getMonth()
+                ).length
+              }
+            </span>
+            <span>
+              {historyData
+                .reduce((sum, item) => sum + item.wordCount, 0)
+                .toLocaleString()}{' '}
+              {content[language].stats.words}
+            </span>
           </div>
         </motion.div>
 
         {/* Search and Filters */}
-        <motion.div 
+        <motion.div
           className="bg-white rounded-xl border border-gray-200 p-6 mb-6"
           variants={motionSafe(slideUp)}
         >
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Search */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Search
+              </label>
               <div className="relative">
                 <input
                   type="text"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={e => setSearchQuery(e.target.value)}
                   placeholder={content[language].searchPlaceholder}
                   className="input-base pl-10"
                 />
-                <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                <svg
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
                 </svg>
               </div>
             </div>
 
             {/* Type Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Type</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Type
+              </label>
               <select
                 value={selectedFilter}
-                onChange={(e) => setSelectedFilter(e.target.value)}
+                onChange={e => setSelectedFilter(e.target.value)}
                 className="input-base"
               >
-                {Object.entries(content[language].filters).map(([key, value]) => (
-                  <option key={key} value={key}>{value}</option>
-                ))}
+                {Object.entries(content[language].filters).map(
+                  ([key, value]) => (
+                    <option key={key} value={key}>
+                      {value}
+                    </option>
+                  )
+                )}
               </select>
             </div>
 
             {/* Language Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Languages</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Languages
+              </label>
               <select
                 value={selectedLanguage}
-                onChange={(e) => setSelectedLanguage(e.target.value)}
+                onChange={e => setSelectedLanguage(e.target.value)}
                 className="input-base"
               >
-                {Object.entries(content[language].languages).map(([key, value]) => (
-                  <option key={key} value={key}>{value}</option>
-                ))}
+                {Object.entries(content[language].languages).map(
+                  ([key, value]) => (
+                    <option key={key} value={key}>
+                      {value}
+                    </option>
+                  )
+                )}
               </select>
             </div>
           </div>
@@ -258,12 +300,19 @@ function TranslationHistory() {
             >
               {content[language].clear}
             </button>
-            <button
-              onClick={handleExport}
-              className="btn-secondary"
-            >
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            <button onClick={handleExport} className="btn-secondary">
+              <svg
+                className="w-4 h-4 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
               </svg>
               {content[language].export}
             </button>
@@ -271,7 +320,7 @@ function TranslationHistory() {
         </motion.div>
 
         {/* History Table */}
-        <motion.div 
+        <motion.div
           className="bg-white rounded-xl border border-gray-200 overflow-hidden"
           variants={motionSafe(slideUp)}
         >
@@ -300,17 +349,18 @@ function TranslationHistory() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {filteredData.map((item) => (
+                {filteredData.map(item => (
                   <tr key={item.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4">
                       <div className="max-w-xs">
                         <p className="text-sm text-gray-900 truncate">
-                          {item.type === 'document' && item.fileName 
+                          {item.type === 'document' && item.fileName
                             ? `📄 ${item.fileName}`
-                            : item.originalText
-                          }
+                            : item.originalText}
                         </p>
-                        <p className="text-xs text-gray-500">{item.wordCount} {content[language].stats.words}</p>
+                        <p className="text-xs text-gray-500">
+                          {item.wordCount} {content[language].stats.words}
+                        </p>
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -320,15 +370,18 @@ function TranslationHistory() {
                     </td>
                     <td className="px-6 py-4">
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        {formatLanguage(item.sourceLang)} → {formatLanguage(item.targetLang)}
+                        {formatLanguage(item.sourceLang)} →{' '}
+                        {formatLanguage(item.targetLang)}
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        item.type === 'document' 
-                          ? 'bg-purple-100 text-purple-800' 
-                          : 'bg-green-100 text-green-800'
-                      }`}>
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          item.type === 'document'
+                            ? 'bg-purple-100 text-purple-800'
+                            : 'bg-green-100 text-green-800'
+                        }`}
+                      >
                         {content[language].filters[item.type]}
                       </span>
                     </td>
@@ -342,16 +395,36 @@ function TranslationHistory() {
                           className="text-gray-400 hover:text-gray-600"
                           title={content[language].actions.copy}
                         >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                            />
                           </svg>
                         </button>
                         <button
                           className="text-red-400 hover:text-red-600"
                           title={content[language].actions.delete}
                         >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            />
                           </svg>
                         </button>
                       </div>
@@ -364,8 +437,18 @@ function TranslationHistory() {
 
           {filteredData.length === 0 && (
             <div className="text-center py-12">
-              <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              <svg
+                className="w-16 h-16 text-gray-300 mx-auto mb-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
               </svg>
               <p className="text-gray-500">No translations found</p>
             </div>
@@ -377,9 +460,5 @@ function TranslationHistory() {
 }
 
 export default function HistoryPage() {
-  return (
-    <AuthProvider>
-      <TranslationHistory />
-    </AuthProvider>
-  )
+  return <TranslationHistory />
 }

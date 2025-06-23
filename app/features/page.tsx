@@ -2,7 +2,6 @@
 
 // import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { AuthProvider } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
 import Footer from '@/components/Footer'
 import FeatureCard from '@/components/ui/FeatureCard'
@@ -243,113 +242,111 @@ export default function Features() {
   }
 
   return (
-    <AuthProvider>
-      <div className="min-h-screen bg-bg-main">
-        <main>
-          {/* Hero Section - Full Width */}
-          <section className="relative overflow-hidden bg-white pt-20 w-full">
-            <div className="w-full py-20">
+    <div className="min-h-screen bg-bg-main">
+      <main>
+        {/* Hero Section - Full Width */}
+        <section className="relative overflow-hidden bg-white pt-20 w-full">
+          <div className="w-full py-20">
+            <div className="w-full">
+              <motion.div
+                variants={motionSafe(staggerContainer)}
+                initial="hidden"
+                animate="visible"
+                className="text-center px-4 md:px-8 lg:px-12"
+              >
+                {/* Features GIF */}
+                <motion.div
+                  variants={motionSafe(slideUp)}
+                  className="mb-4 md:mb-12 lg:mb-16"
+                >
+                  <div
+                    className="hero-gif-container mx-auto"
+                    style={{ maxWidth: '720px' }}
+                  >
+                    <img
+                      src="/assets/features.gif"
+                      alt=""
+                      aria-hidden="true"
+                      loading="lazy"
+                      className="hero-gif w-full"
+                      style={{
+                        width: '100%',
+                        height: 'auto',
+                        display: 'block',
+                      }}
+                    />
+                  </div>
+                </motion.div>
+
+                <motion.h1
+                  variants={motionSafe(slideUp)}
+                  className="heading-1 text-text-primary mb-6"
+                >
+                  {content[language].hero.title}
+                </motion.h1>
+
+                <motion.p
+                  variants={motionSafe(slideUp)}
+                  className="body-xl text-text-secondary mb-8"
+                >
+                  {content[language].hero.subtitle}
+                </motion.p>
+
+                <motion.p
+                  variants={motionSafe(slideUp)}
+                  className="body-lg text-text-muted max-w-2xl mx-auto"
+                >
+                  {content[language].hero.description}
+                </motion.p>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* Feature Sections */}
+        {content[language].sections.map((section, sectionIndex) => (
+          <section key={sectionIndex} className="py-20 w-full">
+            <div className="w-full">
               <div className="w-full">
                 <motion.div
                   variants={motionSafe(staggerContainer)}
                   initial="hidden"
-                  animate="visible"
-                  className="text-center px-4 md:px-8 lg:px-12"
+                  whileInView="visible"
+                  viewport={{ once: true }}
                 >
-                  {/* Features GIF */}
+                  {/* Section Header */}
                   <motion.div
                     variants={motionSafe(slideUp)}
-                    className="mb-4 md:mb-12 lg:mb-16"
+                    className="text-center mb-16 px-4 md:px-8 lg:px-12"
                   >
-                    <div
-                      className="hero-gif-container mx-auto"
-                      style={{ maxWidth: '720px' }}
-                    >
-                      <img
-                        src="/assets/features.gif"
-                        alt=""
-                        aria-hidden="true"
-                        loading="lazy"
-                        className="hero-gif w-full"
-                        style={{
-                          width: '100%',
-                          height: 'auto',
-                          display: 'block',
-                        }}
-                      />
-                    </div>
+                    <h2 className="heading-2 text-text-primary mb-4">
+                      {section.title}
+                    </h2>
+                    <p className="body-lg text-text-secondary max-w-2xl mx-auto">
+                      {section.subtitle}
+                    </p>
                   </motion.div>
 
-                  <motion.h1
-                    variants={motionSafe(slideUp)}
-                    className="heading-1 text-text-primary mb-6"
-                  >
-                    {content[language].hero.title}
-                  </motion.h1>
-
-                  <motion.p
-                    variants={motionSafe(slideUp)}
-                    className="body-xl text-text-secondary mb-8"
-                  >
-                    {content[language].hero.subtitle}
-                  </motion.p>
-
-                  <motion.p
-                    variants={motionSafe(slideUp)}
-                    className="body-lg text-text-muted max-w-2xl mx-auto"
-                  >
-                    {content[language].hero.description}
-                  </motion.p>
+                  {/* Features Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4 md:px-8 lg:px-12">
+                    {section.features.map((feature, index) => (
+                      <FeatureCard
+                        key={index}
+                        icon={feature.icon}
+                        title={feature.title}
+                        description={feature.description}
+                        delay={index * 0.1}
+                      />
+                    ))}
+                  </div>
                 </motion.div>
               </div>
             </div>
           </section>
+        ))}
+      </main>
 
-          {/* Feature Sections */}
-          {content[language].sections.map((section, sectionIndex) => (
-            <section key={sectionIndex} className="py-20 w-full">
-              <div className="w-full">
-                <div className="w-full">
-                  <motion.div
-                    variants={motionSafe(staggerContainer)}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true }}
-                  >
-                    {/* Section Header */}
-                    <motion.div
-                      variants={motionSafe(slideUp)}
-                      className="text-center mb-16 px-4 md:px-8 lg:px-12"
-                    >
-                      <h2 className="heading-2 text-text-primary mb-4">
-                        {section.title}
-                      </h2>
-                      <p className="body-lg text-text-secondary max-w-2xl mx-auto">
-                        {section.subtitle}
-                      </p>
-                    </motion.div>
-
-                    {/* Features Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4 md:px-8 lg:px-12">
-                      {section.features.map((feature, index) => (
-                        <FeatureCard
-                          key={index}
-                          icon={feature.icon}
-                          title={feature.title}
-                          description={feature.description}
-                          delay={index * 0.1}
-                        />
-                      ))}
-                    </div>
-                  </motion.div>
-                </div>
-              </div>
-            </section>
-          ))}
-        </main>
-
-        <Footer />
-      </div>
-    </AuthProvider>
+      <Footer />
+    </div>
   )
 }

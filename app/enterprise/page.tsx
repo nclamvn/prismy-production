@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { AuthProvider } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
 import Footer from '@/components/Footer'
 import UniversalDropdown from '@/components/ui/UniversalDropdown'
@@ -929,9 +928,5 @@ function EnterpriseContent() {
 }
 
 export default function Enterprise() {
-  return (
-    <AuthProvider>
-      <EnterpriseContent />
-    </AuthProvider>
-  )
+  return <EnterpriseContent />
 }

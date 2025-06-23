@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { AuthProvider, useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useUnifiedAuthContext } from '@/contexts/UnifiedAuthProvider'
 import { motionSafe, slideUp, staggerContainer, fadeIn } from '@/lib/motion'
@@ -156,9 +156,5 @@ function WorkspaceContent() {
 }
 
 export default function WorkspacePage() {
-  return (
-    <AuthProvider>
-      <WorkspaceContent />
-    </AuthProvider>
-  )
+  return <WorkspaceContent />
 }

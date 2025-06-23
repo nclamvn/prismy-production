@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { AuthProvider } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
 import Footer from '@/components/Footer'
 import { slideUp, staggerContainer, motionSafe } from '@/lib/motion'
@@ -214,246 +213,242 @@ export default function Blog() {
   )
 
   return (
-    <AuthProvider>
-      <div className="min-h-screen bg-bg-main">
-        <main>
-          {/* Hero Section */}
-          <section className="relative overflow-hidden bg-white pt-20 w-full">
-            <div className="w-full py-20 px-4 sm:px-6 lg:px-8">
-              <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-bg-main">
+      <main>
+        {/* Hero Section */}
+        <section className="relative overflow-hidden bg-white pt-20 w-full">
+          <div className="w-full py-20 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-4xl mx-auto">
+              <motion.div
+                variants={motionSafe(staggerContainer)}
+                initial="hidden"
+                animate="visible"
+                className="text-center"
+              >
+                {/* Blog GIF */}
                 <motion.div
-                  variants={motionSafe(staggerContainer)}
-                  initial="hidden"
-                  animate="visible"
-                  className="text-center"
+                  variants={motionSafe(slideUp)}
+                  className="mb-4 md:mb-12 lg:mb-16"
                 >
-                  {/* Blog GIF */}
-                  <motion.div
-                    variants={motionSafe(slideUp)}
-                    className="mb-4 md:mb-12 lg:mb-16"
+                  <div
+                    className="hero-gif-container mx-auto"
+                    style={{ maxWidth: '720px' }}
                   >
-                    <div
-                      className="hero-gif-container mx-auto"
-                      style={{ maxWidth: '720px' }}
-                    >
-                      <img
-                        src="/assets/blog.gif"
-                        alt=""
-                        aria-hidden="true"
-                        loading="lazy"
-                        className="hero-gif w-full"
-                        style={{
-                          width: '100%',
-                          height: 'auto',
-                          display: 'block',
-                        }}
-                      />
-                    </div>
-                  </motion.div>
-
-                  <motion.h1
-                    variants={motionSafe(slideUp)}
-                    className="heading-1 text-text-primary mb-6"
-                  >
-                    {content[language].hero.title}
-                  </motion.h1>
-
-                  <motion.p
-                    variants={motionSafe(slideUp)}
-                    className="body-xl text-text-secondary mb-8"
-                  >
-                    {content[language].hero.subtitle}
-                  </motion.p>
-
-                  <motion.p
-                    variants={motionSafe(slideUp)}
-                    className="body-lg text-text-muted max-w-2xl mx-auto"
-                  >
-                    {content[language].hero.description}
-                  </motion.p>
+                    <img
+                      src="/assets/blog.gif"
+                      alt=""
+                      aria-hidden="true"
+                      loading="lazy"
+                      className="hero-gif w-full"
+                      style={{
+                        width: '100%',
+                        height: 'auto',
+                        display: 'block',
+                      }}
+                    />
+                  </div>
                 </motion.div>
-              </div>
-            </div>
-          </section>
 
-          {/* Category Filter */}
-          <section className="py-12 border-b border-border-subtle w-full">
-            <div className="w-full px-4 sm:px-6 lg:px-8">
-              <div className="max-w-6xl mx-auto">
-                <div className="flex flex-wrap justify-center gap-4">
-                  {content[language].categories.map(category => (
-                    <button
-                      key={category.id}
-                      onClick={() => setSelectedCategory(category.id)}
-                      className={`px-4 py-2 rounded-lg transition-all duration-300 ${
-                        selectedCategory === category.id
-                          ? 'bg-black text-white'
-                          : 'bg-bg-secondary text-text-secondary hover:bg-gray-100'
-                      }`}
-                    >
-                      {category.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </section>
+                <motion.h1
+                  variants={motionSafe(slideUp)}
+                  className="heading-1 text-text-primary mb-6"
+                >
+                  {content[language].hero.title}
+                </motion.h1>
 
-          {/* Featured Article */}
-          {featuredArticle && selectedCategory === 'all' && (
-            <section className="py-20 w-full">
-              <div className="w-full px-4 sm:px-6 lg:px-8">
-                <div className="max-w-6xl mx-auto">
-                  <motion.div
-                    variants={motionSafe(slideUp)}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true }}
-                    className="bg-bg-secondary rounded-2xl p-8 border border-border-subtle zen-card-hover transition-all duration-300"
+                <motion.p
+                  variants={motionSafe(slideUp)}
+                  className="body-xl text-text-secondary mb-8"
+                >
+                  {content[language].hero.subtitle}
+                </motion.p>
+
+                <motion.p
+                  variants={motionSafe(slideUp)}
+                  className="body-lg text-text-muted max-w-2xl mx-auto"
+                >
+                  {content[language].hero.description}
+                </motion.p>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* Category Filter */}
+        <section className="py-12 border-b border-border-subtle w-full">
+          <div className="w-full px-4 sm:px-6 lg:px-8">
+            <div className="max-w-6xl mx-auto">
+              <div className="flex flex-wrap justify-center gap-4">
+                {content[language].categories.map(category => (
+                  <button
+                    key={category.id}
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={`px-4 py-2 rounded-lg transition-all duration-300 ${
+                      selectedCategory === category.id
+                        ? 'bg-black text-white'
+                        : 'bg-bg-secondary text-text-secondary hover:bg-gray-100'
+                    }`}
                   >
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-                      <div>
-                        <div className="flex items-center gap-2 mb-4">
-                          <Tag size={16} className="text-text-muted" />
-                          <span className="body-sm text-text-muted uppercase tracking-wide">
-                            {language === 'vi' ? 'Nổi bật' : 'Featured'}
-                          </span>
-                        </div>
-
-                        <h2 className="heading-3 font-bold text-text-primary mb-4">
-                          {featuredArticle.title}
-                        </h2>
-
-                        <p className="body-base text-text-secondary mb-6">
-                          {featuredArticle.excerpt}
-                        </p>
-
-                        <div className="blog-metadata-container mb-6 text-text-muted">
-                          <div className="flex items-center gap-2">
-                            <User size={16} />
-                            <span className="body-sm">
-                              {featuredArticle.author}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Calendar size={16} />
-                            <span className="body-sm">
-                              {featuredArticle.date}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Clock size={16} />
-                            <span className="body-sm">
-                              {featuredArticle.readTime}
-                            </span>
-                          </div>
-                        </div>
-
-                        <Link
-                          href={`/blog/${featuredArticle.id}`}
-                          className="inline-flex items-center gap-2 text-text-primary hover:text-text-accent transition-colors"
-                        >
-                          <span className="body-base font-semibold">
-                            {language === 'vi' ? 'Đọc tiếp' : 'Read more'}
-                          </span>
-                          <ArrowRight size={16} />
-                        </Link>
-                      </div>
-
-                      <div className="bg-gray-200 rounded-xl aspect-video flex items-center justify-center">
-                        <span className="text-text-muted">Featured Image</span>
-                      </div>
-                    </div>
-                  </motion.div>
-                </div>
+                    {category.name}
+                  </button>
+                ))}
               </div>
-            </section>
-          )}
+            </div>
+          </div>
+        </section>
 
-          {/* Articles Grid */}
+        {/* Featured Article */}
+        {featuredArticle && selectedCategory === 'all' && (
           <section className="py-20 w-full">
             <div className="w-full px-4 sm:px-6 lg:px-8">
-              <div className="max-w-7xl mx-auto">
+              <div className="max-w-6xl mx-auto">
                 <motion.div
-                  variants={motionSafe(staggerContainer)}
+                  variants={motionSafe(slideUp)}
                   initial="hidden"
                   whileInView="visible"
                   viewport={{ once: true }}
+                  className="bg-bg-secondary rounded-2xl p-8 border border-border-subtle zen-card-hover transition-all duration-300"
                 >
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {(selectedCategory === 'all'
-                      ? regularArticles
-                      : filteredArticles
-                    ).map(article => (
-                      <motion.article
-                        key={article.id}
-                        variants={motionSafe(slideUp)}
-                        className="bg-bg-secondary rounded-2xl border border-border-subtle zen-card-hover transition-all duration-300 overflow-hidden"
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div>
+                      <div className="flex items-center gap-2 mb-4">
+                        <Tag size={16} className="text-text-muted" />
+                        <span className="body-sm text-text-muted uppercase tracking-wide">
+                          {language === 'vi' ? 'Nổi bật' : 'Featured'}
+                        </span>
+                      </div>
+
+                      <h2 className="heading-3 font-bold text-text-primary mb-4">
+                        {featuredArticle.title}
+                      </h2>
+
+                      <p className="body-base text-text-secondary mb-6">
+                        {featuredArticle.excerpt}
+                      </p>
+
+                      <div className="blog-metadata-container mb-6 text-text-muted">
+                        <div className="flex items-center gap-2">
+                          <User size={16} />
+                          <span className="body-sm">
+                            {featuredArticle.author}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Calendar size={16} />
+                          <span className="body-sm">
+                            {featuredArticle.date}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Clock size={16} />
+                          <span className="body-sm">
+                            {featuredArticle.readTime}
+                          </span>
+                        </div>
+                      </div>
+
+                      <Link
+                        href={`/blog/${featuredArticle.id}`}
+                        className="inline-flex items-center gap-2 text-text-primary hover:text-text-accent transition-colors"
                       >
-                        {/* Article Image */}
-                        <div className="bg-gray-200 aspect-video flex items-center justify-center">
-                          <span className="text-text-muted">Article Image</span>
-                        </div>
+                        <span className="body-base font-semibold">
+                          {language === 'vi' ? 'Đọc tiếp' : 'Read more'}
+                        </span>
+                        <ArrowRight size={16} />
+                      </Link>
+                    </div>
 
-                        {/* Article Content */}
-                        <div className="p-6">
-                          <div className="flex items-center gap-2 mb-3">
-                            <Tag size={14} className="text-text-muted" />
-                            <span className="body-sm text-text-muted uppercase tracking-wide">
-                              {
-                                content[language].categories.find(
-                                  cat => cat.id === article.category
-                                )?.name
-                              }
-                            </span>
-                          </div>
-
-                          <h3 className="heading-5 font-bold text-text-primary mb-3 line-clamp-2">
-                            {article.title}
-                          </h3>
-
-                          <p className="body-sm text-text-secondary mb-4 line-clamp-3">
-                            {article.excerpt}
-                          </p>
-
-                          <div className="blog-metadata-container mb-4 text-text-muted">
-                            <div className="flex items-center gap-1">
-                              <User size={14} />
-                              <span className="body-xs">{article.author}</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Calendar size={14} />
-                              <span className="body-xs">{article.date}</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Clock size={14} />
-                              <span className="body-xs">
-                                {article.readTime}
-                              </span>
-                            </div>
-                          </div>
-
-                          <Link
-                            href={`/blog/${article.id}`}
-                            className="inline-flex items-center gap-2 text-text-primary hover:text-text-accent transition-colors"
-                          >
-                            <span className="body-sm font-semibold">
-                              {language === 'vi' ? 'Đọc tiếp' : 'Read more'}
-                            </span>
-                            <ArrowRight size={14} />
-                          </Link>
-                        </div>
-                      </motion.article>
-                    ))}
+                    <div className="bg-gray-200 rounded-xl aspect-video flex items-center justify-center">
+                      <span className="text-text-muted">Featured Image</span>
+                    </div>
                   </div>
                 </motion.div>
               </div>
             </div>
           </section>
-        </main>
+        )}
 
-        <Footer />
-      </div>
-    </AuthProvider>
+        {/* Articles Grid */}
+        <section className="py-20 w-full">
+          <div className="w-full px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto">
+              <motion.div
+                variants={motionSafe(staggerContainer)}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {(selectedCategory === 'all'
+                    ? regularArticles
+                    : filteredArticles
+                  ).map(article => (
+                    <motion.article
+                      key={article.id}
+                      variants={motionSafe(slideUp)}
+                      className="bg-bg-secondary rounded-2xl border border-border-subtle zen-card-hover transition-all duration-300 overflow-hidden"
+                    >
+                      {/* Article Image */}
+                      <div className="bg-gray-200 aspect-video flex items-center justify-center">
+                        <span className="text-text-muted">Article Image</span>
+                      </div>
+
+                      {/* Article Content */}
+                      <div className="p-6">
+                        <div className="flex items-center gap-2 mb-3">
+                          <Tag size={14} className="text-text-muted" />
+                          <span className="body-sm text-text-muted uppercase tracking-wide">
+                            {
+                              content[language].categories.find(
+                                cat => cat.id === article.category
+                              )?.name
+                            }
+                          </span>
+                        </div>
+
+                        <h3 className="heading-5 font-bold text-text-primary mb-3 line-clamp-2">
+                          {article.title}
+                        </h3>
+
+                        <p className="body-sm text-text-secondary mb-4 line-clamp-3">
+                          {article.excerpt}
+                        </p>
+
+                        <div className="blog-metadata-container mb-4 text-text-muted">
+                          <div className="flex items-center gap-1">
+                            <User size={14} />
+                            <span className="body-xs">{article.author}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Calendar size={14} />
+                            <span className="body-xs">{article.date}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Clock size={14} />
+                            <span className="body-xs">{article.readTime}</span>
+                          </div>
+                        </div>
+
+                        <Link
+                          href={`/blog/${article.id}`}
+                          className="inline-flex items-center gap-2 text-text-primary hover:text-text-accent transition-colors"
+                        >
+                          <span className="body-sm font-semibold">
+                            {language === 'vi' ? 'Đọc tiếp' : 'Read more'}
+                          </span>
+                          <ArrowRight size={14} />
+                        </Link>
+                      </div>
+                    </motion.article>
+                  ))}
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <Footer />
+    </div>
   )
 }
