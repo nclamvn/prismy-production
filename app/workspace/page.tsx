@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
@@ -34,10 +34,34 @@ function WorkspaceContent() {
     useWorkspaceLoading()
   const [currentMode, setCurrentMode] = useState<WorkspaceMode>('documents')
 
-  // Simple auth check - trigger sign in if needed
+  // Prevent infinite auth loops
+  const authTriggeredRef = useRef(false)
+  const authTimeoutRef = useRef<NodeJS.Timeout>()
+
+  // Debounced auth check to prevent infinite loops
   useEffect(() => {
-    if (!loading && !user && !isAuthModalOpen) {
-      handleSignIn({ redirectTo: '/workspace' })
+    // Clear any existing timeout
+    if (authTimeoutRef.current) {
+      clearTimeout(authTimeoutRef.current)
+    }
+
+    // Only trigger auth if we haven't already and conditions are met
+    if (!loading && !user && !isAuthModalOpen && !authTriggeredRef.current) {
+      authTimeoutRef.current = setTimeout(() => {
+        authTriggeredRef.current = true
+        handleSignIn({ redirectTo: '/workspace' })
+      }, 500) // 500ms debounce
+    }
+
+    // Reset auth trigger when user becomes available
+    if (user) {
+      authTriggeredRef.current = false
+    }
+
+    return () => {
+      if (authTimeoutRef.current) {
+        clearTimeout(authTimeoutRef.current)
+      }
     }
   }, [loading, user, isAuthModalOpen, handleSignIn])
 

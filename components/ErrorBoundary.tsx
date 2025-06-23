@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useRouter } from 'next/navigation'
 import { AlertCircle, RefreshCw, Home } from 'lucide-react'
 
 interface ErrorBoundaryState {
@@ -29,6 +30,7 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
   resetError,
   showErrorDetails = false,
 }) => {
+  const router = useRouter()
   const isAuthError =
     error?.message?.includes('auth') || error?.message?.includes('login')
   const isNetworkError =
@@ -44,6 +46,10 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
     if (isAuthError) return 'Vui lòng đăng nhập lại để tiếp tục.'
     if (isNetworkError) return 'Kiểm tra kết nối internet và thử lại.'
     return 'Một lỗi không mong muốn đã xảy ra. Vui lòng thử lại.'
+  }
+
+  const handleGoHome = () => {
+    router.push('/')
   }
 
   return (
@@ -67,7 +73,7 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
           </button>
 
           <button
-            onClick={() => (window.location.href = '/')}
+            onClick={handleGoHome}
             className="w-full btn-secondary btn-pill-lg flex items-center justify-center space-x-2"
           >
             <Home className="w-4 h-4" />

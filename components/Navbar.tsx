@@ -25,9 +25,9 @@ export default function Navbar({}: NavbarProps) {
   const router = useRouter()
   const pathname = usePathname()
 
-  // Smart logo navigation logic
+  // Smart logo navigation logic with homepage fallback
   const getLogoHref = () => {
-    // If user is authenticated, always go to workspace
+    // If user is authenticated, go to workspace (primary action)
     if (user) {
       return '/workspace'
     }
@@ -37,6 +37,13 @@ export default function Navbar({}: NavbarProps) {
 
   const handleLogoClick = (e: React.MouseEvent) => {
     e.preventDefault()
+
+    // Smart navigation: Ctrl/Cmd+click for authenticated users goes to homepage
+    if (user && (e.ctrlKey || e.metaKey)) {
+      router.push('/')
+      return
+    }
+
     const targetHref = getLogoHref()
     router.push(targetHref)
   }
@@ -51,15 +58,39 @@ export default function Navbar({}: NavbarProps) {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  const content = {
-    vi: {
-      navigation: [
+  // Dynamic navigation based on auth state
+  const getNavigation = () => {
+    const baseNavigation = {
+      vi: [
         { name: 'Tính năng', href: '/features' },
         { name: 'Tài liệu', href: '/documents' },
         { name: 'Giá cả', href: '/pricing' },
         { name: 'Doanh nghiệp', href: '/enterprise' },
         { name: 'Blog', href: '/blog' },
       ],
+      en: [
+        { name: 'Features', href: '/features' },
+        { name: 'Documents', href: '/documents' },
+        { name: 'Pricing', href: '/pricing' },
+        { name: 'Enterprise', href: '/enterprise' },
+        { name: 'Blog', href: '/blog' },
+      ],
+    }
+
+    // Add homepage link for authenticated users
+    if (user) {
+      return {
+        vi: [{ name: 'Trang chủ', href: '/' }, ...baseNavigation.vi],
+        en: [{ name: 'Home', href: '/' }, ...baseNavigation.en],
+      }
+    }
+
+    return baseNavigation
+  }
+
+  const content = {
+    vi: {
+      navigation: getNavigation().vi,
       signin: 'Đăng nhập',
       getStarted: 'Bắt đầu',
       languages: {
@@ -68,13 +99,7 @@ export default function Navbar({}: NavbarProps) {
       },
     },
     en: {
-      navigation: [
-        { name: 'Features', href: '/features' },
-        { name: 'Documents', href: '/documents' },
-        { name: 'Pricing', href: '/pricing' },
-        { name: 'Enterprise', href: '/enterprise' },
-        { name: 'Blog', href: '/blog' },
-      ],
+      navigation: getNavigation().en,
       signin: 'Sign In',
       getStarted: 'Get Started',
       languages: {

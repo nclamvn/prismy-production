@@ -55,19 +55,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   useEffect(() => {
+    let isMounted = true
+
     // Get initial session
     const getInitialSession = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
-      setSession(session)
-      setUser(session?.user ?? null)
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession()
 
-      if (session?.user) {
-        await fetchUserProfile(session.user.id)
+        if (!isMounted) return
+
+        setSession(session)
+        setUser(session?.user ?? null)
+
+        if (session?.user) {
+          await fetchUserProfile(session.user.id)
+        }
+      } catch (error) {
+        console.error('Error getting initial session:', error)
+      } finally {
+        if (isMounted) {
+          setLoading(false)
+        }
       }
-
-      setLoading(false)
     }
 
     getInitialSession()
@@ -76,6 +87,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!isMounted) return
+
+      console.log('Auth state change:', event, !!session)
+
       setSession(session)
       setUser(session?.user ?? null)
 
@@ -85,10 +100,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setProfile(null)
       }
 
-      setLoading(false)
+      // Only set loading false after initial load
+      // Subsequent auth changes don't need loading state
+      if (event === 'INITIAL_SESSION') {
+        setLoading(false)
+      }
     })
 
-    return () => subscription.unsubscribe()
+    return () => {
+      isMounted = false
+      subscription.unsubscribe()
+    }
   }, []) // Remove supabase.auth dependency to prevent re-runs
 
   const fetchUserProfile = async (userId: string) => {

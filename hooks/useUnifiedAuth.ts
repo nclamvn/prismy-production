@@ -82,13 +82,17 @@ export function useUnifiedAuth() {
       onSuccess()
     }
 
-    if (redirectTo) {
-      // OAuth providers will handle the redirect automatically
-      // For email/password auth, we handle it in the modal
-    }
-
+    // Close modal first to prevent state conflicts
     closeAuthModal()
-  }, [onSuccess, redirectTo, closeAuthModal])
+
+    // Handle redirect after modal is closed
+    if (redirectTo) {
+      // Use setTimeout to ensure modal close state is updated
+      setTimeout(() => {
+        router.push(redirectTo)
+      }, 100)
+    }
+  }, [onSuccess, redirectTo, closeAuthModal, router])
 
   // Handle authentication error
   const handleAuthError = useCallback(
