@@ -1,4 +1,4 @@
-import { createServiceRoleClient } from './supabase-server'
+import { createServiceRoleClient } from './supabase'
 import { logger } from './logger'
 
 export interface AnalyticsEvent {
@@ -43,7 +43,11 @@ export interface SystemMetrics {
   totalApiCalls: number
   avgResponseTime: number
   errorRate: number
-  popularLanguages: Array<{ language: string; count: number; percentage: number }>
+  popularLanguages: Array<{
+    language: string
+    count: number
+    percentage: number
+  }>
   peakUsageHours: Array<{ hour: number; count: number }>
   userRetention: {
     day1: number
@@ -97,11 +101,13 @@ class AnalyticsService {
         event_data: eventData,
         session_id: this.sessionId,
         timestamp: new Date(),
-        page_url: typeof window !== 'undefined' ? window.location.href : undefined,
-        user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
+        page_url:
+          typeof window !== 'undefined' ? window.location.href : undefined,
+        user_agent:
+          typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
         device_type: this.deviceInfo.deviceType,
         browser: this.deviceInfo.browser,
-        os: this.deviceInfo.os
+        os: this.deviceInfo.os,
       }
 
       const { error } = await this.supabase
@@ -134,13 +140,17 @@ class AnalyticsService {
     success: boolean,
     userId?: string
   ): Promise<void> {
-    await this.trackEvent('translation', {
-      source_language: sourceLanguage,
-      target_language: targetLanguage,
-      character_count: characterCount,
-      processing_time: processingTime,
-      success
-    }, userId)
+    await this.trackEvent(
+      'translation',
+      {
+        source_language: sourceLanguage,
+        target_language: targetLanguage,
+        character_count: characterCount,
+        processing_time: processingTime,
+        success,
+      },
+      userId
+    )
   }
 
   /**
@@ -154,13 +164,17 @@ class AnalyticsService {
     ocrUsed: boolean,
     userId?: string
   ): Promise<void> {
-    await this.trackEvent('document_processing', {
-      file_type: fileType,
-      file_size: fileSize,
-      processing_time: processingTime,
-      success,
-      ocr_used: ocrUsed
-    }, userId)
+    await this.trackEvent(
+      'document_processing',
+      {
+        file_type: fileType,
+        file_size: fileSize,
+        processing_time: processingTime,
+        success,
+        ocr_used: ocrUsed,
+      },
+      userId
+    )
   }
 
   /**
@@ -171,10 +185,14 @@ class AnalyticsService {
     duration?: number,
     userId?: string
   ): Promise<void> {
-    await this.trackEvent('engagement', {
-      action,
-      duration
-    }, userId)
+    await this.trackEvent(
+      'engagement',
+      {
+        action,
+        duration,
+      },
+      userId
+    )
   }
 
   /**
@@ -186,11 +204,15 @@ class AnalyticsService {
     context?: Record<string, any>,
     userId?: string
   ): Promise<void> {
-    await this.trackEvent('error', {
-      error_type: errorType,
-      error_message: errorMessage,
-      context
-    }, userId)
+    await this.trackEvent(
+      'error',
+      {
+        error_type: errorType,
+        error_message: errorMessage,
+        context,
+      },
+      userId
+    )
   }
 
   /**
@@ -202,14 +224,17 @@ class AnalyticsService {
   ): Promise<UserMetrics> {
     try {
       const hoursBack = this.parseTimeRange(timeRange)
-      const sinceTime = new Date(Date.now() - (hoursBack * 60 * 60 * 1000)).toISOString()
+      const sinceTime = new Date(
+        Date.now() - hoursBack * 60 * 60 * 1000
+      ).toISOString()
 
       // Get translation history
-      const { data: translations, error: translationsError } = await this.supabase
-        .from('translation_history')
-        .select('*')
-        .eq('user_id', userId)
-        .gte('created_at', sinceTime)
+      const { data: translations, error: translationsError } =
+        await this.supabase
+          .from('translation_history')
+          .select('*')
+          .eq('user_id', userId)
+          .gte('created_at', sinceTime)
 
       if (translationsError) throw translationsError
 
@@ -222,8 +247,11 @@ class AnalyticsService {
 
       if (eventsError) throw eventsError
 
-      return this.calculateUserMetrics(translations || [], events || [], timeRange)
-
+      return this.calculateUserMetrics(
+        translations || [],
+        events || [],
+        timeRange
+      )
     } catch (error) {
       logger.error({ error, userId, timeRange }, 'Failed to get user metrics')
       throw error
@@ -238,7 +266,9 @@ class AnalyticsService {
   ): Promise<SystemMetrics> {
     try {
       const hoursBack = this.parseTimeRange(timeRange)
-      const sinceTime = new Date(Date.now() - (hoursBack * 60 * 60 * 1000)).toISOString()
+      const sinceTime = new Date(
+        Date.now() - hoursBack * 60 * 60 * 1000
+      ).toISOString()
 
       // Get all analytics events for the time range
       const { data: events, error: eventsError } = await this.supabase
@@ -249,15 +279,19 @@ class AnalyticsService {
       if (eventsError) throw eventsError
 
       // Get translation history
-      const { data: translations, error: translationsError } = await this.supabase
-        .from('translation_history')
-        .select('*')
-        .gte('created_at', sinceTime)
+      const { data: translations, error: translationsError } =
+        await this.supabase
+          .from('translation_history')
+          .select('*')
+          .gte('created_at', sinceTime)
 
       if (translationsError) throw translationsError
 
-      return this.calculateSystemMetrics(events || [], translations || [], timeRange)
-
+      return this.calculateSystemMetrics(
+        events || [],
+        translations || [],
+        timeRange
+      )
     } catch (error) {
       logger.error({ error, timeRange }, 'Failed to get system metrics')
       throw error
@@ -272,19 +306,26 @@ class AnalyticsService {
   ): Promise<PerformanceMetrics> {
     try {
       const hoursBack = this.parseTimeRange(timeRange)
-      const sinceTime = new Date(Date.now() - (hoursBack * 60 * 60 * 1000)).toISOString()
+      const sinceTime = new Date(
+        Date.now() - hoursBack * 60 * 60 * 1000
+      ).toISOString()
 
       // Get performance events
       const { data: events, error } = await this.supabase
         .from('analytics_events')
         .select('*')
-        .in('event_type', ['translation', 'document_processing', 'error', 'cache_hit', 'cache_miss'])
+        .in('event_type', [
+          'translation',
+          'document_processing',
+          'error',
+          'cache_hit',
+          'cache_miss',
+        ])
         .gte('timestamp', sinceTime)
 
       if (error) throw error
 
       return this.calculatePerformanceMetrics(events || [])
-
     } catch (error) {
       logger.error({ error, timeRange }, 'Failed to get performance metrics')
       throw error
@@ -312,30 +353,29 @@ class AnalyticsService {
       if (activeError) throw activeError
 
       const activeUsers = new Set(
-        (activeEvents || [])
-          .map(e => e.user_id)
-          .filter(Boolean)
+        (activeEvents || []).map(e => e.user_id).filter(Boolean)
       ).size
 
       // Get translations in progress
-      const { data: translationEvents, error: translationError } = await this.supabase
-        .from('analytics_events')
-        .select('*')
-        .eq('event_type', 'translation')
-        .gte('timestamp', fiveMinutesAgo)
+      const { data: translationEvents, error: translationError } =
+        await this.supabase
+          .from('analytics_events')
+          .select('*')
+          .eq('event_type', 'translation')
+          .gte('timestamp', fiveMinutesAgo)
 
       if (translationError) throw translationError
 
-      const translationsInProgress = (translationEvents || [])
-        .filter(e => e.event_data?.success === undefined).length
+      const translationsInProgress = (translationEvents || []).filter(
+        e => e.event_data?.success === undefined
+      ).length
 
       return {
         activeUsers,
         translationsInProgress,
         systemLoad: Math.random() * 100, // Would get from system monitoring
-        responseTime: Math.random() * 1000 + 200 // Would get from performance monitoring
+        responseTime: Math.random() * 1000 + 200, // Would get from performance monitoring
       }
-
     } catch (error) {
       logger.error({ error }, 'Failed to get real-time metrics')
       throw error
@@ -355,18 +395,21 @@ class AnalyticsService {
         case 'user':
           if (!userId) throw new Error('User ID required for user report')
           return await this.getUserMetrics(userId, timeRange as any)
-        
+
         case 'system':
           return await this.getSystemMetrics(timeRange as any)
-        
+
         case 'performance':
           return await this.getPerformanceMetrics(timeRange as any)
-        
+
         default:
           throw new Error(`Unknown report type: ${type}`)
       }
     } catch (error) {
-      logger.error({ error, type, timeRange, userId }, 'Failed to generate report')
+      logger.error(
+        { error, type, timeRange, userId },
+        'Failed to generate report'
+      )
       throw error
     }
   }
@@ -410,12 +453,16 @@ class AnalyticsService {
   private parseTimeRange(timeRange: string): number {
     const unit = timeRange.slice(-1)
     const value = parseInt(timeRange.slice(0, -1))
-    
+
     switch (unit) {
-      case 'h': return value
-      case 'd': return value * 24
-      case 'y': return value * 24 * 365
-      default: return 24
+      case 'h':
+        return value
+      case 'd':
+        return value * 24
+      case 'y':
+        return value * 24 * 365
+      default:
+        return 24
     }
   }
 
@@ -426,17 +473,30 @@ class AnalyticsService {
   ): UserMetrics {
     const translationEvents = events.filter(e => e.event_type === 'translation')
     const engagementEvents = events.filter(e => e.event_type === 'engagement')
-    
-    const totalTranslations = translations.length
-    const wordsTranslated = translations.reduce((sum, t) => sum + (t.word_count || 0), 0)
-    const charactersTranslated = translations.reduce((sum, t) => sum + (t.character_count || 0), 0)
-    
-    const successfulTranslations = translationEvents.filter(e => e.event_data?.success)
-    const avgAccuracy = successfulTranslations.length > 0 
-      ? (successfulTranslations.length / translationEvents.length) * 100 
-      : 0
 
-    const timeSpent = engagementEvents.reduce((sum, e) => sum + (e.event_data?.duration || 0), 0) / 60
+    const totalTranslations = translations.length
+    const wordsTranslated = translations.reduce(
+      (sum, t) => sum + (t.word_count || 0),
+      0
+    )
+    const charactersTranslated = translations.reduce(
+      (sum, t) => sum + (t.character_count || 0),
+      0
+    )
+
+    const successfulTranslations = translationEvents.filter(
+      e => e.event_data?.success
+    )
+    const avgAccuracy =
+      successfulTranslations.length > 0
+        ? (successfulTranslations.length / translationEvents.length) * 100
+        : 0
+
+    const timeSpent =
+      engagementEvents.reduce(
+        (sum, e) => sum + (e.event_data?.duration || 0),
+        0
+      ) / 60
 
     const languagePairs = new Set(
       translations.map(t => `${t.source_language}-${t.target_language}`)
@@ -446,16 +506,22 @@ class AnalyticsService {
     const avgWordsPerDay = wordsTranslated / days
 
     // Calculate efficiency (translations per hour of engagement)
-    const efficiency = timeSpent > 0 ? (totalTranslations / (timeSpent / 60)) * 100 : 0
+    const efficiency =
+      timeSpent > 0 ? (totalTranslations / (timeSpent / 60)) * 100 : 0
 
-    const languagePairCounts = translations.reduce((acc, t) => {
-      const pair = `${t.source_language}-${t.target_language}`
-      acc[pair] = (acc[pair] || 0) + 1
-      return acc
-    }, {} as Record<string, number>)
+    const languagePairCounts = translations.reduce(
+      (acc, t) => {
+        const pair = `${t.source_language}-${t.target_language}`
+        acc[pair] = (acc[pair] || 0) + 1
+        return acc
+      },
+      {} as Record<string, number>
+    )
 
-    const mostUsedLanguagePair = Object.entries(languagePairCounts)
-      .sort(([,a], [,b]) => (b as number) - (a as number))[0]?.[0] || 'none'
+    const mostUsedLanguagePair =
+      Object.entries(languagePairCounts).sort(
+        ([, a], [, b]) => (b as number) - (a as number)
+      )[0]?.[0] || 'none'
 
     return {
       totalTranslations,
@@ -463,7 +529,9 @@ class AnalyticsService {
       charactersTranslated,
       avgAccuracy,
       timeSpent,
-      documentsProcessed: events.filter(e => e.event_type === 'document_processing').length,
+      documentsProcessed: events.filter(
+        e => e.event_type === 'document_processing'
+      ).length,
       languagePairs,
       avgWordsPerDay,
       efficiency,
@@ -471,7 +539,8 @@ class AnalyticsService {
       peakUsageHours: this.calculatePeakHours(events),
       retentionRate: 85, // Would calculate based on user return patterns
       sessionCount: new Set(events.map(e => e.session_id)).size,
-      avgSessionDuration: timeSpent / Math.max(1, new Set(events.map(e => e.session_id)).size)
+      avgSessionDuration:
+        timeSpent / Math.max(1, new Set(events.map(e => e.session_id)).size),
     }
   }
 
@@ -493,24 +562,33 @@ class AnalyticsService {
     const errorEvents = events.filter(e => e.event_type === 'error')
 
     const totalApiCalls = translationEvents.length
-    const avgResponseTime = translationEvents.reduce((sum, e) => 
-      sum + (e.event_data?.processing_time || 0), 0
-    ) / Math.max(1, translationEvents.length)
+    const avgResponseTime =
+      translationEvents.reduce(
+        (sum, e) => sum + (e.event_data?.processing_time || 0),
+        0
+      ) / Math.max(1, translationEvents.length)
 
-    const errorRate = totalApiCalls > 0 ? (errorEvents.length / totalApiCalls) * 100 : 0
+    const errorRate =
+      totalApiCalls > 0 ? (errorEvents.length / totalApiCalls) * 100 : 0
 
     // Language popularity
-    const languageCounts = translations.reduce((acc, t) => {
-      acc[t.target_language] = (acc[t.target_language] || 0) + 1
-      return acc
-    }, {} as Record<string, number>)
+    const languageCounts = translations.reduce(
+      (acc, t) => {
+        acc[t.target_language] = (acc[t.target_language] || 0) + 1
+        return acc
+      },
+      {} as Record<string, number>
+    )
 
-    const totalLanguageUsage = Object.values(languageCounts).reduce<number>((sum, count) => sum + (count as number), 0)
+    const totalLanguageUsage = Object.values(languageCounts).reduce<number>(
+      (sum, count) => sum + (count as number),
+      0
+    )
     const popularLanguages = Object.entries(languageCounts)
       .map(([language, count]) => ({
         language,
         count: count as number,
-        percentage: ((count as number) / totalLanguageUsage) * 100
+        percentage: ((count as number) / totalLanguageUsage) * 100,
       }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 10)
@@ -528,39 +606,59 @@ class AnalyticsService {
       userRetention: {
         day1: 75,
         day7: 45,
-        day30: 25
+        day30: 25,
       },
       deviceBreakdown: this.calculateDeviceBreakdown(events),
       browserBreakdown: this.calculateBrowserBreakdown(events),
-      countryBreakdown: this.calculateCountryBreakdown(events)
+      countryBreakdown: this.calculateCountryBreakdown(events),
     }
   }
 
   private calculatePerformanceMetrics(events: any[]): PerformanceMetrics {
     const cacheEvents = events.filter(e => e.event_type.includes('cache'))
-    const cacheHits = cacheEvents.filter(e => e.event_type === 'cache_hit').length
-    const cacheMisses = cacheEvents.filter(e => e.event_type === 'cache_miss').length
-    const cacheHitRate = (cacheHits + cacheMisses) > 0 ? (cacheHits / (cacheHits + cacheMisses)) * 100 : 0
+    const cacheHits = cacheEvents.filter(
+      e => e.event_type === 'cache_hit'
+    ).length
+    const cacheMisses = cacheEvents.filter(
+      e => e.event_type === 'cache_miss'
+    ).length
+    const cacheHitRate =
+      cacheHits + cacheMisses > 0
+        ? (cacheHits / (cacheHits + cacheMisses)) * 100
+        : 0
 
     const translationEvents = events.filter(e => e.event_type === 'translation')
-    const avgTranslationTime = translationEvents.length > 0
-      ? translationEvents.reduce((sum, e) => sum + (e.event_data?.processing_time || 0), 0) / translationEvents.length
-      : 0
+    const avgTranslationTime =
+      translationEvents.length > 0
+        ? translationEvents.reduce(
+            (sum, e) => sum + (e.event_data?.processing_time || 0),
+            0
+          ) / translationEvents.length
+        : 0
 
-    const documentEvents = events.filter(e => e.event_type === 'document_processing')
-    const avgDocumentProcessingTime = documentEvents.length > 0
-      ? documentEvents.reduce((sum, e) => sum + (e.event_data?.processing_time || 0), 0) / documentEvents.length
-      : 0
+    const documentEvents = events.filter(
+      e => e.event_type === 'document_processing'
+    )
+    const avgDocumentProcessingTime =
+      documentEvents.length > 0
+        ? documentEvents.reduce(
+            (sum, e) => sum + (e.event_data?.processing_time || 0),
+            0
+          ) / documentEvents.length
+        : 0
 
     const ocrEvents = documentEvents.filter(e => e.event_data?.ocr_used)
     const ocrAccuracy = ocrEvents.length > 0 ? 85 : 0 // Would calculate from actual OCR results
 
     const errorEvents = events.filter(e => e.event_type === 'error')
-    const errorCounts = errorEvents.reduce((acc, e) => {
-      const type = e.event_data?.error_type || 'unknown'
-      acc[type] = (acc[type] || 0) + 1
-      return acc
-    }, {} as Record<string, number>)
+    const errorCounts = errorEvents.reduce(
+      (acc, e) => {
+        const type = e.event_data?.error_type || 'unknown'
+        acc[type] = (acc[type] || 0) + 1
+        return acc
+      },
+      {} as Record<string, number>
+    )
 
     return {
       cacheHitRate,
@@ -572,80 +670,119 @@ class AnalyticsService {
       cpuUsage: 35, // Would get from system monitoring
       diskUsage: 45, // Would get from system monitoring
       networkLatency: 120, // Would get from network monitoring
-      errorCounts
+      errorCounts,
     }
   }
 
   private calculatePeakHours(events: any[]): number[] {
-    const hourCounts = events.reduce((acc, e) => {
-      const hour = new Date(e.timestamp).getHours()
-      acc[hour] = (acc[hour] || 0) + 1
-      return acc
-    }, {} as Record<number, number>)
+    const hourCounts = events.reduce(
+      (acc, e) => {
+        const hour = new Date(e.timestamp).getHours()
+        acc[hour] = (acc[hour] || 0) + 1
+        return acc
+      },
+      {} as Record<number, number>
+    )
 
     return Object.entries(hourCounts)
-      .sort(([,a], [,b]) => (b as number) - (a as number))
+      .sort(([, a], [, b]) => (b as number) - (a as number))
       .slice(0, 3)
       .map(([hour]) => parseInt(hour))
   }
 
-  private calculatePeakHoursDetailed(events: any[]): Array<{ hour: number; count: number }> {
-    const hourCounts = events.reduce((acc, e) => {
-      const hour = new Date(e.timestamp).getHours()
-      acc[hour] = (acc[hour] || 0) + 1
-      return acc
-    }, {} as Record<number, number>)
+  private calculatePeakHoursDetailed(
+    events: any[]
+  ): Array<{ hour: number; count: number }> {
+    const hourCounts = events.reduce(
+      (acc, e) => {
+        const hour = new Date(e.timestamp).getHours()
+        acc[hour] = (acc[hour] || 0) + 1
+        return acc
+      },
+      {} as Record<number, number>
+    )
 
     return Object.entries(hourCounts)
-      .sort(([,a], [,b]) => (b as number) - (a as number))
+      .sort(([, a], [, b]) => (b as number) - (a as number))
       .slice(0, 3)
-      .map(([hour, count]) => ({ hour: parseInt(hour), count: count as number }))
+      .map(([hour, count]) => ({
+        hour: parseInt(hour),
+        count: count as number,
+      }))
   }
 
-  private calculateDeviceBreakdown(events: any[]): { mobile: number; tablet: number; desktop: number } {
-    const deviceCounts = events.reduce((acc, e) => {
-      const device = e.device_type || 'desktop'
-      acc[device] = (acc[device] || 0) + 1
-      return acc
-    }, {} as Record<string, number>)
+  private calculateDeviceBreakdown(events: any[]): {
+    mobile: number
+    tablet: number
+    desktop: number
+  } {
+    const deviceCounts = events.reduce(
+      (acc, e) => {
+        const device = e.device_type || 'desktop'
+        acc[device] = (acc[device] || 0) + 1
+        return acc
+      },
+      {} as Record<string, number>
+    )
 
-    const total = Object.values(deviceCounts).reduce<number>((sum, count) => sum + (count as number), 0)
+    const total = Object.values(deviceCounts).reduce<number>(
+      (sum, count) => sum + (count as number),
+      0
+    )
 
     return {
       mobile: ((deviceCounts.mobile || 0) / total) * 100,
       tablet: ((deviceCounts.tablet || 0) / total) * 100,
-      desktop: ((deviceCounts.desktop || 0) / total) * 100
+      desktop: ((deviceCounts.desktop || 0) / total) * 100,
     }
   }
 
   private calculateBrowserBreakdown(events: any[]): Record<string, number> {
-    const browserCounts = events.reduce((acc, e) => {
-      const browser = e.browser || 'unknown'
-      acc[browser] = (acc[browser] || 0) + 1
-      return acc
-    }, {} as Record<string, number>)
+    const browserCounts = events.reduce(
+      (acc, e) => {
+        const browser = e.browser || 'unknown'
+        acc[browser] = (acc[browser] || 0) + 1
+        return acc
+      },
+      {} as Record<string, number>
+    )
 
-    const total = Object.values(browserCounts).reduce<number>((sum, count) => sum + (count as number), 0)
+    const total = Object.values(browserCounts).reduce<number>(
+      (sum, count) => sum + (count as number),
+      0
+    )
 
-    return Object.entries(browserCounts).reduce((acc, [browser, count]) => {
-      acc[browser] = ((count as number) / total) * 100
-      return acc
-    }, {} as Record<string, number>)
+    return Object.entries(browserCounts).reduce(
+      (acc, [browser, count]) => {
+        acc[browser] = ((count as number) / total) * 100
+        return acc
+      },
+      {} as Record<string, number>
+    )
   }
 
   private calculateCountryBreakdown(events: any[]): Record<string, number> {
-    const countryCounts = events.reduce((acc, e) => {
-      const country = e.country || 'Unknown'
-      acc[country] = (acc[country] || 0) + 1
-      return acc
-    }, {} as Record<string, number>)
+    const countryCounts = events.reduce(
+      (acc, e) => {
+        const country = e.country || 'Unknown'
+        acc[country] = (acc[country] || 0) + 1
+        return acc
+      },
+      {} as Record<string, number>
+    )
 
-    const total = Object.values(countryCounts).reduce<number>((sum, count) => sum + (count as number), 0)
+    const total = Object.values(countryCounts).reduce<number>(
+      (sum, count) => sum + (count as number),
+      0
+    )
 
-    return Object.entries(countryCounts).reduce((acc, [country, count]) => {
-      acc[country] = ((count as number) / total) * 100
-      return acc
-    }, {} as Record<string, number>)
+    return Object.entries(countryCounts).reduce(
+      (acc, [country, count]) => {
+        acc[country] = ((count as number) / total) * 100
+        return acc
+      },
+      {} as Record<string, number>
+    )
   }
 }
 
@@ -653,8 +790,11 @@ class AnalyticsService {
 export const analyticsService = new AnalyticsService()
 
 // Export convenience functions
-export const trackEvent = (eventType: string, eventData?: Record<string, any>, userId?: string) =>
-  analyticsService.trackEvent(eventType, eventData, userId)
+export const trackEvent = (
+  eventType: string,
+  eventData?: Record<string, any>,
+  userId?: string
+) => analyticsService.trackEvent(eventType, eventData, userId)
 
 export const trackPageView = (page: string, userId?: string) =>
   analyticsService.trackPageView(page, userId)
@@ -666,7 +806,15 @@ export const trackTranslation = (
   processingTime: number,
   success: boolean,
   userId?: string
-) => analyticsService.trackTranslation(sourceLanguage, targetLanguage, characterCount, processingTime, success, userId)
+) =>
+  analyticsService.trackTranslation(
+    sourceLanguage,
+    targetLanguage,
+    characterCount,
+    processingTime,
+    success,
+    userId
+  )
 
 export const getUserMetrics = (userId: string, timeRange?: string) =>
   analyticsService.getUserMetrics(userId, timeRange as any)

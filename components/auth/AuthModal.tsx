@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '@/contexts/AuthContext'
 import { motionSafe } from '@/lib/motion'
-import { debugAuth } from '@/lib/auth-debug'
 import ModalPortal from './ModalPortal'
 
 interface AuthModalProps {
@@ -44,13 +43,6 @@ export default function AuthModal({
   // Legacy loading state for backward compatibility
   const loading = loadingState !== 'idle'
   const error = authError?.message || ''
-
-  // Debug logs
-  useEffect(() => {
-    if (isOpen) {
-      debugAuth.modalOpened(mode, redirectTo)
-    }
-  }, [isOpen, mode, redirectTo])
 
   const content = {
     vi: {
@@ -154,8 +146,6 @@ export default function AuthModal({
   }
 
   const handleClose = useCallback(() => {
-    debugAuth.modalClosed('user_action')
-
     // Reset form when closing
     setEmail('')
     setPassword('')

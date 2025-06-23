@@ -27,34 +27,39 @@ export type WorkspaceMode =
 function WorkspaceContent() {
   const { language } = useLanguage()
   const { user, loading } = useAuth()
-  const { handleSignIn } = useUnifiedAuthContext()
+  const { handleSignIn, isAuthModalOpen } = useUnifiedAuthContext()
   const [currentMode, setCurrentMode] = useState<WorkspaceMode>('documents')
-  const [authModalOpened, setAuthModalOpened] = useState(false)
   const [authTimeout, setAuthTimeout] = useState(false)
+  const [authInitiated, setAuthInitiated] = useState(false)
 
   // Auto-open sign in modal if user is not authenticated
   useEffect(() => {
-    if (!loading && !user && !authModalOpened) {
-      setAuthModalOpened(true)
+    if (!loading && !user && !authInitiated && !isAuthModalOpen) {
+      setAuthInitiated(true)
       handleSignIn({
         redirectTo: '/workspace',
         onSuccess: () => {
           // Authentication successful, staying on workspace
+          setAuthInitiated(false)
         },
       })
     }
-  }, [loading, user, authModalOpened, handleSignIn])
+  }, [loading, user, authInitiated, isAuthModalOpen, handleSignIn])
 
   // Set timeout for authentication loading
   useEffect(() => {
-    if (!user && !loading) {
+    if (!user && !loading && !isAuthModalOpen && authInitiated) {
       const timer = setTimeout(() => {
         setAuthTimeout(true)
       }, 10000) // 10 second timeout
 
       return () => clearTimeout(timer)
+    } else if (user) {
+      // Reset timeout when user is authenticated
+      setAuthTimeout(false)
+      setAuthInitiated(false)
     }
-  }, [user, loading])
+  }, [user, loading, isAuthModalOpen, authInitiated])
 
   // Show loading state only while initially checking authentication
   if (loading) {

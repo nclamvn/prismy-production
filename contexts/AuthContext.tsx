@@ -4,7 +4,6 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { User, Session } from '@supabase/supabase-js'
 import { createClientComponentClient } from '@/lib/supabase'
 import type { UserProfile } from '@/lib/supabase'
-import { debugAuth } from '@/lib/auth-debug'
 
 interface AuthContextType {
   user: User | null
@@ -44,17 +43,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         typeof window !== 'undefined' ? window.location.origin : 'unknown',
     }
 
-    debugAuth.environmentCheck(env)
-
     // Check for common misconfigurations
     if (!env.supabaseUrl || env.supabaseUrl.includes('placeholder')) {
-      debugAuth.configurationError('Invalid Supabase URL', {
-        url: env.supabaseUrl,
-      })
+      console.error('Invalid Supabase URL configuration')
     }
 
     if (!env.hasAnonKey) {
-      debugAuth.configurationError('Missing Supabase Anon Key', {})
+      console.error('Missing Supabase Anon Key')
     }
   }, [])
 
@@ -80,8 +75,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      debugAuth.sessionUpdate(session?.user, false)
-
       setSession(session)
       setUser(session?.user ?? null)
 
@@ -146,8 +139,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const callbackUrl = new URL('/auth/callback', window.location.origin)
     callbackUrl.searchParams.set('redirectTo', intendedRedirect)
 
-    debugAuth.oauthInitiated('google', intendedRedirect)
-
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -157,12 +148,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
 
       if (error) {
-        debugAuth.oauthError('google', error)
       }
 
       return { error }
     } catch (err) {
-      debugAuth.supabaseError('Google OAuth', err)
       return { error: err }
     }
   }
@@ -174,8 +163,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const callbackUrl = new URL('/auth/callback', window.location.origin)
     callbackUrl.searchParams.set('redirectTo', intendedRedirect)
 
-    debugAuth.oauthInitiated('apple', intendedRedirect)
-
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'apple',
@@ -185,12 +172,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
 
       if (error) {
-        debugAuth.oauthError('apple', error)
       }
 
       return { error }
     } catch (err) {
-      debugAuth.supabaseError('Apple OAuth', err)
       return { error: err }
     }
   }

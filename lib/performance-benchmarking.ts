@@ -1,6 +1,6 @@
 import { translationService } from './translation-service'
 import { redisTranslationCache } from './redis-translation-cache'
-import { createServiceRoleClient } from './supabase-server'
+import { createServiceRoleClient } from './supabase'
 
 export interface BenchmarkConfig {
   testName: string
@@ -54,7 +54,9 @@ export class PerformanceBenchmarking {
    */
   async runBenchmark(config: BenchmarkConfig): Promise<BenchmarkResult> {
     console.log(`🚀 Starting benchmark: ${config.testName}`)
-    console.log(`📊 Configuration: ${config.iterations} iterations, cache ${config.cacheEnabled ? 'enabled' : 'disabled'}`)
+    console.log(
+      `📊 Configuration: ${config.iterations} iterations, cache ${config.cacheEnabled ? 'enabled' : 'disabled'}`
+    )
 
     const startTime = Date.now()
     const samples: BenchmarkResult['samples'] = []
@@ -76,14 +78,16 @@ export class PerformanceBenchmarking {
       config,
       results,
       samples,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     }
 
     // Store benchmark results in database
     await this.storeBenchmarkResult(benchmarkResult)
 
     console.log(`✅ Benchmark completed: ${config.testName}`)
-    console.log(`📈 Results: ${results.averageResponseTime.toFixed(2)}ms avg, ${results.cacheHitRate.toFixed(1)}% hit rate`)
+    console.log(
+      `📈 Results: ${results.averageResponseTime.toFixed(2)}ms avg, ${results.cacheHitRate.toFixed(1)}% hit rate`
+    )
 
     return benchmarkResult
   }
@@ -92,7 +96,7 @@ export class PerformanceBenchmarking {
    * Run sequential benchmark
    */
   private async runSequentialBenchmark(
-    config: BenchmarkConfig, 
+    config: BenchmarkConfig,
     samples: BenchmarkResult['samples']
   ): Promise<void> {
     for (let i = 0; i < config.iterations; i++) {
@@ -101,13 +105,15 @@ export class PerformanceBenchmarking {
 
       try {
         const startTime = Date.now()
-        
+
         const result = await translationService.translateText({
           text: sample.text,
           sourceLang: sample.sourceLang,
           targetLang: sample.targetLang,
           qualityTier: sample.qualityTier,
-          abTestVariant: config.cacheEnabled ? 'cache_enabled' : 'cache_disabled'
+          abTestVariant: config.cacheEnabled
+            ? 'cache_enabled'
+            : 'cache_disabled',
         })
 
         const endTime = Date.now()
@@ -117,14 +123,15 @@ export class PerformanceBenchmarking {
           iteration,
           responseTime,
           success: true,
-          cached: result.cached || false
+          cached: result.cached || false,
         })
 
         // Progress logging
         if (iteration % 10 === 0) {
-          console.log(`📊 Progress: ${iteration}/${config.iterations} (${(iteration/config.iterations*100).toFixed(1)}%)`)
+          console.log(
+            `📊 Progress: ${iteration}/${config.iterations} (${((iteration / config.iterations) * 100).toFixed(1)}%)`
+          )
         }
-
       } catch (error) {
         const endTime = Date.now()
         const responseTime = endTime - Date.now() // fallback timing
@@ -134,7 +141,7 @@ export class PerformanceBenchmarking {
           responseTime,
           success: false,
           cached: false,
-          error: error instanceof Error ? error.message : 'Unknown error'
+          error: error instanceof Error ? error.message : 'Unknown error',
         })
 
         console.error(`❌ Error in iteration ${iteration}:`, error)
@@ -146,7 +153,7 @@ export class PerformanceBenchmarking {
    * Run concurrent benchmark
    */
   private async runConcurrentBenchmark(
-    config: BenchmarkConfig, 
+    config: BenchmarkConfig,
     samples: BenchmarkResult['samples']
   ): Promise<void> {
     const concurrency = config.maxConcurrency || 5
@@ -155,25 +162,27 @@ export class PerformanceBenchmarking {
     for (let batch = 0; batch < batches; batch++) {
       const batchStart = batch * concurrency
       const batchEnd = Math.min(batchStart + concurrency, config.iterations)
-      
+
       const promises = []
-      
+
       for (let i = batchStart; i < batchEnd; i++) {
         const sample = config.textSamples[i % config.textSamples.length]
         const iteration = i + 1
 
-        promises.push(this.executeBenchmarkIteration(sample, iteration, config.cacheEnabled))
+        promises.push(
+          this.executeBenchmarkIteration(sample, iteration, config.cacheEnabled)
+        )
       }
 
       const batchResults = await Promise.allSettled(promises)
-      
+
       batchResults.forEach((result, index) => {
         const iteration = batchStart + index + 1
-        
+
         if (result.status === 'fulfilled') {
           samples.push({
             iteration,
-            ...result.value
+            ...result.value,
           })
         } else {
           samples.push({
@@ -181,7 +190,7 @@ export class PerformanceBenchmarking {
             responseTime: 0,
             success: false,
             cached: false,
-            error: result.reason?.message || 'Unknown error'
+            error: result.reason?.message || 'Unknown error',
           })
         }
       })
@@ -211,24 +220,24 @@ export class PerformanceBenchmarking {
         sourceLang: sample.sourceLang,
         targetLang: sample.targetLang,
         qualityTier: sample.qualityTier,
-        abTestVariant: cacheEnabled ? 'cache_enabled' : 'cache_disabled'
+        abTestVariant: cacheEnabled ? 'cache_enabled' : 'cache_disabled',
       })
 
       const endTime = Date.now()
-      
+
       return {
         responseTime: endTime - startTime,
         success: true,
-        cached: result.cached || false
+        cached: result.cached || false,
       }
     } catch (error) {
       const endTime = Date.now()
-      
+
       return {
         responseTime: endTime - startTime,
         success: false,
         cached: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       }
     }
   }
@@ -237,7 +246,7 @@ export class PerformanceBenchmarking {
    * Calculate benchmark statistics
    */
   private calculateStatistics(
-    samples: BenchmarkResult['samples'], 
+    samples: BenchmarkResult['samples'],
     totalTime: number
   ): BenchmarkResult['results'] {
     const responseTimes = samples.map(s => s.responseTime)
@@ -253,7 +262,9 @@ export class PerformanceBenchmarking {
       cacheHits: cachedSamples.length,
       cacheMisses: successfulSamples.length - cachedSamples.length,
       totalTime,
-      averageResponseTime: responseTimes.reduce((sum, time) => sum + time, 0) / responseTimes.length,
+      averageResponseTime:
+        responseTimes.reduce((sum, time) => sum + time, 0) /
+        responseTimes.length,
       minResponseTime: Math.min(...responseTimes),
       maxResponseTime: Math.max(...responseTimes),
       throughput: (samples.length / totalTime) * 1000, // requests per second
@@ -261,7 +272,7 @@ export class PerformanceBenchmarking {
       p90ResponseTime: this.percentile(responseTimes, 0.9),
       p95ResponseTime: this.percentile(responseTimes, 0.95),
       errorRate: (samples.length - successfulSamples.length) / samples.length,
-      cacheHitRate: cachedSamples.length / successfulSamples.length
+      cacheHitRate: cachedSamples.length / successfulSamples.length,
     }
   }
 
@@ -278,18 +289,16 @@ export class PerformanceBenchmarking {
    */
   private async storeBenchmarkResult(result: BenchmarkResult): Promise<void> {
     try {
-      await this.supabase
-        .from('performance_benchmarks')
-        .insert({
-          test_name: result.testName,
-          config: result.config,
-          results: result.results,
-          sample_count: result.samples.length,
-          benchmark_data: {
-            samples: result.samples.slice(0, 100) // Store first 100 samples
-          },
-          created_at: result.timestamp
-        })
+      await this.supabase.from('performance_benchmarks').insert({
+        test_name: result.testName,
+        config: result.config,
+        results: result.results,
+        sample_count: result.samples.length,
+        benchmark_data: {
+          samples: result.samples.slice(0, 100), // Store first 100 samples
+        },
+        created_at: result.timestamp,
+      })
     } catch (error) {
       console.error('Error storing benchmark result:', error)
     }
@@ -300,11 +309,36 @@ export class PerformanceBenchmarking {
    */
   getStandardBenchmarks(): BenchmarkConfig[] {
     const vietnameseBusinessTexts = [
-      { text: 'Cảm ơn quý khách hàng đã tin tưởng sử dụng dịch vụ của chúng tôi', sourceLang: 'vi', targetLang: 'en', qualityTier: 'standard' as const },
-      { text: 'Vui lòng xem xét và phê duyệt hợp đồng trong thời gian sớm nhất', sourceLang: 'vi', targetLang: 'en', qualityTier: 'premium' as const },
-      { text: 'Thank you for choosing our premium translation service', sourceLang: 'en', targetLang: 'vi', qualityTier: 'premium' as const },
-      { text: 'Please review the technical documentation and provide feedback', sourceLang: 'en', targetLang: 'vi', qualityTier: 'enterprise' as const },
-      { text: 'Hệ thống đang thực hiện bảo trì định kỳ và sẽ hoạt động trở lại trong 30 phút', sourceLang: 'vi', targetLang: 'en', qualityTier: 'standard' as const }
+      {
+        text: 'Cảm ơn quý khách hàng đã tin tưởng sử dụng dịch vụ của chúng tôi',
+        sourceLang: 'vi',
+        targetLang: 'en',
+        qualityTier: 'standard' as const,
+      },
+      {
+        text: 'Vui lòng xem xét và phê duyệt hợp đồng trong thời gian sớm nhất',
+        sourceLang: 'vi',
+        targetLang: 'en',
+        qualityTier: 'premium' as const,
+      },
+      {
+        text: 'Thank you for choosing our premium translation service',
+        sourceLang: 'en',
+        targetLang: 'vi',
+        qualityTier: 'premium' as const,
+      },
+      {
+        text: 'Please review the technical documentation and provide feedback',
+        sourceLang: 'en',
+        targetLang: 'vi',
+        qualityTier: 'enterprise' as const,
+      },
+      {
+        text: 'Hệ thống đang thực hiện bảo trì định kỳ và sẽ hoạt động trở lại trong 30 phút',
+        sourceLang: 'vi',
+        targetLang: 'en',
+        qualityTier: 'standard' as const,
+      },
     ]
 
     return [
@@ -313,14 +347,14 @@ export class PerformanceBenchmarking {
         iterations: 50,
         concurrent: false,
         cacheEnabled: true,
-        textSamples: vietnameseBusinessTexts
+        textSamples: vietnameseBusinessTexts,
       },
       {
         testName: 'No Cache Performance - Sequential',
         iterations: 50,
         concurrent: false,
         cacheEnabled: false,
-        textSamples: vietnameseBusinessTexts
+        textSamples: vietnameseBusinessTexts,
       },
       {
         testName: 'Cache Performance - Concurrent',
@@ -328,7 +362,7 @@ export class PerformanceBenchmarking {
         concurrent: true,
         maxConcurrency: 5,
         cacheEnabled: true,
-        textSamples: vietnameseBusinessTexts
+        textSamples: vietnameseBusinessTexts,
       },
       {
         testName: 'Load Test - High Concurrency',
@@ -336,8 +370,8 @@ export class PerformanceBenchmarking {
         concurrent: true,
         maxConcurrency: 10,
         cacheEnabled: true,
-        textSamples: vietnameseBusinessTexts
-      }
+        textSamples: vietnameseBusinessTexts,
+      },
     ]
   }
 
@@ -354,10 +388,19 @@ export class PerformanceBenchmarking {
     errorRateComparison: number
     summary: string
   } {
-    const responseTimeImprovement = ((baseline.results.averageResponseTime - comparison.results.averageResponseTime) / baseline.results.averageResponseTime) * 100
-    const throughputImprovement = ((comparison.results.throughput - baseline.results.throughput) / baseline.results.throughput) * 100
-    const cacheHitRateComparison = comparison.results.cacheHitRate - baseline.results.cacheHitRate
-    const errorRateComparison = comparison.results.errorRate - baseline.results.errorRate
+    const responseTimeImprovement =
+      ((baseline.results.averageResponseTime -
+        comparison.results.averageResponseTime) /
+        baseline.results.averageResponseTime) *
+      100
+    const throughputImprovement =
+      ((comparison.results.throughput - baseline.results.throughput) /
+        baseline.results.throughput) *
+      100
+    const cacheHitRateComparison =
+      comparison.results.cacheHitRate - baseline.results.cacheHitRate
+    const errorRateComparison =
+      comparison.results.errorRate - baseline.results.errorRate
 
     let summary = `Performance comparison between ${baseline.testName} and ${comparison.testName}:\n`
     summary += `Response time: ${responseTimeImprovement > 0 ? 'improved' : 'degraded'} by ${Math.abs(responseTimeImprovement).toFixed(1)}%\n`
@@ -369,7 +412,7 @@ export class PerformanceBenchmarking {
       throughputImprovement,
       cacheHitRateComparison,
       errorRateComparison,
-      summary
+      summary,
     }
   }
 }

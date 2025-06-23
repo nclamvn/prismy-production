@@ -1,5 +1,5 @@
 import { redisTranslationCache } from './redis-translation-cache'
-import { createServiceRoleClient } from './supabase-server'
+import { createServiceRoleClient } from './supabase'
 import { createHash } from 'crypto'
 
 export interface CacheMetrics {
@@ -29,7 +29,10 @@ export class CacheManager {
   /**
    * Get comprehensive cache analytics
    */
-  async getCacheAnalytics(userId?: string, timeRange: string = '24h'): Promise<{
+  async getCacheAnalytics(
+    userId?: string,
+    timeRange: string = '24h'
+  ): Promise<{
     metrics: CacheMetrics
     suggestions: CacheOptimizationSuggestion[]
     trends: any[]
@@ -37,17 +40,20 @@ export class CacheManager {
     try {
       const [healthInfo, userStats] = await Promise.all([
         redisTranslationCache.getHealthInfo(),
-        this.getUserCacheStats(userId, timeRange)
+        this.getUserCacheStats(userId, timeRange),
       ])
 
       const metrics = this.calculateMetrics(healthInfo, userStats)
-      const suggestions = this.generateOptimizationSuggestions(metrics, healthInfo)
+      const suggestions = this.generateOptimizationSuggestions(
+        metrics,
+        healthInfo
+      )
       const trends = await this.getCacheTrends(timeRange)
 
       return {
         metrics,
         suggestions,
-        trends
+        trends,
       }
     } catch (error) {
       console.error('Error getting cache analytics:', error)
@@ -61,7 +67,9 @@ export class CacheManager {
   private async getUserCacheStats(userId?: string, timeRange: string = '24h') {
     try {
       const hoursBack = this.parseTimeRange(timeRange)
-      const sinceTime = new Date(Date.now() - (hoursBack * 60 * 60 * 1000)).toISOString()
+      const sinceTime = new Date(
+        Date.now() - hoursBack * 60 * 60 * 1000
+      ).toISOString()
 
       let query = this.supabase
         .from('translation_history')
@@ -78,15 +86,17 @@ export class CacheManager {
 
       return {
         totalTranslations: translations?.length || 0,
-        totalCharacters: translations?.reduce((sum, t) => sum + (t.character_count || 0), 0) || 0,
-        qualityDistribution: this.getQualityDistribution(translations || [])
+        totalCharacters:
+          translations?.reduce((sum, t) => sum + (t.character_count || 0), 0) ||
+          0,
+        qualityDistribution: this.getQualityDistribution(translations || []),
       }
     } catch (error) {
       console.error('Error getting user cache stats:', error)
       return {
         totalTranslations: 0,
         totalCharacters: 0,
-        qualityDistribution: {}
+        qualityDistribution: {},
       }
     }
   }
@@ -97,9 +107,10 @@ export class CacheManager {
   private calculateMetrics(healthInfo: any, userStats: any): CacheMetrics {
     const stats = healthInfo.stats || { hits: 0, misses: 0, hitRate: 0 }
     const totalRequests = stats.hits + stats.misses
-    
+
     // Estimate cost savings (assuming $0.02 per 1K characters for Google Translate)
-    const averageCharsPerTranslation = userStats.totalCharacters / Math.max(userStats.totalTranslations, 1)
+    const averageCharsPerTranslation =
+      userStats.totalCharacters / Math.max(userStats.totalTranslations, 1)
     const cachedCharacters = stats.hits * averageCharsPerTranslation
     const costSavings = (cachedCharacters / 1000) * 0.02
 
@@ -110,9 +121,9 @@ export class CacheManager {
       costSavings,
       performance: {
         averageResponseTime: 250, // Estimate based on cache hit/miss ratio
-        cacheResponseTime: 50,    // Redis response time
-        apiResponseTime: 800      // Google Translate API response time
-      }
+        cacheResponseTime: 50, // Redis response time
+        apiResponseTime: 800, // Google Translate API response time
+      },
     }
   }
 
@@ -133,7 +144,7 @@ export class CacheManager {
         title: 'Low Cache Hit Rate',
         description: `Current hit rate is ${(metrics.hitRate * 100).toFixed(1)}%. This indicates many unique translations.`,
         action: 'Enable cache warming with popular business phrases',
-        impact: 'Could improve hit rate by 20-40%'
+        impact: 'Could improve hit rate by 20-40%',
       })
     } else if (metrics.hitRate >= 0.7) {
       suggestions.push({
@@ -142,7 +153,7 @@ export class CacheManager {
         title: 'Excellent Cache Performance',
         description: `Hit rate of ${(metrics.hitRate * 100).toFixed(1)}% is excellent.`,
         action: 'Consider expanding cache to cover more language pairs',
-        impact: 'Maintain high performance as usage grows'
+        impact: 'Maintain high performance as usage grows',
       })
     }
 
@@ -154,7 +165,7 @@ export class CacheManager {
         title: 'Significant Cost Savings',
         description: `Cache is saving approximately $${metrics.costSavings.toFixed(2)} in API costs.`,
         action: 'Monitor and maintain current cache strategy',
-        impact: 'Continue reducing operational costs'
+        impact: 'Continue reducing operational costs',
       })
     }
 
@@ -164,9 +175,10 @@ export class CacheManager {
         type: 'performance',
         priority: 'high',
         title: 'Redis Connection Issue',
-        description: 'Redis cache is not connected, falling back to in-memory cache.',
+        description:
+          'Redis cache is not connected, falling back to in-memory cache.',
         action: 'Check Redis configuration and network connectivity',
-        impact: 'Restore distributed caching for better performance'
+        impact: 'Restore distributed caching for better performance',
       })
     }
 
@@ -178,7 +190,7 @@ export class CacheManager {
         title: 'Large In-Memory Cache',
         description: `In-memory cache has ${healthInfo.fallbackCacheSize} entries.`,
         action: 'Ensure Redis is working properly to reduce memory usage',
-        impact: 'Reduce server memory consumption'
+        impact: 'Reduce server memory consumption',
       })
     }
 
@@ -195,12 +207,12 @@ export class CacheManager {
     const trends = []
 
     for (let i = hours; i >= 0; i--) {
-      const time = new Date(Date.now() - (i * 60 * 60 * 1000))
+      const time = new Date(Date.now() - i * 60 * 60 * 1000)
       trends.push({
         timestamp: time.toISOString(),
         hitRate: Math.random() * 0.4 + 0.3, // Random between 30-70%
         requests: Math.floor(Math.random() * 100) + 50,
-        costSavings: Math.random() * 5 + 2
+        costSavings: Math.random() * 5 + 2,
       })
     }
 
@@ -220,7 +232,10 @@ export class CacheManager {
         .from('translation_history')
         .select('source_language, target_language, quality_tier')
         .eq('user_id', userId)
-        .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()) // Last 30 days
+        .gte(
+          'created_at',
+          new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+        ) // Last 30 days
         .limit(1000)
 
       if (error) throw error
@@ -234,7 +249,9 @@ export class CacheManager {
 
         // Generate user-specific optimization recommendations
         if (languagePairs.length > 0) {
-          optimizations.push(`Detected common language pairs: ${languagePairs.slice(0, 3).join(', ')}`)
+          optimizations.push(
+            `Detected common language pairs: ${languagePairs.slice(0, 3).join(', ')}`
+          )
         }
 
         if (commonQuality) {
@@ -248,13 +265,13 @@ export class CacheManager {
 
       return {
         success: true,
-        optimizations
+        optimizations,
       }
     } catch (error) {
       console.error('Error optimizing cache for user:', error)
       return {
         success: false,
-        optimizations: ['Failed to optimize cache for user']
+        optimizations: ['Failed to optimize cache for user'],
       }
     }
   }
@@ -294,21 +311,21 @@ export class CacheManager {
           confidence: 0.95,
           qualityScore: t.quality_score,
           timestamp: new Date().toISOString(),
-          qualityTier: t.quality_tier || 'standard'
-        }
+          qualityTier: t.quality_tier || 'standard',
+        },
       }))
 
       await redisTranslationCache.warmCache(warmingData)
 
       return {
         success: true,
-        warmedEntries: warmingData.length
+        warmedEntries: warmingData.length,
       }
     } catch (error) {
       console.error('Error warming cache for user:', error)
       return {
         success: false,
-        warmedEntries: 0
+        warmedEntries: 0,
       }
     }
   }
@@ -317,12 +334,16 @@ export class CacheManager {
   private parseTimeRange(timeRange: string): number {
     const unit = timeRange.slice(-1)
     const value = parseInt(timeRange.slice(0, -1))
-    
+
     switch (unit) {
-      case 'h': return value
-      case 'd': return value * 24
-      case 'w': return value * 24 * 7
-      default: return 24
+      case 'h':
+        return value
+      case 'd':
+        return value * 24
+      case 'w':
+        return value * 24 * 7
+      default:
+        return 24
     }
   }
 
@@ -341,9 +362,9 @@ export class CacheManager {
       const pair = `${p.source_language}-${p.target_language}`
       pairCounts[pair] = (pairCounts[pair] || 0) + 1
     })
-    
+
     return Object.entries(pairCounts)
-      .sort(([,a], [,b]) => b - a)
+      .sort(([, a], [, b]) => b - a)
       .slice(0, 5)
       .map(([pair]) => pair)
   }
@@ -354,9 +375,11 @@ export class CacheManager {
       const quality = p.quality_tier || 'standard'
       qualityCounts[quality] = (qualityCounts[quality] || 0) + 1
     })
-    
-    return Object.entries(qualityCounts)
-      .sort(([,a], [,b]) => b - a)[0]?.[0] || 'standard'
+
+    return (
+      Object.entries(qualityCounts).sort(([, a], [, b]) => b - a)[0]?.[0] ||
+      'standard'
+    )
   }
 }
 

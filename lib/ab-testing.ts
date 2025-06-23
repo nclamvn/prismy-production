@@ -1,5 +1,5 @@
 import { redisTranslationCache } from './redis-translation-cache'
-import { createServiceRoleClient } from './supabase-server'
+import { createServiceRoleClient } from './supabase'
 
 export interface ABTestResult {
   testId: string
@@ -49,7 +49,10 @@ export class ABTestingFramework {
   /**
    * Start a new A/B test for cache performance
    */
-  async startCachePerformanceTest(testId: string, trafficSplit: number = 0.5): Promise<{
+  async startCachePerformanceTest(
+    testId: string,
+    trafficSplit: number = 0.5
+  ): Promise<{
     success: boolean
     message: string
   }> {
@@ -58,25 +61,23 @@ export class ABTestingFramework {
       if (this.activeTests.has(testId)) {
         return {
           success: false,
-          message: 'Test with this ID is already running'
+          message: 'Test with this ID is already running',
         }
       }
 
       // Create test configuration in database
-      const { error } = await this.supabase
-        .from('ab_test_configs')
-        .insert({
-          test_id: testId,
-          test_type: 'cache_performance',
-          traffic_split: trafficSplit,
-          status: 'active',
-          config: {
-            description: 'A/B test to measure Redis cache performance impact',
-            variants: ['cache_enabled', 'cache_disabled'],
-            metrics: ['response_time', 'hit_rate', 'error_rate', 'cost_savings']
-          },
-          started_at: new Date().toISOString()
-        })
+      const { error } = await this.supabase.from('ab_test_configs').insert({
+        test_id: testId,
+        test_type: 'cache_performance',
+        traffic_split: trafficSplit,
+        status: 'active',
+        config: {
+          description: 'A/B test to measure Redis cache performance impact',
+          variants: ['cache_enabled', 'cache_disabled'],
+          metrics: ['response_time', 'hit_rate', 'error_rate', 'cost_savings'],
+        },
+        started_at: new Date().toISOString(),
+      })
 
       if (error) throw error
 
@@ -84,13 +85,14 @@ export class ABTestingFramework {
 
       return {
         success: true,
-        message: `A/B test ${testId} started successfully with ${(trafficSplit * 100)}% traffic split`
+        message: `A/B test ${testId} started successfully with ${trafficSplit * 100}% traffic split`,
       }
     } catch (error) {
       console.error('Error starting A/B test:', error)
       return {
         success: false,
-        message: error instanceof Error ? error.message : 'Failed to start A/B test'
+        message:
+          error instanceof Error ? error.message : 'Failed to start A/B test',
       }
     }
   }
@@ -98,11 +100,15 @@ export class ABTestingFramework {
   /**
    * Determine if a user should be in the cache-enabled or cache-disabled group
    */
-  getTestVariant(testId: string, userId: string, trafficSplit: number = 0.5): 'cache_enabled' | 'cache_disabled' {
+  getTestVariant(
+    testId: string,
+    userId: string,
+    trafficSplit: number = 0.5
+  ): 'cache_enabled' | 'cache_disabled' {
     // Use consistent hashing to ensure same user always gets same variant
     const hash = this.hashString(`${testId}:${userId}`)
-    const normalized = hash % 1000 / 1000 // Convert to 0-1 range
-    
+    const normalized = (hash % 1000) / 1000 // Convert to 0-1 range
+
     return normalized < trafficSplit ? 'cache_enabled' : 'cache_disabled'
   }
 
@@ -111,18 +117,16 @@ export class ABTestingFramework {
    */
   async recordTestResult(result: ABTestResult): Promise<void> {
     try {
-      await this.supabase
-        .from('ab_test_results')
-        .insert({
-          test_id: result.testId,
-          variant: result.variant,
-          response_time: result.responseTime,
-          cache_hit: result.cacheHit,
-          success: result.success,
-          error_message: result.errorMessage,
-          metadata: result.metadata,
-          recorded_at: new Date().toISOString()
-        })
+      await this.supabase.from('ab_test_results').insert({
+        test_id: result.testId,
+        variant: result.variant,
+        response_time: result.responseTime,
+        cache_hit: result.cacheHit,
+        success: result.success,
+        error_message: result.errorMessage,
+        metadata: result.metadata,
+        recorded_at: new Date().toISOString(),
+      })
     } catch (error) {
       console.error('Error recording A/B test result:', error)
       // Don't throw - this shouldn't break the main translation flow
@@ -142,29 +146,46 @@ export class ABTestingFramework {
       if (error) throw error
       if (!results || results.length === 0) return null
 
-      const cacheEnabledResults = results.filter(r => r.variant === 'cache_enabled')
-      const cacheDisabledResults = results.filter(r => r.variant === 'cache_disabled')
+      const cacheEnabledResults = results.filter(
+        r => r.variant === 'cache_enabled'
+      )
+      const cacheDisabledResults = results.filter(
+        r => r.variant === 'cache_disabled'
+      )
 
       // Calculate response time metrics
-      const cacheEnabledAvgTime = this.calculateAverage(cacheEnabledResults.map(r => r.response_time))
-      const cacheDisabledAvgTime = this.calculateAverage(cacheDisabledResults.map(r => r.response_time))
+      const cacheEnabledAvgTime = this.calculateAverage(
+        cacheEnabledResults.map(r => r.response_time)
+      )
+      const cacheDisabledAvgTime = this.calculateAverage(
+        cacheDisabledResults.map(r => r.response_time)
+      )
       const improvement = cacheDisabledAvgTime - cacheEnabledAvgTime
       const improvementPercent = (improvement / cacheDisabledAvgTime) * 100
 
       // Calculate hit rate
       const cacheHits = cacheEnabledResults.filter(r => r.cache_hit).length
-      const hitRate = cacheEnabledResults.length > 0 ? cacheHits / cacheEnabledResults.length : 0
+      const hitRate =
+        cacheEnabledResults.length > 0
+          ? cacheHits / cacheEnabledResults.length
+          : 0
 
       // Calculate error rates
-      const cacheEnabledErrors = cacheEnabledResults.filter(r => !r.success).length
-      const cacheDisabledErrors = cacheDisabledResults.filter(r => !r.success).length
+      const cacheEnabledErrors = cacheEnabledResults.filter(
+        r => !r.success
+      ).length
+      const cacheDisabledErrors = cacheDisabledResults.filter(
+        r => !r.success
+      ).length
 
       // Estimate cost savings (assuming $0.02 per 1K characters)
-      const estimatedSavings = cacheHits * 0.02 * (
-        cacheEnabledResults
+      const estimatedSavings =
+        cacheHits *
+        0.02 *
+        (cacheEnabledResults
           .filter(r => r.cache_hit)
-          .reduce((sum, r) => sum + (r.metadata?.textLength || 0), 0) / 1000
-      )
+          .reduce((sum, r) => sum + (r.metadata?.textLength || 0), 0) /
+          1000)
 
       return {
         testId,
@@ -175,18 +196,26 @@ export class ABTestingFramework {
           cacheEnabled: cacheEnabledAvgTime,
           cacheDisabled: cacheDisabledAvgTime,
           improvement,
-          improvementPercent
+          improvementPercent,
         },
         hitRate,
         errorRate: {
-          cacheEnabled: cacheEnabledResults.length > 0 ? cacheEnabledErrors / cacheEnabledResults.length : 0,
-          cacheDisabled: cacheDisabledResults.length > 0 ? cacheDisabledErrors / cacheDisabledResults.length : 0
+          cacheEnabled:
+            cacheEnabledResults.length > 0
+              ? cacheEnabledErrors / cacheEnabledResults.length
+              : 0,
+          cacheDisabled:
+            cacheDisabledResults.length > 0
+              ? cacheDisabledErrors / cacheDisabledResults.length
+              : 0,
         },
         costSavings: {
           estimatedSavings,
           cacheHits,
-          totalApiCalls: cacheDisabledResults.length + (cacheEnabledResults.length - cacheHits)
-        }
+          totalApiCalls:
+            cacheDisabledResults.length +
+            (cacheEnabledResults.length - cacheHits),
+        },
       }
     } catch (error) {
       console.error('Error getting A/B test metrics:', error)
@@ -207,7 +236,7 @@ export class ABTestingFramework {
         .from('ab_test_configs')
         .update({
           status: 'completed',
-          ended_at: new Date().toISOString()
+          ended_at: new Date().toISOString(),
         })
         .eq('test_id', testId)
 
@@ -219,12 +248,12 @@ export class ABTestingFramework {
 
       return {
         success: true,
-        metrics: metrics || undefined
+        metrics: metrics || undefined,
       }
     } catch (error) {
       console.error('Error stopping A/B test:', error)
       return {
-        success: false
+        success: false,
       }
     }
   }
@@ -239,21 +268,25 @@ export class ABTestingFramework {
   /**
    * Get summary of all active tests
    */
-  async getActiveTests(): Promise<Array<{
-    testId: string
-    startedAt: string
-    trafficSplit: number
-    requestCount: number
-  }>> {
+  async getActiveTests(): Promise<
+    Array<{
+      testId: string
+      startedAt: string
+      trafficSplit: number
+      requestCount: number
+    }>
+  > {
     try {
       const { data: configs, error } = await this.supabase
         .from('ab_test_configs')
-        .select(`
+        .select(
+          `
           test_id,
           started_at,
           traffic_split,
           ab_test_results(count)
-        `)
+        `
+        )
         .eq('status', 'active')
 
       if (error) throw error
@@ -262,7 +295,7 @@ export class ABTestingFramework {
         testId: config.test_id,
         startedAt: config.started_at,
         trafficSplit: config.traffic_split,
-        requestCount: config.ab_test_results?.[0]?.count || 0
+        requestCount: config.ab_test_results?.[0]?.count || 0,
       }))
     } catch (error) {
       console.error('Error getting active tests:', error)
@@ -275,7 +308,7 @@ export class ABTestingFramework {
     let hash = 0
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i)
-      hash = ((hash << 5) - hash) + char
+      hash = (hash << 5) - hash + char
       hash = hash & hash // Convert to 32-bit integer
     }
     return Math.abs(hash)
