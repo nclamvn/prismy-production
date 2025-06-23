@@ -1,27 +1,45 @@
 import { createClient } from '@supabase/supabase-js'
 import { createBrowserClient, createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co'
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key'
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder-service-key'
+const supabaseUrl =
+  process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co'
+const supabaseAnonKey =
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key'
+const supabaseServiceKey =
+  process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder-service-key'
 
-// Client-side Supabase client
+// Singleton client-side Supabase client to prevent multiple instances
+let browserClient: ReturnType<typeof createBrowserClient> | null = null
+
 export const createClientComponentClient = () => {
-  return createBrowserClient(supabaseUrl, supabaseAnonKey)
+  if (typeof window === 'undefined') {
+    // Server-side: always create new instance
+    return createBrowserClient(supabaseUrl, supabaseAnonKey)
+  }
+
+  // Client-side: use singleton pattern
+  if (!browserClient) {
+    browserClient = createBrowserClient(supabaseUrl, supabaseAnonKey)
+  }
+
+  return browserClient
 }
 
 // Server-side Supabase client for API routes
-export const createRouteHandlerClient = ({ cookies: cookieStore }: { cookies: any }) => {
+export const createRouteHandlerClient = ({
+  cookies: cookieStore,
+}: {
+  cookies: () => any
+}) => {
   return createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
       get(name: string) {
         return cookieStore().get(name)?.value
       },
-      set(name: string, value: string, options: any) {
+      set(name: string, value: string, options: Record<string, any>) {
         cookieStore().set({ name, value, ...options })
       },
-      remove(name: string, options: any) {
+      remove(name: string, options: Record<string, any>) {
         cookieStore().set({ name, value: '', ...options })
       },
     },
@@ -29,7 +47,11 @@ export const createRouteHandlerClient = ({ cookies: cookieStore }: { cookies: an
 }
 
 // Server-side Supabase client for Server Components
-export const createServerComponentClient = ({ cookies: cookieStore }: { cookies: any }) => {
+export const createServerComponentClient = ({
+  cookies: cookieStore,
+}: {
+  cookies: () => any
+}) => {
   return createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
       get(name: string) {
@@ -44,8 +66,8 @@ export const createServiceRoleClient = () => {
   return createClient(supabaseUrl, supabaseServiceKey)
 }
 
-// Legacy client for backwards compatibility
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+// Note: Legacy client removed to prevent multiple GoTrueClient instances
+// Use createClientComponentClient() instead
 
 // Database types
 export interface User {
@@ -101,7 +123,9 @@ export interface Database {
       translation_history: {
         Row: TranslationHistory
         Insert: Omit<TranslationHistory, 'id' | 'created_at'>
-        Update: Partial<Omit<TranslationHistory, 'id' | 'user_id' | 'created_at'>>
+        Update: Partial<
+          Omit<TranslationHistory, 'id' | 'user_id' | 'created_at'>
+        >
       }
     }
   }

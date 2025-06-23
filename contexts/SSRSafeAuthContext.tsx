@@ -1,7 +1,15 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
-import { createBrowserClient } from '@supabase/ssr'
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react'
+// DISABLED: This context was creating multiple Supabase client instances
+// Use AuthContext.tsx instead which implements singleton pattern
+// import { createBrowserClient } from '@supabase/ssr'
 import type { User, Session } from '@supabase/supabase-js'
 import { logger } from '@/lib/logger'
 
@@ -25,7 +33,11 @@ export interface UserProfile {
   usage_count: number
   created_at: string
   last_active: string
-  verification_status: 'unverified' | 'email_verified' | 'phone_verified' | 'fully_verified'
+  verification_status:
+    | 'unverified'
+    | 'email_verified'
+    | 'phone_verified'
+    | 'fully_verified'
   api_quota: {
     used: number
     limit: number
@@ -62,12 +74,22 @@ export interface UserPreferences {
 
 interface AuthContextType extends AuthState {
   signIn: (email: string, password: string) => Promise<{ error?: string }>
-  signUp: (email: string, password: string, fullName?: string) => Promise<{ error?: string }>
+  signUp: (
+    email: string,
+    password: string,
+    fullName?: string
+  ) => Promise<{ error?: string }>
   signOut: () => Promise<void>
   updateProfile: (updates: Partial<UserProfile>) => Promise<{ error?: string }>
-  updatePreferences: (updates: Partial<UserPreferences>) => Promise<{ error?: string }>
+  updatePreferences: (
+    updates: Partial<UserPreferences>
+  ) => Promise<{ error?: string }>
   refreshUserData: () => Promise<void>
-  checkQuotaUsage: () => Promise<{ canProceed: boolean; usage: number; limit: number }>
+  checkQuotaUsage: () => Promise<{
+    canProceed: boolean
+    usage: number
+    limit: number
+  }>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -77,7 +99,10 @@ interface AuthProviderProps {
   initialSession?: Session | null
 }
 
-export function SSRSafeAuthProvider({ children, initialSession }: AuthProviderProps) {
+export function SSRSafeAuthProvider({
+  children,
+  initialSession,
+}: AuthProviderProps) {
   const [authState, setAuthState] = useState<AuthState>({
     user: initialSession?.user || null,
     session: initialSession || null,
@@ -85,13 +110,13 @@ export function SSRSafeAuthProvider({ children, initialSession }: AuthProviderPr
     isAuthenticated: !!initialSession?.user,
     userProfile: null,
     subscription: null,
-    preferences: null
+    preferences: null,
   })
 
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
+  // DISABLED: Preventing multiple Supabase client instances
+  // This context was creating a second Supabase client instance
+  // which caused "Multiple GoTrueClient instances" warnings
+  // Use AuthContext.tsx instead which implements singleton pattern
 
   // Initialize auth state on mount
   useEffect(() => {
@@ -100,8 +125,11 @@ export function SSRSafeAuthProvider({ children, initialSession }: AuthProviderPr
     async function initializeAuth() {
       try {
         // Get current session
-        const { data: { session }, error } = await supabase.auth.getSession()
-        
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession()
+
         if (error) {
           logger.error({ error }, 'Failed to get auth session')
           if (mounted) {
@@ -113,13 +141,13 @@ export function SSRSafeAuthProvider({ children, initialSession }: AuthProviderPr
         if (session?.user && mounted) {
           // Load user profile and preferences
           await loadUserData(session.user.id)
-          
+
           setAuthState(prev => ({
             ...prev,
             user: session.user,
             session,
             isAuthenticated: true,
-            isLoading: false
+            isLoading: false,
           }))
         } else if (mounted) {
           setAuthState(prev => ({
@@ -130,10 +158,9 @@ export function SSRSafeAuthProvider({ children, initialSession }: AuthProviderPr
             isLoading: false,
             userProfile: null,
             subscription: null,
-            preferences: null
+            preferences: null,
           }))
         }
-
       } catch (error) {
         logger.error({ error }, 'Auth initialization failed')
         if (mounted) {
@@ -151,34 +178,34 @@ export function SSRSafeAuthProvider({ children, initialSession }: AuthProviderPr
     }
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (!mounted) return
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!mounted) return
 
-        logger.info({ event, userId: session?.user?.id }, 'Auth state changed')
+      logger.info({ event, userId: session?.user?.id }, 'Auth state changed')
 
-        if (session?.user) {
-          await loadUserData(session.user.id)
-          setAuthState(prev => ({
-            ...prev,
-            user: session.user,
-            session,
-            isAuthenticated: true,
-            isLoading: false
-          }))
-        } else {
-          setAuthState({
-            user: null,
-            session: null,
-            isLoading: false,
-            isAuthenticated: false,
-            userProfile: null,
-            subscription: null,
-            preferences: null
-          })
-        }
+      if (session?.user) {
+        await loadUserData(session.user.id)
+        setAuthState(prev => ({
+          ...prev,
+          user: session.user,
+          session,
+          isAuthenticated: true,
+          isLoading: false,
+        }))
+      } else {
+        setAuthState({
+          user: null,
+          session: null,
+          isLoading: false,
+          isAuthenticated: false,
+          userProfile: null,
+          subscription: null,
+          preferences: null,
+        })
       }
-    )
+    })
 
     return () => {
       mounted = false
@@ -189,19 +216,40 @@ export function SSRSafeAuthProvider({ children, initialSession }: AuthProviderPr
   // Load user profile, subscription, and preferences
   async function loadUserData(userId: string) {
     try {
-      const [profileResponse, subscriptionResponse, preferencesResponse] = await Promise.allSettled([
-        supabase.from('user_profiles').select('*').eq('user_id', userId).single(),
-        supabase.from('user_subscriptions').select('*').eq('user_id', userId).single(),
-        supabase.from('user_preferences').select('*').eq('user_id', userId).single()
-      ])
+      const [profileResponse, subscriptionResponse, preferencesResponse] =
+        await Promise.allSettled([
+          supabase
+            .from('user_profiles')
+            .select('*')
+            .eq('user_id', userId)
+            .single(),
+          supabase
+            .from('user_subscriptions')
+            .select('*')
+            .eq('user_id', userId)
+            .single(),
+          supabase
+            .from('user_preferences')
+            .select('*')
+            .eq('user_id', userId)
+            .single(),
+        ])
 
       setAuthState(prev => ({
         ...prev,
-        userProfile: profileResponse.status === 'fulfilled' ? profileResponse.value.data : null,
-        subscription: subscriptionResponse.status === 'fulfilled' ? subscriptionResponse.value.data : null,
-        preferences: preferencesResponse.status === 'fulfilled' ? preferencesResponse.value.data : getDefaultPreferences()
+        userProfile:
+          profileResponse.status === 'fulfilled'
+            ? profileResponse.value.data
+            : null,
+        subscription:
+          subscriptionResponse.status === 'fulfilled'
+            ? subscriptionResponse.value.data
+            : null,
+        preferences:
+          preferencesResponse.status === 'fulfilled'
+            ? preferencesResponse.value.data
+            : getDefaultPreferences(),
       }))
-
     } catch (error) {
       logger.error({ error, userId }, 'Failed to load user data')
     }
@@ -210,11 +258,11 @@ export function SSRSafeAuthProvider({ children, initialSession }: AuthProviderPr
   // Auth actions
   const signIn = async (email: string, password: string) => {
     setAuthState(prev => ({ ...prev, isLoading: true }))
-    
+
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
-        password
+        password,
       })
 
       if (error) {
@@ -232,16 +280,16 @@ export function SSRSafeAuthProvider({ children, initialSession }: AuthProviderPr
 
   const signUp = async (email: string, password: string, fullName?: string) => {
     setAuthState(prev => ({ ...prev, isLoading: true }))
-    
+
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
-            full_name: fullName
-          }
-        }
+            full_name: fullName,
+          },
+        },
       })
 
       if (error) {
@@ -257,7 +305,7 @@ export function SSRSafeAuthProvider({ children, initialSession }: AuthProviderPr
           full_name: fullName,
           subscription_tier: 'free',
           usage_count: 0,
-          verification_status: 'email_verified'
+          verification_status: 'email_verified',
         })
       }
 
@@ -300,21 +348,19 @@ export function SSRSafeAuthProvider({ children, initialSession }: AuthProviderPr
     if (!authState.user) return { error: 'Chưa đăng nhập' }
 
     try {
-      const { error } = await supabase
-        .from('user_preferences')
-        .upsert({
-          user_id: authState.user.id,
-          ...authState.preferences,
-          ...updates,
-          updated_at: new Date().toISOString()
-        })
+      const { error } = await supabase.from('user_preferences').upsert({
+        user_id: authState.user.id,
+        ...authState.preferences,
+        ...updates,
+        updated_at: new Date().toISOString(),
+      })
 
       if (error) return { error: error.message }
 
       // Update local state
       setAuthState(prev => ({
         ...prev,
-        preferences: { ...prev.preferences, ...updates } as UserPreferences
+        preferences: { ...prev.preferences, ...updates } as UserPreferences,
       }))
 
       return {}
@@ -338,7 +384,7 @@ export function SSRSafeAuthProvider({ children, initialSession }: AuthProviderPr
     return {
       canProceed: used < limit,
       usage: used,
-      limit
+      limit,
     }
   }
 
@@ -350,13 +396,11 @@ export function SSRSafeAuthProvider({ children, initialSession }: AuthProviderPr
     updateProfile,
     updatePreferences,
     refreshUserData,
-    checkQuotaUsage
+    checkQuotaUsage,
   }
 
   return (
-    <AuthContext.Provider value={contextValue}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   )
 }
 
@@ -380,26 +424,28 @@ function getDefaultPreferences(): UserPreferences {
     email_notifications: true,
     marketing_emails: false,
     quality_preference: 'balanced',
-    preferred_payment_method: 'vnpay'
+    preferred_payment_method: 'vnpay',
   }
 }
 
 // Utility hook for checking if user has feature access
 export function useFeatureAccess() {
   const { subscription } = useSSRSafeAuth()
-  
+
   return {
     hasFeature: (feature: string) => {
       return subscription?.features.includes(feature) || false
     },
     canUseOCR: () => {
-      return ['standard', 'premium', 'enterprise'].includes(subscription?.tier || 'free')
+      return ['standard', 'premium', 'enterprise'].includes(
+        subscription?.tier || 'free'
+      )
     },
     canUseBatchProcessing: () => {
       return ['premium', 'enterprise'].includes(subscription?.tier || 'free')
     },
     hasAPIAccess: () => {
       return subscription?.tier !== 'free'
-    }
+    },
   }
 }
