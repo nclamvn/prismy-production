@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useAuth } from '@/contexts/AuthContext'
 import { useUnifiedAuthContext } from '@/contexts/UnifiedAuthProvider'
+import PublicLayout from '@/components/layouts/PublicLayout'
 import Footer from '@/components/Footer'
 import { slideUp, staggerContainer, motionSafe } from '@/lib/motion'
 import { UNIFIED_SUBSCRIPTION_PLANS } from '@/lib/payments/payment-service'
@@ -196,242 +197,323 @@ export default function Home() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-bg-main overflow-x-hidden">
-      <main className="overflow-x-hidden">
-        {/* Hero Section - Full Width */}
-        <section className="relative overflow-hidden bg-white pt-20 w-full">
-          <div className="w-full py-8 md:py-12">
-            <div className="w-full">
-              <motion.div
-                variants={motionSafe(staggerContainer)}
-                initial="hidden"
-                animate="visible"
-                className="text-center px-4 md:px-8 lg:px-12"
-              >
-                {/* Hero GIF */}
+    <PublicLayout>
+      <div className="min-h-screen bg-bg-main overflow-x-hidden">
+        <main className="overflow-x-hidden">
+          {/* Hero Section - Full Width */}
+          <section className="relative overflow-hidden bg-white pt-20 w-full">
+            <div className="w-full py-8 md:py-12">
+              <div className="w-full">
                 <motion.div
-                  variants={motionSafe(slideUp)}
-                  className="mb-8 md:mb-12 lg:mb-16"
+                  variants={motionSafe(staggerContainer)}
+                  initial="hidden"
+                  animate="visible"
+                  className="text-center px-4 md:px-8 lg:px-12"
                 >
-                  <div
-                    className="hero-gif-container mx-auto"
-                    style={{ maxWidth: '720px' }}
+                  {/* Hero GIF */}
+                  <motion.div
+                    variants={motionSafe(slideUp)}
+                    className="mb-8 md:mb-12 lg:mb-16"
                   >
-                    <img
-                      src="/assets/header.gif"
-                      alt=""
-                      aria-hidden="true"
-                      loading="lazy"
-                      className="hero-gif w-full"
-                      style={{
-                        width: '100%',
-                        height: 'auto',
-                        display: 'block',
-                      }}
-                    />
-                  </div>
-                </motion.div>
-
-                <motion.h1
-                  variants={motionSafe(slideUp)}
-                  className="heading-hero text-center mb-6"
-                >
-                  {content[language].hero.title}
-                </motion.h1>
-
-                <motion.p
-                  variants={motionSafe(slideUp)}
-                  className="subheadline text-center max-w-4xl mx-auto mb-8"
-                >
-                  {content[language].hero.description}
-                </motion.p>
-
-                <motion.div
-                  variants={motionSafe(slideUp)}
-                  className="flex flex-col sm:flex-row gap-4 justify-center mb-8 md:mb-10 lg:mb-12"
-                >
-                  <button
-                    onClick={handleGetStartedWithWorkspace}
-                    className="btn-primary btn-pill-lg"
-                  >
-                    {content[language].hero.getStarted}
-                  </button>
-                  <button className="btn-secondary btn-pill-lg">
-                    {content[language].hero.watchDemo}
-                  </button>
-                </motion.div>
-
-                <motion.p
-                  variants={motionSafe(slideUp)}
-                  className="body-sm text-gray-500 text-center mb-4 md:mb-6 lg:mb-8"
-                >
-                  {content[language].hero.trustIndicator}
-                </motion.p>
-              </motion.div>
-            </div>
-          </div>
-        </section>
-
-        {/* Features Section - Full Width */}
-        <section id="features" className="py-20 w-full">
-          <div className="w-full">
-            <div className="w-full">
-              <motion.div
-                variants={motionSafe(staggerContainer)}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-              >
-                <motion.div
-                  variants={motionSafe(slideUp)}
-                  className="text-center mb-16"
-                >
-                  <h2 className="heading-2 mb-4">
-                    {content[language].features.title}
-                  </h2>
-                  <p className="subheadline max-w-2xl mx-auto">
-                    {content[language].features.subtitle}
-                  </p>
-                </motion.div>
-
-                {/* Mobile: Horizontal Carousel */}
-                <div
-                  className="md:hidden flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory scrollbar-hide"
-                  style={{
-                    scrollSnapType: 'x mandatory',
-                    scrollBehavior: 'smooth',
-                    paddingLeft: 'calc(50vw - 160px)',
-                    paddingRight: 'calc(50vw - 160px)',
-                  }}
-                >
-                  {content[language].features.items.map((feature, index) => (
                     <div
-                      key={index}
-                      className="snap-center shrink-0 w-80"
-                      style={{ scrollSnapAlign: 'center' }}
+                      className="hero-gif-container mx-auto"
+                      style={{ maxWidth: '720px' }}
                     >
-                      <FeatureCard
-                        icon={feature.icon}
-                        title={feature.title}
-                        description={feature.description}
-                        delay={0} // No delay for mobile carousel
+                      <img
+                        src="/assets/header.gif"
+                        alt=""
+                        aria-hidden="true"
+                        loading="lazy"
+                        className="hero-gif w-full"
+                        style={{
+                          width: '100%',
+                          height: 'auto',
+                          display: 'block',
+                        }}
                       />
                     </div>
-                  ))}
-                </div>
+                  </motion.div>
 
-                {/* Desktop: Grid Layout */}
-                <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 md:px-8 lg:px-12">
-                  {content[language].features.items.map((feature, index) => (
-                    <FeatureCard
-                      key={index}
-                      icon={feature.icon}
-                      title={feature.title}
-                      description={feature.description}
-                      delay={index * 0.1}
-                    />
-                  ))}
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </section>
+                  <motion.h1
+                    variants={motionSafe(slideUp)}
+                    className="heading-hero text-center mb-6"
+                  >
+                    {content[language].hero.title}
+                  </motion.h1>
 
-        {/* Stats Section - Full Width */}
-        <section className="py-20 bg-gray-50 w-full">
-          <div className="w-full">
-            <div className="w-full">
-              <motion.div
-                variants={motionSafe(staggerContainer)}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                className="text-center"
-              >
-                <motion.h2
-                  variants={motionSafe(slideUp)}
-                  className="heading-2 mb-12"
-                >
-                  {content[language].social_proof.title}
-                </motion.h2>
+                  <motion.p
+                    variants={motionSafe(slideUp)}
+                    className="subheadline text-center max-w-4xl mx-auto mb-8"
+                  >
+                    {content[language].hero.description}
+                  </motion.p>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-8 px-4 md:px-8 lg:px-12">
-                  {content[language].social_proof.stats.map((stat, index) => {
-                    const IconComponent = stat.icon
-                    return (
-                      <motion.div
-                        key={index}
-                        variants={motionSafe(slideUp)}
-                        className="mini-card text-center"
-                      >
-                        <div className="flex justify-center mb-3">
-                          <IconComponent
-                            size={32}
-                            className="text-gray-600"
-                            strokeWidth={1.5}
-                          />
-                        </div>
-                        <div className="heading-1 text-gray-900 mb-2">
-                          {stat.number}
-                        </div>
-                        <div className="body-base">{stat.label}</div>
-                      </motion.div>
-                    )
-                  })}
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </section>
+                  <motion.div
+                    variants={motionSafe(slideUp)}
+                    className="flex flex-col sm:flex-row gap-4 justify-center mb-8 md:mb-10 lg:mb-12"
+                  >
+                    <button
+                      onClick={handleGetStartedWithWorkspace}
+                      className="btn-primary btn-pill-lg"
+                    >
+                      {content[language].hero.getStarted}
+                    </button>
+                    <button className="btn-secondary btn-pill-lg">
+                      {content[language].hero.watchDemo}
+                    </button>
+                  </motion.div>
 
-        {/* Pricing Section - Full Width */}
-        <section id="pricing" className="py-20 w-full">
-          <div className="w-full">
-            <div className="w-full">
-              <motion.div
-                variants={motionSafe(staggerContainer)}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-              >
-                <motion.div
-                  variants={motionSafe(slideUp)}
-                  className="text-center mb-16"
-                >
-                  <h2 className="heading-2 mb-4">
-                    {content[language].pricing.title}
-                  </h2>
-                  <p className="subheadline">
-                    {content[language].pricing.subtitle}
-                  </p>
+                  <motion.p
+                    variants={motionSafe(slideUp)}
+                    className="body-sm text-gray-500 text-center mb-4 md:mb-6 lg:mb-8"
+                  >
+                    {content[language].hero.trustIndicator}
+                  </motion.p>
                 </motion.div>
+              </div>
+            </div>
+          </section>
 
-                {/* Mobile: Pricing Carousel */}
-                <div className="md:hidden">
+          {/* Features Section - Full Width */}
+          <section id="features" className="py-20 w-full">
+            <div className="w-full">
+              <div className="w-full">
+                <motion.div
+                  variants={motionSafe(staggerContainer)}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                >
+                  <motion.div
+                    variants={motionSafe(slideUp)}
+                    className="text-center mb-16"
+                  >
+                    <h2 className="heading-2 mb-4">
+                      {content[language].features.title}
+                    </h2>
+                    <p className="subheadline max-w-2xl mx-auto">
+                      {content[language].features.subtitle}
+                    </p>
+                  </motion.div>
+
+                  {/* Mobile: Horizontal Carousel */}
                   <div
-                    ref={pricingScrollRef}
-                    className="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory scrollbar-hide"
+                    className="md:hidden flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory scrollbar-hide"
                     style={{
                       scrollSnapType: 'x mandatory',
                       scrollBehavior: 'smooth',
-                      paddingLeft: 'calc(50vw - 165px)',
-                      paddingRight: 'calc(50vw - 165px)',
+                      paddingLeft: 'calc(50vw - 160px)',
+                      paddingRight: 'calc(50vw - 160px)',
                     }}
                   >
+                    {content[language].features.items.map((feature, index) => (
+                      <div
+                        key={index}
+                        className="snap-center shrink-0 w-80"
+                        style={{ scrollSnapAlign: 'center' }}
+                      >
+                        <FeatureCard
+                          icon={feature.icon}
+                          title={feature.title}
+                          description={feature.description}
+                          delay={0} // No delay for mobile carousel
+                        />
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Desktop: Grid Layout */}
+                  <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 md:px-8 lg:px-12">
+                    {content[language].features.items.map((feature, index) => (
+                      <FeatureCard
+                        key={index}
+                        icon={feature.icon}
+                        title={feature.title}
+                        description={feature.description}
+                        delay={index * 0.1}
+                      />
+                    ))}
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+          </section>
+
+          {/* Stats Section - Full Width */}
+          <section className="py-20 bg-gray-50 w-full">
+            <div className="w-full">
+              <div className="w-full">
+                <motion.div
+                  variants={motionSafe(staggerContainer)}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  className="text-center"
+                >
+                  <motion.h2
+                    variants={motionSafe(slideUp)}
+                    className="heading-2 mb-12"
+                  >
+                    {content[language].social_proof.title}
+                  </motion.h2>
+
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-8 px-4 md:px-8 lg:px-12">
+                    {content[language].social_proof.stats.map((stat, index) => {
+                      const IconComponent = stat.icon
+                      return (
+                        <motion.div
+                          key={index}
+                          variants={motionSafe(slideUp)}
+                          className="mini-card text-center"
+                        >
+                          <div className="flex justify-center mb-3">
+                            <IconComponent
+                              size={32}
+                              className="text-gray-600"
+                              strokeWidth={1.5}
+                            />
+                          </div>
+                          <div className="heading-1 text-gray-900 mb-2">
+                            {stat.number}
+                          </div>
+                          <div className="body-base">{stat.label}</div>
+                        </motion.div>
+                      )
+                    })}
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+          </section>
+
+          {/* Pricing Section - Full Width */}
+          <section id="pricing" className="py-20 w-full">
+            <div className="w-full">
+              <div className="w-full">
+                <motion.div
+                  variants={motionSafe(staggerContainer)}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                >
+                  <motion.div
+                    variants={motionSafe(slideUp)}
+                    className="text-center mb-16"
+                  >
+                    <h2 className="heading-2 mb-4">
+                      {content[language].pricing.title}
+                    </h2>
+                    <p className="subheadline">
+                      {content[language].pricing.subtitle}
+                    </p>
+                  </motion.div>
+
+                  {/* Mobile: Pricing Carousel */}
+                  <div className="md:hidden">
+                    <div
+                      ref={pricingScrollRef}
+                      className="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory scrollbar-hide"
+                      style={{
+                        scrollSnapType: 'x mandatory',
+                        scrollBehavior: 'smooth',
+                        paddingLeft: 'calc(50vw - 165px)',
+                        paddingRight: 'calc(50vw - 165px)',
+                      }}
+                    >
+                      {Object.entries(UNIFIED_SUBSCRIPTION_PLANS).map(
+                        ([key, plan]) => (
+                          <div
+                            key={key}
+                            className="snap-center shrink-0 w-80"
+                            style={{ scrollSnapAlign: 'center' }}
+                          >
+                            <div className="card-base card-hover p-6 h-full">
+                              <h3 className="heading-4 mb-4">
+                                {language === 'vi' ? plan.nameVi : plan.name}
+                              </h3>
+
+                              <div className="mb-6">
+                                <span className="text-lg md:text-xl lg:text-2xl font-semibold">
+                                  {new Intl.NumberFormat('vi-VN', {
+                                    style: 'currency',
+                                    currency: 'VND',
+                                  }).format(plan.priceVND)}
+                                </span>
+                                <span className="body-sm text-gray-500">
+                                  /{content[language].pricing.monthly}
+                                </span>
+                              </div>
+
+                              <ul className="space-y-3 mb-8">
+                                {(language === 'vi'
+                                  ? plan.featuresVi
+                                  : plan.features
+                                ).map((feature, index) => (
+                                  <li
+                                    key={index}
+                                    className="flex items-start space-x-3"
+                                  >
+                                    <svg
+                                      className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0"
+                                      fill="currentColor"
+                                      viewBox="0 0 20 20"
+                                    >
+                                      <path
+                                        fillRule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clipRule="evenodd"
+                                      />
+                                    </svg>
+                                    <span className="body-sm">{feature}</span>
+                                  </li>
+                                ))}
+                              </ul>
+
+                              <button
+                                onClick={handleGetStartedWithWorkspace}
+                                className={`w-full ${key === 'standard' ? 'btn-primary btn-pill-lg' : 'btn-secondary btn-pill-lg'}`}
+                              >
+                                {content[language].pricing.getStarted}
+                              </button>
+                            </div>
+                          </div>
+                        )
+                      )}
+                    </div>
+
+                    {/* Dot Indicators */}
+                    <div className="flex justify-center gap-2 mt-6">
+                      {Object.keys(UNIFIED_SUBSCRIPTION_PLANS).map(
+                        (_, index) => (
+                          <div
+                            key={index}
+                            className={`carousel-dot w-2 h-2 rounded-full ${
+                              index === activePricingIndex
+                                ? 'carousel-dot-active bg-gray-900'
+                                : 'bg-gray-300'
+                            }`}
+                          />
+                        )
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Desktop: Grid Layout */}
+                  <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 px-4 md:px-8 lg:px-12">
                     {Object.entries(UNIFIED_SUBSCRIPTION_PLANS).map(
                       ([key, plan]) => (
-                        <div
+                        <motion.div
                           key={key}
-                          className="snap-center shrink-0 w-80"
-                          style={{ scrollSnapAlign: 'center' }}
+                          variants={motionSafe(slideUp)}
+                          className="relative"
                         >
-                          <div className="card-base card-hover p-6 h-full">
+                          <div className="card-base card-hover p-8 h-full">
                             <h3 className="heading-4 mb-4">
                               {language === 'vi' ? plan.nameVi : plan.name}
                             </h3>
 
                             <div className="mb-6">
-                              <span className="text-lg md:text-xl lg:text-2xl font-semibold">
+                              <span className="heading-2">
                                 {new Intl.NumberFormat('vi-VN', {
                                   style: 'currency',
                                   currency: 'VND',
@@ -474,95 +556,18 @@ export default function Home() {
                               {content[language].pricing.getStarted}
                             </button>
                           </div>
-                        </div>
+                        </motion.div>
                       )
                     )}
                   </div>
-
-                  {/* Dot Indicators */}
-                  <div className="flex justify-center gap-2 mt-6">
-                    {Object.keys(UNIFIED_SUBSCRIPTION_PLANS).map((_, index) => (
-                      <div
-                        key={index}
-                        className={`carousel-dot w-2 h-2 rounded-full ${
-                          index === activePricingIndex
-                            ? 'carousel-dot-active bg-gray-900'
-                            : 'bg-gray-300'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                {/* Desktop: Grid Layout */}
-                <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 px-4 md:px-8 lg:px-12">
-                  {Object.entries(UNIFIED_SUBSCRIPTION_PLANS).map(
-                    ([key, plan]) => (
-                      <motion.div
-                        key={key}
-                        variants={motionSafe(slideUp)}
-                        className="relative"
-                      >
-                        <div className="card-base card-hover p-8 h-full">
-                          <h3 className="heading-4 mb-4">
-                            {language === 'vi' ? plan.nameVi : plan.name}
-                          </h3>
-
-                          <div className="mb-6">
-                            <span className="heading-2">
-                              {new Intl.NumberFormat('vi-VN', {
-                                style: 'currency',
-                                currency: 'VND',
-                              }).format(plan.priceVND)}
-                            </span>
-                            <span className="body-sm text-gray-500">
-                              /{content[language].pricing.monthly}
-                            </span>
-                          </div>
-
-                          <ul className="space-y-3 mb-8">
-                            {(language === 'vi'
-                              ? plan.featuresVi
-                              : plan.features
-                            ).map((feature, index) => (
-                              <li
-                                key={index}
-                                className="flex items-start space-x-3"
-                              >
-                                <svg
-                                  className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0"
-                                  fill="currentColor"
-                                  viewBox="0 0 20 20"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                    clipRule="evenodd"
-                                  />
-                                </svg>
-                                <span className="body-sm">{feature}</span>
-                              </li>
-                            ))}
-                          </ul>
-
-                          <button
-                            onClick={handleGetStartedWithWorkspace}
-                            className={`w-full ${key === 'standard' ? 'btn-primary btn-pill-lg' : 'btn-secondary btn-pill-lg'}`}
-                          >
-                            {content[language].pricing.getStarted}
-                          </button>
-                        </div>
-                      </motion.div>
-                    )
-                  )}
-                </div>
-              </motion.div>
+                </motion.div>
+              </div>
             </div>
-          </div>
-        </section>
-      </main>
+          </section>
+        </main>
 
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </PublicLayout>
   )
 }

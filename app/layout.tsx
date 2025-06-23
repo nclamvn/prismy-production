@@ -10,7 +10,6 @@ import {
   LoadingProvider,
   GlobalLoadingIndicator,
 } from '@/contexts/LoadingContext'
-import Navbar from '@/components/Navbar'
 
 const inter = Inter({
   subsets: ['latin', 'vietnamese'],
@@ -140,7 +139,6 @@ export default function RootLayout({
             <AuthProvider>
               <UnifiedAuthProvider>
                 <GlobalLoadingIndicator />
-                <Navbar />
                 {children}
               </UnifiedAuthProvider>
             </AuthProvider>

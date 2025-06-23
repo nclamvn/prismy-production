@@ -8,6 +8,7 @@ import { useUnifiedAuthContext } from '@/contexts/UnifiedAuthProvider'
 import { useWorkspaceLoading } from '@/contexts/LoadingContext'
 import { motionSafe, slideUp, staggerContainer, fadeIn } from '@/lib/motion'
 import { WorkspaceErrorBoundary } from '@/components/ErrorBoundary'
+import AuthenticatedLayout from '@/components/layouts/AuthenticatedLayout'
 import WorkspaceLayout from '@/components/workspace/WorkspaceLayout'
 import DocumentMode from '@/components/workspace/modes/DocumentMode'
 import IntelligenceMode from '@/components/workspace/modes/IntelligenceMode'
@@ -111,7 +112,7 @@ function WorkspaceContent() {
   }
 
   return (
-    <div className="min-h-screen bg-bg-main">
+    <AuthenticatedLayout>
       <motion.div
         variants={motionSafe(fadeIn)}
         initial="hidden"
@@ -127,7 +128,7 @@ function WorkspaceContent() {
           {renderCurrentMode()}
         </WorkspaceLayout>
       </motion.div>
-    </div>
+    </AuthenticatedLayout>
   )
 }
 
