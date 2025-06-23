@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext } from 'react'
+import { createContext, useContext, useEffect } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useUnifiedAuth, type UnifiedAuthOptions } from '@/hooks/useUnifiedAuth'
 import { AuthErrorBoundary } from '@/components/ErrorBoundary'
@@ -29,6 +29,18 @@ export function UnifiedAuthProvider({
 }) {
   const { language } = useLanguage()
   const unifiedAuth = useUnifiedAuth()
+
+  // Listen for openAuthModal events from AuthErrorHandler
+  useEffect(() => {
+    const handleOpenAuthModal = () => {
+      unifiedAuth.openAuthModal({ mode: 'signin' })
+    }
+
+    window.addEventListener('openAuthModal', handleOpenAuthModal)
+    return () => {
+      window.removeEventListener('openAuthModal', handleOpenAuthModal)
+    }
+  }, [unifiedAuth])
 
   return (
     <UnifiedAuthContext.Provider value={unifiedAuth}>

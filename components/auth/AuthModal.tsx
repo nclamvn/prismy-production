@@ -190,8 +190,8 @@ export default function AuthModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
-    setError('')
+    setLoadingState('authenticating')
+    setAuthError(null)
 
     try {
       let result
@@ -202,24 +202,32 @@ export default function AuthModal({
       }
 
       if (result.error) {
-        setError(result.error.message)
+        setAuthError({
+          type: 'validation',
+          message: result.error.message,
+        })
+        setLoadingState('idle')
       } else {
+        setLoadingState('completing')
         handleClose()
         // Redirect to intended destination after successful authentication
         if (redirectTo) {
           window.location.href = redirectTo
         }
       }
-    } catch (err) {
-      setError(content[language].error)
-    } finally {
-      setLoading(false)
+    } catch (err: any) {
+      setAuthError({
+        type: 'unknown',
+        message: content[language].error,
+        details: err.message,
+      })
+      setLoadingState('idle')
     }
   }
 
   const toggleMode = () => {
     setMode(mode === 'signin' ? 'signup' : 'signin')
-    setError('')
+    setAuthError(null)
   }
 
   const handleGoogleSignIn = async () => {

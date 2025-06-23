@@ -201,6 +201,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     callbackUrl.searchParams.set('redirectTo', intendedRedirect)
 
     try {
+      console.log('🔄 AuthContext: Starting Google OAuth', {
+        redirectTo: intendedRedirect,
+        callbackUrl: callbackUrl.toString(),
+        origin: window.location.origin,
+      })
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -209,10 +215,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
 
       if (error) {
+        console.error('❌ AuthContext: Google OAuth error:', error)
+        return { error }
       }
 
-      return { error }
+      console.log('✅ AuthContext: Google OAuth initiated successfully')
+      return { error: null }
     } catch (err) {
+      console.error('❌ AuthContext: Google OAuth catch block:', err)
       return { error: err }
     }
   }
@@ -225,6 +235,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     callbackUrl.searchParams.set('redirectTo', intendedRedirect)
 
     try {
+      console.log('🔄 AuthContext: Starting Apple OAuth', {
+        redirectTo: intendedRedirect,
+        callbackUrl: callbackUrl.toString(),
+        origin: window.location.origin,
+      })
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'apple',
         options: {
@@ -233,10 +249,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
 
       if (error) {
+        console.error('❌ AuthContext: Apple OAuth error:', error)
+        return { error }
       }
 
-      return { error }
+      console.log('✅ AuthContext: Apple OAuth initiated successfully')
+      return { error: null }
     } catch (err) {
+      console.error('❌ AuthContext: Apple OAuth catch block:', err)
       return { error: err }
     }
   }

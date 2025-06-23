@@ -157,7 +157,7 @@ export async function GET(request: Request) {
     const redirectTo =
       requestUrl.searchParams.get('redirect_to') ||
       requestUrl.searchParams.get('redirectTo') ||
-      '/dashboard'
+      '/workspace'
 
     if (!validateRedirectUrl(redirectTo, requestUrl.origin)) {
       console.error('❌ Invalid redirect URL:', redirectTo)

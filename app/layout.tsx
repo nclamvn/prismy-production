@@ -10,6 +10,7 @@ import {
   LoadingProvider,
   GlobalLoadingIndicator,
 } from '@/contexts/LoadingContext'
+import AuthErrorHandler from '@/components/auth/AuthErrorHandler'
 
 const inter = Inter({
   subsets: ['latin', 'vietnamese'],
@@ -139,6 +140,7 @@ export default function RootLayout({
             <AuthProvider>
               <UnifiedAuthProvider>
                 <GlobalLoadingIndicator />
+                <AuthErrorHandler />
                 {children}
               </UnifiedAuthProvider>
             </AuthProvider>
