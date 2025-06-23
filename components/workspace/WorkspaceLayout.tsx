@@ -14,20 +14,16 @@ import {
   Building2,
   CreditCard,
   User,
-  Bell,
-  Search,
   Menu,
   X,
   Home,
-  Zap,
-  Globe,
-  Users,
 } from 'lucide-react'
 
 interface WorkspaceLayoutProps {
   currentMode: WorkspaceMode
   onModeChange: (mode: WorkspaceMode) => void
   language: 'vi' | 'en'
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   user: any
   children: React.ReactNode
 }
@@ -40,25 +36,8 @@ export default function WorkspaceLayout({
   children,
 }: WorkspaceLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const router = useRouter()
-
-  // Direct navigation to homepage - MANDATORY FUNCTIONALITY
-  const handleBackToHome = () => {
-    console.log('🏠 WorkspaceLayout: Back to Home clicked - direct navigation')
-    try {
-      // Direct navigation to homepage without complex logic
-      router.push('/')
-      console.log(
-        '✅ WorkspaceLayout: Direct router.push("/") called successfully'
-      )
-    } catch (error) {
-      console.error(
-        '❌ WorkspaceLayout: Router navigation failed, using fallback'
-      )
-      // Fallback to window navigation
-      window.location.href = '/'
-    }
-  }
 
   const content = {
     vi: {
@@ -390,17 +369,17 @@ export default function WorkspaceLayout({
                 </div>
               </div>
 
-              {/* Back to Home Button */}
-              <button
-                onClick={handleBackToHome}
-                className="flex items-center text-sm text-gray-600 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 rounded-md px-3 py-1.5 hover:bg-gray-50"
-                type="button"
+              {/* Back to Home - Direct HTML Link (DỨT ĐIỂM) */}
+              {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+              <a
+                href="/"
+                className="flex items-center text-sm text-gray-600 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 rounded-md px-3 py-1.5 hover:bg-gray-50 no-underline"
               >
                 <Home size={16} className="mr-2" />
                 <span className="hidden sm:inline">
                   {content[language].backToHome}
                 </span>
-              </button>
+              </a>
 
               {/* User Menu */}
               <UserMenu />
