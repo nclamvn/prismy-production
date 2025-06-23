@@ -148,27 +148,6 @@ export default function RootLayout({
         </LoadingProvider>
         <ServiceWorkerRegistration />
         <PerformanceMonitor />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              // Preload critical resources on interaction
-              const preloadEvents = ['mousedown', 'touchstart', 'keydown'];
-              const preload = () => {
-                const link = document.createElement('link');
-                link.rel = 'modulepreload';
-                link.href = '/_next/static/chunks/tesseract.js';
-                document.head.appendChild(link);
-                
-                preloadEvents.forEach(event => {
-                  document.removeEventListener(event, preload);
-                });
-              };
-              preloadEvents.forEach(event => {
-                document.addEventListener(event, preload, { once: true });
-              });
-            `,
-          }}
-        />
       </body>
     </html>
   )

@@ -96,16 +96,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    // Session restoration timeout (8 seconds)
+    // Session restoration timeout (5 seconds for better responsiveness)
     sessionRestoreTimeout = setTimeout(() => {
       if (!sessionRestored && isMounted) {
-        console.log(
-          '⏰ AuthContext: Session restoration timeout, proceeding without session'
-        )
+        // Removed console log for cleaner production experience
         setSessionRestored(true)
         setLoading(false)
       }
-    }, 8000)
+    }, 5000)
 
     getInitialSession()
 
