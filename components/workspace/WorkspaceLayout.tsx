@@ -16,6 +16,7 @@ import {
   Menu,
   X,
   Home,
+  User,
 } from 'lucide-react'
 
 interface WorkspaceLayoutProps {
