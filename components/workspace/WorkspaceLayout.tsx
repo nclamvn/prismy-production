@@ -353,67 +353,78 @@ export default function WorkspaceLayout({
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Top Header */}
-        <header className="bg-white border-b border-border-subtle p-4 lg:p-6">
+        {/* Clean Workspace Header - Professional & Minimal */}
+        <header className="bg-white border-b border-border-subtle px-4 py-3 lg:px-6 lg:py-4">
           <div className="flex items-center justify-between">
+            {/* Left Section: Mobile Menu + Current Section */}
             <div className="flex items-center">
+              {/* Mobile Menu Button */}
               <button
                 onClick={() => setIsSidebarOpen(true)}
-                className="lg:hidden p-2 hover:bg-gray-100 rounded-lg mr-4"
+                className="lg:hidden p-2 hover:bg-gray-100 rounded-lg mr-3 transition-colors"
               >
                 <Menu size={20} className="text-gray-600" />
               </button>
 
-              <div>
-                <h1 className="heading-3 text-gray-900">
+              {/* Current Section Info */}
+              <div className="hidden lg:block">
+                <h1 className="text-lg font-semibold text-gray-900">
                   {navigationItems.find(item => item.id === currentMode)?.label}
                 </h1>
-                <p className="body-sm text-gray-500">
+                <p className="text-sm text-gray-500 mt-0.5">
                   {
                     navigationItems.find(item => item.id === currentMode)
                       ?.description
                   }
                 </p>
               </div>
+
+              {/* Mobile Section Title */}
+              <div className="lg:hidden">
+                <h1 className="text-lg font-semibold text-gray-900">
+                  {navigationItems.find(item => item.id === currentMode)?.label}
+                </h1>
+              </div>
             </div>
 
-            <div className="flex items-center space-x-4">
+            {/* Right Section: Navigation + User */}
+            <div className="flex items-center space-x-3">
+              {/* Quick Stats - Desktop Only */}
+              <div className="hidden xl:flex items-center space-x-6 text-center pr-6 border-r border-gray-200">
+                <div>
+                  <div className="text-sm font-medium text-gray-900">247</div>
+                  <div className="text-xs text-gray-500">
+                    {content[language].quickStats.documents}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-gray-900">1.2M</div>
+                  <div className="text-xs text-gray-500">
+                    {content[language].quickStats.usage}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-gray-900">15</div>
+                  <div className="text-xs text-gray-500">
+                    {content[language].quickStats.languages}
+                  </div>
+                </div>
+              </div>
+
+              {/* Back to Home Button */}
               <button
                 onClick={handleBackToHome}
-                className="hidden md:flex items-center body-sm text-gray-600 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 rounded-md px-2 py-1"
+                className="flex items-center text-sm text-gray-600 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 rounded-md px-3 py-1.5 hover:bg-gray-50"
                 type="button"
               >
                 <Home size={16} className="mr-2" />
-                {content[language].backToHome}
+                <span className="hidden sm:inline">
+                  {content[language].backToHome}
+                </span>
               </button>
 
-              <div className="flex items-center space-x-3">
-                <div className="flex items-center space-x-4 text-center">
-                  <div>
-                    <div className="body-sm font-medium text-gray-900">247</div>
-                    <div className="body-xs text-gray-500">
-                      {content[language].quickStats.documents}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="body-sm font-medium text-gray-900">
-                      1.2M
-                    </div>
-                    <div className="body-xs text-gray-500">
-                      {content[language].quickStats.usage}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="body-sm font-medium text-gray-900">15</div>
-                    <div className="body-xs text-gray-500">
-                      {content[language].quickStats.languages}
-                    </div>
-                  </div>
-                </div>
-
-                {/* User Menu for logout functionality */}
-                <UserMenu />
-              </div>
+              {/* User Menu */}
+              <UserMenu />
             </div>
           </div>
         </header>
