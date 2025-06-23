@@ -134,7 +134,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signInWithGoogle = async (redirectTo?: string) => {
-    const intendedRedirect = redirectTo || '/dashboard'
+    const intendedRedirect = redirectTo || '/workspace'
 
     // Build callback URL with intended redirect as query param
     const callbackUrl = new URL('/auth/callback', window.location.origin)
@@ -158,7 +158,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signInWithApple = async (redirectTo?: string) => {
-    const intendedRedirect = redirectTo || '/dashboard'
+    const intendedRedirect = redirectTo || '/workspace'
 
     // Build callback URL with intended redirect as query param
     const callbackUrl = new URL('/auth/callback', window.location.origin)

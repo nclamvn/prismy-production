@@ -261,10 +261,10 @@ export default function OfflinePage() {
           </button>
 
           <a
-            href="/dashboard"
+            href="/workspace"
             className="flex-1 bg-white hover:bg-gray-50 text-gray-900 py-3 px-6 rounded-lg font-medium border border-gray-300 transition-colors flex items-center justify-center space-x-2"
           >
-            <span>Go to Dashboard</span>
+            <span>Go to Workspace</span>
             <ArrowRight className="h-5 w-5" />
           </a>
         </motion.div>

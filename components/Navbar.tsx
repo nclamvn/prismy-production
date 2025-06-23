@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter, usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { slideDown, motionSafe } from '@/lib/motion'
 import { useAuth } from '@/contexts/AuthContext'
@@ -21,6 +22,24 @@ export default function Navbar({}: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false)
   const { user, loading } = useAuth()
   const { handleGetStarted, handleSignIn } = useUnifiedAuthContext()
+  const router = useRouter()
+  const pathname = usePathname()
+
+  // Smart logo navigation logic
+  const getLogoHref = () => {
+    // If user is authenticated, always go to workspace
+    if (user) {
+      return '/workspace'
+    }
+    // If not authenticated, go to homepage
+    return '/'
+  }
+
+  const handleLogoClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    const targetHref = getLogoHref()
+    router.push(targetHref)
+  }
 
   // Scroll detection for desktop header styling only
   useEffect(() => {
@@ -81,9 +100,10 @@ export default function Navbar({}: NavbarProps) {
           <div className="flex items-center justify-between">
             {/* Mobile Logo */}
             <Link
-              href="/"
+              href={getLogoHref()}
+              onClick={handleLogoClick}
               className="flex items-center focus-visible-ring rounded-md"
-              aria-label="Prismy home"
+              aria-label={user ? 'Go to workspace' : 'Prismy home'}
             >
               <img src="/logo.svg" alt="Prismy" className="h-8 w-auto mr-2" />
               <span className="heading-4 font-bold">Prismy</span>
@@ -152,9 +172,10 @@ export default function Navbar({}: NavbarProps) {
               >
                 {/* Desktop Logo */}
                 <Link
-                  href="/"
+                  href={getLogoHref()}
+                  onClick={handleLogoClick}
                   className="flex items-center focus-visible-ring rounded-md mr-5"
-                  aria-label="Prismy home"
+                  aria-label={user ? 'Go to workspace' : 'Prismy home'}
                 >
                   <img
                     src="/logo.svg"

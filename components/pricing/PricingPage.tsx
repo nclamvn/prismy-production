@@ -39,22 +39,9 @@ const renderPaymentMethodIcon = (method: PaymentMethod) => {
 }
 
 export default function PricingPage({}: PricingPageProps) {
-  // Client-side only state
-  const [isClient, setIsClient] = useState(false)
-
-  // Context hooks - always call at component top level
-  const authContext = useAuth()
-  const langContext = useLanguage()
-
-  // Extract values with safe fallbacks
-  const user = authContext?.user || null
-  const authLoading = authContext?.loading ?? false
-  const language = langContext?.language ?? 'vi'
-
-  // Ensure we're on client side
-  useEffect(() => {
-    setIsClient(true)
-  }, [])
+  // Standard context usage
+  const { user, loading } = useAuth()
+  const { language } = useLanguage()
 
   // Simple currency formatter
   const formatCurrency = (amount: number) => {
@@ -166,15 +153,15 @@ export default function PricingPage({}: PricingPageProps) {
 
   // Load user quota information
   useEffect(() => {
-    if (user && !authLoading) {
+    if (user && !loading) {
       // Quota check logic can be implemented later
       setQuotaInfo({ canProceed: true, usage: 0, limit: 1000 })
     }
-  }, [user, authLoading])
+  }, [user, loading])
 
   // Mobile carousel scroll detection
   useEffect(() => {
-    if (!isClient || !tierScrollRef.current) return
+    if (!tierScrollRef.current) return
 
     const handleScroll = () => {
       if (!tierScrollRef.current) return
@@ -198,12 +185,10 @@ export default function PricingPage({}: PricingPageProps) {
         scrollContainer.removeEventListener('scroll', handleScroll)
       }
     }
-  }, [isClient, activeTierIndex])
+  }, [activeTierIndex])
 
   // Premium upgrade handler
   const handleUpgrade = async (planId: string) => {
-    if (!isClient) return
-
     if (!user) {
       // Redirect to sign up with selected plan
       window.location.href = `/auth/signup?plan=${planId}&period=${billingPeriod}`
@@ -235,8 +220,8 @@ export default function PricingPage({}: PricingPageProps) {
     }
   }
 
-  // Show loading state during SSR or auth loading
-  if (!isClient || authLoading) {
+  // Show loading state during auth loading
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-600 border-t-transparent"></div>
@@ -345,7 +330,7 @@ export default function PricingPage({}: PricingPageProps) {
               </div>
 
               {/* User Status Banner (Premium Feature) */}
-              {isClient && user && (
+              {user && (
                 <motion.div
                   className="card-base p-6 mb-12"
                   {...motionSafe({

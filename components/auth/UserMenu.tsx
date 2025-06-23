@@ -35,12 +35,15 @@ export default function UserMenu() {
       free: 'bg-gray-100 text-gray-800',
       standard: 'bg-blue-100 text-blue-800',
       premium: 'bg-purple-100 text-purple-800',
-      enterprise: 'bg-gold-100 text-gold-800'
+      enterprise: 'bg-gold-100 text-gold-800',
     }
 
     return (
-      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${colors[profile.subscription_tier]}`}>
-        {profile.subscription_tier.charAt(0).toUpperCase() + profile.subscription_tier.slice(1)}
+      <span
+        className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${colors[profile.subscription_tier]}`}
+      >
+        {profile.subscription_tier.charAt(0).toUpperCase() +
+          profile.subscription_tier.slice(1)}
       </span>
     )
   }
@@ -55,7 +58,8 @@ export default function UserMenu() {
       >
         <div className="w-8 h-8 bg-gray-900 rounded-full flex items-center justify-center">
           <span className="text-white text-sm font-medium">
-            {profile.full_name?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase()}
+            {profile.full_name?.charAt(0).toUpperCase() ||
+              user.email?.charAt(0).toUpperCase()}
           </span>
         </div>
         <div className="hidden md:block text-left">
@@ -75,7 +79,12 @@ export default function UserMenu() {
           stroke="currentColor"
           viewBox="0 0 24 24"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
         </svg>
       </button>
 
@@ -86,7 +95,7 @@ export default function UserMenu() {
             className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
             variants={motionSafe({
               hidden: { opacity: 0, scale: 0.95, y: -10 },
-              visible: { opacity: 1, scale: 1, y: 0 }
+              visible: { opacity: 1, scale: 1, y: 0 },
             })}
             initial="hidden"
             animate="visible"
@@ -110,14 +119,24 @@ export default function UserMenu() {
             {/* Menu Items */}
             <div className="py-1">
               <Link
-                href="/dashboard"
+                href="/workspace"
                 className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                 onClick={() => setIsOpen(false)}
               >
-                <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                <svg
+                  className="w-4 h-4 mr-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                  />
                 </svg>
-                Dashboard
+                Workspace
               </Link>
 
               <Link
@@ -125,8 +144,18 @@ export default function UserMenu() {
                 className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                 onClick={() => setIsOpen(false)}
               >
-                <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  className="w-4 h-4 mr-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
                 Translation History
               </Link>
@@ -136,9 +165,24 @@ export default function UserMenu() {
                 className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                 onClick={() => setIsOpen(false)}
               >
-                <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <svg
+                  className="w-4 h-4 mr-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
                 </svg>
                 Settings
               </Link>
@@ -149,8 +193,18 @@ export default function UserMenu() {
                   className="flex items-center px-4 py-2 text-sm text-purple-700 hover:bg-purple-50"
                   onClick={() => setIsOpen(false)}
                 >
-                  <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  <svg
+                    className="w-4 h-4 mr-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 10V3L4 14h7v7l9-11h-7z"
+                    />
                   </svg>
                   Upgrade to Premium
                 </Link>
@@ -163,8 +217,18 @@ export default function UserMenu() {
                 onClick={handleSignOut}
                 className="flex items-center w-full px-4 py-2 text-sm text-red-700 hover:bg-red-50"
               >
-                <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                <svg
+                  className="w-4 h-4 mr-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  />
                 </svg>
                 Sign Out
               </button>
