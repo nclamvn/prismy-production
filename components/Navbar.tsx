@@ -58,9 +58,9 @@ export default function Navbar({}: NavbarProps) {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Dynamic navigation based on auth state
+  // Clean navigation - logo handles homepage, no redundant tab
   const getNavigation = () => {
-    const baseNavigation = {
+    return {
       vi: [
         { name: 'Tính năng', href: '/features' },
         { name: 'Tài liệu', href: '/documents' },
@@ -76,16 +76,6 @@ export default function Navbar({}: NavbarProps) {
         { name: 'Blog', href: '/blog' },
       ],
     }
-
-    // Add homepage link for authenticated users
-    if (user) {
-      return {
-        vi: [{ name: 'Trang chủ', href: '/' }, ...baseNavigation.vi],
-        en: [{ name: 'Home', href: '/' }, ...baseNavigation.en],
-      }
-    }
-
-    return baseNavigation
   }
 
   const content = {

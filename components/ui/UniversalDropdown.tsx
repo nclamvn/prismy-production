@@ -102,7 +102,7 @@ export default function UniversalDropdown({
           bg-transparent rounded-full
           font-medium text-gray-900
           hover:font-semibold hover:bg-gray-50 hover:-translate-y-px
-          focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-gray-300
+          focus:outline-none focus:ring-1 focus:ring-gray-300
           transition-all duration-300 cubic-bezier(0.25, 0.46, 0.45, 0.94)
           touch-manipulation mobile-dropdown-zen
           ${sizeClasses[size]}
@@ -120,7 +120,7 @@ export default function UniversalDropdown({
 
         <ChevronDown
           size={iconSizes[size]}
-          className={`flex-shrink-0 transition-transform duration-200 ${
+          className={`flex-shrink-0 transition-transform duration-200 ml-2 ${
             isOpen ? 'rotate-180' : ''
           }`}
         />

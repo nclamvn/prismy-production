@@ -34,30 +34,12 @@ export default function UserMenu() {
     router.push('/')
   }
 
-  const getSubscriptionBadge = () => {
-    const colors = {
-      free: 'bg-gray-100 text-gray-800',
-      standard: 'bg-blue-100 text-blue-800',
-      premium: 'bg-purple-100 text-purple-800',
-      enterprise: 'bg-gold-100 text-gold-800',
-    }
-
-    return (
-      <span
-        className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${colors[profile.subscription_tier]}`}
-      >
-        {profile.subscription_tier.charAt(0).toUpperCase() +
-          profile.subscription_tier.slice(1)}
-      </span>
-    )
-  }
-
   return (
     <div className="relative" ref={menuRef}>
       {/* User Avatar Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500"
+        className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none focus:ring-1 focus:ring-gray-300"
         aria-label="Open user menu"
       >
         <div className="w-8 h-8 bg-gray-900 rounded-full flex items-center justify-center">
@@ -67,15 +49,9 @@ export default function UserMenu() {
           </span>
         </div>
         <div className="hidden md:block text-left">
-          <p className="body-sm font-medium text-gray-900">
+          <p className="text-sm font-medium text-gray-900">
             {profile.full_name || user.email}
           </p>
-          <div className="flex items-center gap-2">
-            {getSubscriptionBadge()}
-            <span className="text-xs text-gray-500">
-              {profile.usage_count}/{profile.usage_limit}
-            </span>
-          </div>
         </div>
         <svg
           className={`w-4 h-4 text-gray-500 transition-transform ${isOpen ? 'rotate-180' : ''}`}

@@ -13,7 +13,6 @@ import {
   Settings,
   Building2,
   CreditCard,
-  User,
   Menu,
   X,
   Home,
@@ -201,23 +200,6 @@ export default function WorkspaceLayout({
             )
           })}
         </nav>
-
-        {/* Sidebar Footer - User Info */}
-        <div className="p-4 border-t border-border-subtle">
-          <div className="flex items-center p-3 rounded-2xl bg-gray-50">
-            <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center mr-3">
-              <User size={18} className="text-gray-600" />
-            </div>
-            <div className="flex-1">
-              <div className="body-sm font-medium text-gray-900">
-                {user?.email || 'User'}
-              </div>
-              <div className="body-xs text-gray-500">
-                {language === 'vi' ? 'Thành viên' : 'Member'}
-              </div>
-            </div>
-          </div>
-        </div>
       </motion.aside>
 
       {/* Mobile Sidebar Overlay */}
