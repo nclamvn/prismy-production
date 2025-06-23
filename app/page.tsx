@@ -4,10 +4,9 @@
 import { motion } from 'framer-motion'
 import { useState, useEffect, useRef } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { useAuth } from '@/contexts/AuthContext'
-import { useUnifiedAuthContext } from '@/contexts/UnifiedAuthProvider'
 import PublicLayout from '@/components/layouts/PublicLayout'
 import Footer from '@/components/Footer'
+import UnifiedGetStartedButton from '@/components/ui/UnifiedGetStartedButton'
 import { slideUp, staggerContainer, motionSafe } from '@/lib/motion'
 import { UNIFIED_SUBSCRIPTION_PLANS } from '@/lib/payments/payment-service'
 import FeatureCard from '@/components/ui/FeatureCard'
@@ -26,8 +25,6 @@ import {
 
 export default function Home() {
   const { language } = useLanguage()
-  const { user } = useAuth()
-  const { handleGetStarted } = useUnifiedAuthContext()
   const [activePricingIndex, setActivePricingIndex] = useState(0)
   const pricingScrollRef = useRef<HTMLDivElement>(null)
 
@@ -172,13 +169,7 @@ export default function Home() {
     },
   }
 
-  // Handle Get Started button click - unified across all entry points
-  const handleGetStartedWithWorkspace = () => {
-    handleGetStarted({
-      initialMode: 'signup',
-      redirectTo: '/workspace',
-    })
-  }
+  // No longer needed - using UnifiedGetStartedButton component
 
   // Handle pricing carousel scroll
   useEffect(() => {
@@ -252,12 +243,11 @@ export default function Home() {
                     variants={motionSafe(slideUp)}
                     className="flex flex-col sm:flex-row gap-4 justify-center mb-8 md:mb-10 lg:mb-12"
                   >
-                    <button
-                      onClick={handleGetStartedWithWorkspace}
-                      className="btn-primary btn-pill-lg"
-                    >
-                      {content[language].hero.getStarted}
-                    </button>
+                    <UnifiedGetStartedButton
+                      variant="primary"
+                      size="pill-lg"
+                      redirectTo="/workspace"
+                    />
                     <button className="btn-secondary btn-pill-lg">
                       {content[language].hero.watchDemo}
                     </button>
@@ -469,12 +459,14 @@ export default function Home() {
                                 ))}
                               </ul>
 
-                              <button
-                                onClick={handleGetStartedWithWorkspace}
-                                className={`w-full ${key === 'standard' ? 'btn-primary btn-pill-lg' : 'btn-secondary btn-pill-lg'}`}
-                              >
-                                {content[language].pricing.getStarted}
-                              </button>
+                              <UnifiedGetStartedButton
+                                variant={
+                                  key === 'standard' ? 'primary' : 'secondary'
+                                }
+                                size="pill-lg"
+                                className="w-full"
+                                redirectTo="/workspace"
+                              />
                             </div>
                           </div>
                         )
@@ -549,12 +541,14 @@ export default function Home() {
                               ))}
                             </ul>
 
-                            <button
-                              onClick={handleGetStartedWithWorkspace}
-                              className={`w-full ${key === 'standard' ? 'btn-primary btn-pill-lg' : 'btn-secondary btn-pill-lg'}`}
-                            >
-                              {content[language].pricing.getStarted}
-                            </button>
+                            <UnifiedGetStartedButton
+                              variant={
+                                key === 'standard' ? 'primary' : 'secondary'
+                              }
+                              size="pill-lg"
+                              className="w-full"
+                              redirectTo="/workspace"
+                            />
                           </div>
                         </motion.div>
                       )

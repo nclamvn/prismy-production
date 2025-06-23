@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useSmartNavigation } from '@/hooks/useSmartNavigation'
 import { motionSafe, slideUp, fadeIn } from '@/lib/motion'
 import { WorkspaceMode } from '@/app/workspace/page'
 import {
@@ -41,11 +42,11 @@ export default function WorkspaceLayout({
 }: WorkspaceLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const router = useRouter()
+  const { handleBackToHome: smartBackToHome } = useSmartNavigation()
 
-  // Handle back to home navigation
+  // Handle back to home navigation with smart navigation
   const handleBackToHome = () => {
-    console.log('🏠 Workspace: Navigating back to home')
-    router.push('/')
+    smartBackToHome()
   }
 
   const content = {

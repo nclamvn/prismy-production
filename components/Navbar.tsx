@@ -8,8 +8,10 @@ import { slideDown, motionSafe } from '@/lib/motion'
 import { useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useUnifiedAuthContext } from '@/contexts/UnifiedAuthProvider'
+import { useSmartNavigation } from '@/hooks/useSmartNavigation'
 import UserMenu from './auth/UserMenu'
 import UniversalDropdown from './ui/UniversalDropdown'
+import UnifiedGetStartedButton from './ui/UnifiedGetStartedButton'
 import { Globe, ChevronDown } from 'lucide-react'
 
 interface NavbarProps {
@@ -21,31 +23,16 @@ export default function Navbar({}: NavbarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const { user, loading } = useAuth()
-  const { handleGetStarted, handleSignIn } = useUnifiedAuthContext()
+  const { handleSignIn } = useUnifiedAuthContext()
+  const { handleLogoClick: smartLogoClick, isAuthenticated } =
+    useSmartNavigation()
   const router = useRouter()
   const pathname = usePathname()
 
-  // Smart logo navigation logic with homepage fallback
-  const getLogoHref = () => {
-    // If user is authenticated, go to workspace (primary action)
-    if (user) {
-      return '/workspace'
-    }
-    // If not authenticated, go to homepage
-    return '/'
-  }
-
+  // Handle logo click with smart navigation
   const handleLogoClick = (e: React.MouseEvent) => {
     e.preventDefault()
-
-    // Smart navigation: Ctrl/Cmd+click for authenticated users goes to homepage
-    if (user && (e.ctrlKey || e.metaKey)) {
-      router.push('/')
-      return
-    }
-
-    const targetHref = getLogoHref()
-    router.push(targetHref)
+    smartLogoClick(e)
   }
 
   // Scroll detection for desktop header styling only
@@ -124,15 +111,14 @@ export default function Navbar({}: NavbarProps) {
         <nav className="w-full px-4 py-2" aria-label="Mobile navigation">
           <div className="flex items-center justify-between">
             {/* Mobile Logo */}
-            <Link
-              href={getLogoHref()}
+            <button
               onClick={handleLogoClick}
               className="flex items-center focus-visible-ring rounded-md"
-              aria-label={user ? 'Go to workspace' : 'Prismy home'}
+              aria-label={isAuthenticated ? 'Go to workspace' : 'Prismy home'}
             >
               <img src="/logo.svg" alt="Prismy" className="h-8 w-auto mr-2" />
               <span className="heading-4 font-bold">Prismy</span>
-            </Link>
+            </button>
 
             {/* Mobile menu button */}
             <button
@@ -196,11 +182,12 @@ export default function Navbar({}: NavbarProps) {
                 className={`flex items-center ${shouldUseDesktopPill ? 'h-10' : 'h-12'}`}
               >
                 {/* Desktop Logo */}
-                <Link
-                  href={getLogoHref()}
+                <button
                   onClick={handleLogoClick}
                   className="flex items-center focus-visible-ring rounded-md mr-5"
-                  aria-label={user ? 'Go to workspace' : 'Prismy home'}
+                  aria-label={
+                    isAuthenticated ? 'Go to workspace' : 'Prismy home'
+                  }
                 >
                   <img
                     src="/logo.svg"
@@ -208,7 +195,7 @@ export default function Navbar({}: NavbarProps) {
                     className="h-8 w-auto mr-2"
                   />
                   <span className="heading-4 font-bold">Prismy</span>
-                </Link>
+                </button>
 
                 {/* Desktop Navigation */}
                 <div className="flex items-center space-x-5 flex-1">
@@ -258,12 +245,11 @@ export default function Navbar({}: NavbarProps) {
                         >
                           {content[language].signin}
                         </button>
-                        <button
-                          onClick={() => handleGetStarted()}
-                          className={`btn-primary ${shouldUseDesktopPill ? 'h-8 px-3 text-xs' : 'btn-pill-compact-md'} font-semibold`}
-                        >
-                          {content[language].getStarted}
-                        </button>
+                        <UnifiedGetStartedButton
+                          variant="primary"
+                          size={shouldUseDesktopPill ? 'sm' : 'compact-md'}
+                          redirectTo="/workspace"
+                        />
                       </>
                     ))}
                 </div>
@@ -337,15 +323,13 @@ export default function Navbar({}: NavbarProps) {
                       >
                         {content[language].signin}
                       </button>
-                      <button
-                        onClick={() => {
-                          handleGetStarted()
-                          setIsMenuOpen(false)
-                        }}
-                        className="block btn-primary w-full text-center font-semibold h-8 px-3 text-xs"
-                      >
-                        {content[language].getStarted}
-                      </button>
+                      <UnifiedGetStartedButton
+                        variant="primary"
+                        size="sm"
+                        className="block w-full text-center"
+                        redirectTo="/workspace"
+                        onClick={() => setIsMenuOpen(false)}
+                      />
                     </>
                   ))}
               </div>
