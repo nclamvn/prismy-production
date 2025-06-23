@@ -6,6 +6,9 @@ import { createClientComponentClient } from '@/lib/supabase'
 export default function EnvDebugPage() {
   const [testResults, setTestResults] = useState<Record<string, any>>({})
 
+  // Single Supabase client instance for the entire component
+  const supabase = createClientComponentClient()
+
   const runEnvironmentTests = async () => {
     const results: Record<string, any> = {}
 
@@ -19,7 +22,6 @@ export default function EnvDebugPage() {
 
     // Test Supabase connection
     try {
-      const supabase = createClientComponentClient()
       const { data, error } = await supabase.auth.getSession()
 
       results.supabaseConnection = {
@@ -36,7 +38,6 @@ export default function EnvDebugPage() {
     }
 
     // Test OAuth configuration
-    const supabase = createClientComponentClient()
     try {
       // This will show us the actual callback URL being generated
       const callbackUrl = new URL('/auth/callback', window.location.origin)
@@ -55,7 +56,6 @@ export default function EnvDebugPage() {
 
     // Test current auth state
     try {
-      const supabase = createClientComponentClient()
       const {
         data: { user },
       } = await supabase.auth.getUser()
@@ -77,7 +77,6 @@ export default function EnvDebugPage() {
 
   const testGoogleOAuth = async () => {
     try {
-      const supabase = createClientComponentClient()
       const callbackUrl = new URL('/auth/callback', window.location.origin)
       callbackUrl.searchParams.set('redirectTo', '/debug/env')
 
