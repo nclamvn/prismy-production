@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '@/contexts/AuthContext'
 import { motionSafe } from '@/lib/motion'
@@ -10,6 +11,7 @@ export default function UserMenu() {
   const [isOpen, setIsOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const { user, profile, signOut } = useAuth()
+  const router = useRouter()
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -28,6 +30,8 @@ export default function UserMenu() {
   const handleSignOut = async () => {
     await signOut()
     setIsOpen(false)
+    // Redirect to homepage after logout
+    router.push('/')
   }
 
   const getSubscriptionBadge = () => {

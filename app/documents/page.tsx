@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
-import Footer from '@/components/Footer'
+import MainLayout from '@/components/layouts/MainLayout'
 import DocumentUpload from '@/components/documents/DocumentUpload'
 import DocumentTranslator from '@/components/documents/DocumentTranslator'
 import UniversalDropdown from '@/components/ui/UniversalDropdown'
@@ -143,8 +143,8 @@ function DocumentsPageContent() {
   }
 
   return (
-    <div className="min-h-screen bg-bg-main">
-      <main className="pt-24 pb-16">
+    <MainLayout>
+      <div className="pt-24 pb-16">
         <motion.div
           className="content-container"
           variants={motionSafe(staggerContainer)}
@@ -359,10 +359,8 @@ function DocumentsPageContent() {
             </>
           )}
         </motion.div>
-      </main>
-
-      <Footer />
-    </div>
+      </div>
+    </MainLayout>
   )
 }
 

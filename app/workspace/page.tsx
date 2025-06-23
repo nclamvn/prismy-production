@@ -1,14 +1,14 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { useUnifiedAuthContext } from '@/contexts/UnifiedAuthProvider'
 import { useWorkspaceLoading } from '@/contexts/LoadingContext'
 import { motionSafe, slideUp, staggerContainer, fadeIn } from '@/lib/motion'
 import { WorkspaceErrorBoundary } from '@/components/ErrorBoundary'
 import AuthenticatedLayout from '@/components/layouts/AuthenticatedLayout'
+import AuthGuard from '@/components/auth/AuthGuard'
 import WorkspaceLayout from '@/components/workspace/WorkspaceLayout'
 import DocumentMode from '@/components/workspace/modes/DocumentMode'
 import IntelligenceMode from '@/components/workspace/modes/IntelligenceMode'
@@ -29,119 +29,56 @@ export type WorkspaceMode =
 
 function WorkspaceContent() {
   const { language } = useLanguage()
-  const { user, loading, sessionRestored } = useAuth()
-  const { handleSignIn, isAuthModalOpen } = useUnifiedAuthContext()
+  const { user, loading } = useAuth()
   const { isLoading: workspaceLoading, setLoading: setWorkspaceLoading } =
     useWorkspaceLoading()
   const [currentMode, setCurrentMode] = useState<WorkspaceMode>('documents')
 
-  // Prevent infinite auth loops
-  const authTriggeredRef = useRef(false)
-  const authTimeoutRef = useRef<NodeJS.Timeout>()
+  // AuthGuard handles authentication checks
 
-  // Loading timeout to prevent infinite loading on refresh
-  const loadingTimeoutRef = useRef<NodeJS.Timeout>()
-  const [loadingTimedOut, setLoadingTimedOut] = useState(false)
-
-  // Enhanced loading timeout mechanism with session restoration awareness
+  // Log workspace component lifecycle
   useEffect(() => {
-    if (loading && !sessionRestored && !loadingTimedOut) {
-      console.log('🔄 Workspace: Starting session restore timeout (12s)')
-      loadingTimeoutRef.current = setTimeout(() => {
-        console.log(
-          '⏰ Workspace: Session restore timeout - proceeding with auth check'
-        )
-        setLoadingTimedOut(true)
-      }, 12000) // 12 second timeout to allow for session restoration
-    } else if (!loading || sessionRestored) {
-      // Clear timeout if loading finishes or session is restored
-      if (loadingTimeoutRef.current) {
-        clearTimeout(loadingTimeoutRef.current)
-      }
-      setLoadingTimedOut(false)
-    }
+    console.log('💼 Workspace: Component mounted', {
+      user: user ? 'authenticated' : 'guest',
+      loading,
+    })
 
     return () => {
-      if (loadingTimeoutRef.current) {
-        clearTimeout(loadingTimeoutRef.current)
-      }
+      console.log('💼 Workspace: Component unmounting')
     }
-  }, [loading, sessionRestored, loadingTimedOut])
+  }, [])
 
-  // Enhanced auth check with session restoration awareness
+  // Update user state logging
   useEffect(() => {
-    // Clear any existing timeout
-    if (authTimeoutRef.current) {
-      clearTimeout(authTimeoutRef.current)
-    }
-
-    // Only trigger auth after session restoration is complete
-    if (
-      sessionRestored && // Wait for session restoration
-      !loading &&
-      !user &&
-      !isAuthModalOpen &&
-      !authTriggeredRef.current
-    ) {
-      console.log(
-        '🔐 Workspace: Session restored, no user found - triggering auth modal'
-      )
-      authTimeoutRef.current = setTimeout(() => {
-        authTriggeredRef.current = true
-        handleSignIn({ redirectTo: '/workspace' })
-      }, 1000) // 1 second delay after session restoration
-    }
-
-    // Reset auth trigger when user becomes available
     if (user) {
-      console.log('✅ Workspace: User authenticated successfully')
-      authTriggeredRef.current = false
-      setLoadingTimedOut(false)
+      console.log('✅ Workspace: User authenticated', user.email)
     }
-
-    return () => {
-      if (authTimeoutRef.current) {
-        clearTimeout(authTimeoutRef.current)
-      }
-    }
-  }, [sessionRestored, loading, user, isAuthModalOpen, handleSignIn])
+  }, [user])
 
   // Coordinate workspace loading state
   useEffect(() => {
     setWorkspaceLoading(loading)
   }, [loading, setWorkspaceLoading])
 
-  // Show loading while session is being restored or initial auth check
-  if (
-    (loading && !sessionRestored) ||
-    (sessionRestored && !user && !authTriggeredRef.current && !loadingTimedOut)
-  ) {
-    const loadingMessage = !sessionRestored
-      ? language === 'vi'
-        ? 'Đang khôi phục phiên...'
-        : 'Restoring session...'
-      : language === 'vi'
-        ? 'Đang tải...'
-        : 'Loading...'
-
+  // Show loading while auth is being checked
+  if (loading) {
     return (
       <div className="min-h-screen bg-bg-main flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin w-8 h-8 border-2 border-gray-300 border-t-gray-900 rounded-full mb-4 mx-auto"></div>
-          <p className="body-base text-gray-600">{loadingMessage}</p>
-          {process.env.NODE_ENV === 'development' && (
-            <p className="body-xs text-gray-400 mt-2">
-              Debug: loading={loading.toString()}, sessionRestored=
-              {sessionRestored.toString()}, user={user ? 'present' : 'null'}
-            </p>
-          )}
+          <p className="body-base text-gray-600">
+            {language === 'vi' ? 'Đang tải...' : 'Loading...'}
+          </p>
         </div>
       </div>
     )
   }
 
-  // If session is restored but no user, return null (auth modal will handle it)
-  if (sessionRestored && !user) {
+  // AuthGuard ensures user is authenticated at this point
+  if (!user) {
+    console.warn(
+      '⚠️ Workspace: No user but AuthGuard should have prevented this'
+    )
     return null
   }
 
@@ -189,8 +126,10 @@ function WorkspaceContent() {
 
 export default function WorkspacePage() {
   return (
-    <WorkspaceErrorBoundary>
-      <WorkspaceContent />
-    </WorkspaceErrorBoundary>
+    <AuthGuard requireAuth redirectTo="/">
+      <WorkspaceErrorBoundary>
+        <WorkspaceContent />
+      </WorkspaceErrorBoundary>
+    </AuthGuard>
   )
 }

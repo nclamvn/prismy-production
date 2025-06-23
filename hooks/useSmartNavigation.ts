@@ -17,59 +17,21 @@ export function useSmartNavigation() {
   const { handleSignIn: unifiedHandleSignIn } = useUnifiedAuthContext()
   const router = useRouter()
 
-  // Smart logo navigation - adapts based on auth state
+  // Logo navigation - ALWAYS goes to homepage
   const handleLogoClick = useCallback(
     (event?: React.MouseEvent, options: SmartNavigationOptions = {}) => {
-      const {
-        redirectTo,
-        forceDestination = false,
-        onNavigationStart,
-        onNavigationComplete,
-      } = options
+      const { onNavigationStart, onNavigationComplete } = options
 
-      console.log('🏠 SmartNavigation: Logo click', {
-        user: user ? 'authenticated' : 'guest',
-        ctrlKey: event?.ctrlKey,
-        metaKey: event?.metaKey,
-        forceDestination,
-      })
+      console.log('🏠 SmartNavigation: Logo click - navigating to homepage')
 
       if (onNavigationStart) onNavigationStart()
 
-      // Ctrl/Cmd + Click = always go to homepage (override behavior)
-      if (event && (event.ctrlKey || event.metaKey)) {
-        console.log('🔄 SmartNavigation: Override to homepage (Ctrl/Cmd+Click)')
-        router.push('/')
-        if (onNavigationComplete) onNavigationComplete()
-        return
-      }
-
-      // Force specific destination
-      if (forceDestination && redirectTo) {
-        console.log('🎯 SmartNavigation: Force navigation to', redirectTo)
-        router.push(redirectTo)
-        if (onNavigationComplete) onNavigationComplete()
-        return
-      }
-
-      // Smart navigation logic
-      if (user) {
-        // Authenticated: Primary action is workspace
-        const destination = redirectTo || '/workspace'
-        console.log(
-          '✅ SmartNavigation: Authenticated user, navigating to',
-          destination
-        )
-        router.push(destination)
-      } else {
-        // Guest: Go to homepage
-        console.log('🏠 SmartNavigation: Guest user, navigating to homepage')
-        router.push('/')
-      }
+      // Logo ALWAYS goes to homepage regardless of auth state
+      router.push('/')
 
       if (onNavigationComplete) onNavigationComplete()
     },
-    [user, router]
+    [router]
   )
 
   // Smart Get Started - unified logic for all entry points
@@ -109,7 +71,7 @@ export function useSmartNavigation() {
     [user, unifiedHandleSignIn, router]
   )
 
-  // Smart Back to Home - context-aware homepage navigation
+  // Back to Home - always goes to homepage
   const handleBackToHome = useCallback(
     (options: SmartNavigationOptions = {}) => {
       const { onNavigationStart, onNavigationComplete } = options
@@ -118,7 +80,7 @@ export function useSmartNavigation() {
 
       if (onNavigationStart) onNavigationStart()
 
-      // Always navigate to homepage, regardless of auth state
+      // Always navigate to homepage
       router.push('/')
 
       if (onNavigationComplete) onNavigationComplete()

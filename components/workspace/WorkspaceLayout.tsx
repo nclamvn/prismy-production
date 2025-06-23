@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { useSmartNavigation } from '@/hooks/useSmartNavigation'
 import { motionSafe, slideUp, fadeIn } from '@/lib/motion'
 import { WorkspaceMode } from '@/app/workspace/page'
+import UserMenu from '@/components/auth/UserMenu'
 import {
   FileText,
   Brain,
@@ -377,6 +378,9 @@ export default function WorkspaceLayout({
                     </div>
                   </div>
                 </div>
+
+                {/* User Menu for logout functionality */}
+                <UserMenu />
               </div>
             </div>
           </div>

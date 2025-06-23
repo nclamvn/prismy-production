@@ -242,7 +242,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signOut = async () => {
-    await supabase.auth.signOut()
+    try {
+      console.log('🚪 AuthContext: Signing out user')
+      const { error } = await supabase.auth.signOut()
+      if (error) {
+        console.error('❌ AuthContext: Error signing out:', error)
+      } else {
+        console.log('✅ AuthContext: Sign out successful')
+        // Clear all state
+        setUser(null)
+        setSession(null)
+        setProfile(null)
+      }
+    } catch (error) {
+      console.error('❌ AuthContext: Unexpected error during sign out:', error)
+    }
   }
 
   const updateProfile = async (updates: Partial<UserProfile>) => {
