@@ -42,6 +42,12 @@ export default function WorkspaceLayout({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const router = useRouter()
 
+  // Handle back to home navigation
+  const handleBackToHome = () => {
+    console.log('🏠 Workspace: Navigating back to home')
+    router.push('/')
+  }
+
   const content = {
     vi: {
       workspace: 'Không gian làm việc',
@@ -339,13 +345,13 @@ export default function WorkspaceLayout({
             </div>
 
             <div className="flex items-center space-x-4">
-              <Link
-                href="/"
-                className="hidden md:flex items-center body-sm text-gray-600 hover:text-gray-900 transition-colors"
+              <button
+                onClick={handleBackToHome}
+                className="hidden md:flex items-center body-sm text-gray-600 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 rounded-md px-2 py-1"
               >
                 <Home size={16} className="mr-2" />
                 {content[language].backToHome}
-              </Link>
+              </button>
 
               <div className="flex items-center space-x-3">
                 <div className="flex items-center space-x-4 text-center">

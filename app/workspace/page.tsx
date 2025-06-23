@@ -39,6 +39,35 @@ function WorkspaceContent() {
   const authTriggeredRef = useRef(false)
   const authTimeoutRef = useRef<NodeJS.Timeout>()
 
+  // Loading timeout to prevent infinite loading on refresh
+  const loadingTimeoutRef = useRef<NodeJS.Timeout>()
+  const [loadingTimedOut, setLoadingTimedOut] = useState(false)
+
+  // Loading timeout mechanism to prevent infinite loading on refresh
+  useEffect(() => {
+    if (loading && !loadingTimedOut) {
+      console.log('🔄 Workspace: Starting loading timeout (10s)')
+      loadingTimeoutRef.current = setTimeout(() => {
+        console.log('⏰ Workspace: Loading timeout reached, showing auth modal')
+        setLoadingTimedOut(true)
+        authTriggeredRef.current = true
+        handleSignIn({ redirectTo: '/workspace' })
+      }, 10000) // 10 second timeout
+    } else if (!loading) {
+      // Clear timeout if loading finishes normally
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current)
+      }
+      setLoadingTimedOut(false)
+    }
+
+    return () => {
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current)
+      }
+    }
+  }, [loading, loadingTimedOut, handleSignIn])
+
   // Debounced auth check to prevent infinite loops
   useEffect(() => {
     // Clear any existing timeout
@@ -47,7 +76,14 @@ function WorkspaceContent() {
     }
 
     // Only trigger auth if we haven't already and conditions are met
-    if (!loading && !user && !isAuthModalOpen && !authTriggeredRef.current) {
+    if (
+      !loading &&
+      !user &&
+      !isAuthModalOpen &&
+      !authTriggeredRef.current &&
+      !loadingTimedOut
+    ) {
+      console.log('🔐 Workspace: Triggering auth modal (no user found)')
       authTimeoutRef.current = setTimeout(() => {
         authTriggeredRef.current = true
         handleSignIn({ redirectTo: '/workspace' })
@@ -56,7 +92,9 @@ function WorkspaceContent() {
 
     // Reset auth trigger when user becomes available
     if (user) {
+      console.log('✅ Workspace: User authenticated successfully')
       authTriggeredRef.current = false
+      setLoadingTimedOut(false)
     }
 
     return () => {
@@ -64,7 +102,7 @@ function WorkspaceContent() {
         clearTimeout(authTimeoutRef.current)
       }
     }
-  }, [loading, user, isAuthModalOpen, handleSignIn])
+  }, [loading, user, isAuthModalOpen, handleSignIn, loadingTimedOut])
 
   // Coordinate workspace loading state
   useEffect(() => {
@@ -72,7 +110,7 @@ function WorkspaceContent() {
   }, [loading, setWorkspaceLoading])
 
   // Show loading only while initially checking auth
-  if (loading) {
+  if (loading && !loadingTimedOut) {
     return (
       <div className="min-h-screen bg-bg-main flex items-center justify-center">
         <div className="text-center">
@@ -80,6 +118,12 @@ function WorkspaceContent() {
           <p className="body-base text-gray-600">
             {language === 'vi' ? 'Đang tải...' : 'Loading...'}
           </p>
+          {process.env.NODE_ENV === 'development' && (
+            <p className="body-xs text-gray-400 mt-2">
+              Debug: loading={loading.toString()}, user=
+              {user ? 'present' : 'null'}
+            </p>
+          )}
         </div>
       </div>
     )
