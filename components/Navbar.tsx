@@ -110,7 +110,13 @@ export default function Navbar({}: NavbarProps) {
       animate="visible"
     >
       {/* Mobile Navbar - Stable and Simple */}
-      <div className="md:hidden w-full" style={{backgroundColor: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(12px)'}}>
+      <div
+        className="md:hidden w-full"
+        style={{
+          backgroundColor: 'rgba(255, 255, 255, 0.92)',
+          backdropFilter: 'blur(12px)',
+        }}
+      >
         <nav className="w-full px-4 py-2" aria-label="Mobile navigation">
           <div className="flex items-center justify-between">
             {/* Mobile Logo */}
@@ -172,13 +178,11 @@ export default function Navbar({}: NavbarProps) {
       <div className="hidden md:block w-full">
         <div
           className={`transition-all duration-300 ${
-            shouldUseDesktopPill
-              ? 'mx-8 mt-4 rounded-full shadow-sm'
-              : ''
+            shouldUseDesktopPill ? 'mx-8 mt-4 rounded-full shadow-sm' : ''
           }`}
           style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.85)', 
-            backdropFilter: 'blur(12px)'
+            backgroundColor: 'rgba(255, 255, 255, 0.92)',
+            backdropFilter: 'blur(12px)',
           }}
         >
           <nav className="w-full" aria-label="Desktop navigation">

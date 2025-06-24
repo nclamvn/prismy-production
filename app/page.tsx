@@ -24,11 +24,11 @@ import {
 
 // Phase 2 Performance Optimizations
 import { HomeCriticalCSS } from '@/components/CriticalCSS'
-import { 
-  ScrollAnimatedElement, 
-  ProgressiveImage, 
+import {
+  ScrollAnimatedElement,
+  ProgressiveImage,
   CountUpOnScroll,
-  ScrollProgress 
+  ScrollProgress,
 } from '@/components/IntersectionOptimizer'
 import { TouchButton, TouchOptimized } from '@/components/ui/TouchOptimized'
 import { SkeletonCard, SkeletonProvider } from '@/components/ui/Skeleton'
@@ -38,7 +38,7 @@ export default function Home() {
   const { language } = useLanguage()
   const [activePricingIndex, setActivePricingIndex] = useState(0)
   const pricingScrollRef = useRef<HTMLDivElement>(null)
-  
+
   // Predictive loading hook for performance
   usePredictiveLoading()
 
@@ -206,10 +206,10 @@ export default function Home() {
       <div className="overflow-x-hidden">
         {/* Critical CSS for above-the-fold content */}
         <HomeCriticalCSS />
-        
+
         {/* Scroll Progress Indicator */}
         <ScrollProgress />
-        
+
         {/* Hero Section - Full Width */}
         <section className="relative overflow-hidden bg-white pt-20 w-full">
           <div className="w-full py-8 md:py-12">
@@ -250,16 +250,9 @@ export default function Home() {
                   className="heading-hero text-center mb-6"
                 >
                   <div className="mb-2">{content[language].hero.title}</div>
-                  <div 
+                  <div
                     className="animated-gradient-text"
-                    style={{
-                      background: 'linear-gradient(270deg, #c084fc, #86efac)',
-                      backgroundSize: '400% 400%',
-                      animation: 'gradientMove 15s ease infinite',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      fontSize: '1.5em'
-                    }}
+                    style={{ fontSize: '1.5em' }}
                   >
                     {content[language].hero.titleHighlight}
                   </div>
@@ -278,17 +271,16 @@ export default function Home() {
                     size="pill-lg"
                     redirectTo="/workspace"
                     className="text-lg font-semibold h-14 px-8"
-                    style={{fontSize: '130%'}}
+                    style={{ fontSize: '130%' }}
                   />
                 </TouchOptimized>
-
               </motion.div>
             </div>
           </div>
         </section>
 
         {/* Features Section - Full Width */}
-        <section id="features" className="py-20 w-full">
+        <section id="features" className="py-12 w-full">
           <div className="w-full">
             <div className="w-full">
               <motion.div
@@ -394,7 +386,9 @@ export default function Home() {
                           />
                         </div>
                         <CountUpOnScroll
-                          end={parseInt(stat.number.replace(/[^0-9]/g, '')) || 0}
+                          end={
+                            parseInt(stat.number.replace(/[^0-9]/g, '')) || 0
+                          }
                           suffix={stat.number.replace(/[0-9]/g, '')}
                           className="heading-1 text-gray-900 mb-2"
                         />

@@ -84,38 +84,37 @@ button.no-border,
 }
 
 /* Remove borders from common UI elements */
-.btn, .button,
-.dropdown, .select,
-.modal .btn, .modal button,
-.popup .btn, .popup button {
+.btn,
+.button,
+.dropdown,
+.select,
+.modal .btn,
+.modal button,
+.popup .btn,
+.popup button {
   border: none;
 }
 
-/* Fix pricing button layering issues */
+/* Flat design pricing buttons */
 .btn-primary {
   position: relative;
   background: #111827 !important;
   color: white !important;
   border: none !important;
+  border-radius: 8px !important;
   overflow: hidden;
   z-index: 1;
+  transition: background-color 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: #374151 !important;
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 .btn-primary::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: #374151;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  z-index: -1;
-}
-
-.btn-primary:hover::before {
-  opacity: 1;
+  display: none;
 }
 
 /* ============================================================================ */
@@ -234,7 +233,7 @@ body {
 /* PROFESSIONAL COMPONENT SYSTEM */
 /* ============================================================================ */
 
-/* Button System */
+/* Button System - Flat Design */
 .btn-primary {
   display: inline-flex;
   align-items: center;
@@ -242,21 +241,22 @@ body {
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: var(--radius-lg);
+  border-radius: 8px;
   font-family: inherit;
   font-size: var(--text-base);
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
-  transition: var(--transition-base);
+  transition: background-color 0.2s ease;
   white-space: nowrap;
-  background: var(--primary-600);
-  color: var(--white);
+  background: #111827;
+  color: white;
 }
 
 .btn-primary:hover {
-  background: var(--primary-700);
-  transform: translateY(-1px);
+  background: #374151;
+  transform: none;
+  box-shadow: none;
 }
 
 .btn-secondary {
@@ -265,22 +265,24 @@ body {
   justify-content: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  border: 1px solid var(--border-main);
-  border-radius: var(--radius-lg);
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
   font-family: inherit;
   font-size: var(--text-base);
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
-  transition: var(--transition-base);
+  transition: background-color 0.2s ease;
   white-space: nowrap;
-  background: var(--bg-secondary);
-  color: var(--text-primary);
+  background: #f9fafb;
+  color: #111827;
 }
 
 .btn-secondary:hover {
-  background: var(--gray-50);
-  border-color: var(--border-strong);
+  background: #f3f4f6;
+  border-color: #d1d5db;
+  transform: none;
+  box-shadow: none;
 }
 
 .btn-ghost {

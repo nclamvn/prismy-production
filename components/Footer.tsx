@@ -258,29 +258,29 @@ export default function Footer({}: FooterProps) {
                 </div>
               </motion.div>
 
-              {/* Navigation Sections - Closer Together */}
-              <div className="flex gap-12">
+              {/* Navigation Sections - Right Aligned */}
+              <div className="flex gap-12 justify-end">
                 {content[language].sections.map(section => (
                   <motion.div
                     key={section.title}
                     variants={motionSafe(slideUp)}
                     className="min-w-0"
                   >
-                  <h3 className="heading-4 text-gray-900 mb-4">
-                    {section.title}
-                  </h3>
-                  <ul className="space-y-3">
-                    {section.links.map(link => (
-                      <li key={link.name}>
-                        <Link
-                          href={link.href}
-                          className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                        >
-                          {link.name}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
+                    <h3 className="heading-4 text-gray-900 mb-4">
+                      {section.title}
+                    </h3>
+                    <ul className="space-y-3">
+                      {section.links.map(link => (
+                        <li key={link.name}>
+                          <Link
+                            href={link.href}
+                            className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
+                          >
+                            {link.name}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
                   </motion.div>
                 ))}
               </div>
