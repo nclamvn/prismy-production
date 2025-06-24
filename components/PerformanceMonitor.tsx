@@ -29,11 +29,8 @@ interface PerformanceThresholds {
 }
 
 export default function PerformanceMonitor() {
-  const [metrics, setMetrics] = useState<PerformanceMetrics>({})
-  const [showDetails, setShowDetails] = useState(false)
-  const [isCollecting, setIsCollecting] = useState(true)
-  const { isVisible: isDashboardVisible, toggle: toggleDashboard } =
-    usePerformanceMonitor()
+  // Disable PerformanceMonitor completely for clean UI
+  return null
 
   const thresholds: PerformanceThresholds = {
     LCP: { good: 2500, poor: 4000 },

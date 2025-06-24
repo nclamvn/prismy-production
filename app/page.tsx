@@ -45,13 +45,13 @@ export default function Home() {
   const content = {
     vi: {
       hero: {
-        title: 'AI Agent tiên phong trong xử lý tài liệu thông minh',
+        title: 'AI Agent tiên phong cho',
+        titleHighlight: 'Tài liệu',
         subtitle: '',
         description:
           'Giải pháp dịch thuật thông minh với độ chính xác cao, hỗ trợ hơn 100 ngôn ngữ',
         getStarted: 'Bắt đầu ngay',
         watchDemo: 'Xem demo',
-        trustIndicator: 'Tin cậy bởi 10,000+ doanh nghiệp',
       },
       features: {
         title: 'Tính năng nổi bật',
@@ -114,13 +114,13 @@ export default function Home() {
     },
     en: {
       hero: {
-        title: 'Pioneering AI Agent for Document Intelligence',
+        title: 'Pioneering AI Agent for',
+        titleHighlight: 'Document',
         subtitle: '',
         description:
           'Intelligent translation solution with high accuracy, supporting 100+ languages',
         getStarted: 'Get Started',
         watchDemo: 'Watch Demo',
-        trustIndicator: 'Trusted by 10,000+ businesses',
       },
       features: {
         title: 'Powerful Features',
@@ -249,7 +249,20 @@ export default function Home() {
                   variants={motionSafe(slideUp)}
                   className="heading-hero text-center mb-6"
                 >
-                  {content[language].hero.title}
+                  <div className="mb-2">{content[language].hero.title}</div>
+                  <div 
+                    className="animated-gradient-text"
+                    style={{
+                      background: 'linear-gradient(270deg, #c084fc, #86efac)',
+                      backgroundSize: '400% 400%',
+                      animation: 'gradientMove 15s ease infinite',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      fontSize: '1.5em'
+                    }}
+                  >
+                    {content[language].hero.titleHighlight}
+                  </div>
                 </motion.h1>
 
                 <motion.p
@@ -270,12 +283,6 @@ export default function Home() {
                   </TouchButton>
                 </TouchOptimized>
 
-                <motion.p
-                  variants={motionSafe(slideUp)}
-                  className="body-sm text-gray-500 text-center mb-4 md:mb-6 lg:mb-8"
-                >
-                  {content[language].hero.trustIndicator}
-                </motion.p>
               </motion.div>
             </div>
           </div>

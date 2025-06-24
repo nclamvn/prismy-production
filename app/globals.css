@@ -46,6 +46,51 @@
 }
 
 /* ============================================================================ */
+/* GRADIENT TEXT ANIMATION */
+/* ============================================================================ */
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animated-gradient-text {
+  background: linear-gradient(270deg, #c084fc, #86efac);
+  background-size: 400% 400%;
+  animation: gradientMove 15s ease infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================================================================ */
+/* NO BORDER UTILITIES */
+/* ============================================================================ */
+
+.no-border,
+.btn-no-border,
+button.no-border,
+.dropdown-no-border {
+  border: none !important;
+  border-width: 0 !important;
+}
+
+/* Remove borders from common UI elements */
+.btn, .button,
+.dropdown, .select,
+.modal .btn, .modal button,
+.popup .btn, .popup button {
+  border: none;
+}
+
+/* ============================================================================ */
 /* PROFESSIONAL BASE STYLES */
 /* ============================================================================ */
 

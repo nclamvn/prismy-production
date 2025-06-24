@@ -110,7 +110,7 @@ export default function Navbar({}: NavbarProps) {
       animate="visible"
     >
       {/* Mobile Navbar - Stable and Simple */}
-      <div className="md:hidden w-full bg-white/95 backdrop-blur-sm border-b border-gray-200">
+      <div className="md:hidden w-full" style={{backgroundColor: 'rgba(255, 255, 255, 0.7)', backdropFilter: 'blur(12px)'}}>
         <nav className="w-full px-4 py-2" aria-label="Mobile navigation">
           <div className="flex items-center justify-between">
             {/* Mobile Logo */}
@@ -173,9 +173,13 @@ export default function Navbar({}: NavbarProps) {
         <div
           className={`transition-all duration-300 ${
             shouldUseDesktopPill
-              ? 'mx-8 mt-4 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-full shadow-sm'
-              : 'bg-white/95 backdrop-blur-sm border-b border-gray-200'
+              ? 'mx-8 mt-4 rounded-full shadow-sm'
+              : ''
           }`}
+          style={{
+            backgroundColor: 'rgba(255, 255, 255, 0.7)', 
+            backdropFilter: 'blur(12px)'
+          }}
         >
           <nav className="w-full" aria-label="Desktop navigation">
             <div
@@ -264,7 +268,7 @@ export default function Navbar({}: NavbarProps) {
 
       {/* Mobile menu - Separate and Stable */}
       {isMenuOpen && (
-        <div className="md:hidden w-full bg-white border-b border-gray-200">
+        <div className="md:hidden w-full bg-white">
           <motion.div
             id="mobile-menu"
             className="px-4 py-4"
@@ -291,8 +295,8 @@ export default function Navbar({}: NavbarProps) {
                   <button
                     onClick={() => setLanguage('vi')}
                     className={`w-full text-left px-4 py-3 text-sm transition-all duration-300 cubic-bezier(0.25, 0.46, 0.45, 0.94)
-                             hover:bg-gray-50 hover:font-semibold hover:-translate-y-px border border-border-subtle
-                             ${language === 'vi' ? 'font-semibold text-gray-900 bg-gray-50 border-gray-300' : 'text-gray-600 bg-white'}`}
+                             hover:bg-gray-50 hover:font-semibold hover:-translate-y-px
+                             ${language === 'vi' ? 'font-semibold text-gray-900 bg-gray-50' : 'text-gray-600 bg-white'}`}
                     style={{ borderRadius: 'var(--radius-md)' }}
                   >
                     {content[language].languages.vi}
@@ -300,8 +304,8 @@ export default function Navbar({}: NavbarProps) {
                   <button
                     onClick={() => setLanguage('en')}
                     className={`w-full text-left px-4 py-3 text-sm transition-all duration-300 cubic-bezier(0.25, 0.46, 0.45, 0.94)
-                             hover:bg-gray-50 hover:font-semibold hover:-translate-y-px border border-border-subtle
-                             ${language === 'en' ? 'font-semibold text-gray-900 bg-gray-50 border-gray-300' : 'text-gray-600 bg-white'}`}
+                             hover:bg-gray-50 hover:font-semibold hover:-translate-y-px
+                             ${language === 'en' ? 'font-semibold text-gray-900 bg-gray-50' : 'text-gray-600 bg-white'}`}
                     style={{ borderRadius: 'var(--radius-md)' }}
                   >
                     {content[language].languages.en}

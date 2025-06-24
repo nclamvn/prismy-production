@@ -134,10 +134,9 @@ export default function UniversalDropdown({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -8 }}
             transition={{ duration: 0.15 }}
-            className="absolute z-[60] w-full mt-1 bg-white border border-border-subtle rounded-md overflow-hidden mobile-dropdown-zen"
+            className="absolute z-[60] w-full mt-1 bg-white rounded-md overflow-hidden mobile-dropdown-zen"
             style={{
               boxShadow: 'var(--shadow-lg)',
-              borderColor: 'var(--border-subtle)',
             }}
           >
             <div className="max-h-60 overflow-y-auto">

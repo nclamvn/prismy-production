@@ -219,11 +219,11 @@ export default function Footer({}: FooterProps) {
           {/* Main Footer Content */}
           <div className="mb-6 sm:mb-8">
             {/* Simplified Desktop Layout - Only existing routes */}
-            <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-5 gap-6">
               {/* Brand Section */}
               <motion.div
                 variants={motionSafe(slideUp)}
-                className="lg:col-span-2 flex flex-col gap-4"
+                className="lg:col-span-3 flex flex-col gap-4"
               >
                 <div>
                   <Link
