@@ -3,7 +3,8 @@
 import { useState, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { motionSafe, slideUp, staggerContainer } from '@/lib/motion'
-import DocumentUpload from '@/components/documents/DocumentUpload'
+import TranslationEnabledUpload from '@/components/workspace/TranslationEnabledUpload'
+import type { AIProcessingResult } from '@/lib/ai-document-processor'
 import {
   Upload,
   FileText,
@@ -135,14 +136,19 @@ export default function DocumentMode({ language }: DocumentModeProps) {
     },
   ]
 
-  const handleFileSelect = useCallback((file: File) => {
-    setSelectedFile(file)
-    setIsProcessing(true)
-    // Simulate processing
-    setTimeout(() => {
-      setIsProcessing(false)
-    }, 3000)
+  const handleDocumentProcessed = useCallback((result: AIProcessingResult) => {
+    console.log('✅ DocumentMode: Document processed successfully:', result)
+    setSelectedFile(new File([''], result.document.title || 'processed-document'))
+    setIsProcessing(false)
   }, [])
+
+  const handleProcessingError = useCallback((error: Error) => {
+    console.error('❌ DocumentMode: Document processing error:', error)
+    setIsProcessing(false)
+  }, [])
+
+  // Add log when component mounts to confirm it's using the right component
+  console.log('📄 DocumentMode: Using workspace DocumentUpload component with translation enabled')
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -198,11 +204,15 @@ export default function DocumentMode({ language }: DocumentModeProps) {
                     {content[language].uploadZone.supported}
                   </p>
 
-                  <DocumentUpload
-                    language={language}
-                    onFileSelect={handleFileSelect}
-                    isProcessing={isProcessing}
-                  />
+                  <div className="document-upload-wrapper">
+                    <TranslationEnabledUpload
+                      enableTranslation={true}
+                      defaultTargetLanguage={language === 'vi' ? 'en' : 'vi'}
+                      onDocumentProcessed={handleDocumentProcessed}
+                      onError={handleProcessingError}
+                      className="w-full"
+                    />
+                  </div>
                 </div>
               ) : (
                 <div className="space-y-6">

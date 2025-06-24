@@ -128,15 +128,14 @@ const EnhancedTranslationInterface: React.FC<RealTimeTranslationProps> = ({
         }
 
         // 2. Call translation API
-        const response = await fetch('/api/translate', {
+        const response = await fetch('/api/translate/public', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             text,
             sourceLang: sourceLang === 'auto' ? undefined : sourceLang,
             targetLang,
-            enableMemoryLookup: true,
-            enableCaching: true
+            qualityTier: 'free'
           })
         })
 
@@ -144,11 +143,16 @@ const EnhancedTranslationInterface: React.FC<RealTimeTranslationProps> = ({
           throw new Error(`Translation failed: ${response.statusText}`)
         }
 
-        const result = await response.json()
+        const data = await response.json()
         
+        if (!data.success) {
+          throw new Error(data.message || 'Translation failed')
+        }
+        
+        const result = data.result
         setTranslatedText(result.translatedText)
-        setConfidence(result.confidence || 0.8)
-        setProcessingTime(Date.now() - startTime)
+        setConfidence(result.qualityScore || 0.8)
+        setProcessingTime(result.processingTime || (Date.now() - startTime))
 
         // Create session record
         const session: TranslationSession = {

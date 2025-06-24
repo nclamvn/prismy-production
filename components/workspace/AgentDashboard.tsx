@@ -22,6 +22,7 @@ import {
 } from 'lucide-react'
 
 import { useLanguage } from '@/contexts/LanguageContext'
+import { useAgentGestures } from './MobileGestureProvider'
 import '../../styles/ai-workspace-components.css'
 
 interface Agent {
@@ -72,6 +73,10 @@ export default function AgentDashboard({
   const [agents, setAgents] = useState<Agent[]>([])
   const [tasks, setTasks] = useState<Task[]>([])
   const [showCollaborationMode, setShowCollaborationMode] = useState(false)
+  const [currentAgentIndex, setCurrentAgentIndex] = useState(0)
+  
+  // Agent-specific gesture handling
+  const agentGestures = useAgentGestures()
 
   // Initialize agents with 12+ specialized personalities
   useEffect(() => {
@@ -288,6 +293,52 @@ export default function AgentDashboard({
 
     setAgents(initialAgents)
   }, [])
+  
+  // Gesture handlers for agent dashboard
+  useEffect(() => {
+    // Swipe for agent navigation
+    const unsubscribeSwipe = agentGestures.registerAgentGesture('swipe', (gesture) => {
+      if (gesture.direction === 'left' && currentAgentIndex < agents.length - 1) {
+        const nextIndex = currentAgentIndex + 1
+        setCurrentAgentIndex(nextIndex)
+        if (onAgentSelect && agents[nextIndex]) {
+          onAgentSelect(agents[nextIndex])
+        }
+      } else if (gesture.direction === 'right' && currentAgentIndex > 0) {
+        const prevIndex = currentAgentIndex - 1
+        setCurrentAgentIndex(prevIndex)
+        if (onAgentSelect && agents[prevIndex]) {
+          onAgentSelect(agents[prevIndex])
+        }
+      }
+    })
+    
+    // Long press for collaboration mode
+    const unsubscribeLongPress = agentGestures.registerAgentGesture('longpress', (gesture) => {
+      setShowCollaborationMode(!showCollaborationMode)
+    })
+    
+    // Tap for agent selection
+    const unsubscribeTap = agentGestures.registerAgentGesture('tap', (gesture) => {
+      // Get tapped agent from DOM context if available
+      const target = gesture.target as HTMLElement
+      const agentCard = target.closest('.agent-card')
+      if (agentCard) {
+        const agentId = agentCard.getAttribute('data-agent-id')
+        const agent = agents.find(a => a.id === agentId)
+        if (agent && onAgentSelect) {
+          onAgentSelect(agent)
+          setCurrentAgentIndex(agents.indexOf(agent))
+        }
+      }
+    })
+    
+    return () => {
+      unsubscribeSwipe()
+      unsubscribeLongPress()
+      unsubscribeTap()
+    }
+  }, [agentGestures, agents, currentAgentIndex, onAgentSelect, showCollaborationMode])
 
   const getStatusColor = (status: Agent['status']) => {
     switch (status) {
@@ -384,6 +435,7 @@ export default function AgentDashboard({
             <motion.div
               key={agent.id}
               className={`agent-card ${selectedAgentId === agent.id ? 'active' : ''}`}
+              data-agent-id={agent.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}

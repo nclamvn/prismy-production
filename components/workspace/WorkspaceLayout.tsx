@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation'
 import { motionSafe, slideUp, fadeIn } from '@/lib/motion'
 import { WorkspaceMode } from '@/app/workspace/page'
 import UserMenu from '@/components/auth/UserMenu'
+import CreditDisplay from '@/components/auth/CreditDisplay'
+import InviteRedemptionModal from '@/components/auth/InviteRedemptionModal'
 import {
   FileText,
   Brain,
@@ -36,6 +38,7 @@ export default function WorkspaceLayout({
   children,
 }: WorkspaceLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [showInviteModal, setShowInviteModal] = useState(false)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const router = useRouter()
 
@@ -330,6 +333,16 @@ export default function WorkspaceLayout({
 
             {/* Right Section: Navigation + User */}
             <div className="flex items-center space-x-3">
+              {/* Credit Display */}
+              <CreditDisplay 
+                userId={user?.id}
+                size="md"
+                variant="badge"
+                onInviteClick={() => setShowInviteModal(true)}
+                onTopUpClick={() => router.push('/pricing')}
+                className="mr-2"
+              />
+
               {/* Quick Stats - Desktop Only */}
               <div className="hidden xl:flex items-center space-x-6 text-center pr-6 border-r border-gray-200">
                 <div>
@@ -383,6 +396,19 @@ export default function WorkspaceLayout({
           </motion.div>
         </main>
       </div>
+
+      {/* Invite Redemption Modal */}
+      <InviteRedemptionModal
+        isOpen={showInviteModal}
+        onClose={() => setShowInviteModal(false)}
+        onSuccess={(result) => {
+          console.log('Invite redeemed:', result)
+          setShowInviteModal(false)
+          // Optionally show a success message or refresh the page
+          window.location.reload()
+        }}
+        userEmail={user?.email}
+      />
     </div>
   )
 }

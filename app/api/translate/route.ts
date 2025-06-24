@@ -6,7 +6,7 @@ import { validateCSRFMiddleware } from '@/lib/csrf'
 import { createRouteHandlerClient } from '@/lib/supabase'
 import { redisTranslationCache } from '@/lib/redis-translation-cache'
 import { abTestingFramework } from '@/lib/ab-testing'
-import { usageTracker } from '@/lib/usage-tracker'
+import { checkAndDeductCredits, estimateTokensFromText } from '@/lib/credit-manager'
 import { websocketManager } from '@/lib/websocket/websocket-manager'
 import { cookies } from 'next/headers'
 
@@ -90,28 +90,37 @@ export async function POST(request: NextRequest) {
 
     const { text, sourceLanguage, targetLanguage, qualityTier } = validation.data
 
-    // Check usage and enforce quotas
-    const usageResult = await usageTracker.checkAndTrackUsage({
-      userId: session.user.id,
-      type: 'translation',
-      characters: text.length,
-      metadata: {
+    // Calculate and check credits required
+    const estimatedTokens = estimateTokensFromText(text)
+    const creditResult = await checkAndDeductCredits(
+      supabase,
+      session.user.id,
+      {
+        tokens: estimatedTokens,
+        characters: text.length,
+        operation_type: 'translate',
+        quality_tier: qualityTier as any
+      },
+      'translate',
+      {
         sourceLanguage,
         targetLanguage,
-        qualityTier
+        qualityTier,
+        apiEndpoint: '/api/translate'
       }
-    })
+    )
 
-    if (!usageResult.allowed) {
+    if (!creditResult.success) {
       return NextResponse.json(
         { 
-          error: 'Usage limit exceeded',
-          message: usageResult.reason,
-          usage: usageResult.usage,
-          remaining: usageResult.remaining,
-          plan: usageResult.plan
+          error: creditResult.error,
+          message: creditResult.message,
+          credits: {
+            available: creditResult.credits_before,
+            needed: creditResult.calculation.tokens ? Math.ceil(creditResult.calculation.tokens / 1000) : 1
+          }
         },
-        { status: 429 }
+        { status: 402 } // Payment Required
       )
     }
 
@@ -199,7 +208,7 @@ export async function POST(request: NextRequest) {
         }
       })
 
-      // Return successful response with usage information
+      // Return successful response with credit information
         return NextResponse.json({
           success: true,
           translationId,
@@ -211,13 +220,19 @@ export async function POST(request: NextRequest) {
             qualityScore: result.qualityScore || 0.95,
             cached: result.cached || false
           },
-          usage: {
+          credits: {
+            used: creditResult.credits_used,
+            remaining: creditResult.credits_after,
+            previousBalance: creditResult.credits_before
+          },
+          billing: {
             charactersTranslated: text.length,
+            tokensProcessed: estimatedTokens,
             qualityTier: qualityTier,
-            remainingQuota: rateLimitResult.remaining,
-            current: usageResult.usage,
-            remaining: usageResult.remaining,
-            plan: usageResult.plan
+            rateLimit: {
+              remaining: rateLimitResult.remaining,
+              limit: rateLimitResult.limit
+            }
           }
         })
 

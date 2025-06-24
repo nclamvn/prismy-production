@@ -17,6 +17,7 @@ import {
 
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useUnifiedAuth } from '@/hooks/useUnifiedAuth'
+import { MobileGestureProvider, useWorkspaceGestures } from './MobileGestureProvider'
 
 // Import new styles
 import '../../styles/notebooklm-design-tokens.css'
@@ -50,7 +51,7 @@ interface Document {
   agentsAssigned: string[]
 }
 
-export default function AIWorkspaceLayout({ 
+function AIWorkspaceLayoutInner({ 
   children, 
   sidebar, 
   rightPanel, 
@@ -63,6 +64,9 @@ export default function AIWorkspaceLayout({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [activeDocuments, setActiveDocuments] = useState<Document[]>([])
+  
+  // Mobile gesture handling
+  const workspaceGestures = useWorkspaceGestures()
 
   // Sample navigation items
   const navigationItems: NavigationItem[] = [
@@ -134,6 +138,74 @@ export default function AIWorkspaceLayout({
       }
     ])
   }, [])
+  
+  // Gesture event handlers
+  useEffect(() => {
+    const handleWorkspaceSwipe = (event: CustomEvent) => {
+      const { direction } = event.detail
+      
+      switch (direction) {
+        case 'left':
+          // Navigate to next document or agent
+          if (!showRightPanel && onToggleRightPanel) {
+            onToggleRightPanel()
+          }
+          break
+        case 'right':
+          // Navigate to previous or show sidebar
+          if (sidebarCollapsed) {
+            setSidebarCollapsed(false)
+          }
+          break
+        case 'up':
+          // Show agent dashboard or minimize panels
+          if (window.innerWidth < 768) {
+            setMobileMenuOpen(true)
+          }
+          break
+        case 'down':
+          // Hide panels or show document viewer
+          if (mobileMenuOpen) {
+            setMobileMenuOpen(false)
+          }
+          break
+      }
+    }
+    
+    const handleSidebarGesture = (event: CustomEvent) => {
+      setSidebarCollapsed(false)
+    }
+    
+    const handlePanelGesture = (event: CustomEvent) => {
+      if (onToggleRightPanel) {
+        onToggleRightPanel()
+      }
+    }
+    
+    const handleQuickActions = (event: CustomEvent) => {
+      // Show quick action menu
+      console.log('Quick actions triggered via gesture')
+    }
+    
+    // Listen for workspace-specific gestures
+    document.addEventListener('workspace:swipe:left', handleWorkspaceSwipe as EventListener)
+    document.addEventListener('workspace:swipe:right', handleWorkspaceSwipe as EventListener)
+    document.addEventListener('workspace:swipe:up', handleWorkspaceSwipe as EventListener)
+    document.addEventListener('workspace:swipe:down', handleWorkspaceSwipe as EventListener)
+    document.addEventListener('workspace:sidebar:show', handleSidebarGesture as EventListener)
+    document.addEventListener('workspace:panel:show', handlePanelGesture as EventListener)
+    document.addEventListener('workspace:quick:actions', handleQuickActions as EventListener)
+    
+    return () => {
+      document.removeEventListener('workspace:swipe:left', handleWorkspaceSwipe as EventListener)
+      document.removeEventListener('workspace:swipe:right', handleWorkspaceSwipe as EventListener)
+      document.removeEventListener('workspace:swipe:up', handleWorkspaceSwipe as EventListener)
+      document.removeEventListener('workspace:swipe:down', handleWorkspaceSwipe as EventListener)
+      document.removeEventListener('workspace:sidebar:show', handleSidebarGesture as EventListener)
+      document.removeEventListener('workspace:panel:show', handlePanelGesture as EventListener)
+      document.removeEventListener('workspace:quick:actions', handleQuickActions as EventListener)
+    }
+  }, [sidebarCollapsed, showRightPanel, onToggleRightPanel, mobileMenuOpen])
 
   return (
     <div className={`workspace-container ${culturalClass}`}>
@@ -367,6 +439,18 @@ export default function AIWorkspaceLayout({
         )}
       </AnimatePresence>
     </div>
+  )
+}
+
+// Main component with gesture provider
+export default function AIWorkspaceLayout(props: AIWorkspaceLayoutProps) {
+  return (
+    <MobileGestureProvider 
+      defaultEnabled={true}
+      enabledGestures={['swipe', 'pinch', 'longpress', 'tap', 'edgetouch']}
+    >
+      <AIWorkspaceLayoutInner {...props} />
+    </MobileGestureProvider>
   )
 }
 

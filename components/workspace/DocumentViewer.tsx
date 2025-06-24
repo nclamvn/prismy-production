@@ -20,6 +20,7 @@ import {
 } from 'lucide-react'
 
 import { useLanguage } from '@/contexts/LanguageContext'
+import { useDocumentGestures } from './MobileGestureProvider'
 import '../../styles/ai-workspace-components.css'
 
 interface DocumentViewerProps {
@@ -30,6 +31,20 @@ interface DocumentViewerProps {
   onAnnotationCreate?: (annotation: Annotation) => void
   onTextSelect?: (selectedText: string, position: Position) => void
   className?: string
+  
+  // Translation support
+  originalContent?: string
+  translatedContent?: string
+  translation?: {
+    targetLanguage: string
+    qualityScore: number
+    chunkTranslations?: Array<{
+      id: string
+      originalText: string
+      translatedText: string
+      confidence: number
+    }>
+  }
 }
 
 interface Annotation {
@@ -64,7 +79,10 @@ export default function DocumentViewer({
   title = 'Vietnamese Business Contract.pdf',
   onAnnotationCreate,
   onTextSelect,
-  className = ''
+  className = '',
+  originalContent,
+  translatedContent,
+  translation
 }: DocumentViewerProps) {
   const { language } = useLanguage()
   const [currentPage, setCurrentPage] = useState(1)
@@ -75,7 +93,23 @@ export default function DocumentViewer({
   const [annotations, setAnnotations] = useState<Annotation[]>([])
   const [selectedText, setSelectedText] = useState('')
   const [showAnnotations, setShowAnnotations] = useState(true)
+  const [viewMode, setViewMode] = useState<'original' | 'translated' | 'side-by-side'>('original')
+  const [activeChunk, setActiveChunk] = useState<string | null>(null)
   const viewerRef = useRef<HTMLDivElement>(null)
+  
+  // Document-specific gesture handling
+  const documentGestures = useDocumentGestures()
+  
+  // Auto-set view mode based on available content
+  React.useEffect(() => {
+    if (translatedContent && originalContent) {
+      setViewMode('side-by-side')
+    } else if (translatedContent) {
+      setViewMode('translated')
+    } else {
+      setViewMode('original')
+    }
+  }, [originalContent, translatedContent])
 
   // Sample document pages for demo
   const documentPages: DocumentPage[] = Array.from({ length: totalPages }, (_, i) => ({
@@ -126,6 +160,112 @@ export default function DocumentViewer({
     }
   }, [onTextSelect])
 
+  // Gesture handlers for document viewer
+  React.useEffect(() => {
+    // Pinch to zoom handler
+    const unsubscribePinch = documentGestures.registerDocumentGesture('pinch', (gesture) => {
+      const newZoom = zoom * gesture.scale
+      setZoom(Math.max(0.25, Math.min(3, newZoom)))
+    })
+    
+    // Swipe for page navigation
+    const unsubscribeSwipe = documentGestures.registerDocumentGesture('swipe', (gesture) => {
+      if (gesture.direction === 'left' && currentPage < totalPages) {
+        setCurrentPage(prev => prev + 1)
+      } else if (gesture.direction === 'right' && currentPage > 1) {
+        setCurrentPage(prev => prev - 1)
+      }
+    })
+    
+    // Long press for annotation creation
+    const unsubscribeLongPress = documentGestures.registerDocumentGesture('longpress', (gesture) => {
+      // Create highlight annotation at touch position
+      createAnnotation('highlight')
+    })
+    
+    // Double tap to zoom
+    const unsubscribeDoubleTap = documentGestures.registerDocumentGesture('tap', (gesture) => {
+      // Simple double-tap detection (production should use proper gesture library)
+      if (zoom === 1) {
+        setZoom(2)
+      } else {
+        setZoom(1)
+      }
+    })
+    
+    return () => {
+      unsubscribePinch()
+      unsubscribeSwipe()
+      unsubscribeLongPress()
+      unsubscribeDoubleTap()
+    }
+  }, [documentGestures, zoom, currentPage, totalPages])
+  
+  // Listen for workspace zoom events
+  React.useEffect(() => {
+    const handleZoomEvent = (event: CustomEvent) => {
+      const { scale } = event.detail
+      if (scale > 1) {
+        handleZoomIn()
+      } else {
+        handleZoomOut()
+      }
+    }
+    
+    document.addEventListener('workspace:zoom:in', handleZoomEvent as EventListener)
+    document.addEventListener('workspace:zoom:out', handleZoomEvent as EventListener)
+    
+    return () => {
+      document.removeEventListener('workspace:zoom:in', handleZoomEvent as EventListener)
+      document.removeEventListener('workspace:zoom:out', handleZoomEvent as EventListener)
+    }
+  }, [handleZoomIn, handleZoomOut])
+
+  // Helper function to render content with chunk highlighting
+  const renderContent = (content: string, type: 'original' | 'translated') => {
+    // Split content into paragraphs for better readability
+    const paragraphs = content.split('\n\n').filter(p => p.trim().length > 0)
+    
+    return paragraphs.map((paragraph, index) => {
+      const isActiveChunk = activeChunk === `chunk_${index}`
+      return (
+        <div 
+          key={index}
+          className={`mb-4 p-3 rounded-lg transition-all cursor-pointer ${
+            isActiveChunk 
+              ? 'bg-blue-100 border border-blue-300' 
+              : 'hover:bg-gray-50'
+          }`}
+          onClick={() => setActiveChunk(isActiveChunk ? null : `chunk_${index}`)}
+          onMouseEnter={() => {
+            // Highlight corresponding chunk in other view
+            if (viewMode === 'side-by-side') {
+              setActiveChunk(`chunk_${index}`)
+            }
+          }}
+          onMouseLeave={() => {
+            if (viewMode === 'side-by-side') {
+              setActiveChunk(null)
+            }
+          }}
+        >
+          {paragraph.split('\n').map((line, lineIndex) => (
+            <p key={lineIndex} className="mb-2 last:mb-0">
+              {line}
+            </p>
+          ))}
+          {translation?.chunkTranslations && type === 'translated' && (
+            <div className="mt-2 text-xs text-blue-600">
+              {language === 'vi' ? 'Độ tin cậy:' : 'Confidence:'} {
+                Math.round((translation.chunkTranslations[index]?.confidence || 0) * 100)
+              }%
+            </div>
+          )}
+        </div>
+      )
+    })
+  }
+
   const createAnnotation = useCallback((type: 'highlight' | 'note' | 'question') => {
     if (!selectedText) return
 
@@ -175,6 +315,82 @@ export default function DocumentViewer({
     }
 
     const currentPageData = documentPages[currentPage - 1]
+
+    // Render side-by-side view for translations
+    if (viewMode === 'side-by-side' && originalContent && translatedContent) {
+      return (
+        <div className="document-canvas-split">
+          <div className="flex h-full">
+            {/* Original Content */}
+            <div className="flex-1 pr-2">
+              <div className="bg-white shadow-lg rounded-lg overflow-hidden h-full">
+                <div className="bg-gray-50 px-4 py-2 border-b">
+                  <h3 className="text-sm font-medium text-gray-700">
+                    {language === 'vi' ? 'Bản Gốc' : 'Original'}
+                  </h3>
+                </div>
+                <div className="p-6 overflow-auto h-full prose prose-sm max-w-none">
+                  {renderContent(originalContent, 'original')}
+                </div>
+              </div>
+            </div>
+
+            {/* Translated Content */}
+            <div className="flex-1 pl-2">
+              <div className="bg-white shadow-lg rounded-lg overflow-hidden h-full">
+                <div className="bg-blue-50 px-4 py-2 border-b">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-medium text-blue-700">
+                      {language === 'vi' ? 'Bản Dịch' : 'Translation'}
+                      {translation && (
+                        <span className="ml-2 text-xs text-blue-600">
+                          ({translation.targetLanguage.toUpperCase()})
+                        </span>
+                      )}
+                    </h3>
+                    {translation && (
+                      <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                        {translation.qualityScore}% {language === 'vi' ? 'chất lượng' : 'quality'}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div className="p-6 overflow-auto h-full prose prose-sm max-w-none">
+                  {renderContent(translatedContent, 'translated')}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+    }
+
+    // Single view for original or translated content
+    const content = viewMode === 'translated' ? translatedContent : originalContent
+    if (content) {
+      return (
+        <div className="document-canvas">
+          <motion.div
+            className="document-page"
+            style={{
+              transform: `scale(${zoom}) rotate(${rotation}deg)`,
+              transformOrigin: 'center center'
+            }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: zoom }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+              <div className="p-8">
+                <div className="prose prose-lg max-w-none">
+                  {renderContent(content, viewMode)}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )
+    }
 
     return (
       <div className="document-canvas">
@@ -352,6 +568,43 @@ export default function DocumentViewer({
           >
             <Download className="w-4 h-4" />
           </button>
+
+          {/* Translation View Controls */}
+          {(originalContent || translatedContent) && (
+            <>
+              <div className="h-6 w-px bg-gray-300 mx-2" />
+              
+              <div className="flex items-center gap-2">
+                <select
+                  value={viewMode}
+                  onChange={(e) => setViewMode(e.target.value as any)}
+                  className="text-xs border border-gray-300 rounded px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {originalContent && (
+                    <option value="original">
+                      {language === 'vi' ? 'Bản gốc' : 'Original'}
+                    </option>
+                  )}
+                  {translatedContent && (
+                    <option value="translated">
+                      {language === 'vi' ? 'Bản dịch' : 'Translation'}
+                    </option>
+                  )}
+                  {originalContent && translatedContent && (
+                    <option value="side-by-side">
+                      {language === 'vi' ? 'Song song' : 'Side-by-side'}
+                    </option>
+                  )}
+                </select>
+
+                {translation && (
+                  <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
+                    {translation.targetLanguage.toUpperCase()}
+                  </span>
+                )}
+              </div>
+            </>
+          )}
 
           <button
             className="document-control-btn"

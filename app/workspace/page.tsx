@@ -31,7 +31,7 @@ export type WorkspaceMode =
 
 function WorkspaceContent() {
   const { language } = useLanguage()
-  const { user, loading } = useAuth()
+  const { user, profile, loading } = useAuth()
   const { isLoading: workspaceLoading, setLoading: setWorkspaceLoading } =
     useWorkspaceLoading()
   const [currentMode, setCurrentMode] = useState<WorkspaceMode>('documents')
@@ -111,7 +111,7 @@ function WorkspaceContent() {
       case 'billing':
         return <BillingMode language={language} />
       case 'settings':
-        return <SettingsMode language={language} />
+        return <SettingsMode language={language} user={profile} />
       default:
         return (
           <AIWorkspaceLayout

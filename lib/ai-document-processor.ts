@@ -17,6 +17,8 @@ import { Document, DocumentMetadata, DocumentInsight, Agent } from '@/components
 import { modernOCRService } from './google-vision-ocr'
 import { documentProcessor as baseProcessor } from './document-processor'
 import { agentCollaborationEngine } from './agent-collaboration'
+// Translation service moved to API calls to avoid client-side Google Cloud dependencies
+import { largeDocumentProcessor, LargeDocumentProcessingOptions } from './large-document-processor'
 
 export interface AIProcessingOptions {
   language?: 'en' | 'vi' | 'auto'
@@ -31,6 +33,17 @@ export interface AIProcessingOptions {
   extractEntities?: boolean
   generateSummary?: boolean
   detectSentiment?: boolean
+  
+  // Translation options
+  enableTranslation?: boolean
+  targetLanguage?: string
+  translationQuality?: 'free' | 'standard' | 'premium' | 'enterprise'
+  useTranslationMemory?: boolean
+  
+  // Large document options
+  useLargeDocumentMode?: boolean
+  maxChunkSize?: number
+  parallelProcessing?: boolean
 }
 
 export interface AIProcessingResult {
@@ -44,6 +57,28 @@ export interface AIProcessingResult {
   confidence: number
   warnings?: string[]
   suggestions?: string[]
+  
+  // Translation results
+  translation?: {
+    translatedContent: string
+    translatedStructuredContent?: StructuredContent
+    targetLanguage: string
+    sourceLanguage: string
+    confidence: number
+    qualityScore: number
+    translationTime: number
+    chunkTranslations: TranslationChunk[]
+    fromCache?: boolean
+  }
+}
+
+export interface TranslationChunk {
+  id: string
+  originalText: string
+  translatedText: string
+  confidence: number
+  fromMemory?: boolean
+  processingTime: number
 }
 
 export interface StructuredContent {
@@ -112,11 +147,17 @@ export interface TextStyle {
 }
 
 export interface ProcessingProgress {
-  stage: 'uploading' | 'analyzing' | 'extracting' | 'processing' | 'agent-assignment' | 'finalizing'
+  stage: 'uploading' | 'analyzing' | 'extracting' | 'processing' | 'translating' | 'agent-assignment' | 'finalizing'
   progress: number
   message: string
   messageVi: string
   details?: string
+  translationProgress?: {
+    chunksTotal: number
+    chunksCompleted: number
+    currentChunk?: string
+    estimatedTimeRemaining?: number
+  }
 }
 
 export class AIDocumentProcessor {
@@ -155,6 +196,13 @@ export class AIDocumentProcessor {
         messageVi: 'Đang tải lên tài liệu...',
         details: `File: ${file.name} (${this.formatFileSize(file.size)})`
       })
+
+      // Determine if we should use large document mode
+      const shouldUseLargeMode = this.shouldUseLargeDocumentMode(file, options)
+      
+      if (shouldUseLargeMode) {
+        return this.processLargeDocument(file, options, documentId, startTime)
+      }
 
       // Use base processor for initial processing
       const baseResult = await baseProcessor.processFile(file)
@@ -208,6 +256,55 @@ export class AIDocumentProcessor {
         ? await this.assignAgents(baseResult.originalText, structuredContent, insights)
         : []
 
+      // Translation processing if enabled
+      let translationResult: AIProcessingResult['translation'] | undefined
+      if (options.enableTranslation && options.targetLanguage) {
+        console.log('🌍 Translation enabled, starting translation process', {
+          targetLanguage: options.targetLanguage,
+          sourceLanguage: enhancedMetadata.language || 'auto',
+          translationQuality: options.translationQuality || 'standard',
+          contentLength: baseResult.originalText.length
+        })
+
+        this.updateProgress(documentId, {
+          stage: 'translating',
+          progress: 60,
+          message: 'Translating document...',
+          messageVi: 'Đang dịch tài liệu...',
+          details: `Target language: ${options.targetLanguage}`
+        })
+
+        try {
+          translationResult = await this.translateDocument(
+            baseResult.originalText,
+            structuredContent,
+            enhancedMetadata.language || 'auto',
+            options.targetLanguage,
+            options,
+            documentId
+          )
+          console.log('✅ Translation completed successfully', {
+            translatedLength: translationResult.translatedContent.length,
+            quality: translationResult.qualityScore,
+            chunks: translationResult.chunkTranslations.length
+          })
+        } catch (translationError) {
+          console.error('❌ Translation failed:', translationError)
+          console.error('Translation error details:', {
+            sourceLanguage: enhancedMetadata.language || 'auto', 
+            targetLanguage: options.targetLanguage,
+            contentPreview: baseResult.originalText.substring(0, 200),
+            error: translationError instanceof Error ? translationError.message : String(translationError)
+          })
+          throw translationError
+        }
+      } else {
+        console.log('⏭️ Translation skipped', {
+          enableTranslation: options.enableTranslation,
+          targetLanguage: options.targetLanguage
+        })
+      }
+
       // Create enhanced document
       const document: Document = {
         id: documentId,
@@ -232,15 +329,16 @@ export class AIDocumentProcessor {
       )
 
       // Finalize
+      const finalProgress = translationResult ? 90 : 100
       this.updateProgress(documentId, {
         stage: 'finalizing',
-        progress: 100,
-        message: 'Processing complete!',
-        messageVi: 'Xử lý hoàn tất!',
-        details: `${insights.length} insights generated, ${assignedAgents.length} agents assigned`
+        progress: finalProgress,
+        message: translationResult ? 'Finalizing translation...' : 'Processing complete!',
+        messageVi: translationResult ? 'Hoàn thiện bản dịch...' : 'Xử lý hoàn tất!',
+        details: `${insights.length} insights generated, ${assignedAgents.length} agents assigned${translationResult ? ', translation completed' : ''}`
       })
 
-      return {
+      const result: AIProcessingResult = {
         document,
         content: baseResult.originalText,
         structuredContent,
@@ -249,8 +347,22 @@ export class AIDocumentProcessor {
         assignedAgents,
         processingTime: Date.now() - startTime,
         confidence: this.calculateConfidence(insights),
-        suggestions
+        suggestions,
+        translation: translationResult
       }
+
+      // Final progress update
+      if (translationResult) {
+        this.updateProgress(documentId, {
+          stage: 'finalizing',
+          progress: 100,
+          message: 'Processing and translation complete!',
+          messageVi: 'Xử lý và dịch thuật hoàn tất!',
+          details: `Document processed and translated to ${options.targetLanguage}`
+        })
+      }
+
+      return result
     } catch (error) {
       console.error('AI Document processing error:', error)
       throw error
@@ -921,6 +1033,421 @@ export class AIDocumentProcessor {
     }
     
     return suggestions
+  }
+
+  /**
+   * Translate document content with intelligent chunking
+   */
+  private async translateDocument(
+    originalText: string,
+    structuredContent: StructuredContent,
+    sourceLang: string,
+    targetLang: string,
+    options: AIProcessingOptions,
+    documentId: string
+  ): Promise<AIProcessingResult['translation']> {
+    const startTime = Date.now()
+    
+    try {
+      // Create translation chunks from structured content
+      const chunks = this.createTranslationChunks(originalText, structuredContent)
+      const chunkTranslations: TranslationChunk[] = []
+      let totalConfidence = 0
+      let fromCache = false
+
+      // Process chunks with progress tracking
+      for (let i = 0; i < chunks.length; i++) {
+        const chunk = chunks[i]
+        
+        // Update progress
+        this.updateProgress(documentId, {
+          stage: 'translating',
+          progress: 60 + (i / chunks.length) * 25,
+          message: `Translating chunk ${i + 1} of ${chunks.length}...`,
+          messageVi: `Đang dịch đoạn ${i + 1} / ${chunks.length}...`,
+          details: `Processing: ${chunk.text.substring(0, 50)}...`,
+          translationProgress: {
+            chunksTotal: chunks.length,
+            chunksCompleted: i,
+            currentChunk: chunk.text.substring(0, 100),
+            estimatedTimeRemaining: this.estimateRemainingTime(i, chunks.length, startTime)
+          }
+        })
+
+        // Translate chunk via API
+        const response = await fetch('/api/translate/public', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            text: chunk.text,
+            sourceLang: sourceLang === 'auto' ? 'auto' : sourceLang,
+            targetLang: targetLang,
+            qualityTier: options.translationQuality || 'standard'
+          })
+        })
+
+        if (!response.ok) {
+          throw new Error(`Translation API error: ${response.status} ${response.statusText}`)
+        }
+
+        const translationResult = await response.json()
+
+        const chunkTranslation: TranslationChunk = {
+          id: chunk.id,
+          originalText: chunk.text,
+          translatedText: translationResult.translatedText,
+          confidence: translationResult.confidence,
+          fromMemory: translationResult.cached,
+          processingTime: Date.now() - startTime
+        }
+
+        chunkTranslations.push(chunkTranslation)
+        totalConfidence += translationResult.confidence
+        
+        if (translationResult.cached) {
+          fromCache = true
+        }
+
+        // Small delay to prevent API rate limiting
+        if (i < chunks.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 100))
+        }
+      }
+
+      // Reconstruct translated content
+      const translatedContent = this.reconstructTranslatedContent(chunkTranslations, structuredContent)
+      
+      // Create translated structured content
+      const translatedStructuredContent = this.createTranslatedStructuredContent(
+        structuredContent,
+        chunkTranslations
+      )
+
+      const avgConfidence = totalConfidence / chunks.length
+      const qualityScore = this.calculateTranslationQuality(avgConfidence, options.translationQuality || 'standard')
+
+      return {
+        translatedContent,
+        translatedStructuredContent,
+        targetLanguage: targetLang,
+        sourceLanguage: sourceLang,
+        confidence: avgConfidence,
+        qualityScore,
+        translationTime: Date.now() - startTime,
+        chunkTranslations,
+        fromCache
+      }
+    } catch (error) {
+      console.error('Translation error:', error)
+      throw new Error(`Document translation failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    }
+  }
+
+  /**
+   * Create optimal translation chunks from document content
+   */
+  private createTranslationChunks(
+    originalText: string,
+    structuredContent: StructuredContent
+  ): Array<{ id: string; text: string; type: 'section' | 'table' | 'paragraph' }> {
+    const chunks: Array<{ id: string; text: string; type: 'section' | 'table' | 'paragraph' }> = []
+    
+    // Process sections
+    structuredContent.sections.forEach(section => {
+      if (section.content.length > 2000) {
+        // Split large sections into paragraphs
+        const paragraphs = section.content.split('\n\n').filter(p => p.trim().length > 0)
+        paragraphs.forEach((paragraph, index) => {
+          chunks.push({
+            id: `${section.id}_para_${index}`,
+            text: paragraph.trim(),
+            type: 'paragraph'
+          })
+        })
+      } else {
+        chunks.push({
+          id: section.id,
+          text: section.content,
+          type: 'section'
+        })
+      }
+    })
+
+    // Process tables separately
+    if (structuredContent.tables) {
+      structuredContent.tables.forEach(table => {
+        const tableText = this.tableToText(table)
+        chunks.push({
+          id: table.id,
+          text: tableText,
+          type: 'table'
+        })
+      })
+    }
+
+    return chunks
+  }
+
+  /**
+   * Convert table to translatable text format
+   */
+  private tableToText(table: Table): string {
+    const headerRow = table.headers.join(' | ')
+    const dataRows = table.rows.map(row => row.join(' | ')).join('\n')
+    return `${headerRow}\n${dataRows}`
+  }
+
+  /**
+   * Reconstruct translated content from chunks
+   */
+  private reconstructTranslatedContent(
+    chunkTranslations: TranslationChunk[],
+    structuredContent: StructuredContent
+  ): string {
+    const translatedSections: string[] = []
+    
+    structuredContent.sections.forEach(section => {
+      const sectionChunks = chunkTranslations.filter(chunk => 
+        chunk.id === section.id || chunk.id.startsWith(`${section.id}_para_`)
+      )
+      
+      if (sectionChunks.length > 0) {
+        const translatedSection = sectionChunks
+          .map(chunk => chunk.translatedText)
+          .join('\n\n')
+        translatedSections.push(translatedSection)
+      }
+    })
+
+    return translatedSections.join('\n\n---\n\n')
+  }
+
+  /**
+   * Create translated structured content
+   */
+  private createTranslatedStructuredContent(
+    originalStructured: StructuredContent,
+    chunkTranslations: TranslationChunk[]
+  ): StructuredContent {
+    const translatedSections = originalStructured.sections.map(section => {
+      const translation = chunkTranslations.find(chunk => chunk.id === section.id)
+      return {
+        ...section,
+        content: translation?.translatedText || section.content
+      }
+    })
+
+    const translatedTables = originalStructured.tables?.map(table => {
+      const translation = chunkTranslations.find(chunk => chunk.id === table.id)
+      if (translation) {
+        const lines = translation.translatedText.split('\n')
+        const headers = lines[0].split(' | ')
+        const rows = lines.slice(1).map(line => line.split(' | '))
+        return {
+          ...table,
+          headers,
+          rows
+        }
+      }
+      return table
+    })
+
+    return {
+      sections: translatedSections,
+      tables: translatedTables,
+      entities: originalStructured.entities // Keep entities as-is for now
+    }
+  }
+
+  /**
+   * Calculate translation quality score
+   */
+  private calculateTranslationQuality(confidence: number, tier: string): number {
+    const baseScore = confidence * 100
+    const tierMultiplier = {
+      'free': 0.8,
+      'standard': 0.9,
+      'premium': 0.95,
+      'enterprise': 1.0
+    }[tier] || 0.9
+
+    return Math.round(baseScore * tierMultiplier)
+  }
+
+  /**
+   * Estimate remaining translation time
+   */
+  private estimateRemainingTime(currentIndex: number, totalChunks: number, startTime: number): number {
+    if (currentIndex === 0) return 0
+    
+    const elapsed = Date.now() - startTime
+    const avgTimePerChunk = elapsed / currentIndex
+    const remainingChunks = totalChunks - currentIndex
+    
+    return Math.round(remainingChunks * avgTimePerChunk / 1000) // Return in seconds
+  }
+
+  /**
+   * Determine if document should use large document processing mode
+   */
+  private shouldUseLargeDocumentMode(file: File, options: AIProcessingOptions): boolean {
+    // Force large mode if explicitly requested
+    if (options.useLargeDocumentMode) return true
+    
+    // Auto-detect based on file size (>10MB) or estimated page count
+    const fileSizeMB = file.size / (1024 * 1024)
+    if (fileSizeMB > 10) return true
+    
+    // Estimate page count based on file type and size
+    let estimatedPages = 0
+    if (file.type.includes('pdf')) {
+      estimatedPages = Math.ceil(fileSizeMB / 0.1) // ~100KB per page
+    } else if (file.type.includes('word')) {
+      estimatedPages = Math.ceil(fileSizeMB / 0.05) // ~50KB per page
+    } else if (file.type.includes('text')) {
+      estimatedPages = Math.ceil(fileSizeMB / 0.002) // ~2KB per page
+    }
+    
+    return estimatedPages > 50 // Use large mode for 50+ pages
+  }
+
+  /**
+   * Process large document using specialized processor
+   */
+  private async processLargeDocument(
+    file: File,
+    options: AIProcessingOptions,
+    documentId: string,
+    startTime: number
+  ): Promise<AIProcessingResult> {
+    const largeDocOptions: LargeDocumentProcessingOptions = {
+      maxChunkSize: options.maxChunkSize || 2000,
+      enableTranslation: options.enableTranslation,
+      targetLanguage: options.targetLanguage,
+      translationQuality: options.translationQuality,
+      parallelChunks: options.parallelProcessing ? 5 : 3,
+      onProgress: (largeProgress) => {
+        // Convert large document progress to standard progress format
+        const stage = this.mapLargeDocStageToStandard(largeProgress.stage)
+        this.updateProgress(documentId, {
+          stage,
+          progress: largeProgress.overallProgress,
+          message: this.getLargeDocProgressMessage(largeProgress.stage, false),
+          messageVi: this.getLargeDocProgressMessage(largeProgress.stage, true),
+          details: largeProgress.currentChunk,
+          translationProgress: largeProgress.translationProgress ? {
+            chunksTotal: largeProgress.chunksTotal,
+            chunksCompleted: largeProgress.translationProgress.chunksTranslated,
+            currentChunk: largeProgress.currentChunk,
+            estimatedTimeRemaining: largeProgress.estimatedTimeRemaining
+          } : undefined
+        })
+      }
+    }
+
+    const largeResult = await largeDocumentProcessor.processLargeDocument(file, largeDocOptions)
+
+    // Convert large document result to standard AI processing result format
+    const document: Document = {
+      id: documentId,
+      title: file.name,
+      type: this.mapFileTypeToDocumentType(file.type),
+      size: this.formatFileSize(file.size),
+      lastModified: new Date(file.lastModified).toISOString(),
+      agentsAssigned: [], // TODO: Assign agents for large documents
+      status: 'ready',
+      metadata: {
+        pageCount: largeResult.pageCount,
+        wordCount: largeResult.wordCount,
+        language: options.language || 'auto',
+        complexity: 'high', // Large documents are inherently complex
+        documentType: 'large_document'
+      },
+      insights: [], // TODO: Generate insights for large documents
+      language: options.language || 'en',
+      pageCount: largeResult.pageCount,
+      wordCount: largeResult.wordCount
+    }
+
+    // Create translation result if available
+    let translationResult: AIProcessingResult['translation'] | undefined
+    if (largeResult.translation) {
+      translationResult = {
+        translatedContent: largeResult.translation.translatedContent,
+        targetLanguage: largeResult.translation.targetLanguage,
+        sourceLanguage: options.language || 'auto',
+        confidence: largeResult.translation.averageQuality / 100,
+        qualityScore: largeResult.translation.averageQuality,
+        translationTime: largeResult.translation.translationTime,
+        chunkTranslations: largeResult.translation.translatedChunks.map(chunk => ({
+          id: chunk.chunkId,
+          originalText: chunk.originalText,
+          translatedText: chunk.translatedText,
+          confidence: chunk.confidence,
+          fromMemory: chunk.fromCache,
+          processingTime: chunk.processingTime
+        })),
+        fromCache: largeResult.translation.translatedChunks.some(chunk => chunk.fromCache)
+      }
+    }
+
+    return {
+      document,
+      content: largeResult.originalContent,
+      structuredContent: {
+        sections: largeResult.chunks.map(chunk => ({
+          id: chunk.id,
+          content: chunk.content,
+          level: chunk.type === 'header' ? 1 : 2,
+          pageNumber: chunk.pageRange.start
+        }))
+      },
+      metadata: document.metadata!,
+      insights: [], // TODO: Generate insights
+      assignedAgents: [], // TODO: Assign agents
+      processingTime: largeResult.processingTime,
+      confidence: 0.9, // High confidence for large document processor
+      suggestions: [
+        'Large document processed successfully with intelligent chunking',
+        `Processing efficiency: ${largeResult.performanceMetrics.parallelEfficiency}%`,
+        `Memory usage optimized: ${largeResult.performanceMetrics.memoryPeakUsage}MB peak`
+      ],
+      translation: translationResult
+    }
+  }
+
+  /**
+   * Map large document stage to standard processing stage
+   */
+  private mapLargeDocStageToStandard(stage: string): ProcessingProgress['stage'] {
+    switch (stage) {
+      case 'parsing': return 'analyzing'
+      case 'chunking': return 'extracting'
+      case 'processing': return 'processing'
+      case 'translating': return 'translating'
+      case 'assembling': return 'finalizing'
+      case 'completed': return 'finalizing'
+      default: return 'processing'
+    }
+  }
+
+  /**
+   * Get progress message for large document processing
+   */
+  private getLargeDocProgressMessage(stage: string, isVietnamese: boolean): string {
+    const messages = {
+      parsing: { en: 'Parsing large document...', vi: 'Phân tích tài liệu lớn...' },
+      chunking: { en: 'Creating intelligent chunks...', vi: 'Tạo các đoạn thông minh...' },
+      processing: { en: 'Processing chunks in parallel...', vi: 'Xử lý song song các đoạn...' },
+      translating: { en: 'Translating document chunks...', vi: 'Dịch các đoạn tài liệu...' },
+      assembling: { en: 'Assembling final result...', vi: 'Ghép kết quả cuối cùng...' },
+      completed: { en: 'Large document processing complete!', vi: 'Xử lý tài liệu lớn hoàn tất!' }
+    }
+    
+    const messageSet = messages[stage as keyof typeof messages] || messages.processing
+    return isVietnamese ? messageSet.vi : messageSet.en
   }
 
   private updateProgress(documentId: string, progress: ProcessingProgress): void {

@@ -19,13 +19,16 @@ import {
   Lock,
   Smartphone,
   AlertTriangle,
+  Gift,
+  CreditCard,
 } from 'lucide-react'
 
 interface SettingsModeProps {
   language: 'vi' | 'en'
+  user?: any
 }
 
-export default function SettingsMode({ language }: SettingsModeProps) {
+export default function SettingsMode({ language, user }: SettingsModeProps) {
   const [activeTab, setActiveTab] = useState('profile')
   const [darkMode, setDarkMode] = useState(false)
   const [notifications, setNotifications] = useState({
@@ -44,6 +47,8 @@ export default function SettingsMode({ language }: SettingsModeProps) {
         notifications: 'Thông báo',
         preferences: 'Tùy chọn',
         danger: 'Vùng nguy hiểm',
+        invites: 'Quản lý mã mời',
+        credits: 'Theo dõi credits',
       },
       profile: {
         title: 'Thông tin cá nhân',
@@ -91,6 +96,18 @@ export default function SettingsMode({ language }: SettingsModeProps) {
         deleteDesc: 'Xóa vĩnh viễn tài khoản và tất cả dữ liệu',
         confirmDelete: 'Tôi hiểu hậu quả',
       },
+      invites: {
+        title: 'Quản lý mã mời',
+        description: 'Tạo và quản lý mã mời cho beta testers',
+        goToAdmin: 'Mở trang quản lý',
+      },
+      credits: {
+        title: 'Theo dõi Credits',
+        description: 'Xem thống kê sử dụng credits của người dùng',
+        totalIssued: 'Tổng credits phát hành',
+        totalUsed: 'Tổng credits đã dùng',
+        activeUsers: 'Người dùng hoạt động',
+      },
     },
     en: {
       title: 'Account Settings',
@@ -102,6 +119,8 @@ export default function SettingsMode({ language }: SettingsModeProps) {
         notifications: 'Notifications',
         preferences: 'Preferences',
         danger: 'Danger Zone',
+        invites: 'Invite Management',
+        credits: 'Credit Monitor',
       },
       profile: {
         title: 'Personal Information',
@@ -149,8 +168,23 @@ export default function SettingsMode({ language }: SettingsModeProps) {
         deleteDesc: 'Permanently delete your account and all data',
         confirmDelete: 'I understand the consequences',
       },
+      invites: {
+        title: 'Invite Management',
+        description: 'Create and manage invite codes for beta testers',
+        goToAdmin: 'Open Admin Panel',
+      },
+      credits: {
+        title: 'Credit Monitor',
+        description: 'View credit usage statistics for all users',
+        totalIssued: 'Total Credits Issued',
+        totalUsed: 'Total Credits Used',
+        activeUsers: 'Active Users',
+      },
     },
   }
+
+  // Check if user is admin
+  const isAdmin = user?.subscription_tier === 'enterprise'
 
   const tabs = [
     { id: 'profile', label: content[language].tabs.profile, icon: User },
@@ -166,6 +200,11 @@ export default function SettingsMode({ language }: SettingsModeProps) {
       icon: Globe,
     },
     { id: 'danger', label: content[language].tabs.danger, icon: AlertTriangle },
+    // Admin-only tabs
+    ...(isAdmin ? [
+      { id: 'invites', label: content[language].tabs.invites, icon: Gift },
+      { id: 'credits', label: content[language].tabs.credits, icon: CreditCard },
+    ] : []),
   ]
 
   return (
@@ -569,6 +608,80 @@ export default function SettingsMode({ language }: SettingsModeProps) {
                         </div>
                       </div>
                     </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Invite Management Tab (Admin Only) */}
+              {activeTab === 'invites' && isAdmin && (
+                <div>
+                  <h3 className="heading-3 text-gray-900 mb-6">
+                    {content[language].invites.title}
+                  </h3>
+                  <p className="body-lg text-gray-600 mb-8">
+                    {content[language].invites.description}
+                  </p>
+
+                  <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-8 text-center">
+                    <Gift size={48} className="text-blue-600 mx-auto mb-4" />
+                    <h4 className="heading-4 text-gray-900 mb-4">
+                      {language === 'vi' ? 'Trang quản lý mã mời' : 'Invite Management Dashboard'}
+                    </h4>
+                    <p className="body-base text-gray-600 mb-6">
+                      {language === 'vi' 
+                        ? 'Tạo mã mời, theo dõi sử dụng và quản lý beta testers'
+                        : 'Create invite codes, track usage, and manage beta testers'}
+                    </p>
+                    <a
+                      href="/admin/invites"
+                      className="inline-flex items-center btn-primary btn-pill-lg"
+                    >
+                      <Gift size={20} className="mr-2" />
+                      {content[language].invites.goToAdmin}
+                    </a>
+                  </div>
+                </div>
+              )}
+
+              {/* Credit Monitor Tab (Admin Only) */}
+              {activeTab === 'credits' && isAdmin && (
+                <div>
+                  <h3 className="heading-3 text-gray-900 mb-6">
+                    {content[language].credits.title}
+                  </h3>
+                  <p className="body-lg text-gray-600 mb-8">
+                    {content[language].credits.description}
+                  </p>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div className="bg-blue-50 rounded-2xl p-6 text-center">
+                      <div className="text-3xl font-bold text-blue-600 mb-2">0</div>
+                      <div className="body-sm text-gray-700">
+                        {content[language].credits.totalIssued}
+                      </div>
+                    </div>
+                    <div className="bg-green-50 rounded-2xl p-6 text-center">
+                      <div className="text-3xl font-bold text-green-600 mb-2">0</div>
+                      <div className="body-sm text-gray-700">
+                        {content[language].credits.totalUsed}
+                      </div>
+                    </div>
+                    <div className="bg-purple-50 rounded-2xl p-6 text-center">
+                      <div className="text-3xl font-bold text-purple-600 mb-2">0</div>
+                      <div className="body-sm text-gray-700">
+                        {content[language].credits.activeUsers}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="text-center">
+                    <a
+                      href="/admin/invites"
+                      className="inline-flex items-center btn-secondary btn-pill-lg"
+                    >
+                      <CreditCard size={20} className="mr-2" />
+                      {language === 'vi' ? 'Xem chi tiết' : 'View Details'}
+                    </a>
                   </div>
                 </div>
               )}

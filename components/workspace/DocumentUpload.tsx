@@ -24,6 +24,8 @@ interface DocumentUploadProps {
   onDocumentProcessed?: (result: AIProcessingResult) => void
   onError?: (error: Error) => void
   className?: string
+  enableTranslation?: boolean
+  defaultTargetLanguage?: string
 }
 
 interface UploadingFile {
@@ -38,10 +40,27 @@ interface UploadingFile {
 export default function DocumentUpload({
   onDocumentProcessed,
   onError,
-  className = ''
+  className = '',
+  enableTranslation = true,
+  defaultTargetLanguage = 'en'
 }: DocumentUploadProps) {
   const { language } = useLanguage()
   const [uploadingFiles, setUploadingFiles] = useState<Map<string, UploadingFile>>(new Map())
+  const [targetLanguage, setTargetLanguage] = useState(defaultTargetLanguage)
+  const [translationEnabled, setTranslationEnabled] = useState(enableTranslation)
+
+  // Language options for translation
+  const languageOptions = [
+    { code: 'en', name: 'English', nameVi: 'Tiếng Anh' },
+    { code: 'vi', name: 'Vietnamese', nameVi: 'Tiếng Việt' },
+    { code: 'zh', name: 'Chinese', nameVi: 'Tiếng Trung' },
+    { code: 'ja', name: 'Japanese', nameVi: 'Tiếng Nhật' },
+    { code: 'ko', name: 'Korean', nameVi: 'Tiếng Hàn' },
+    { code: 'fr', name: 'French', nameVi: 'Tiếng Pháp' },
+    { code: 'de', name: 'German', nameVi: 'Tiếng Đức' },
+    { code: 'es', name: 'Spanish', nameVi: 'Tiếng Tây Ban Nha' },
+    { code: 'th', name: 'Thai', nameVi: 'Tiếng Thái' }
+  ]
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     for (const file of acceptedFiles) {
@@ -63,6 +82,13 @@ export default function DocumentUpload({
       setUploadingFiles(prev => new Map(prev).set(fileId, uploadingFile))
 
       try {
+        console.log('🚀 Starting document processing with AI', {
+          fileName: file.name,
+          fileSize: file.size,
+          translationEnabled,
+          targetLanguage: translationEnabled ? targetLanguage : 'none'
+        })
+
         // Process document with AI
         const result = await processDocumentWithAI(
           file,
@@ -76,9 +102,16 @@ export default function DocumentUpload({
             deepAnalysis: true,
             extractEntities: true,
             generateSummary: true,
-            detectSentiment: true
+            detectSentiment: true,
+            
+            // Translation options
+            enableTranslation: translationEnabled,
+            targetLanguage: translationEnabled ? targetLanguage : undefined,
+            translationQuality: 'standard',
+            useTranslationMemory: true
           },
           (progress) => {
+            console.log('📊 Processing progress:', progress)
             setUploadingFiles(prev => {
               const updated = new Map(prev)
               const current = updated.get(fileId)
@@ -90,6 +123,12 @@ export default function DocumentUpload({
             })
           }
         )
+
+        console.log('✅ Document processing completed successfully', {
+          hasTranslation: !!result.translation,
+          translationQuality: result.translation?.qualityScore,
+          processingTime: result.processingTime
+        })
 
         // Update with result
         setUploadingFiles(prev => {
@@ -116,21 +155,42 @@ export default function DocumentUpload({
           })
         }, 3000)
       } catch (error) {
-        console.error('Document processing error:', error)
+        console.error('❌ Document processing error:', error)
+        console.error('Error details:', {
+          type: error instanceof Error ? error.constructor.name : typeof error,
+          message: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined
+        })
         
-        // Update with error
+        // Determine specific error message
+        let errorMessage = 'Processing failed'
+        if (error instanceof Error) {
+          if (error.message.includes('Translation failed')) {
+            errorMessage = translationEnabled 
+              ? `Translation to ${targetLanguage} failed: ${error.message}`
+              : error.message
+          } else if (error.message.includes('Google')) {
+            errorMessage = 'Google Cloud translation service unavailable'
+          } else if (error.message.includes('rate limit')) {
+            errorMessage = 'Too many requests. Please try again later.'
+          } else {
+            errorMessage = error.message
+          }
+        }
+        
+        // Update with detailed error
         setUploadingFiles(prev => {
           const updated = new Map(prev)
           const current = updated.get(fileId)
           if (current) {
             current.status = 'error'
-            current.error = error instanceof Error ? error.message : 'Processing failed'
+            current.error = errorMessage
           }
           return updated
         })
 
         if (onError) {
-          onError(error instanceof Error ? error : new Error('Processing failed'))
+          onError(error instanceof Error ? error : new Error(errorMessage))
         }
       }
     }
@@ -190,6 +250,58 @@ export default function DocumentUpload({
 
   return (
     <div className={`document-upload-container ${className}`}>
+      {/* Translation Settings */}
+      {enableTranslation && (
+        <div className="mb-6 p-4 bg-gray-50 rounded-lg border">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-medium text-gray-700">
+              {language === 'vi' ? 'Cài Đặt Dịch Thuật' : 'Translation Settings'}
+            </h3>
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                checked={translationEnabled}
+                onChange={(e) => setTranslationEnabled(e.target.checked)}
+                className="mr-2"
+              />
+              <span className="text-sm text-gray-600">
+                {language === 'vi' ? 'Bật dịch tự động' : 'Enable auto-translation'}
+              </span>
+            </label>
+          </div>
+          
+          {translationEnabled && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">
+                  {language === 'vi' ? 'Dịch sang' : 'Translate to'}
+                </label>
+                <select
+                  value={targetLanguage}
+                  onChange={(e) => setTargetLanguage(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {languageOptions.map(option => (
+                    <option key={option.code} value={option.code}>
+                      {language === 'vi' ? option.nameVi : option.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">
+                  {language === 'vi' ? 'Chất lượng' : 'Quality'}
+                </label>
+                <select className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <option value="standard">{language === 'vi' ? 'Tiêu chuẩn' : 'Standard'}</option>
+                  <option value="premium">{language === 'vi' ? 'Cao cấp' : 'Premium'}</option>
+                </select>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Dropzone */}
       <div
         {...getRootProps()}
@@ -281,6 +393,33 @@ export default function DocumentUpload({
                       )}
                     </p>
 
+                    {/* Translation Progress */}
+                    {uploadingFile.progress.translationProgress && (
+                      <div className="text-xs text-blue-600 mb-2">
+                        <div className="flex items-center justify-between">
+                          <span>
+                            {language === 'vi' 
+                              ? `Đang dịch: ${uploadingFile.progress.translationProgress.chunksCompleted}/${uploadingFile.progress.translationProgress.chunksTotal} đoạn`
+                              : `Translating: ${uploadingFile.progress.translationProgress.chunksCompleted}/${uploadingFile.progress.translationProgress.chunksTotal} chunks`
+                            }
+                          </span>
+                          {uploadingFile.progress.translationProgress.estimatedTimeRemaining && (
+                            <span>
+                              {language === 'vi' 
+                                ? `~${uploadingFile.progress.translationProgress.estimatedTimeRemaining}s còn lại`
+                                : `~${uploadingFile.progress.translationProgress.estimatedTimeRemaining}s remaining`
+                              }
+                            </span>
+                          )}
+                        </div>
+                        {uploadingFile.progress.translationProgress.currentChunk && (
+                          <div className="text-gray-500 mt-1 truncate">
+                            {uploadingFile.progress.translationProgress.currentChunk}...
+                          </div>
+                        )}
+                      </div>
+                    )}
+
                     {/* Progress Bar */}
                     {uploadingFile.status !== 'error' && (
                       <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden">
@@ -304,10 +443,18 @@ export default function DocumentUpload({
                     {/* Success Info */}
                     {uploadingFile.status === 'completed' && uploadingFile.result && (
                       <div className="mt-2 text-xs text-gray-600">
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-4 flex-wrap">
                           <span>{uploadingFile.result.insights.length} insights</span>
                           <span>{uploadingFile.result.assignedAgents.length} agents assigned</span>
                           <span>{(uploadingFile.result.confidence * 100).toFixed(0)}% confidence</span>
+                          {uploadingFile.result.translation && (
+                            <span className="text-blue-600">
+                              {language === 'vi' 
+                                ? `Đã dịch sang ${uploadingFile.result.translation.targetLanguage} (${uploadingFile.result.translation.qualityScore}% chất lượng)`
+                                : `Translated to ${uploadingFile.result.translation.targetLanguage} (${uploadingFile.result.translation.qualityScore}% quality)`
+                              }
+                            </span>
+                          )}
                         </div>
                       </div>
                     )}

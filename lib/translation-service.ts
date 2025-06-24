@@ -25,13 +25,87 @@ export class PrismyTranslationService {
   private translate: Translate
 
   constructor() {
-    // Initialize Google Translate with credentials
-    this.translate = new Translate({
-      projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
-      keyFilename: process.env.GOOGLE_CLOUD_KEY_FILE,
-      // Fallback to API key if service account not available
-      key: process.env.GOOGLE_TRANSLATE_API_KEY,
+    // Debug environment variables
+    console.log('🔧 Initializing Google Translate service', {
+      hasProjectId: !!process.env.GOOGLE_CLOUD_PROJECT_ID,
+      hasKeyFile: !!process.env.GOOGLE_CLOUD_KEY_FILE,
+      hasApiKey: !!process.env.GOOGLE_TRANSLATE_API_KEY,
+      projectId: process.env.GOOGLE_CLOUD_PROJECT_ID ? 'set' : 'missing'
     })
+
+    // Determine best authentication method
+    let authConfig: any = {
+      projectId: process.env.GOOGLE_CLOUD_PROJECT_ID
+    }
+
+    // Check if we have a valid service account file path
+    const keyFilePath = process.env.GOOGLE_CLOUD_KEY_FILE
+    const hasValidKeyFile = keyFilePath && 
+      keyFilePath !== '/path/to/service-account.json' && 
+      keyFilePath !== 'your-service-account-key-file.json'
+
+    if (hasValidKeyFile) {
+      // Try to use service account file
+      try {
+        const fs = require('fs')
+        if (fs.existsSync(keyFilePath)) {
+          console.log('✅ Using service account file authentication')
+          authConfig.keyFilename = keyFilePath
+        } else {
+          console.log('⚠️ Service account file path provided but file does not exist, falling back to API key')
+          authConfig.key = process.env.GOOGLE_TRANSLATE_API_KEY
+        }
+      } catch (error) {
+        console.log('⚠️ Cannot access service account file, falling back to API key')
+        authConfig.key = process.env.GOOGLE_TRANSLATE_API_KEY
+      }
+    } else if (process.env.GOOGLE_TRANSLATE_API_KEY) {
+      // Use API key authentication (preferred for Vercel deployment)
+      console.log('✅ Using API key authentication')
+      authConfig.key = process.env.GOOGLE_TRANSLATE_API_KEY
+    } else {
+      console.error('❌ No valid Google Cloud credentials found!')
+      throw new Error('Google Cloud Translation API credentials not configured. Please set GOOGLE_TRANSLATE_API_KEY or GOOGLE_CLOUD_KEY_FILE environment variable.')
+    }
+
+    console.log('🔐 Authentication method:', authConfig.key ? 'API Key' : 'Service Account')
+
+    // Initialize Google Translate with the determined authentication
+    this.translate = new Translate(authConfig)
+
+    // Test the connection on initialization (don't await to avoid blocking)
+    this.validateConnection().catch(error => {
+      console.error('❌ Google Translate service validation failed:', error.message)
+    })
+  }
+
+  /**
+   * Validate the Google Translate service connection
+   */
+  private async validateConnection(): Promise<boolean> {
+    try {
+      console.log('🔍 Validating Google Translate service connection...')
+      
+      // Test with a simple translation
+      const [translation] = await this.translate.translate('Hello', {
+        to: 'vi',
+        from: 'en'
+      })
+      
+      console.log('✅ Google Translate service validation successful', {
+        testTranslation: translation
+      })
+      
+      return true
+    } catch (error) {
+      console.error('❌ Google Translate service validation failed:', {
+        error: error instanceof Error ? error.message : String(error),
+        hasApiKey: !!process.env.GOOGLE_TRANSLATE_API_KEY,
+        hasProjectId: !!process.env.GOOGLE_CLOUD_PROJECT_ID
+      })
+      
+      throw new Error(`Google Translate service not accessible: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    }
   }
 
   async translateText({
@@ -41,6 +115,15 @@ export class PrismyTranslationService {
     qualityTier = 'standard',
     abTestVariant = 'cache_enabled'
   }: TranslationRequest): Promise<TranslationResponse> {
+    console.log('🔄 Starting translation', {
+      textLength: text.length,
+      textPreview: text.substring(0, 100),
+      sourceLang,
+      targetLang,
+      qualityTier,
+      abTestVariant
+    })
+
     try {
       // Check cache based on A/B test variant (skip for auto-detect and cache-disabled variant)
       if (sourceLang !== 'auto' && abTestVariant === 'cache_enabled') {
@@ -69,12 +152,25 @@ export class PrismyTranslationService {
       // Handle auto-detection
       const from = sourceLang === 'auto' ? undefined : sourceLang
       
+      console.log('📡 Calling Google Translate API', {
+        from,
+        to: targetLang,
+        model: this.getModelForQuality(qualityTier),
+        textLength: text.length
+      })
+      
       // Perform translation
       const [translation, metadata] = await this.translate.translate(text, {
         from,
         to: targetLang,
         format: 'text',
         model: this.getModelForQuality(qualityTier)
+      })
+
+      console.log('✅ Google Translate API response received', {
+        translatedLength: Array.isArray(translation) ? translation[0].length : translation.length,
+        detectedSourceLanguage: metadata?.detectedSourceLanguage,
+        hasMetadata: !!metadata
       })
 
       // Calculate quality metrics
