@@ -3,7 +3,7 @@
  * Implements dynamic imports and code splitting strategies
  */
 
-import { lazy, ComponentType } from 'react'
+import React, { lazy, ComponentType } from 'react'
 
 // Lazy load heavy components
 export const LazyDocumentViewer = lazy(() => 
@@ -38,14 +38,11 @@ export const LazySwaggerUI = lazy(() =>
 )
 
 // Lazy load heavy libraries
-export const lazyLoadTesseract = () => 
-  import('tesseract.js').then(module => module.default)
-
 export const lazyLoadPDFJS = () => 
   import('pdfjs-dist').then(module => module.default)
 
-export const lazyLoadXLSX = () => 
-  import('xlsx').then(module => module.default)
+export const lazyLoadExcelJS = () => 
+  import('exceljs').then(module => module.default)
 
 export const lazyLoadMammoth = () => 
   import('mammoth').then(module => module.default)
@@ -118,13 +115,15 @@ export const createIntersectionObserver = (
 // Lazy component wrapper with loading state
 export const withLazyLoading = <P extends object>(
   LazyComponent: ComponentType<P>,
-  LoadingComponent: ComponentType = () => <div>Loading...</div>
+  LoadingComponent?: ComponentType<{}>
 ) => {
-  return (props: P) => (
-    <React.Suspense fallback={<LoadingComponent />}>
-      <LazyComponent {...props} />
-    </React.Suspense>
-  )
+  const DefaultLoading = () => React.createElement('div', null, 'Loading...')
+  return (props: P) => 
+    React.createElement(
+      React.Suspense,
+      { fallback: LoadingComponent ? React.createElement(LoadingComponent) : React.createElement(DefaultLoading) },
+      React.createElement(LazyComponent, props)
+    )
 }
 
 // Bundle size monitoring

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useCallback } from 'react'
+import React, { useEffect, useRef, useCallback } from 'react'
 
 /* ============================================================================ */
 /* PRISMY PREDICTIVE PRELOADING SYSTEM */
@@ -508,9 +508,8 @@ export function PredictiveLoadingProvider({
 }) {
   usePredictiveLoading(config)
   
-  return <>{children}</>
+  return React.createElement(React.Fragment, null, children)
 }
 
 // Export the main class and utilities
-export { PredictiveLoader }
 export default PredictiveLoader

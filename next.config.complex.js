@@ -12,9 +12,8 @@ const nextConfig = {
       'framer-motion',
       '@stripe/stripe-js',
       '@supabase/supabase-js',
-      'tesseract.js',
       'mammoth',
-      'xlsx',
+      'exceljs',
     ],
   },
 
@@ -49,7 +48,6 @@ const nextConfig = {
       config.resolve.alias = {
         ...config.resolve.alias,
         'pdfjs-dist': require.resolve('./lib/stubs/pdfjs-stub.ts'),
-        'tesseract.js': require.resolve('./lib/stubs/tesseract-stub.ts'),
       }
 
       // Exclude worker threads and problematic modules
@@ -57,7 +55,6 @@ const nextConfig = {
       if (isServer) {
         config.externals.push({
           worker_threads: 'commonjs worker_threads',
-          'tesseract.js': 'commonjs tesseract.js',
           child_process: 'commonjs child_process',
         })
       }
@@ -69,10 +66,6 @@ const nextConfig = {
         }),
         new webpack.IgnorePlugin({
           resourceRegExp: /worker_threads/,
-        }),
-        new webpack.IgnorePlugin({
-          resourceRegExp: /tesseract\.js/,
-          contextRegExp: /node_modules/,
         }),
         new webpack.NormalModuleReplacementPlugin(
           /pdfjs-dist\/build\/pdf\.worker\.min\.js/,
@@ -119,9 +112,9 @@ const nextConfig = {
         ...config.optimization.splitChunks,
         cacheGroups: {
           ...config.optimization.splitChunks.cacheGroups,
-          tesseract: {
-            name: 'tesseract',
-            test: /[\\/]node_modules[\\/]tesseract\.js[\\/]/,
+          exceljs: {
+            name: 'exceljs',
+            test: /[\\/]node_modules[\\/]exceljs[\\/]/,
             chunks: 'all',
             priority: 10,
           },

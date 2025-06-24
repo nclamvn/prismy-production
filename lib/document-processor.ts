@@ -101,20 +101,20 @@ export class DocumentProcessor {
 
   private static async processPdfFile(file: File): Promise<string> {
     try {
-      // First try to extract text directly from PDF using pdf.js
-      // This would be more efficient for text-based PDFs
-      
-      // For now, use OCR as fallback for image-based PDFs
-      const { ocrService } = await import('./ocr-service')
+      // Use modern Google Vision OCR for PDF processing
+      const { modernOCRService } = await import('./google-vision-ocr')
       
       // Convert PDF to image and perform OCR
       // Note: In a real implementation, you'd want to render PDF pages to canvas first
-      const result = await ocrService.recognizeFromFile(file, {
-        language: 'eng+vie', // Support both English and Vietnamese
-        psm: 3 // Fully automatic page segmentation
+      const result = await modernOCRService.processImage(file, {
+        languages: ['en', 'vi'] // Support both English and Vietnamese
       })
       
-      return result.text || `[Could not extract text from PDF: ${file.name}]`
+      if (!result.text || result.text.trim().length === 0) {
+        return `[No text detected in PDF: ${file.name}]`
+      }
+      
+      return result.text
     } catch (error) {
       console.error('[Document Processor] PDF processing failed:', error)
       return `[PDF processing failed for: ${file.name}. Error: ${error}]`
@@ -135,12 +135,11 @@ export class DocumentProcessor {
 
   private static async processImageFile(file: File): Promise<string> {
     try {
-      const { ocrService } = await import('./ocr-service')
+      const { modernOCRService } = await import('./google-vision-ocr')
       
-      // Perform OCR on the image
-      const result = await ocrService.recognizeFromFile(file, {
-        language: 'eng+vie', // Support both English and Vietnamese
-        psm: 3 // Fully automatic page segmentation
+      // Perform OCR on the image using Google Vision
+      const result = await modernOCRService.processImage(file, {
+        languages: ['en', 'vi'] // Support both English and Vietnamese
       })
       
       if (!result.text || result.text.trim().length === 0) {

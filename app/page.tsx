@@ -22,10 +22,25 @@ import {
   Clock,
 } from 'lucide-react'
 
+// Phase 2 Performance Optimizations
+import { HomeCriticalCSS } from '@/components/CriticalCSS'
+import { 
+  ScrollAnimatedElement, 
+  ProgressiveImage, 
+  CountUpOnScroll,
+  ScrollProgress 
+} from '@/components/IntersectionOptimizer'
+import { TouchButton, TouchOptimized } from '@/components/ui/TouchOptimized'
+import { SkeletonCard, SkeletonProvider } from '@/components/ui/Skeleton'
+import { usePredictiveLoading } from '@/lib/predictive-loading'
+
 export default function Home() {
   const { language } = useLanguage()
   const [activePricingIndex, setActivePricingIndex] = useState(0)
   const pricingScrollRef = useRef<HTMLDivElement>(null)
+  
+  // Predictive loading hook for performance
+  usePredictiveLoading()
 
   const content = {
     vi: {
@@ -189,6 +204,12 @@ export default function Home() {
   return (
     <MainLayout>
       <div className="overflow-x-hidden">
+        {/* Critical CSS for above-the-fold content */}
+        <HomeCriticalCSS />
+        
+        {/* Scroll Progress Indicator */}
+        <ScrollProgress />
+        
         {/* Hero Section - Full Width */}
         <section className="relative overflow-hidden bg-white pt-20 w-full">
           <div className="w-full py-8 md:py-12">
@@ -199,29 +220,30 @@ export default function Home() {
                 animate="visible"
                 className="text-center px-4 md:px-8 lg:px-12"
               >
-                {/* Hero GIF */}
-                <motion.div
-                  variants={motionSafe(slideUp)}
+                {/* Hero GIF with Progressive Enhancement */}
+                <ScrollAnimatedElement
+                  animation="slideUp"
+                  threshold={0.1}
                   className="mb-8 md:mb-12 lg:mb-16"
                 >
                   <div
                     className="hero-gif-container mx-auto"
                     style={{ maxWidth: '720px' }}
                   >
-                    <img
+                    <ProgressiveImage
                       src="/assets/header.gif"
-                      alt=""
-                      aria-hidden="true"
-                      loading="lazy"
+                      alt="Prismy AI Translation Platform Demo"
                       className="hero-gif w-full"
                       style={{
                         width: '100%',
                         height: 'auto',
                         display: 'block',
                       }}
+                      placeholder="/assets/header-placeholder.jpg"
+                      sizes="(max-width: 768px) 100vw, 720px"
                     />
                   </div>
-                </motion.div>
+                </ScrollAnimatedElement>
 
                 <motion.h1
                   variants={motionSafe(slideUp)}
@@ -237,19 +259,16 @@ export default function Home() {
                   {content[language].hero.description}
                 </motion.p>
 
-                <motion.div
-                  variants={motionSafe(slideUp)}
-                  className="flex flex-col sm:flex-row gap-4 justify-center mb-8 md:mb-10 lg:mb-12"
-                >
+                <TouchOptimized className="flex flex-col sm:flex-row gap-4 justify-center mb-8 md:mb-10 lg:mb-12">
                   <UnifiedGetStartedButton
                     variant="primary"
                     size="pill-lg"
                     redirectTo="/workspace"
                   />
-                  <button className="btn-secondary btn-pill-lg">
+                  <TouchButton className="btn-secondary btn-pill-lg">
                     {content[language].hero.watchDemo}
-                  </button>
-                </motion.div>
+                  </TouchButton>
+                </TouchOptimized>
 
                 <motion.p
                   variants={motionSafe(slideUp)}
@@ -284,8 +303,8 @@ export default function Home() {
                   </p>
                 </motion.div>
 
-                {/* Mobile: Horizontal Carousel */}
-                <div
+                {/* Mobile: Horizontal Carousel with Touch Optimization */}
+                <TouchOptimized
                   className="md:hidden flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory scrollbar-hide"
                   style={{
                     scrollSnapType: 'x mandatory',
@@ -295,7 +314,7 @@ export default function Home() {
                   }}
                 >
                   {content[language].features.items.map((feature, index) => (
-                    <div
+                    <TouchButton
                       key={index}
                       className="snap-center shrink-0 w-80"
                       style={{ scrollSnapAlign: 'center' }}
@@ -306,20 +325,26 @@ export default function Home() {
                         description={feature.description}
                         delay={0} // No delay for mobile carousel
                       />
-                    </div>
+                    </TouchButton>
                   ))}
-                </div>
+                </TouchOptimized>
 
-                {/* Desktop: Grid Layout */}
+                {/* Desktop: Grid Layout with Intersection Observer */}
                 <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 md:px-8 lg:px-12">
                   {content[language].features.items.map((feature, index) => (
-                    <FeatureCard
+                    <ScrollAnimatedElement
                       key={index}
-                      icon={feature.icon}
-                      title={feature.title}
-                      description={feature.description}
+                      animation="slideUp"
                       delay={index * 0.1}
-                    />
+                      threshold={0.1}
+                    >
+                      <FeatureCard
+                        icon={feature.icon}
+                        title={feature.title}
+                        description={feature.description}
+                        delay={0} // Animation handled by ScrollAnimatedElement
+                      />
+                    </ScrollAnimatedElement>
                   ))}
                 </div>
               </motion.div>
@@ -349,9 +374,10 @@ export default function Home() {
                   {content[language].social_proof.stats.map((stat, index) => {
                     const IconComponent = stat.icon
                     return (
-                      <motion.div
+                      <ScrollAnimatedElement
                         key={index}
-                        variants={motionSafe(slideUp)}
+                        animation="slideUp"
+                        delay={index * 0.1}
                         className="mini-card text-center"
                       >
                         <div className="flex justify-center mb-3">
@@ -361,11 +387,13 @@ export default function Home() {
                             strokeWidth={1.5}
                           />
                         </div>
-                        <div className="heading-1 text-gray-900 mb-2">
-                          {stat.number}
-                        </div>
+                        <CountUpOnScroll
+                          end={parseInt(stat.number.replace(/[^0-9]/g, '')) || 0}
+                          suffix={stat.number.replace(/[0-9]/g, '')}
+                          className="heading-1 text-gray-900 mb-2"
+                        />
                         <div className="body-base">{stat.label}</div>
-                      </motion.div>
+                      </ScrollAnimatedElement>
                     )
                   })}
                 </div>
@@ -396,9 +424,9 @@ export default function Home() {
                   </p>
                 </motion.div>
 
-                {/* Mobile: Pricing Carousel */}
+                {/* Mobile: Pricing Carousel with Touch Optimization */}
                 <div className="md:hidden">
-                  <div
+                  <TouchOptimized
                     ref={pricingScrollRef}
                     className="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory scrollbar-hide"
                     style={{
@@ -457,19 +485,21 @@ export default function Home() {
                               ))}
                             </ul>
 
-                            <UnifiedGetStartedButton
-                              variant={
-                                key === 'standard' ? 'primary' : 'secondary'
-                              }
-                              size="pill-lg"
-                              className="w-full"
-                              redirectTo="/workspace"
-                            />
+                            <TouchButton className="w-full">
+                              <UnifiedGetStartedButton
+                                variant={
+                                  key === 'standard' ? 'primary' : 'secondary'
+                                }
+                                size="pill-lg"
+                                className="w-full"
+                                redirectTo="/workspace"
+                              />
+                            </TouchButton>
                           </div>
                         </div>
                       )
                     )}
-                  </div>
+                  </TouchOptimized>
 
                   {/* Dot Indicators */}
                   <div className="flex justify-center gap-2 mt-6">
@@ -486,13 +516,15 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Desktop: Grid Layout */}
+                {/* Desktop: Grid Layout with Intersection Observer */}
                 <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 px-4 md:px-8 lg:px-12">
                   {Object.entries(UNIFIED_SUBSCRIPTION_PLANS).map(
-                    ([key, plan]) => (
-                      <motion.div
+                    ([key, plan], index) => (
+                      <ScrollAnimatedElement
                         key={key}
-                        variants={motionSafe(slideUp)}
+                        animation="slideUp"
+                        delay={index * 0.1}
+                        threshold={0.1}
                         className="relative"
                       >
                         <div className="card-base card-hover p-8 h-full">
@@ -537,16 +569,18 @@ export default function Home() {
                             ))}
                           </ul>
 
-                          <UnifiedGetStartedButton
-                            variant={
-                              key === 'standard' ? 'primary' : 'secondary'
-                            }
-                            size="pill-lg"
-                            className="w-full"
-                            redirectTo="/workspace"
-                          />
+                          <TouchButton className="w-full">
+                            <UnifiedGetStartedButton
+                              variant={
+                                key === 'standard' ? 'primary' : 'secondary'
+                              }
+                              size="pill-lg"
+                              className="w-full"
+                              redirectTo="/workspace"
+                            />
+                          </TouchButton>
                         </div>
-                      </motion.div>
+                      </ScrollAnimatedElement>
                     )
                   )}
                 </div>

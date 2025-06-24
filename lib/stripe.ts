@@ -116,9 +116,10 @@ export const createCheckoutSession = async (
   successUrl: string,
   cancelUrl: string
 ) => {
-  // Temporarily disabled for deployment
-  throw new Error('Stripe temporarily disabled')
-  /*
+  if (!stripe) {
+    throw new Error('Stripe not configured')
+  }
+
   try {
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
@@ -144,16 +145,16 @@ export const createCheckoutSession = async (
     console.error('Error creating checkout session:', error)
     throw error
   }
-  */
 }
 
 export const createBillingPortalSession = async (
   customerId: string,
   returnUrl: string
 ) => {
-  // Temporarily disabled for deployment
-  throw new Error('Stripe temporarily disabled')
-  /*
+  if (!stripe) {
+    throw new Error('Stripe not configured')
+  }
+
   try {
     const session = await stripe.billingPortal.sessions.create({
       customer: customerId,
@@ -165,13 +166,13 @@ export const createBillingPortalSession = async (
     console.error('Error creating billing portal session:', error)
     throw error
   }
-  */
 }
 
 export const getCustomerSubscriptions = async (customerId: string) => {
-  // Temporarily disabled for deployment
-  return { data: [] }
-  /*
+  if (!stripe) {
+    return { data: [] }
+  }
+
   try {
     const subscriptions = await stripe.subscriptions.list({
       customer: customerId,
@@ -184,5 +185,4 @@ export const getCustomerSubscriptions = async (customerId: string) => {
     console.error('Error fetching customer subscriptions:', error)
     throw error
   }
-  */
 }

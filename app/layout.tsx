@@ -1,3 +1,4 @@
+import React from 'react'
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import '@/styles/globals.css'
@@ -11,6 +12,11 @@ import {
   GlobalLoadingIndicator,
 } from '@/contexts/LoadingContext'
 import AuthErrorHandler from '@/components/auth/AuthErrorHandler'
+
+// Phase 2 Performance Optimizations
+import { CriticalCSS } from '@/components/CriticalCSS'
+import { PredictiveLoadingProvider } from '@/lib/predictive-loading'
+import { SkeletonProvider } from '@/components/ui/Skeleton'
 
 const inter = Inter({
   subsets: ['latin', 'vietnamese'],
@@ -135,17 +141,31 @@ export default function RootLayout({
         className="font-inter antialiased bg-white text-gray-900 overflow-x-hidden"
         style={{ fontSize: '18px', lineHeight: '1.6' }}
       >
-        <LoadingProvider>
-          <LanguageProvider>
-            <AuthProvider>
-              <UnifiedAuthProvider>
-                <GlobalLoadingIndicator />
-                <AuthErrorHandler />
-                {children}
-              </UnifiedAuthProvider>
-            </AuthProvider>
-          </LanguageProvider>
-        </LoadingProvider>
+        <CriticalCSS>
+          <PredictiveLoadingProvider config={{ 
+            enableMouseTracking: true,
+            enableScrollPrediction: true,
+            enableRoutePrediction: true,
+            aggressiveness: 'moderate'
+          }}>
+            <LoadingProvider>
+              <SkeletonProvider 
+                loading={false} 
+                skeleton={<div className="min-h-screen bg-gray-50 animate-pulse" />}
+              >
+                <LanguageProvider>
+                  <AuthProvider>
+                    <UnifiedAuthProvider>
+                      <GlobalLoadingIndicator />
+                      <AuthErrorHandler />
+                      {children}
+                    </UnifiedAuthProvider>
+                  </AuthProvider>
+                </LanguageProvider>
+              </SkeletonProvider>
+            </LoadingProvider>
+          </PredictiveLoadingProvider>
+        </CriticalCSS>
         <ServiceWorkerRegistration />
         <PerformanceMonitor />
       </body>

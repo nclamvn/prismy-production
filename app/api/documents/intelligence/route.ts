@@ -4,6 +4,9 @@ import { getRateLimitForTier } from '@/lib/rate-limiter'
 import { validateCSRFMiddleware } from '@/lib/csrf'
 import { aiOrchestrator } from '@/lib/ai/ai-orchestrator'
 import { backgroundQueue } from '@/lib/background-processing-queue'
+import { documentIntelligenceOrchestrator } from '@/lib/ai/document-intelligence-orchestrator'
+import { intelligenceJobProcessor } from '@/lib/ai/intelligence-job-processor'
+import { streamingProcessor } from '@/lib/ai/streaming-processor'
 import { semanticSearchEngine } from '@/lib/ai/semantic-search-engine'
 import { analytics } from '@/lib/analytics'
 import { logger, performanceLogger } from '@/lib/logger'
@@ -307,18 +310,63 @@ async function generateQuickInsights(
   options: any
 ): Promise<InstantIntelligence['quickInsights']> {
   try {
-    // Quick document type detection
+    // Enhanced quick analysis using real AI for better accuracy
+    logger.info('Generating enhanced quick insights', { 
+      filename, 
+      fileType, 
+      bufferSize: fileBuffer.length 
+    })
+
+    // Try to extract a small text sample for AI analysis
+    let textSample = ''
+    try {
+      // For text files, use buffer content directly
+      if (fileType.includes('text') || fileType.includes('json') || fileType.includes('xml')) {
+        textSample = fileBuffer.toString('utf8').substring(0, 2000)
+      } else {
+        // For other files, use filename and metadata for analysis
+        textSample = `Filename: ${filename}\nFile type: ${fileType}\nFile size: ${fileBuffer.length} bytes`
+      }
+    } catch (error) {
+      logger.warn('Failed to extract text sample, using metadata only')
+      textSample = `Filename: ${filename}\nFile type: ${fileType}`
+    }
+
+    // Use AI for enhanced quick analysis if we have a reasonable text sample
+    if (textSample.length > 20) {
+      try {
+        const quickAnalysisResult = await documentIntelligenceOrchestrator.analyzeDocument({
+          content: textSample,
+          analysisDepth: 'quick',
+          detectLanguage: true,
+          extractKeyTerms: true,
+          identifyTopics: true,
+          analyzeComplexity: true,
+          userTier: options.userTier || 'free'
+        })
+
+        if (quickAnalysisResult.success && quickAnalysisResult.documentInfo) {
+          const documentInfo = quickAnalysisResult.documentInfo
+          
+          return {
+            documentType: documentInfo.type || detectDocumentType(filename, fileType),
+            detectedLanguage: documentInfo.language || options.language || 'auto',
+            estimatedReadingTime: Math.ceil(documentInfo.wordCount / 200) || Math.ceil(fileBuffer.length / 1000),
+            keyTopics: quickAnalysisResult.topics?.map(t => t.topic) || extractQuickTopics(filename, fileType),
+            complexity: documentInfo.complexity || estimateComplexity(fileBuffer.length, fileType),
+            confidence: documentInfo.confidence || 0.85,
+          }
+        }
+      } catch (aiError) {
+        logger.warn('AI quick analysis failed, falling back to heuristics', { error: aiError })
+      }
+    }
+
+    // Fallback to enhanced heuristic analysis
     const documentType = detectDocumentType(filename, fileType)
-
-    // Fast language detection from filename and basic content analysis
-    const detectedLanguage =
-      options.language || (await detectLanguageQuick(fileBuffer, fileType))
-
-    // Estimate file complexity and reading time
+    const detectedLanguage = options.language || (await detectLanguageQuick(fileBuffer, fileType))
     const complexity = estimateComplexity(fileBuffer.length, fileType)
-    const estimatedReadingTime = Math.ceil(fileBuffer.length / 1000) // Rough estimate
-
-    // Quick topic extraction using filename and basic patterns
+    const estimatedReadingTime = Math.ceil(fileBuffer.length / 1000)
     const keyTopics = extractQuickTopics(filename, fileType)
 
     return {
@@ -327,12 +375,12 @@ async function generateQuickInsights(
       estimatedReadingTime,
       keyTopics,
       complexity,
-      confidence: 0.85, // Quick analysis confidence
+      confidence: 0.75, // Slightly lower confidence for heuristic analysis
     }
   } catch (error) {
     logger.warn(
       { error, filename },
-      'Quick insights generation failed, using fallback'
+      'Enhanced quick insights generation failed, using fallback'
     )
 
     return {
@@ -354,28 +402,136 @@ async function createIntelligenceJob(
   fileType: string,
   options: any
 ): Promise<string> {
-  const jobId = `intelligence_${documentId}`
-
-  const job = await backgroundQueue.addJob({
-    type: 'document_intelligence',
-    priority: options.userTier === 'enterprise' ? 'high' : 'medium',
-    userId: options.userId,
-    maxRetries: 3,
-    data: {
+  try {
+    logger.info('Creating enhanced intelligence job', {
       documentId,
-      fileBuffer: fileBuffer.toString('base64'), // Store as base64
-      filename,
-      fileType,
-      options,
-    },
-    metadata: {
       filename,
       fileSize: fileBuffer.length,
       analysisDepth: options.analysisDepth || 'standard',
-    },
-  })
+      userTier: options.userTier
+    })
 
-  return jobId
+    // Extract text content for processing (if possible)
+    let extractedContent = ''
+    try {
+      if (fileType.includes('text') || fileType.includes('json') || fileType.includes('xml')) {
+        extractedContent = fileBuffer.toString('utf8')
+      } else if (fileType.includes('pdf') || fileType.includes('document')) {
+        // For binary files, we'll need OCR or document parsing
+        // For now, use filename and metadata
+        extractedContent = `Document: ${filename}\nType: ${fileType}\nSize: ${fileBuffer.length} bytes`
+      }
+    } catch (error) {
+      logger.warn('Failed to extract content for intelligence job')
+      extractedContent = `Document: ${filename}\nType: ${fileType}`
+    }
+
+    // Determine if we should use streaming processing for large files
+    const shouldUseStreaming = extractedContent.length > 100000 // 100KB threshold
+    
+    if (shouldUseStreaming) {
+      logger.info('Using streaming processing for large document', {
+        contentLength: extractedContent.length,
+        documentId
+      })
+      
+      // Create streaming intelligence job
+      const jobId = await intelligenceJobProcessor.addJob({
+        type: 'document_analysis',
+        priority: options.userTier === 'enterprise' ? 'high' : 
+                 options.userTier === 'premium' ? 'medium' : 'low',
+        data: {
+          documentId,
+          content: extractedContent,
+          filename,
+          fileType,
+          documentType: options.documentType,
+          language: options.language,
+          useStreaming: true,
+          options: {
+            analysisDepth: options.analysisDepth || 'standard',
+            extractEntities: true,
+            generateEmbeddings: options.analysisDepth !== 'quick',
+            buildKnowledgeGraph: options.analysisDepth === 'comprehensive',
+            createSummary: true,
+            extractKeyTerms: true,
+            identifyTopics: true,
+            analyzeComplexity: true,
+            detectLanguage: !options.language
+          },
+          userTier: options.userTier || 'free',
+          userId: options.userId,
+          agentId: options.agentId,
+          userContext: options.userContext
+        }
+      })
+      
+      return jobId
+    } else {
+      // Use standard processing for smaller files
+      const jobId = await intelligenceJobProcessor.addJob({
+        type: 'document_analysis',
+        priority: options.userTier === 'enterprise' ? 'high' : 
+                 options.userTier === 'premium' ? 'medium' : 'low',
+        data: {
+          documentId,
+          content: extractedContent,
+          filename,
+          fileType,
+          documentType: options.documentType,
+          language: options.language,
+          useStreaming: false,
+          options: {
+            analysisDepth: options.analysisDepth || 'standard',
+            extractEntities: true,
+            generateEmbeddings: options.analysisDepth !== 'quick',
+            buildKnowledgeGraph: options.analysisDepth === 'comprehensive',
+            createSummary: true,
+            extractKeyTerms: true,
+            identifyTopics: true,
+            analyzeComplexity: true,
+            detectLanguage: !options.language
+          },
+          userTier: options.userTier || 'free',
+          userId: options.userId,
+          agentId: options.agentId,
+          userContext: options.userContext
+        }
+      })
+      
+      return jobId
+    }
+
+    logger.info(`Enhanced intelligence job created: ${jobId}`)
+    return jobId
+
+  } catch (error) {
+    logger.error('Failed to create enhanced intelligence job:', error)
+    
+    // Fallback to simple job creation
+    const fallbackJobId = `intelligence_fallback_${documentId}`
+    
+    await backgroundQueue.addJob({
+      type: 'document_intelligence',
+      priority: options.userTier === 'enterprise' ? 'high' : 'medium',
+      userId: options.userId,
+      maxRetries: 3,
+      data: {
+        documentId,
+        fileBuffer: fileBuffer.toString('base64'),
+        filename,
+        fileType,
+        options,
+      },
+      metadata: {
+        filename,
+        fileSize: fileBuffer.length,
+        analysisDepth: options.analysisDepth || 'standard',
+      },
+    })
+    
+    return fallbackJobId
+  }
 }
 
 // Get user's document context for personalized processing

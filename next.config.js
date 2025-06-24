@@ -32,9 +32,18 @@ const nextConfig = {
   poweredByHeader: false,
 
   // Bundle optimization - minimal for stability
-  // experimental: {
-  //   optimizeCss: true, // Disabled due to critters dependency issue
-  // },
+  experimental: {
+    // optimizeCss: true, // Disabled due to critters dependency issue
+    missingSuspenseWithCSRBailout: false,
+  },
+
+  // Skip trailing slash redirects
+  skipTrailingSlashRedirect: true,
+
+  // Skip problematic static generation for deployment
+  generateBuildId: async () => {
+    return 'ai-workspace-update'
+  },
 
   // Simplified webpack optimizations for stability
   webpack: (config, { dev, isServer }) => {

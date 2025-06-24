@@ -3,16 +3,22 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import DashboardLayout from '@/components/dashboard/DashboardLayout'
+import PaymentAnalyticsDashboard from '@/components/analytics/PaymentAnalyticsDashboard'
 import { motionSafe, slideUp, staggerContainer } from '@/lib/motion'
 
 function AnalyticsPage() {
   const [language, setLanguage] = useState<'vi' | 'en'>('en')
   const [selectedPeriod, setSelectedPeriod] = useState('30d')
+  const [activeTab, setActiveTab] = useState<'usage' | 'payments'>('usage')
 
   const content = {
     vi: {
       title: 'Phân tích & Thống kê',
       subtitle: 'Theo dõi hiệu suất dịch thuật và xu hướng sử dụng',
+      tabs: {
+        usage: 'Sử dụng',
+        payments: 'Thanh toán'
+      },
       periods: {
         '7d': '7 ngày',
         '30d': '30 ngày',
@@ -48,6 +54,10 @@ function AnalyticsPage() {
     en: {
       title: 'Analytics & Insights',
       subtitle: 'Track your translation performance and usage trends',
+      tabs: {
+        usage: 'Usage',
+        payments: 'Payments'
+      },
       periods: {
         '7d': '7 days',
         '30d': '30 days',
@@ -212,29 +222,51 @@ function AnalyticsPage() {
               </p>
             </div>
 
-            {/* Period Selector */}
-            <div className="flex bg-gray-100 rounded-lg p-1 mt-4 sm:mt-0">
-              {Object.entries(content[language].periods).map(([key, value]) => (
-                <button
-                  key={key}
-                  onClick={() => setSelectedPeriod(key)}
-                  className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
-                    selectedPeriod === key
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  {value}
-                </button>
-              ))}
-            </div>
+            {/* Period Selector - Only show for usage tab */}
+            {activeTab === 'usage' && (
+              <div className="flex bg-gray-100 rounded-lg p-1 mt-4 sm:mt-0">
+                {Object.entries(content[language].periods).map(([key, value]) => (
+                  <button
+                    key={key}
+                    onClick={() => setSelectedPeriod(key)}
+                    className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
+                      selectedPeriod === key
+                        ? 'bg-white text-gray-900 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    {value}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Tab Navigation */}
+          <div className="flex space-x-1 bg-gray-100 rounded-lg p-1">
+            {Object.entries(content[language].tabs).map(([key, value]) => (
+              <button
+                key={key}
+                onClick={() => setActiveTab(key as 'usage' | 'payments')}
+                className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                  activeTab === key
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                {value}
+              </button>
+            ))}
           </div>
         </motion.div>
 
-        {/* Key Metrics */}
-        <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
-          variants={motionSafe(slideUp)}
+        {/* Content based on active tab */}
+        {activeTab === 'usage' ? (
+          <>
+            {/* Key Metrics */}
+            <motion.div
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
+              variants={motionSafe(slideUp)}
         >
           {/* Total Translations */}
           <div className="bg-white rounded-xl p-6 border border-gray-200">
@@ -587,6 +619,11 @@ function AnalyticsPage() {
             </div>
           </div>
         </motion.div>
+          </>
+        ) : (
+          /* Payment Analytics Tab */
+          <PaymentAnalyticsDashboard language={language} />
+        )}
       </motion.div>
     </DashboardLayout>
   )

@@ -9,6 +9,7 @@ import { motionSafe, slideUp, staggerContainer, fadeIn } from '@/lib/motion'
 import { WorkspaceErrorBoundary } from '@/components/ErrorBoundary'
 import AuthenticatedLayout from '@/components/layouts/AuthenticatedLayout'
 import AuthGuard from '@/components/auth/AuthGuard'
+import { AIWorkspaceLayout, AIChatInterface, DocumentViewer, AgentDashboard } from '@/components/workspace'
 import WorkspaceLayout from '@/components/workspace/WorkspaceLayout'
 import DocumentMode from '@/components/workspace/modes/DocumentMode'
 import IntelligenceMode from '@/components/workspace/modes/IntelligenceMode'
@@ -26,6 +27,7 @@ export type WorkspaceMode =
   | 'enterprise'
   | 'billing'
   | 'settings'
+  | 'ai-workspace'
 
 function WorkspaceContent() {
   const { language } = useLanguage()
@@ -33,6 +35,8 @@ function WorkspaceContent() {
   const { isLoading: workspaceLoading, setLoading: setWorkspaceLoading } =
     useWorkspaceLoading()
   const [currentMode, setCurrentMode] = useState<WorkspaceMode>('documents')
+  const [selectedAgent, setSelectedAgent] = useState(null)
+  const [selectedDocument, setSelectedDocument] = useState(null)
 
   // AuthGuard handles authentication checks
 
@@ -84,6 +88,16 @@ function WorkspaceContent() {
 
   const renderCurrentMode = () => {
     switch (currentMode) {
+      case 'ai-workspace':
+        return (
+          <AIWorkspaceLayout
+            selectedAgent={selectedAgent}
+            selectedDocument={selectedDocument}
+            onAgentSelect={setSelectedAgent}
+            onDocumentSelect={setSelectedDocument}
+            language={language}
+          />
+        )
       case 'documents':
         return <DocumentMode language={language} />
       case 'intelligence':
@@ -99,7 +113,15 @@ function WorkspaceContent() {
       case 'settings':
         return <SettingsMode language={language} />
       default:
-        return <DocumentMode language={language} />
+        return (
+          <AIWorkspaceLayout
+            selectedAgent={selectedAgent}
+            selectedDocument={selectedDocument}
+            onAgentSelect={setSelectedAgent}
+            onDocumentSelect={setSelectedDocument}
+            language={language}
+          />
+        )
     }
   }
 

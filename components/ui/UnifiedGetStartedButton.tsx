@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useUnifiedAuthContext } from '@/contexts/UnifiedAuthProvider'
 import { useLanguage } from '@/contexts/LanguageContext'

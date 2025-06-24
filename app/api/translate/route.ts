@@ -6,6 +6,8 @@ import { validateCSRFMiddleware } from '@/lib/csrf'
 import { createRouteHandlerClient } from '@/lib/supabase'
 import { redisTranslationCache } from '@/lib/redis-translation-cache'
 import { abTestingFramework } from '@/lib/ab-testing'
+import { usageTracker } from '@/lib/usage-tracker'
+import { websocketManager } from '@/lib/websocket/websocket-manager'
 import { cookies } from 'next/headers'
 
 export async function POST(request: NextRequest) {
@@ -88,6 +90,31 @@ export async function POST(request: NextRequest) {
 
     const { text, sourceLanguage, targetLanguage, qualityTier } = validation.data
 
+    // Check usage and enforce quotas
+    const usageResult = await usageTracker.checkAndTrackUsage({
+      userId: session.user.id,
+      type: 'translation',
+      characters: text.length,
+      metadata: {
+        sourceLanguage,
+        targetLanguage,
+        qualityTier
+      }
+    })
+
+    if (!usageResult.allowed) {
+      return NextResponse.json(
+        { 
+          error: 'Usage limit exceeded',
+          message: usageResult.reason,
+          usage: usageResult.usage,
+          remaining: usageResult.remaining,
+          plan: usageResult.plan
+        },
+        { status: 429 }
+      )
+    }
+
     // A/B testing for cache performance
     const testId = 'cache_performance_2024_06'
     const isTestActive = abTestingFramework.isTestActive(testId)
@@ -150,9 +177,32 @@ export async function POST(request: NextRequest) {
       // Invalidate user history cache when new translation is added
       await redisTranslationCache.invalidateUserHistory(session.user.id)
 
-      // Return successful response
+      // Send real-time notification via WebSocket
+      const translationId = `trans_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      
+      // Notify user via WebSocket about translation completion
+      websocketManager.sendToUser(session.user.id, {
+        id: `notif_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        type: 'translation_completed',
+        userId: 'system',
+        timestamp: Date.now(),
+        data: {
+          translationId,
+          result: {
+            translatedText: result.translatedText,
+            sourceLanguage: result.detectedSourceLanguage || sourceLanguage,
+            targetLanguage: targetLanguage,
+            confidence: result.qualityScore || 0.95
+          },
+          processingTime: endTime - startTime,
+          cached: result.cached || false
+        }
+      })
+
+      // Return successful response with usage information
         return NextResponse.json({
           success: true,
+          translationId,
           result: {
             translatedText: result.translatedText,
             sourceLanguage: result.detectedSourceLanguage || sourceLanguage,
@@ -164,7 +214,10 @@ export async function POST(request: NextRequest) {
           usage: {
             charactersTranslated: text.length,
             qualityTier: qualityTier,
-            remainingQuota: rateLimitResult.remaining
+            remainingQuota: rateLimitResult.remaining,
+            current: usageResult.usage,
+            remaining: usageResult.remaining,
+            plan: usageResult.plan
           }
         })
 

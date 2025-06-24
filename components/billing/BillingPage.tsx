@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { SUBSCRIPTION_PLANS, formatPrice, getPlanByPriceId } from '@/lib/stripe'
 import { motionSafe } from '@/lib/motion'
@@ -11,8 +11,35 @@ interface BillingPageProps {
   language?: 'vi' | 'en'
 }
 
+interface UsageData {
+  current: {
+    translations: number
+    documents: number
+    characters: number
+    lastReset: string
+  }
+  limits: {
+    translations: number
+    documents: number
+    characters: number
+  }
+  remaining: {
+    translations: number
+    documents: number
+    characters: number
+  }
+  percentage: {
+    translations: number
+    documents: number
+    characters: number
+  }
+  plan: string
+}
+
 export default function BillingPage({ profile, language = 'en' }: BillingPageProps) {
   const [loading, setLoading] = useState(false)
+  const [usageData, setUsageData] = useState<UsageData | null>(null)
+  const [usageLoading, setUsageLoading] = useState(true)
 
   const content = {
     vi: {
@@ -35,7 +62,9 @@ export default function BillingPage({ profile, language = 'en' }: BillingPagePro
         translations: 'Lượt dịch',
         documents: 'Tài liệu',
         characters: 'Ký tự',
-        unlimited: 'Không giới hạn'
+        unlimited: 'Không giới hạn',
+        warning: 'Sắp hết hạn mức',
+        critical: 'Đã hết hạn mức'
       }
     },
     en: {
@@ -58,10 +87,34 @@ export default function BillingPage({ profile, language = 'en' }: BillingPagePro
         translations: 'Translations',
         documents: 'Documents',
         characters: 'Characters',
-        unlimited: 'Unlimited'
+        unlimited: 'Unlimited',
+        warning: 'Approaching limit',
+        critical: 'Limit exceeded'
       }
     }
   }
+
+  // Fetch usage data when component mounts
+  useEffect(() => {
+    const fetchUsageData = async () => {
+      try {
+        setUsageLoading(true)
+        const response = await fetch('/api/user/usage')
+        if (response.ok) {
+          const data = await response.json()
+          setUsageData(data.usage)
+        }
+      } catch (error) {
+        console.error('Failed to fetch usage data:', error)
+      } finally {
+        setUsageLoading(false)
+      }
+    }
+
+    if (profile) {
+      fetchUsageData()
+    }
+  }, [profile])
 
   const currentPlan = profile?.subscription_plan 
     ? getPlanByPriceId(profile.subscription_plan) 
@@ -117,6 +170,23 @@ export default function BillingPage({ profile, language = 'en' }: BillingPagePro
       month: 'long',
       day: 'numeric'
     })
+  }
+
+  const getUsageStatus = (percentage: number) => {
+    if (percentage >= 100) return 'critical'
+    if (percentage >= 80) return 'warning'
+    return 'normal'
+  }
+
+  const getUsageColor = (status: string) => {
+    switch (status) {
+      case 'critical':
+        return 'bg-red-500'
+      case 'warning':
+        return 'bg-yellow-500'
+      default:
+        return 'bg-blue-500'
+    }
   }
 
   return (
@@ -213,52 +283,132 @@ export default function BillingPage({ profile, language = 'en' }: BillingPagePro
         >
           <h2 className="heading-3 text-gray-900 mb-6">{content[language].usage.title}</h2>
           
-          <div className="space-y-6">
-            {/* Translations */}
-            <div>
-              <div className="flex justify-between items-center mb-2">
-                <span className="body-base text-gray-700">{content[language].usage.translations}</span>
-                <span className="body-base font-medium text-gray-900">
-                  0 / {(planData.limits.translations as number) === -1 ? content[language].usage.unlimited : planData.limits.translations.toLocaleString()}
-                </span>
+          {usageLoading ? (
+            <div className="space-y-6">
+              <div className="animate-pulse">
+                <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                <div className="h-2 bg-gray-200 rounded"></div>
               </div>
-              {(planData.limits.translations as number) !== -1 && (
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-blue-500 h-2 rounded-full" style={{ width: '0%' }}></div>
-                </div>
-              )}
+              <div className="animate-pulse">
+                <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                <div className="h-2 bg-gray-200 rounded"></div>
+              </div>
+              <div className="animate-pulse">
+                <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                <div className="h-2 bg-gray-200 rounded"></div>
+              </div>
             </div>
+          ) : (
+            <div className="space-y-6">
+              {/* Translations */}
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <div className="flex items-center space-x-2">
+                    <span className="body-base text-gray-700">{content[language].usage.translations}</span>
+                    {usageData && (planData.limits.translations as number) !== -1 && (
+                      <span className={`text-xs px-2 py-1 rounded-full ${
+                        getUsageStatus(usageData.percentage.translations) === 'critical' 
+                          ? 'bg-red-100 text-red-700' 
+                          : getUsageStatus(usageData.percentage.translations) === 'warning'
+                          ? 'bg-yellow-100 text-yellow-700'
+                          : 'bg-green-100 text-green-700'
+                      }`}>
+                        {getUsageStatus(usageData.percentage.translations) === 'critical' 
+                          ? content[language].usage.critical
+                          : getUsageStatus(usageData.percentage.translations) === 'warning'
+                          ? content[language].usage.warning
+                          : `${Math.round(usageData.percentage.translations)}%`
+                        }
+                      </span>
+                    )}
+                  </div>
+                  <span className="body-base font-medium text-gray-900">
+                    {usageData?.current.translations || 0} / {(planData.limits.translations as number) === -1 ? content[language].usage.unlimited : planData.limits.translations.toLocaleString()}
+                  </span>
+                </div>
+                {(planData.limits.translations as number) !== -1 && (
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className={`h-2 rounded-full transition-all duration-300 ${getUsageColor(getUsageStatus(usageData?.percentage.translations || 0))}`}
+                      style={{ width: `${Math.min(100, usageData?.percentage.translations || 0)}%` }}
+                    ></div>
+                  </div>
+                )}
+              </div>
 
-            {/* Documents */}
-            <div>
-              <div className="flex justify-between items-center mb-2">
-                <span className="body-base text-gray-700">{content[language].usage.documents}</span>
-                <span className="body-base font-medium text-gray-900">
-                  0 / {(planData.limits.documents as number) === -1 ? content[language].usage.unlimited : planData.limits.documents.toLocaleString()}
-                </span>
-              </div>
-              {(planData.limits.documents as number) !== -1 && planData.limits.documents > 0 && (
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-green-500 h-2 rounded-full" style={{ width: '0%' }}></div>
+              {/* Documents */}
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <div className="flex items-center space-x-2">
+                    <span className="body-base text-gray-700">{content[language].usage.documents}</span>
+                    {usageData && (planData.limits.documents as number) !== -1 && planData.limits.documents > 0 && (
+                      <span className={`text-xs px-2 py-1 rounded-full ${
+                        getUsageStatus(usageData.percentage.documents) === 'critical' 
+                          ? 'bg-red-100 text-red-700' 
+                          : getUsageStatus(usageData.percentage.documents) === 'warning'
+                          ? 'bg-yellow-100 text-yellow-700'
+                          : 'bg-green-100 text-green-700'
+                      }`}>
+                        {getUsageStatus(usageData.percentage.documents) === 'critical' 
+                          ? content[language].usage.critical
+                          : getUsageStatus(usageData.percentage.documents) === 'warning'
+                          ? content[language].usage.warning
+                          : `${Math.round(usageData.percentage.documents)}%`
+                        }
+                      </span>
+                    )}
+                  </div>
+                  <span className="body-base font-medium text-gray-900">
+                    {usageData?.current.documents || 0} / {(planData.limits.documents as number) === -1 ? content[language].usage.unlimited : planData.limits.documents.toLocaleString()}
+                  </span>
                 </div>
-              )}
-            </div>
+                {(planData.limits.documents as number) !== -1 && planData.limits.documents > 0 && (
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className={`h-2 rounded-full transition-all duration-300 ${getUsageColor(getUsageStatus(usageData?.percentage.documents || 0))}`}
+                      style={{ width: `${Math.min(100, usageData?.percentage.documents || 0)}%` }}
+                    ></div>
+                  </div>
+                )}
+              </div>
 
-            {/* Characters */}
-            <div>
-              <div className="flex justify-between items-center mb-2">
-                <span className="body-base text-gray-700">{content[language].usage.characters}</span>
-                <span className="body-base font-medium text-gray-900">
-                  0 / {(planData.limits.characters as number) === -1 ? content[language].usage.unlimited : planData.limits.characters.toLocaleString()}
-                </span>
-              </div>
-              {(planData.limits.characters as number) !== -1 && (
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-purple-500 h-2 rounded-full" style={{ width: '0%' }}></div>
+              {/* Characters */}
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <div className="flex items-center space-x-2">
+                    <span className="body-base text-gray-700">{content[language].usage.characters}</span>
+                    {usageData && (planData.limits.characters as number) !== -1 && (
+                      <span className={`text-xs px-2 py-1 rounded-full ${
+                        getUsageStatus(usageData.percentage.characters) === 'critical' 
+                          ? 'bg-red-100 text-red-700' 
+                          : getUsageStatus(usageData.percentage.characters) === 'warning'
+                          ? 'bg-yellow-100 text-yellow-700'
+                          : 'bg-green-100 text-green-700'
+                      }`}>
+                        {getUsageStatus(usageData.percentage.characters) === 'critical' 
+                          ? content[language].usage.critical
+                          : getUsageStatus(usageData.percentage.characters) === 'warning'
+                          ? content[language].usage.warning
+                          : `${Math.round(usageData.percentage.characters)}%`
+                        }
+                      </span>
+                    )}
+                  </div>
+                  <span className="body-base font-medium text-gray-900">
+                    {usageData?.current.characters?.toLocaleString() || 0} / {(planData.limits.characters as number) === -1 ? content[language].usage.unlimited : planData.limits.characters.toLocaleString()}
+                  </span>
                 </div>
-              )}
+                {(planData.limits.characters as number) !== -1 && (
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className={`h-2 rounded-full transition-all duration-300 ${getUsageColor(getUsageStatus(usageData?.percentage.characters || 0))}`}
+                      style={{ width: `${Math.min(100, usageData?.percentage.characters || 0)}%` }}
+                    ></div>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </motion.div>
       </div>
 

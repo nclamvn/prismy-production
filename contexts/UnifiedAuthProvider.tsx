@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect } from 'react'
+import React, { createContext, useContext, useEffect } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useUnifiedAuth, type UnifiedAuthOptions } from '@/hooks/useUnifiedAuth'
 import { AuthErrorBoundary } from '@/components/ErrorBoundary'

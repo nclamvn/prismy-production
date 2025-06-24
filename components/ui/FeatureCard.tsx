@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import { motion } from 'framer-motion'
 import { motionSafe, slideUp } from '@/lib/motion'
 import { LucideIcon } from 'lucide-react'

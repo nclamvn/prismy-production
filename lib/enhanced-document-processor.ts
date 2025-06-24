@@ -1,6 +1,6 @@
 import mammoth from 'mammoth'
-import * as XLSX from 'xlsx'
-import { ocrService } from '@/lib/ocr-service'
+import ExcelJS from 'exceljs'
+import { modernOCRService } from '@/lib/google-vision-ocr'
 import { logger, performanceLogger } from './logger'
 
 // Import PDF.js - will be stubbed in production by webpack
@@ -201,15 +201,22 @@ class EnhancedDocumentProcessor {
     options: ProcessingOptions
   ): Promise<ProcessedDocument> {
     try {
-      const workbook = XLSX.read(buffer, { type: 'buffer' })
+      const workbook = new ExcelJS.Workbook()
+      await workbook.xlsx.load(buffer)
       const chunks: DocumentChunk[] = []
       let fullText = ''
 
       // Process each worksheet
-      workbook.SheetNames.forEach((sheetName, sheetIndex) => {
-        const worksheet = workbook.Sheets[sheetName]
-        const csvData = XLSX.utils.sheet_to_csv(worksheet)
-        const textData = XLSX.utils.sheet_to_txt(worksheet)
+      workbook.worksheets.forEach((worksheet, sheetIndex) => {
+        const sheetName = worksheet.name
+        let textData = ''
+        
+        // Extract text from each row
+        worksheet.eachRow((row, rowNumber) => {
+          const rowValues = row.values as any[]
+          const rowText = rowValues.slice(1).join('\t') // Skip first empty element
+          textData += `${rowText}\n`
+        })
         
         // Add sheet as a chunk
         chunks.push({
@@ -458,14 +465,35 @@ class EnhancedDocumentProcessor {
     options: ProcessingOptions
   ): Promise<ProcessedDocument> {
     const csvText = buffer.toString('utf-8')
-    const workbook = XLSX.read(csvText, { type: 'string' })
-    const worksheet = workbook.Sheets[workbook.SheetNames[0]]
-    const jsonData = XLSX.utils.sheet_to_json(worksheet)
-    const textData = XLSX.utils.sheet_to_txt(worksheet)
+    
+    // Simple CSV parsing - split by lines and parse each row
+    const lines = csvText.split('\n').filter(line => line.trim())
+    const rows = lines.map(line => {
+      // Simple CSV parsing - handle basic quoted fields
+      const cells = []
+      let current = ''
+      let inQuotes = false
+      
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i]
+        if (char === '"') {
+          inQuotes = !inQuotes
+        } else if (char === ',' && !inQuotes) {
+          cells.push(current.trim())
+          current = ''
+        } else {
+          current += char
+        }
+      }
+      cells.push(current.trim())
+      return cells
+    })
+    
+    const textData = rows.map(row => row.join('\t')).join('\n')
 
     const chunks: DocumentChunk[] = [{
       content: textData,
-      metadata: { format: 'csv', rows: jsonData.length }
+      metadata: { format: 'csv', rows: rows.length }
     }]
 
     const metadata: DocumentMetadata = {
