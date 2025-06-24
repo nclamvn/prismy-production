@@ -219,11 +219,11 @@ export default function Footer({}: FooterProps) {
           {/* Main Footer Content */}
           <div className="mb-6 sm:mb-8">
             {/* Simplified Desktop Layout - Only existing routes */}
-            <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-5 gap-6">
+            <div className="hidden md:flex md:justify-between md:items-start">
               {/* Brand Section */}
               <motion.div
                 variants={motionSafe(slideUp)}
-                className="lg:col-span-3 flex flex-col gap-4"
+                className="flex flex-col gap-4 flex-1 max-w-lg"
               >
                 <div>
                   <Link
@@ -258,13 +258,14 @@ export default function Footer({}: FooterProps) {
                 </div>
               </motion.div>
 
-              {/* Navigation Sections */}
-              {content[language].sections.map(section => (
-                <motion.div
-                  key={section.title}
-                  variants={motionSafe(slideUp)}
-                  className="lg:col-span-1"
-                >
+              {/* Navigation Sections - Closer Together */}
+              <div className="flex gap-12">
+                {content[language].sections.map(section => (
+                  <motion.div
+                    key={section.title}
+                    variants={motionSafe(slideUp)}
+                    className="min-w-0"
+                  >
                   <h3 className="heading-4 text-gray-900 mb-4">
                     {section.title}
                   </h3>
@@ -280,8 +281,9 @@ export default function Footer({}: FooterProps) {
                       </li>
                     ))}
                   </ul>
-                </motion.div>
-              ))}
+                  </motion.div>
+                ))}
+              </div>
             </div>
 
             {/* Mobile Accordion Layout - Visible only on mobile */}

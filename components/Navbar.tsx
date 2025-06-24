@@ -110,7 +110,7 @@ export default function Navbar({}: NavbarProps) {
       animate="visible"
     >
       {/* Mobile Navbar - Stable and Simple */}
-      <div className="md:hidden w-full" style={{backgroundColor: 'rgba(255, 255, 255, 0.7)', backdropFilter: 'blur(12px)'}}>
+      <div className="md:hidden w-full" style={{backgroundColor: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(12px)'}}>
         <nav className="w-full px-4 py-2" aria-label="Mobile navigation">
           <div className="flex items-center justify-between">
             {/* Mobile Logo */}
@@ -177,7 +177,7 @@ export default function Navbar({}: NavbarProps) {
               : ''
           }`}
           style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.7)', 
+            backgroundColor: 'rgba(255, 255, 255, 0.85)', 
             backdropFilter: 'blur(12px)'
           }}
         >

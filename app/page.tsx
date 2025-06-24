@@ -272,15 +272,14 @@ export default function Home() {
                   {content[language].hero.description}
                 </motion.p>
 
-                <TouchOptimized className="flex flex-col sm:flex-row gap-4 justify-center mb-8 md:mb-10 lg:mb-12">
+                <TouchOptimized className="flex justify-center mb-8 md:mb-10 lg:mb-12">
                   <UnifiedGetStartedButton
                     variant="primary"
                     size="pill-lg"
                     redirectTo="/workspace"
+                    className="text-lg font-semibold h-14 px-8"
+                    style={{fontSize: '130%'}}
                   />
-                  <TouchButton className="btn-secondary btn-pill-lg">
-                    {content[language].hero.watchDemo}
-                  </TouchButton>
                 </TouchOptimized>
 
               </motion.div>

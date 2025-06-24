@@ -62,12 +62,13 @@
 }
 
 .animated-gradient-text {
-  background: linear-gradient(270deg, #c084fc, #86efac);
-  background-size: 400% 400%;
-  animation: gradientMove 15s ease infinite;
+  background: linear-gradient(270deg, #9333ea, #10b981, #facc15);
+  background-size: 300% 300%;
+  animation: gradientMove 10s ease infinite;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  font-weight: 600;
 }
 
 /* ============================================================================ */
@@ -88,6 +89,33 @@ button.no-border,
 .modal .btn, .modal button,
 .popup .btn, .popup button {
   border: none;
+}
+
+/* Fix pricing button layering issues */
+.btn-primary {
+  position: relative;
+  background: #111827 !important;
+  color: white !important;
+  border: none !important;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #374151;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: -1;
+}
+
+.btn-primary:hover::before {
+  opacity: 1;
 }
 
 /* ============================================================================ */
