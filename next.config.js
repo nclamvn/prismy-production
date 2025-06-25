@@ -2,9 +2,10 @@
 
 // Performance-optimized Next.js configuration for maximum speed
 const nextConfig = {
-  // Build optimizations - Enable checks for quality
+  // Build optimizations - Warning only mode
   eslint: {
     ignoreDuringBuilds: false,
+    dirs: ['app', 'components', 'lib', 'contexts', 'hooks'],
   },
   typescript: {
     ignoreBuildErrors: false,
