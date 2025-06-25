@@ -363,10 +363,17 @@ export const getAdaptiveMotion = (baseVariants: Variants): Variants => {
   const rhythm = getCulturalRhythm()
   const hardware = getHardwareCapability()
 
-  // Base hardware optimization
+  // Base hardware optimization - merge GPU settings into each variant
   const optimizedVariants = {
     ...baseVariants,
-    ...GPU_OPTIMIZED,
+    hidden: {
+      ...baseVariants.hidden,
+      ...GPU_OPTIMIZED,
+    },
+    visible: {
+      ...baseVariants.visible,
+      ...GPU_OPTIMIZED,
+    },
   }
 
   switch (rhythm) {
@@ -413,8 +420,8 @@ export const slideDown = smooth60fps(microFloat)
 export const scaleIn = smooth60fps(zenFade)
 export const staggerContainer = smooth60fps(zenBreathe)
 export const listItem = smooth60fps(whisperUp)
-export const hoverScale = performanceCritical(zenScale)
-export const hoverLift = performanceCritical(whisperHover)
+export const hoverScale = zenScale  // Remove performanceCritical to avoid SSR issues
+export const hoverLift = whisperHover  // Remove performanceCritical to avoid SSR issues
 
 // New hardware-accelerated variants
 export const ultraSmooth = {

@@ -32,7 +32,7 @@ export class MemoryOptimizer {
     })
 
     // Trigger garbage collection if available
-    if ('gc' in window && typeof (window as any).gc === 'function') {
+    if (typeof window !== 'undefined' && 'gc' in window && typeof (window as any).gc === 'function') {
       ;(window as any).gc()
     }
   }
@@ -73,7 +73,7 @@ export class FrameRateOptimizer {
   }
 
   private static animate() {
-    if (!this.isRunning) return
+    if (!this.isRunning || typeof performance === 'undefined' || typeof requestAnimationFrame === 'undefined') return
 
     const now = performance.now()
     const deltaTime = now - this.lastFrameTime
@@ -238,7 +238,9 @@ export class CanvasOptimizer {
     width: number,
     height: number,
     poolKey?: string
-  ): HTMLCanvasElement {
+  ): HTMLCanvasElement | null {
+    if (typeof document === 'undefined') return null
+    
     const key = poolKey || `${width}x${height}`
     const pool = this.canvasPool.get(key) || []
 
@@ -291,6 +293,8 @@ export class PerformanceMonitor {
   }
 
   static async initialize() {
+    if (typeof navigator === 'undefined') return
+    
     // Monitor battery if available
     if ('getBattery' in navigator) {
       try {
@@ -343,7 +347,7 @@ export class PerformanceMonitor {
   static shouldReduceAnimations(): boolean {
     return (
       this.getPerformanceLevel() === 'low' ||
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches)
     )
   }
 }

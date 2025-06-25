@@ -4,7 +4,9 @@
 export class LiveRegionManager {
   private static regions = new Map<string, HTMLElement>()
   
-  static createLiveRegion(id: string, politeness: 'polite' | 'assertive' = 'polite'): HTMLElement {
+  static createLiveRegion(id: string, politeness: 'polite' | 'assertive' = 'polite'): HTMLElement | null {
+    if (typeof document === 'undefined') return null
+    
     if (this.regions.has(id)) {
       return this.regions.get(id)!
     }
@@ -67,6 +69,8 @@ export class KeyboardNavigator {
   private static lastFocusedElement: HTMLElement | null = null
   
   static trapFocus(container: HTMLElement) {
+    if (typeof document === 'undefined') return
+    
     this.trapStack.push(container)
     this.lastFocusedElement = document.activeElement as HTMLElement
     
@@ -154,6 +158,8 @@ export class KeyboardNavigator {
     callback: (event: KeyboardEvent) => void,
     options: { ctrlKey?: boolean; altKey?: boolean; shiftKey?: boolean } = {}
   ) {
+    if (typeof document === 'undefined') return () => {}
+    
     const handleKeyDown = (event: KeyboardEvent) => {
       if (
         event.key.toLowerCase() === key.toLowerCase() &&
@@ -306,11 +312,15 @@ export class ScreenReaderOptimizer {
 
 // Motion and animation preferences
 export class MotionAccessibility {
-  private static reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  private static reducedMotion = false
+  private static initialized = false
   
   static initialize() {
+    if (typeof window === 'undefined') return
+    
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
     this.reducedMotion = mediaQuery.matches
+    this.initialized = true
     
     mediaQuery.addEventListener('change', (e) => {
       this.reducedMotion = e.matches

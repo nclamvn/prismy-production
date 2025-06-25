@@ -9,7 +9,7 @@ import AIOnboarding from '@/components/onboarding/AIOnboarding'
 import SmartUserJourney from '@/components/onboarding/SmartUserJourney'
 import AIFeatureIntroduction from '@/components/onboarding/AIFeatureIntroduction'
 import PerformanceAccessibilityMonitor from '@/components/monitoring/PerformanceAccessibilityMonitor'
-import { motionSafe, slideUp, staggerContainer } from '@/lib/motion'
+import { motionSafe, slideUp, zenBreathe } from '@/lib/motion'
 import { FileText, Upload, Clock, Zap, TrendingUp, Users, Brain } from 'lucide-react'
 
 interface DashboardStats {
@@ -222,7 +222,7 @@ function DashboardOverview() {
   return (
     <DashboardLayout language={language}>
       <motion.div
-        variants={motionSafe(staggerContainer)}
+        variants={motionSafe(zenBreathe)}
         initial="hidden"
         animate="visible"
       >
@@ -556,3 +556,6 @@ function DashboardOverview() {
 export default function DashboardPage() {
   return <DashboardOverview />
 }
+
+// Force dynamic rendering to prevent SSR issues
+export const dynamic = 'force-dynamic'

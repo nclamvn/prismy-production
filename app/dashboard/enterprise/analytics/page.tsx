@@ -22,8 +22,7 @@ import {
   Filter,
   RefreshCw
 } from 'lucide-react'
-// Temporarily disable to fix SSR issues
-// import AdvancedMetricsDashboard from '@/components/enterprise/AdvancedMetricsDashboard'
+import AdvancedMetricsDashboard from '@/components/enterprise/AdvancedMetricsDashboard'
 
 interface AnalyticsData {
   overview: {
@@ -760,16 +759,21 @@ function EnterpriseAnalytics({ language = 'en' }: EnterpriseAnalyticsProps) {
           </div>
         </motion.div>
 
-        {/* Advanced Metrics Dashboard - Temporarily disabled for SSR fix */}
+        {/* Advanced Metrics Dashboard */}
         <motion.div variants={motionSafe(slideUp)}>
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Advanced Metrics Dashboard
-            </h3>
-            <p className="text-gray-600">
-              Advanced metrics dashboard temporarily disabled for SSR compatibility.
-            </p>
-          </div>
+          <AdvancedMetricsDashboard
+            language={language}
+            organizationId="enterprise"
+            timeRange={selectedTimeRange}
+            onMetricClick={(metric) => {
+              console.log('Metric clicked:', metric)
+              // Could navigate to detailed metric view
+            }}
+            onAlertTriggered={(alert) => {
+              console.log('Alert triggered:', alert)
+              // Could show notification or take action
+            }}
+          />
         </motion.div>
       </motion.div>
     </DashboardLayout>
