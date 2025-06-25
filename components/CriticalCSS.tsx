@@ -10,30 +10,13 @@ import React, { useEffect } from 'react'
 
 export function CriticalCSS({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    // Inject critical CSS immediately
-    if (!document.getElementById('critical-css')) {
-      injectCriticalCSS(CRITICAL_CSS)
-    }
-
-    // Optimize above-fold images
-    optimizeAboveFoldImages()
-
-    // Preload critical fonts
-    const fontOptimizer = FontOptimizer.getInstance()
-    fontOptimizer.preloadCriticalFonts()
-
     // Mark paint timing
     if ('performance' in window && 'mark' in performance) {
       performance.mark('critical-css-injected')
     }
   }, [])
 
-  return (
-    <>
-      <ResourceHints />
-      {children}
-    </>
-  )
+  return <>{children}</>
 }
 
 // Individual critical style components for specific pages
@@ -231,10 +214,10 @@ export function PricingCriticalCSS() {
 }
 
 // Above-fold optimization wrapper
-export function AboveFoldOptimizer({ 
-  children, 
-  criticalImages = [] 
-}: { 
+export function AboveFoldOptimizer({
+  children,
+  criticalImages = [],
+}: {
   children: React.ReactNode
   criticalImages?: string[]
 }) {
@@ -247,7 +230,7 @@ export function AboveFoldOptimizer({
     })
 
     // Mark LCP elements
-    const observer = new IntersectionObserver((entries) => {
+    const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           const element = entry.target as HTMLElement
@@ -258,7 +241,9 @@ export function AboveFoldOptimizer({
     })
 
     // Observe potential LCP elements
-    const lcpCandidates = document.querySelectorAll('h1, .hero-title, .hero-image')
+    const lcpCandidates = document.querySelectorAll(
+      'h1, .hero-title, .hero-image'
+    )
     lcpCandidates.forEach(el => observer.observe(el))
 
     return () => observer.disconnect()
