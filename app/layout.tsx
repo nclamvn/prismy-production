@@ -3,7 +3,6 @@ import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import '@/styles/globals.css'
 import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration'
-import PerformanceMonitor from '@/components/PerformanceMonitor'
 import { LanguageProvider } from '@/contexts/LanguageContext'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { UnifiedAuthProvider } from '@/contexts/UnifiedAuthProvider'
@@ -15,7 +14,6 @@ import AuthErrorHandler from '@/components/auth/AuthErrorHandler'
 
 // Phase 2 Performance Optimizations
 import { CriticalCSS } from '@/components/CriticalCSS'
-import { PredictiveLoadingProvider } from '@/lib/predictive-loading'
 import { SkeletonProvider } from '@/components/ui/Skeleton'
 
 const inter = Inter({
@@ -142,32 +140,24 @@ export default function RootLayout({
         style={{ fontSize: '18px', lineHeight: '1.6' }}
       >
         <CriticalCSS>
-          <PredictiveLoadingProvider config={{ 
-            enableMouseTracking: true,
-            enableScrollPrediction: true,
-            enableRoutePrediction: true,
-            aggressiveness: 'moderate'
-          }}>
-            <LoadingProvider>
-              <SkeletonProvider 
-                loading={false} 
-                skeleton={<div className="min-h-screen bg-gray-50 animate-pulse" />}
-              >
-                <LanguageProvider>
-                  <AuthProvider>
-                    <UnifiedAuthProvider>
-                      <GlobalLoadingIndicator />
-                      <AuthErrorHandler />
-                      {children}
-                    </UnifiedAuthProvider>
-                  </AuthProvider>
-                </LanguageProvider>
-              </SkeletonProvider>
-            </LoadingProvider>
-          </PredictiveLoadingProvider>
+          <LoadingProvider>
+            <SkeletonProvider 
+              loading={false} 
+              skeleton={<div className="min-h-screen bg-gray-50 animate-pulse" />}
+            >
+              <LanguageProvider>
+                <AuthProvider>
+                  <UnifiedAuthProvider>
+                    <GlobalLoadingIndicator />
+                    <AuthErrorHandler />
+                    {children}
+                  </UnifiedAuthProvider>
+                </AuthProvider>
+              </LanguageProvider>
+            </SkeletonProvider>
+          </LoadingProvider>
         </CriticalCSS>
         <ServiceWorkerRegistration />
-        <PerformanceMonitor />
       </body>
     </html>
   )

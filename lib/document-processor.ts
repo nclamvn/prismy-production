@@ -101,13 +101,15 @@ export class DocumentProcessor {
 
   private static async processPdfFile(file: File): Promise<string> {
     try {
-      // Use modern Google Vision OCR for PDF processing
-      const { modernOCRService } = await import('./google-vision-ocr')
+      // Use OCR service for PDF processing
+      const { ocrService } = await import('./ocr/ocr-service')
       
       // Convert PDF to image and perform OCR
       // Note: In a real implementation, you'd want to render PDF pages to canvas first
-      const result = await modernOCRService.processImage(file, {
-        languages: ['en', 'vi'] // Support both English and Vietnamese
+      const result = await ocrService.processImage(file, {
+        languages: ['en', 'vi'], // Support both English and Vietnamese
+        enableDocumentTextDetection: true,
+        confidence: 0.6
       })
       
       if (!result.text || result.text.trim().length === 0) {
@@ -135,11 +137,14 @@ export class DocumentProcessor {
 
   private static async processImageFile(file: File): Promise<string> {
     try {
-      const { modernOCRService } = await import('./google-vision-ocr')
+      const { ocrService } = await import('./ocr/ocr-service')
       
-      // Perform OCR on the image using Google Vision
-      const result = await modernOCRService.processImage(file, {
-        languages: ['en', 'vi'] // Support both English and Vietnamese
+      // Perform OCR on the image using the OCR service
+      const result = await ocrService.processImage(file, {
+        languages: ['en', 'vi'], // Support both English and Vietnamese
+        enableTextDetection: true,
+        enableHandwritingDetection: true,
+        confidence: 0.6
       })
       
       if (!result.text || result.text.trim().length === 0) {

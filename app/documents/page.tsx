@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import { useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
 import MainLayout from '@/components/layouts/MainLayout'
-import DocumentUpload from '@/components/documents/DocumentUpload'
+import EnhancedDocumentUpload from '@/components/documents/EnhancedDocumentUpload'
 import DocumentTranslator from '@/components/documents/DocumentTranslator'
 import UniversalDropdown from '@/components/ui/UniversalDropdown'
 import { DocumentProcessor, ProcessedDocument } from '@/lib/document-processor'
@@ -276,10 +276,14 @@ function DocumentsPageContent() {
             <>
               {!processedDocument && !isProcessing && (
                 <motion.div variants={motionSafe(slideUp)}>
-                  <DocumentUpload
+                  <EnhancedDocumentUpload
                     language={language}
                     onFileSelect={handleFileSelect}
                     isProcessing={isProcessing}
+                    showAgentVisualization={true}
+                    onAgentAssign={(file, agentType) => {
+                      console.log(`Assigned ${agentType} agent to process ${file.name}`)
+                    }}
                   />
                 </motion.div>
               )}

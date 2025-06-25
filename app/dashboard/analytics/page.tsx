@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import DashboardLayout from '@/components/dashboard/DashboardLayout'
-import PaymentAnalyticsDashboard from '@/components/analytics/PaymentAnalyticsDashboard'
+// Simplified analytics - removed PaymentAnalyticsDashboard
 import { motionSafe, slideUp, staggerContainer } from '@/lib/motion'
 
 function AnalyticsPage() {
@@ -621,8 +621,13 @@ function AnalyticsPage() {
         </motion.div>
           </>
         ) : (
-          /* Payment Analytics Tab */
-          <PaymentAnalyticsDashboard language={language} />
+          /* Payment Analytics Tab - Simplified */
+          <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <h3 className="heading-4 text-gray-900 mb-4">
+              {content[language].tabs.payments}
+            </h3>
+            <p className="text-gray-600">Payment analytics coming soon...</p>
+          </div>
         )}
       </motion.div>
     </DashboardLayout>

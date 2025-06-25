@@ -6,37 +6,142 @@ import { usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { useAuth } from '@/contexts/AuthContext'
 import UserMenu from '@/components/auth/UserMenu'
+import { FeatureDiscoveryProvider, useFeatureDiscovery } from '@/contexts/FeatureDiscoveryContext'
+import FeatureDiscovery from '@/components/ui/FeatureDiscovery'
+import FeatureHint, { FeatureBadge } from '@/components/ui/FeatureHint'
+import { HelpCircle, Sparkles } from 'lucide-react'
 
 interface DashboardLayoutProps {
   children: React.ReactNode
   language?: 'vi' | 'en'
 }
 
-export default function DashboardLayout({ children, language = 'en' }: DashboardLayoutProps) {
+function DashboardLayoutInner({ children, language = 'en' }: DashboardLayoutProps) {
   const pathname = usePathname()
   const { user } = useAuth()
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const { isDiscoveryOpen, showDiscovery, hideDiscovery, completeFeature } = useFeatureDiscovery()
 
   const navigation = {
     vi: {
       menu: [
-        { name: 'Tổng quan', href: '/dashboard', icon: HomeIcon },
-        { name: 'Lịch sử dịch', href: '/dashboard/history', icon: HistoryIcon },
-        { name: 'Phân tích', href: '/dashboard/analytics', icon: ChartIcon },
-        { name: 'Tài liệu', href: '/dashboard/documents', icon: DocumentIcon },
-        { name: 'Cài đặt', href: '/dashboard/settings', icon: SettingsIcon },
+        { 
+          name: 'Tổng quan', 
+          href: '/dashboard', 
+          icon: HomeIcon,
+          category: 'main'
+        },
+        { 
+          name: 'Lịch sử dịch', 
+          href: '/dashboard/history', 
+          icon: HistoryIcon,
+          category: 'main'
+        },
+        { 
+          name: 'Phân tích', 
+          href: '/dashboard/analytics', 
+          icon: ChartIcon,
+          category: 'main'
+        },
+        { 
+          name: 'AI Agents', 
+          href: '/dashboard/agents', 
+          icon: BrainIcon,
+          category: 'ai',
+          badge: 'Mới'
+        },
+        { 
+          name: 'Thông tin thông minh', 
+          href: '/dashboard/insights', 
+          icon: ZapIcon,
+          category: 'ai',
+          badge: 'AI'
+        },
+        { 
+          name: 'Enterprise', 
+          href: '/dashboard/enterprise', 
+          icon: NetworkIcon,
+          category: 'ai',
+          badge: 'Pro'
+        },
+        { 
+          name: 'Tài liệu', 
+          href: '/dashboard/documents', 
+          icon: DocumentIcon,
+          category: 'main'
+        },
+        { 
+          name: 'Cài đặt', 
+          href: '/dashboard/settings', 
+          icon: SettingsIcon,
+          category: 'main'
+        },
       ],
-      toggleSidebar: 'Ẩn/Hiện menu'
+      toggleSidebar: 'Ẩn/Hiện menu',
+      categories: {
+        main: 'Chính',
+        ai: 'AI & Enterprise'
+      }
     },
     en: {
       menu: [
-        { name: 'Overview', href: '/dashboard', icon: HomeIcon },
-        { name: 'History', href: '/dashboard/history', icon: HistoryIcon },
-        { name: 'Analytics', href: '/dashboard/analytics', icon: ChartIcon },
-        { name: 'Documents', href: '/dashboard/documents', icon: DocumentIcon },
-        { name: 'Settings', href: '/dashboard/settings', icon: SettingsIcon },
+        { 
+          name: 'Overview', 
+          href: '/dashboard', 
+          icon: HomeIcon,
+          category: 'main'
+        },
+        { 
+          name: 'History', 
+          href: '/dashboard/history', 
+          icon: HistoryIcon,
+          category: 'main'
+        },
+        { 
+          name: 'Analytics', 
+          href: '/dashboard/analytics', 
+          icon: ChartIcon,
+          category: 'main'
+        },
+        { 
+          name: 'AI Agents', 
+          href: '/dashboard/agents', 
+          icon: BrainIcon,
+          category: 'ai',
+          badge: 'New'
+        },
+        { 
+          name: 'Insights', 
+          href: '/dashboard/insights', 
+          icon: ZapIcon,
+          category: 'ai',
+          badge: 'AI'
+        },
+        { 
+          name: 'Enterprise', 
+          href: '/dashboard/enterprise', 
+          icon: NetworkIcon,
+          category: 'ai',
+          badge: 'Pro'
+        },
+        { 
+          name: 'Documents', 
+          href: '/dashboard/documents', 
+          icon: DocumentIcon,
+          category: 'main'
+        },
+        { 
+          name: 'Settings', 
+          href: '/dashboard/settings', 
+          icon: SettingsIcon,
+          category: 'main'
+        },
       ],
-      toggleSidebar: 'Toggle sidebar'
+      toggleSidebar: 'Toggle sidebar',
+      categories: {
+        main: 'Main',
+        ai: 'AI & Enterprise'
+      }
     }
   }
 
@@ -88,25 +193,77 @@ export default function DashboardLayout({ children, language = 'en' }: Dashboard
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
-            {navigation[language].menu.map((item) => {
-              const isActive = pathname === item.href
+          <nav className="flex-1 px-4 py-4 overflow-y-auto">
+            {Object.entries(navigation[language].categories).map(([categoryKey, categoryName]) => {
+              const categoryItems = navigation[language].menu.filter(item => item.category === categoryKey)
+              
               return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`
-                    flex items-center px-3 py-2 text-sm font-medium rounded-lg
-                    transition-colors duration-200
-                    ${isActive 
-                      ? 'bg-gray-100 text-gray-900' 
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                    }
-                  `}
-                >
-                  <item.icon className="w-5 h-5 mr-3" />
-                  {item.name}
-                </Link>
+                <div key={categoryKey} className="mb-6">
+                  <h3 className="px-3 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    {categoryName}
+                  </h3>
+                  <div className="space-y-1">
+                    {categoryItems.map((item) => {
+                      const isActive = pathname === item.href
+                      const featureId = item.href.split('/').pop() || 'main'
+                      
+                      return (
+                        <FeatureHint
+                          key={item.href}
+                          feature={featureId}
+                          title={item.name}
+                          description={`Discover the power of ${item.name} - ${
+                            featureId === 'agents' ? 'Create autonomous AI agents that work for you' :
+                            featureId === 'insights' ? 'Get AI-powered predictive insights and cross-document analysis' :
+                            featureId === 'enterprise' ? 'Access learning networks and voice control features' :
+                            'Explore this powerful feature'
+                          }`}
+                          position="right"
+                          delay={categoryKey === 'ai' ? 8000 : 15000}
+                        >
+                          <Link
+                            href={item.href}
+                            className={`
+                              flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg
+                              transition-all duration-200 group
+                              ${isActive 
+                                ? 'bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-900 shadow-sm' 
+                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                              }
+                            `}
+                          >
+                            <div className="flex items-center">
+                              <item.icon className={`w-5 h-5 mr-3 ${isActive ? 'text-blue-600' : ''}`} />
+                              <span>{item.name}</span>
+                              {categoryKey === 'ai' && (
+                                <FeatureBadge 
+                                  feature={featureId} 
+                                  type={item.badge === 'Pro' ? 'pro' : item.badge === 'AI' ? 'ai' : 'new'}
+                                  size="sm"
+                                />
+                              )}
+                            </div>
+                            {item.badge && (
+                              <span className={`
+                                px-2 py-1 text-xs font-medium rounded-full
+                                ${isActive 
+                                  ? 'bg-blue-200 text-blue-800' 
+                                  : item.badge === 'Pro' 
+                                    ? 'bg-purple-100 text-purple-700'
+                                    : item.badge === 'AI'
+                                      ? 'bg-indigo-100 text-indigo-700'
+                                      : 'bg-green-100 text-green-700'
+                                }
+                              `}>
+                                {item.badge}
+                              </span>
+                            )}
+                          </Link>
+                        </FeatureHint>
+                      )
+                    })}
+                  </div>
+                </div>
               )
             })}
           </nav>
@@ -121,7 +278,7 @@ export default function DashboardLayout({ children, language = 'en' }: Dashboard
       {/* Main content */}
       <div className={`flex-1 ${isSidebarOpen ? 'lg:ml-64' : ''}`}>
         {/* Top bar */}
-        <header className="bg-white border-b border-gray-200">
+        <header className="bg-white border-b border-gray-200 dashboard-header">
           <div className="flex items-center justify-between h-16 px-6">
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -132,6 +289,33 @@ export default function DashboardLayout({ children, language = 'en' }: Dashboard
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
+
+            {/* Feature Discovery Button */}
+            <div className="flex items-center space-x-3">
+              <FeatureHint
+                feature="feature-tour"
+                title="Take a feature tour"
+                description="Discover Prismy's advanced AI capabilities with a guided tour"
+                position="bottom"
+                delay={20000}
+              >
+                <button
+                  onClick={showDiscovery}
+                  className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-purple-600 hover:text-purple-700 border border-purple-300 rounded-lg hover:bg-purple-50 transition-colors"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  <span>{language === 'vi' ? 'Khám phá tính năng' : 'Discover Features'}</span>
+                </button>
+              </FeatureHint>
+
+              <button
+                onClick={showDiscovery}
+                className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                title={language === 'vi' ? 'Trợ giúp' : 'Help'}
+              >
+                <HelpCircle className="w-5 h-5" />
+              </button>
+            </div>
           </div>
         </header>
 
@@ -148,7 +332,25 @@ export default function DashboardLayout({ children, language = 'en' }: Dashboard
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
+
+      {/* Feature Discovery */}
+      <FeatureDiscovery
+        isOpen={isDiscoveryOpen}
+        onClose={hideDiscovery}
+        onComplete={completeFeature}
+        userLevel="beginner"
+      />
     </div>
+  )
+}
+
+export default function DashboardLayout({ children, language = 'en' }: DashboardLayoutProps) {
+  return (
+    <FeatureDiscoveryProvider>
+      <DashboardLayoutInner language={language}>
+        {children}
+      </DashboardLayoutInner>
+    </FeatureDiscoveryProvider>
   )
 }
 
@@ -190,6 +392,30 @@ function SettingsIcon({ className }: { className?: string }) {
     <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    </svg>
+  )
+}
+
+function BrainIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+    </svg>
+  )
+}
+
+function ZapIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+    </svg>
+  )
+}
+
+function NetworkIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
     </svg>
   )
 }

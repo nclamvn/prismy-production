@@ -1,13 +1,7 @@
 'use client'
 
 import React, { useEffect } from 'react'
-import { 
-  CRITICAL_CSS, 
-  injectCriticalCSS, 
-  optimizeAboveFoldImages,
-  ResourceHints,
-  FontOptimizer 
-} from '@/lib/progressive-enhancement'
+// Simplified CriticalCSS for MVP - removed progressive enhancement
 
 /* ============================================================================ */
 /* CRITICAL CSS INJECTION COMPONENT */

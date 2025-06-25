@@ -1,157 +1,123 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+// Simplified Workspace Page for MVP
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { useWorkspaceLoading } from '@/contexts/LoadingContext'
-import { motionSafe, slideUp, staggerContainer, fadeIn } from '@/lib/motion'
-import { WorkspaceErrorBoundary } from '@/components/ErrorBoundary'
+import { motionSafe, slideUp, staggerContainer } from '@/lib/motion'
 import AuthenticatedLayout from '@/components/layouts/AuthenticatedLayout'
 import AuthGuard from '@/components/auth/AuthGuard'
-import { AIWorkspaceLayout, AIChatInterface, DocumentViewer, AgentDashboard } from '@/components/workspace'
 import WorkspaceLayout from '@/components/workspace/WorkspaceLayout'
-import DocumentMode from '@/components/workspace/modes/DocumentMode'
-import IntelligenceMode from '@/components/workspace/modes/IntelligenceMode'
-import AnalyticsMode from '@/components/workspace/modes/AnalyticsMode'
-import APIMode from '@/components/workspace/modes/APIMode'
-import EnterpriseMode from '@/components/workspace/modes/EnterpriseMode'
-import BillingMode from '@/components/workspace/modes/BillingMode'
-import SettingsMode from '@/components/workspace/modes/SettingsMode'
+import SimpleTranslationInterface from '@/components/workspace/SimpleTranslationInterface'
 
-export type WorkspaceMode =
-  | 'documents'
-  | 'intelligence'
-  | 'analytics'
-  | 'api'
-  | 'enterprise'
-  | 'billing'
-  | 'settings'
-  | 'ai-workspace'
+export type WorkspaceMode = 'translation' | 'billing' | 'settings'
 
-function WorkspaceContent() {
+export default function Workspace() {
+  const { user } = useAuth()
   const { language } = useLanguage()
-  const { user, profile, loading } = useAuth()
-  const { isLoading: workspaceLoading, setLoading: setWorkspaceLoading } =
-    useWorkspaceLoading()
-  const [currentMode, setCurrentMode] = useState<WorkspaceMode>('documents')
-  const [selectedAgent, setSelectedAgent] = useState(null)
-  const [selectedDocument, setSelectedDocument] = useState(null)
+  const [activeMode, setActiveMode] = useState<WorkspaceMode>('translation')
 
-  // AuthGuard handles authentication checks
-
-  // Log workspace component lifecycle
-  useEffect(() => {
-    console.log('💼 Workspace: Component mounted', {
-      user: user ? 'authenticated' : 'guest',
-      loading,
-    })
-
-    return () => {
-      console.log('💼 Workspace: Component unmounting')
+  const content = {
+    vi: {
+      title: 'Không gian làm việc',
+      subtitle: 'Quản lý dự án dịch thuật của bạn',
+      modes: {
+        translation: 'Dịch thuật',
+        billing: 'Thanh toán',
+        settings: 'Cài đặt'
+      }
+    },
+    en: {
+      title: 'Workspace',
+      subtitle: 'Manage your translation projects',
+      modes: {
+        translation: 'Translation',
+        billing: 'Billing', 
+        settings: 'Settings'
+      }
     }
-  }, [])
-
-  // Update user state logging
-  useEffect(() => {
-    if (user) {
-      console.log('✅ Workspace: User authenticated', user.email)
-    }
-  }, [user])
-
-  // Coordinate workspace loading state
-  useEffect(() => {
-    setWorkspaceLoading(loading)
-  }, [loading, setWorkspaceLoading])
-
-  // Show loading while auth is being checked
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-bg-main flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin w-8 h-8 border-2 border-gray-300 border-t-gray-900 rounded-full mb-4 mx-auto"></div>
-          <p className="body-base text-gray-600">
-            {language === 'vi' ? 'Đang tải...' : 'Loading...'}
-          </p>
-        </div>
-      </div>
-    )
   }
 
-  // AuthGuard ensures user is authenticated at this point
-  if (!user) {
-    console.warn(
-      '⚠️ Workspace: No user but AuthGuard should have prevented this'
-    )
-    return null
-  }
-
-  const renderCurrentMode = () => {
-    switch (currentMode) {
-      case 'ai-workspace':
-        return (
-          <AIWorkspaceLayout
-            selectedAgent={selectedAgent}
-            selectedDocument={selectedDocument}
-            onAgentSelect={setSelectedAgent}
-            onDocumentSelect={setSelectedDocument}
-            language={language}
-          />
-        )
-      case 'documents':
-        return <DocumentMode language={language} />
-      case 'intelligence':
-        return <IntelligenceMode language={language} />
-      case 'analytics':
-        return <AnalyticsMode language={language} />
-      case 'api':
-        return <APIMode language={language} />
-      case 'enterprise':
-        return <EnterpriseMode language={language} />
+  const renderActiveMode = () => {
+    switch (activeMode) {
+      case 'translation':
+        return <SimpleTranslationInterface />
       case 'billing':
-        return <BillingMode language={language} />
-      case 'settings':
-        return <SettingsMode language={language} user={profile} />
-      default:
         return (
-          <AIWorkspaceLayout
-            selectedAgent={selectedAgent}
-            selectedDocument={selectedDocument}
-            onAgentSelect={setSelectedAgent}
-            onDocumentSelect={setSelectedDocument}
-            language={language}
-          />
+          <div className="bg-white rounded-xl p-8 border border-gray-200">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">
+              Billing Management
+            </h3>
+            <p className="text-gray-600">Billing features coming soon...</p>
+          </div>
         )
+      case 'settings':
+        return (
+          <div className="bg-white rounded-xl p-8 border border-gray-200">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">
+              Settings
+            </h3>
+            <p className="text-gray-600">Settings panel coming soon...</p>
+          </div>
+        )
+      default:
+        return <SimpleTranslationInterface />
     }
   }
 
   return (
-    <AuthenticatedLayout>
-      <motion.div
-        variants={motionSafe(fadeIn)}
-        initial="hidden"
-        animate="visible"
-        className="h-screen flex flex-col"
-      >
-        <WorkspaceLayout
-          currentMode={currentMode}
-          onModeChange={setCurrentMode}
-          language={language}
-          user={user}
-        >
-          {renderCurrentMode()}
-        </WorkspaceLayout>
-      </motion.div>
-    </AuthenticatedLayout>
-  )
-}
+    <AuthGuard>
+      <AuthenticatedLayout>
+        <WorkspaceLayout>
+          <motion.div
+            className="space-y-6"
+            variants={motionSafe(staggerContainer)}
+            initial="hidden"
+            animate="visible"
+          >
+            {/* Header */}
+            <motion.div
+              className="flex flex-col sm:flex-row justify-between items-start sm:items-center"
+              variants={motionSafe(slideUp)}
+            >
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                  {content[language].title}
+                </h1>
+                <p className="text-gray-600">
+                  {content[language].subtitle}
+                </p>
+              </div>
+            </motion.div>
 
-export default function WorkspacePage() {
-  return (
-    <AuthGuard requireAuth redirectTo="/">
-      <WorkspaceErrorBoundary>
-        <WorkspaceContent />
-      </WorkspaceErrorBoundary>
+            {/* Mode Navigation */}
+            <motion.div
+              className="flex space-x-1 bg-gray-100 rounded-lg p-1"
+              variants={motionSafe(slideUp)}
+            >
+              {(Object.keys(content[language].modes) as WorkspaceMode[]).map((mode) => (
+                <button
+                  key={mode}
+                  onClick={() => setActiveMode(mode)}
+                  className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                    activeMode === mode
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  {content[language].modes[mode]}
+                </button>
+              ))}
+            </motion.div>
+
+            {/* Active Mode Content */}
+            <motion.div variants={motionSafe(slideUp)}>
+              {renderActiveMode()}
+            </motion.div>
+          </motion.div>
+        </WorkspaceLayout>
+      </AuthenticatedLayout>
     </AuthGuard>
   )
 }

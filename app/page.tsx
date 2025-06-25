@@ -1,8 +1,8 @@
 'use client'
 
-// Force deployment rebuild - June 21, 2025
+// Simplified Home Page for MVP
 import { motion } from 'framer-motion'
-import { useState, useEffect, useRef } from 'react'
+import { useState } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import MainLayout from '@/components/layouts/MainLayout'
 import UnifiedGetStartedButton from '@/components/ui/UnifiedGetStartedButton'
@@ -22,569 +22,208 @@ import {
   Clock,
 } from 'lucide-react'
 
-// Phase 2 Performance Optimizations
-import { HomeCriticalCSS } from '@/components/CriticalCSS'
-import {
-  ScrollAnimatedElement,
-  ProgressiveImage,
-  CountUpOnScroll,
-  ScrollProgress,
-} from '@/components/IntersectionOptimizer'
-import { TouchButton, TouchOptimized } from '@/components/ui/TouchOptimized'
-import { SkeletonCard, SkeletonProvider } from '@/components/ui/Skeleton'
-import { usePredictiveLoading } from '@/lib/predictive-loading'
-
 export default function Home() {
   const { language } = useLanguage()
   const [activePricingIndex, setActivePricingIndex] = useState(0)
-  const pricingScrollRef = useRef<HTMLDivElement>(null)
 
-  // Predictive loading hook for performance
-  usePredictiveLoading()
-
+  // Simplified content - removed optimization features
   const content = {
     vi: {
       hero: {
-        title: 'AI Agent tiên phong cho',
-        titleHighlight: 'Tài liệu',
-        subtitle: '',
-        description:
-          'Giải pháp dịch thuật thông minh với độ chính xác cao, hỗ trợ hơn 100 ngôn ngữ',
-        getStarted: 'Bắt đầu ngay',
-        watchDemo: 'Xem demo',
+        title: 'Dịch thuật AI thông minh',
+        subtitle: 'Nền tảng dịch thuật AI mạnh mẽ với độ chính xác cao và tốc độ siêu nhanh',
+        cta: 'Bắt đầu dịch miễn phí'
       },
       features: {
         title: 'Tính năng nổi bật',
-        subtitle:
-          'Công nghệ AI tiên tiến phục vụ nhu cầu dịch thuật chuyên nghiệp',
         items: [
           {
-            title: 'Dịch thuật tức thì',
-            description:
-              'AI thế hệ mới với công nghệ neural machine translation tiên tiến, đảm bảo độ chính xác cao và tốc độ xử lý nhanh chóng chỉ trong vài giây. Hỗ trợ dịch thuật theo ngữ cảnh và giữ nguyên định dạng tài liệu gốc.',
             icon: Zap,
+            title: 'Dịch thuật tức thì',
+            description: 'Công nghệ AI tiên tiến cho kết quả dịch chính xác trong giây lát'
           },
           {
-            title: 'Hỗ trợ 100+ ngôn ngữ',
-            description:
-              'Hệ thống dịch thuật đa ngôn ngữ toàn diện, bao phủ tất cả các ngôn ngữ chính thống trên thế giới. Từ các ngôn ngữ phổ biến như Anh, Trung, Nhật đến các ngôn ngữ địa phương hiếm gặp, đảm bảo chất lượng dịch thuật nhất quán.',
             icon: Globe,
+            title: 'Hỗ trợ đa ngôn ngữ',
+            description: 'Hơn 100 ngôn ngữ được hỗ trợ với độ chính xác cao'
           },
           {
-            title: 'Thanh toán Việt Nam',
-            description:
-              'Tích hợp đầy đủ các phương thức thanh toán phổ biến tại Việt Nam: VNPay, MoMo, ZaloPay và thẻ quốc tế. Giao dịch an toàn, nhanh chóng với mã hóa 256-bit và tuân thủ chuẩn bảo mật PCI DSS.',
-            icon: CreditCard,
-          },
-          {
-            title: 'Bảo mật tuyệt đối',
-            description:
-              'Hệ thống bảo mật đa lớp với mã hóa AES-256, xác thực hai yếu tố và tuân thủ các tiêu chuẩn quốc tế ISO 27001, SOC 2. Tất cả dữ liệu được xử lý trong môi trường cloud bảo mật và tự động xóa sau khi hoàn tất.',
             icon: Shield,
-          },
-          {
-            title: 'API doanh nghiệp',
-            description:
-              'RESTful API mạnh mẽ và linh hoạt, dễ dàng tích hợp vào hệ thống hiện tại của doanh nghiệp. Hỗ trợ webhook, batch processing và SDK cho các ngôn ngữ lập trình phổ biến. Tài liệu API chi tiết và mẫu code sẵn sàng.',
-            icon: Settings,
-          },
-          {
-            title: 'Hỗ trợ 24/7',
-            description:
-              'Đội ngũ chuyên gia kỹ thuật và customer success sẵn sàng hỗ trợ 24/7 qua nhiều kênh: live chat, email, phone và ticket system. Thời gian phản hồi trung bình dưới 15 phút, đảm bảo doanh nghiệp luôn được hỗ trợ kịp thời.',
-            icon: Headphones,
-          },
-        ],
-      },
-      social_proof: {
-        title: 'Được tin cậy bởi các doanh nghiệp hàng đầu',
-        stats: [
-          { number: '10,000+', label: 'Doanh nghiệp', icon: Building2 },
-          { number: '1M+', label: 'Tài liệu đã dịch', icon: FileText },
-          { number: '50+', label: 'Ngôn ngữ', icon: Languages },
-          { number: '99.9%', label: 'Uptime', icon: Clock },
-        ],
+            title: 'Bảo mật tuyệt đối',
+            description: 'Dữ liệu được mã hóa và bảo vệ theo tiêu chuẩn quốc tế'
+          }
+        ]
       },
       pricing: {
-        title: 'Bảng giá minh bạch',
-        subtitle: 'Chọn gói phù hợp với nhu cầu của bạn',
+        title: 'Gói dịch vụ',
         monthly: 'Hàng tháng',
-        getStarted: 'Bắt đầu',
-      },
+        yearly: 'Hàng năm'
+      }
     },
     en: {
       hero: {
-        title: 'Pioneering AI Agent for',
-        titleHighlight: 'Document',
-        subtitle: '',
-        description:
-          'Intelligent translation solution with high accuracy, supporting 100+ languages',
-        getStarted: 'Get Started',
-        watchDemo: 'Watch Demo',
+        title: 'Intelligent AI Translation',
+        subtitle: 'Powerful AI translation platform with high accuracy and lightning speed',
+        cta: 'Start translating for free'
       },
       features: {
-        title: 'Powerful Features',
-        subtitle:
-          'Advanced AI technology serving professional translation needs',
+        title: 'Key Features',
         items: [
           {
-            title: 'Instant Translation',
-            description:
-              'Next-generation AI with advanced neural machine translation technology, ensuring high accuracy and lightning-fast processing in just seconds. Supports context-aware translation while preserving original document formatting.',
             icon: Zap,
+            title: 'Instant Translation',
+            description: 'Advanced AI technology for accurate translation results in seconds'
           },
           {
-            title: '100+ Languages',
-            description:
-              'Comprehensive multilingual translation system covering all major world languages. From popular languages like English, Chinese, Japanese to rare regional dialects, ensuring consistent translation quality across all language pairs.',
             icon: Globe,
+            title: 'Multi-language Support',
+            description: 'Over 100 languages supported with high accuracy'
           },
           {
-            title: 'Vietnamese Payments',
-            description:
-              'Full integration with popular Vietnamese payment methods: VNPay, MoMo, ZaloPay, and international cards. Secure, fast transactions with 256-bit encryption and PCI DSS compliance standards.',
-            icon: CreditCard,
-          },
-          {
-            title: 'Absolute Security',
-            description:
-              'Multi-layered security system with AES-256 encryption, two-factor authentication, and compliance with international standards ISO 27001, SOC 2. All data processed in secure cloud environment and automatically deleted after completion.',
             icon: Shield,
-          },
-          {
-            title: 'Enterprise API',
-            description:
-              'Powerful and flexible RESTful API, easily integrated into existing enterprise systems. Supports webhooks, batch processing, and SDKs for popular programming languages. Comprehensive API documentation and ready-to-use code samples.',
-            icon: Settings,
-          },
-          {
-            title: '24/7 Support',
-            description:
-              'Expert technical and customer success teams available 24/7 through multiple channels: live chat, email, phone, and ticket system. Average response time under 15 minutes, ensuring businesses receive timely support.',
-            icon: Headphones,
-          },
-        ],
-      },
-      social_proof: {
-        title: 'Trusted by Leading Enterprises',
-        stats: [
-          { number: '10,000+', label: 'Businesses', icon: Building2 },
-          { number: '1M+', label: 'Documents Translated', icon: FileText },
-          { number: '50+', label: 'Languages', icon: Languages },
-          { number: '99.9%', label: 'Uptime', icon: Clock },
-        ],
+            title: 'Absolute Security',
+            description: 'Data encrypted and protected according to international standards'
+          }
+        ]
       },
       pricing: {
-        title: 'Transparent Pricing',
-        subtitle: 'Choose the plan that fits your needs',
+        title: 'Pricing Plans',
         monthly: 'Monthly',
-        getStarted: 'Get Started',
-      },
-    },
-  }
-
-  // No longer needed - using UnifiedGetStartedButton component
-
-  // Handle pricing carousel scroll
-  useEffect(() => {
-    const scrollContainer = pricingScrollRef.current
-    if (!scrollContainer) return
-
-    const handleScroll = () => {
-      const scrollPosition = scrollContainer.scrollLeft
-      const cardWidth = scrollContainer.offsetWidth * 0.9 // 90vw
-      const newIndex = Math.round(scrollPosition / cardWidth)
-      setActivePricingIndex(newIndex)
+        yearly: 'Yearly'
+      }
     }
-
-    scrollContainer.addEventListener('scroll', handleScroll)
-    return () => scrollContainer.removeEventListener('scroll', handleScroll)
-  }, [])
+  }
 
   return (
     <MainLayout>
-      <div className="overflow-x-hidden">
-        {/* Critical CSS for above-the-fold content */}
-        <HomeCriticalCSS />
-
-        {/* Scroll Progress Indicator */}
-        <ScrollProgress />
-
-        {/* Hero Section - Full Width */}
-        <section className="relative overflow-hidden bg-white pt-20 w-full">
-          <div className="w-full py-8 md:py-12">
-            <div className="w-full">
-              <motion.div
-                variants={motionSafe(staggerContainer)}
-                initial="hidden"
-                animate="visible"
-                className="text-center px-4 md:px-8 lg:px-12"
+      <div className="relative">
+        {/* Hero Section */}
+        <section className="relative bg-gradient-to-br from-blue-50 via-white to-purple-50 overflow-hidden">
+          <div className="absolute inset-0 bg-grid-gray-100/50 bg-[size:20px_20px] opacity-50" />
+          
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
+            <motion.div
+              className="text-center"
+              variants={motionSafe(staggerContainer)}
+              initial="hidden"
+              animate="visible"
+            >
+              <motion.h1 
+                className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-8"
+                variants={motionSafe(slideUp)}
               >
-                {/* Hero GIF with Progressive Enhancement */}
-                <ScrollAnimatedElement
-                  animation="slideUp"
-                  threshold={0.1}
-                  className="mb-8 md:mb-12 lg:mb-16"
-                >
-                  <div
-                    className="hero-gif-container mx-auto"
-                    style={{ maxWidth: '720px' }}
-                  >
-                    <ProgressiveImage
-                      src="/assets/header.gif"
-                      alt="Prismy AI Translation Platform Demo"
-                      className="hero-gif w-full"
-                      style={{
-                        width: '100%',
-                        height: 'auto',
-                        display: 'block',
-                      }}
-                      placeholder="/assets/header-placeholder.jpg"
-                      sizes="(max-width: 768px) 100vw, 720px"
-                    />
-                  </div>
-                </ScrollAnimatedElement>
+                {content[language].hero.title}
+              </motion.h1>
+              
+              <motion.p 
+                className="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto"
+                variants={motionSafe(slideUp)}
+              >
+                {content[language].hero.subtitle}
+              </motion.p>
+              
+              <motion.div variants={motionSafe(slideUp)}>
+                <UnifiedGetStartedButton size="lg">
+                  {content[language].hero.cta}
+                </UnifiedGetStartedButton>
+              </motion.div>
+            </motion.div>
+          </div>
+        </section>
 
-                <motion.h1
+        {/* Features Section */}
+        <section className="py-24 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              className="text-center mb-16"
+              variants={motionSafe(slideUp)}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+            >
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                {content[language].features.title}
+              </h2>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {content[language].features.items.map((feature, index) => (
+                <motion.div
+                  key={index}
                   variants={motionSafe(slideUp)}
-                  className="heading-hero text-center mb-6"
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
                 >
-                  <div className="mb-2">{content[language].hero.title}</div>
-                  <div
-                    className="animated-gradient-text"
-                    style={{ fontSize: '1.5em' }}
-                  >
-                    {content[language].hero.titleHighlight}
-                  </div>
-                </motion.h1>
-
-                <motion.p
-                  variants={motionSafe(slideUp)}
-                  className="subheadline text-center max-w-4xl mx-auto mb-8"
-                >
-                  {content[language].hero.description}
-                </motion.p>
-
-                <TouchOptimized className="flex justify-center mb-8 md:mb-10 lg:mb-12">
-                  <UnifiedGetStartedButton
-                    variant="primary"
-                    size="pill-lg"
-                    redirectTo="/workspace"
-                    className="text-lg font-semibold h-14 px-8"
-                    style={{ fontSize: '130%' }}
+                  <FeatureCard
+                    icon={feature.icon}
+                    title={feature.title}
+                    description={feature.description}
                   />
-                </TouchOptimized>
-              </motion.div>
-            </div>
-          </div>
-        </section>
-
-        {/* Features Section - Full Width */}
-        <section id="features" className="py-12 w-full">
-          <div className="w-full">
-            <div className="w-full">
-              <motion.div
-                variants={motionSafe(staggerContainer)}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-              >
-                <motion.div
-                  variants={motionSafe(slideUp)}
-                  className="text-center mb-16"
-                >
-                  <h2 className="heading-2 mb-4">
-                    {content[language].features.title}
-                  </h2>
-                  <p className="subheadline max-w-2xl mx-auto">
-                    {content[language].features.subtitle}
-                  </p>
                 </motion.div>
-
-                {/* Mobile: Horizontal Carousel with Touch Optimization */}
-                <TouchOptimized
-                  className="md:hidden flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory scrollbar-hide"
-                  style={{
-                    scrollSnapType: 'x mandatory',
-                    scrollBehavior: 'smooth',
-                    paddingLeft: 'calc(50vw - 160px)',
-                    paddingRight: 'calc(50vw - 160px)',
-                  }}
-                >
-                  {content[language].features.items.map((feature, index) => (
-                    <TouchButton
-                      key={index}
-                      className="snap-center shrink-0 w-80"
-                      style={{ scrollSnapAlign: 'center' }}
-                    >
-                      <FeatureCard
-                        icon={feature.icon}
-                        title={feature.title}
-                        description={feature.description}
-                        delay={0} // No delay for mobile carousel
-                      />
-                    </TouchButton>
-                  ))}
-                </TouchOptimized>
-
-                {/* Desktop: Grid Layout with Intersection Observer */}
-                <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 md:px-8 lg:px-12">
-                  {content[language].features.items.map((feature, index) => (
-                    <ScrollAnimatedElement
-                      key={index}
-                      animation="slideUp"
-                      delay={index * 0.1}
-                      threshold={0.1}
-                    >
-                      <FeatureCard
-                        icon={feature.icon}
-                        title={feature.title}
-                        description={feature.description}
-                        delay={0} // Animation handled by ScrollAnimatedElement
-                      />
-                    </ScrollAnimatedElement>
-                  ))}
-                </div>
-              </motion.div>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* Stats Section - Full Width */}
-        <section className="py-20 bg-gray-50 w-full">
-          <div className="w-full">
-            <div className="w-full">
-              <motion.div
-                variants={motionSafe(staggerContainer)}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                className="text-center"
-              >
-                <motion.h2
-                  variants={motionSafe(slideUp)}
-                  className="heading-2 mb-12"
-                >
-                  {content[language].social_proof.title}
-                </motion.h2>
+        {/* Pricing Section */}
+        <section className="py-24 bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              className="text-center mb-16"
+              variants={motionSafe(slideUp)}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+            >
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                {content[language].pricing.title}
+              </h2>
+            </motion.div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-8 px-4 md:px-8 lg:px-12">
-                  {content[language].social_proof.stats.map((stat, index) => {
-                    const IconComponent = stat.icon
-                    return (
-                      <ScrollAnimatedElement
-                        key={index}
-                        animation="slideUp"
-                        delay={index * 0.1}
-                        className="mini-card text-center"
-                      >
-                        <div className="flex justify-center mb-3">
-                          <IconComponent
-                            size={32}
-                            className="text-gray-600"
-                            strokeWidth={1.5}
-                          />
-                        </div>
-                        <CountUpOnScroll
-                          end={
-                            parseInt(stat.number.replace(/[^0-9]/g, '')) || 0
-                          }
-                          suffix={stat.number.replace(/[0-9]/g, '')}
-                          className="heading-1 text-gray-900 mb-2"
-                        />
-                        <div className="body-base">{stat.label}</div>
-                      </ScrollAnimatedElement>
-                    )
-                  })}
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </section>
-
-        {/* Pricing Section - Full Width */}
-        <section id="pricing" className="py-20 w-full">
-          <div className="w-full">
-            <div className="w-full">
-              <motion.div
-                variants={motionSafe(staggerContainer)}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-              >
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {UNIFIED_SUBSCRIPTION_PLANS.map((plan, index) => (
                 <motion.div
+                  key={plan.key}
+                  className="bg-white rounded-xl p-8 border border-gray-200 relative"
                   variants={motionSafe(slideUp)}
-                  className="text-center mb-16"
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
                 >
-                  <h2 className="heading-2 mb-4">
-                    {content[language].pricing.title}
-                  </h2>
-                  <p className="subheadline">
-                    {content[language].pricing.subtitle}
-                  </p>
-                </motion.div>
-
-                {/* Mobile: Pricing Carousel with Touch Optimization */}
-                <div className="md:hidden">
-                  <TouchOptimized
-                    ref={pricingScrollRef}
-                    className="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory scrollbar-hide"
-                    style={{
-                      scrollSnapType: 'x mandatory',
-                      scrollBehavior: 'smooth',
-                      paddingLeft: 'calc(50vw - 165px)',
-                      paddingRight: 'calc(50vw - 165px)',
-                    }}
-                  >
-                    {Object.entries(UNIFIED_SUBSCRIPTION_PLANS).map(
-                      ([key, plan]) => (
-                        <div
-                          key={key}
-                          className="snap-center shrink-0 w-80"
-                          style={{ scrollSnapAlign: 'center' }}
-                        >
-                          <div className="card-base card-hover p-6 h-full">
-                            <h3 className="heading-4 mb-4">
-                              {language === 'vi' ? plan.nameVi : plan.name}
-                            </h3>
-
-                            <div className="mb-6">
-                              <span className="text-lg md:text-xl lg:text-2xl font-semibold">
-                                {new Intl.NumberFormat('vi-VN', {
-                                  style: 'currency',
-                                  currency: 'VND',
-                                }).format(plan.priceVND)}
-                              </span>
-                              <span className="body-sm text-gray-500">
-                                /{content[language].pricing.monthly}
-                              </span>
-                            </div>
-
-                            <ul className="space-y-3 mb-8">
-                              {(language === 'vi'
-                                ? plan.featuresVi
-                                : plan.features
-                              ).map((feature, index) => (
-                                <li
-                                  key={index}
-                                  className="flex items-start space-x-3"
-                                >
-                                  <svg
-                                    className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0"
-                                    fill="currentColor"
-                                    viewBox="0 0 20 20"
-                                  >
-                                    <path
-                                      fillRule="evenodd"
-                                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                      clipRule="evenodd"
-                                    />
-                                  </svg>
-                                  <span className="body-sm">{feature}</span>
-                                </li>
-                              ))}
-                            </ul>
-
-                            <TouchButton className="w-full">
-                              <UnifiedGetStartedButton
-                                variant={
-                                  key === 'standard' ? 'primary' : 'secondary'
-                                }
-                                size="pill-lg"
-                                className="w-full"
-                                redirectTo="/workspace"
-                              />
-                            </TouchButton>
-                          </div>
-                        </div>
-                      )
-                    )}
-                  </TouchOptimized>
-
-                  {/* Dot Indicators */}
-                  <div className="flex justify-center gap-2 mt-6">
-                    {Object.keys(UNIFIED_SUBSCRIPTION_PLANS).map((_, index) => (
-                      <div
-                        key={index}
-                        className={`carousel-dot w-2 h-2 rounded-full ${
-                          index === activePricingIndex
-                            ? 'carousel-dot-active bg-gray-900'
-                            : 'bg-gray-300'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                {/* Desktop: Grid Layout with Intersection Observer */}
-                <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 px-4 md:px-8 lg:px-12">
-                  {Object.entries(UNIFIED_SUBSCRIPTION_PLANS).map(
-                    ([key, plan], index) => (
-                      <ScrollAnimatedElement
-                        key={key}
-                        animation="slideUp"
-                        delay={index * 0.1}
-                        threshold={0.1}
-                        className="relative"
-                      >
-                        <div className="card-base card-hover p-8 h-full">
-                          <h3 className="heading-4 mb-4">
-                            {language === 'vi' ? plan.nameVi : plan.name}
-                          </h3>
-
-                          <div className="mb-6">
-                            <span className="heading-2">
-                              {new Intl.NumberFormat('vi-VN', {
-                                style: 'currency',
-                                currency: 'VND',
-                              }).format(plan.priceVND)}
-                            </span>
-                            <span className="body-sm text-gray-500">
-                              /{content[language].pricing.monthly}
-                            </span>
-                          </div>
-
-                          <ul className="space-y-3 mb-8">
-                            {(language === 'vi'
-                              ? plan.featuresVi
-                              : plan.features
-                            ).map((feature, index) => (
-                              <li
-                                key={index}
-                                className="flex items-start space-x-3"
-                              >
-                                <svg
-                                  className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0"
-                                  fill="currentColor"
-                                  viewBox="0 0 20 20"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                    clipRule="evenodd"
-                                  />
-                                </svg>
-                                <span className="body-sm">{feature}</span>
-                              </li>
-                            ))}
-                          </ul>
-
-                          <TouchButton className="w-full">
-                            <UnifiedGetStartedButton
-                              variant={
-                                key === 'standard' ? 'primary' : 'secondary'
-                              }
-                              size="pill-lg"
-                              className="w-full"
-                              redirectTo="/workspace"
-                            />
-                          </TouchButton>
-                        </div>
-                      </ScrollAnimatedElement>
-                    )
+                  {plan.popular && (
+                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                      <span className="bg-blue-500 text-white px-4 py-1 rounded-full text-sm font-medium">
+                        Most Popular
+                      </span>
+                    </div>
                   )}
-                </div>
-              </motion.div>
+                  
+                  <div className="text-center">
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">
+                      {plan.name}
+                    </h3>
+                    <div className="mb-4">
+                      <span className="text-4xl font-bold text-gray-900">
+                        {plan.price === 0 ? 'Free' : `$${plan.price}`}
+                      </span>
+                      {plan.price > 0 && (
+                        <span className="text-gray-500 ml-2">/month</span>
+                      )}
+                    </div>
+                    <p className="text-gray-600 mb-6">{plan.description}</p>
+                    
+                    <UnifiedGetStartedButton 
+                      variant={plan.popular ? 'primary' : 'secondary'}
+                      className="w-full"
+                    >
+                      Get Started
+                    </UnifiedGetStartedButton>
+                  </div>
+                </motion.div>
+              ))}
             </div>
           </div>
         </section>

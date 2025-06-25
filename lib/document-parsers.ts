@@ -148,11 +148,15 @@ class PDFParser {
 
   private async extractTextWithOCR(file: File | Buffer): Promise<DocumentStructure> {
     try {
-      const { modernOCRService } = await import('./google-vision-ocr')
+      const { ocrService } = await import('./ocr/ocr-service')
       
-      const result = await modernOCRService.processImage(file, {
+      // Convert Buffer to File if needed
+      const processFile = file instanceof File ? file : 
+        new File([file], 'document.pdf', { type: 'application/pdf' })
+      
+      const result = await ocrService.processImage(processFile, {
         languages: ['en', 'vi'],
-        features: ['DOCUMENT_TEXT_DETECTION']
+        enableDocumentTextDetection: true
       })
 
       return {
@@ -436,11 +440,11 @@ export class UniversalDocumentParser {
 
   private async parseImageFile(file: File): Promise<DocumentStructure> {
     try {
-      const { modernOCRService } = await import('./google-vision-ocr')
+      const { ocrService } = await import('./ocr/ocr-service')
       
-      const result = await modernOCRService.processImage(file, {
+      const result = await ocrService.processImage(file, {
         languages: ['en', 'vi'],
-        features: ['DOCUMENT_TEXT_DETECTION']
+        enableDocumentTextDetection: true
       })
 
       return {

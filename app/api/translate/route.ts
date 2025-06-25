@@ -5,9 +5,8 @@ import { validateRequest, translationSchema } from '@/lib/validation'
 import { validateCSRFMiddleware } from '@/lib/csrf'
 import { createRouteHandlerClient } from '@/lib/supabase'
 import { redisTranslationCache } from '@/lib/redis-translation-cache'
-import { abTestingFramework } from '@/lib/ab-testing'
+// Removed A/B testing and websocket for MVP
 import { checkAndDeductCredits, estimateTokensFromText } from '@/lib/credit-manager'
-import { websocketManager } from '@/lib/websocket/websocket-manager'
 import { cookies } from 'next/headers'
 
 export async function POST(request: NextRequest) {
