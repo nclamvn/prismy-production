@@ -1,0 +1,20 @@
+# CHẶN NODE_MODULES VÀ BUILD FILES
+node_modules/
+.git/
+dist/
+build/
+.next/
+.nuxt/
+coverage/
+
+# CHẶN FILES KHÔNG CẦN THIẾT
+*.log
+*.tmp
+.DS_Store
+.env.local
+.env.production
+
+# GIỮ LẠI TẤT CẢ SOURCE CODE
+# src/     - ✅ Giữ lại
+# pages/   - ✅ Giữ lại  
+# components/ - ✅ Giữ lại
