@@ -111,10 +111,11 @@ export default function Navbar({}: NavbarProps) {
     >
       {/* Mobile Navbar - Stable and Simple */}
       <div
-        className="md:hidden w-full"
+        className="md:hidden w-full backdrop-blur-md"
         style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.92)',
-          backdropFilter: 'blur(12px)',
+          backgroundColor: 'rgba(255, 255, 255, 0.8)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
         }}
       >
         <nav className="w-full px-4 py-2" aria-label="Mobile navigation">
@@ -177,12 +178,13 @@ export default function Navbar({}: NavbarProps) {
       {/* Desktop Navbar - Dynamic Styling */}
       <div className="hidden md:block w-full">
         <div
-          className={`transition-all duration-300 ${
+          className={`transition-all duration-300 backdrop-blur-md ${
             shouldUseDesktopPill ? 'mx-8 mt-4 rounded-full shadow-sm' : ''
           }`}
           style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.92)',
-            backdropFilter: 'blur(12px)',
+            backgroundColor: 'rgba(255, 255, 255, 0.8)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
           }}
         >
           <nav className="w-full" aria-label="Desktop navigation">

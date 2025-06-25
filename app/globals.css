@@ -62,12 +62,13 @@
 }
 
 .animated-gradient-text {
-  background: linear-gradient(270deg, #9333ea, #10b981, #facc15);
+  background: linear-gradient(to right, #a855f7, #4ade80, #facc15);
   background-size: 300% 300%;
-  animation: gradientMove 10s ease infinite;
+  animation: gradientMove 8s ease infinite;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  color: transparent;
   font-weight: 600;
 }
 
