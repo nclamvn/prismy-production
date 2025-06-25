@@ -912,3 +912,6 @@ function WorkflowsPage({ language = 'en' }: WorkflowsPageProps) {
 export default function WorkflowsPageRoute() {
   return <WorkflowsPage />
 }
+
+// Force dynamic rendering to prevent SSR issues
+export const dynamic = 'force-dynamic'

@@ -222,6 +222,8 @@ export function AboveFoldOptimizer({
   criticalImages?: string[]
 }) {
   useEffect(() => {
+    if (typeof window === 'undefined') return
+
     // Preload critical images
     criticalImages.forEach(src => {
       const img = new Image()

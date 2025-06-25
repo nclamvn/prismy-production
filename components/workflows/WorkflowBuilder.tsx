@@ -277,7 +277,7 @@ export default function WorkflowBuilder({
     const render = () => {
       // Set canvas size
       const rect = canvas.getBoundingClientRect()
-      const dpr = window.devicePixelRatio || 1
+      const dpr = typeof window !== 'undefined' ? (window.devicePixelRatio || 1) : 1
       canvas.width = rect.width * dpr
       canvas.height = rect.height * dpr
       ctx.scale(dpr, dpr)

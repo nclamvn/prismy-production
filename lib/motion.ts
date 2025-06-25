@@ -270,7 +270,12 @@ export const getMotionPreference = () => {
 
 // Hardware capability detection
 export const getHardwareCapability = () => {
-  if (typeof window === 'undefined') return false
+  if (typeof window === 'undefined') return {
+    hasWebGL: false,
+    hasWillChange: false,
+    hasTransform3d: false,
+    devicePixelRatio: 1,
+  }
 
   // Check for hardware acceleration support
   const canvas = document.createElement('canvas')

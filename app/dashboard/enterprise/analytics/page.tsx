@@ -1,5 +1,6 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '@/contexts/AuthContext'
@@ -21,7 +22,8 @@ import {
   Filter,
   RefreshCw
 } from 'lucide-react'
-import AdvancedMetricsDashboard from '@/components/enterprise/AdvancedMetricsDashboard'
+// Temporarily disable to fix SSR issues
+// import AdvancedMetricsDashboard from '@/components/enterprise/AdvancedMetricsDashboard'
 
 interface AnalyticsData {
   overview: {
@@ -378,7 +380,7 @@ function EnterpriseAnalytics({ language = 'en' }: EnterpriseAnalyticsProps) {
   }
 
   const handleExportData = () => {
-    if (!analyticsData) return
+    if (!analyticsData || typeof window === 'undefined') return
     
     const dataToExport = {
       exportDate: new Date().toISOString(),
@@ -758,21 +760,16 @@ function EnterpriseAnalytics({ language = 'en' }: EnterpriseAnalyticsProps) {
           </div>
         </motion.div>
 
-        {/* Advanced Metrics Dashboard */}
+        {/* Advanced Metrics Dashboard - Temporarily disabled for SSR fix */}
         <motion.div variants={motionSafe(slideUp)}>
-          <AdvancedMetricsDashboard
-            language={language}
-            organizationId="enterprise"
-            timeRange={selectedTimeRange}
-            onMetricClick={(metric) => {
-              console.log('Metric clicked:', metric)
-              // Could navigate to detailed metric view
-            }}
-            onAlertTriggered={(alert) => {
-              console.log('Alert triggered:', alert)
-              // Could show notification or take action
-            }}
-          />
+          <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Advanced Metrics Dashboard
+            </h3>
+            <p className="text-gray-600">
+              Advanced metrics dashboard temporarily disabled for SSR compatibility.
+            </p>
+          </div>
         </motion.div>
       </motion.div>
     </DashboardLayout>
@@ -782,3 +779,6 @@ function EnterpriseAnalytics({ language = 'en' }: EnterpriseAnalyticsProps) {
 export default function EnterpriseAnalyticsPage() {
   return <EnterpriseAnalytics />
 }
+
+// Force dynamic rendering to prevent SSR issues
+export const dynamic = 'force-dynamic'

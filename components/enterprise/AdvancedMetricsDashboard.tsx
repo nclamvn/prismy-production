@@ -505,6 +505,8 @@ export default function AdvancedMetricsDashboard({
   }
 
   const handleExport = () => {
+    if (typeof window === 'undefined') return
+    
     const exportData = {
       timestamp: new Date().toISOString(),
       timeRange,
