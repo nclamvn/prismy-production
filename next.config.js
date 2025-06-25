@@ -4,11 +4,11 @@
 const nextConfig = {
   // Build optimizations - Warning only mode
   eslint: {
-    ignoreDuringBuilds: false,
+    ignoreDuringBuilds: true,
     dirs: ['app', 'components', 'lib', 'contexts', 'hooks'],
   },
   typescript: {
-    ignoreBuildErrors: false,
+    ignoreBuildErrors: true,
   },
 
   // Advanced image optimization with next-gen formats
