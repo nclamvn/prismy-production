@@ -2,12 +2,12 @@
 
 // Performance-optimized Next.js configuration for maximum speed
 const nextConfig = {
-  // Build optimizations
+  // Build optimizations - Enable checks for quality
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
   },
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
 
   // Advanced image optimization with next-gen formats
@@ -40,9 +40,9 @@ const nextConfig = {
   // Skip trailing slash redirects
   skipTrailingSlashRedirect: true,
 
-  // Skip problematic static generation for deployment
+  // Dynamic build ID for proper cache invalidation
   generateBuildId: async () => {
-    return 'ai-workspace-update'
+    return `build-${Date.now()}`
   },
 
   // Simplified webpack optimizations for stability
