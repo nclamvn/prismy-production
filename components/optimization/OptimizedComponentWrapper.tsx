@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useEffect, useRef, useState, memo, useMemo } from 'react'
-import { motion } from 'framer-motion'
 import {
   MemoryOptimizer,
   FrameRateOptimizer,
@@ -338,28 +337,14 @@ export default function OptimizedComponentWrapper({
     }
   }, [children, performanceLevel, enablePerformanceOptimization])
 
-  // Determine motion preferences
-  const motionProps = isReducedMotion 
-    ? {
-        initial: false,
-        animate: false,
-        transition: { duration: 0 }
-      }
-    : {
-        initial: { opacity: 0 },
-        animate: { opacity: 1 },
-        transition: { duration: 0.3 }
-      }
-
   return (
-    <motion.div
+    <div
       ref={containerRef}
-      className={`optimized-component ${className}`}
+      className={`optimized-component ${className} ${!isReducedMotion ? 'animate-fade-in' : ''}`}
       role={role}
       aria-label={ariaLabel}
       data-component-id={componentId}
       data-performance-level={performanceLevel}
-      {...motionProps}
     >
       {optimizedChildren}
       
@@ -375,7 +360,7 @@ export default function OptimizedComponentWrapper({
           </div>
         </div>
       )}
-    </motion.div>
+    </div>
   )
 }
 

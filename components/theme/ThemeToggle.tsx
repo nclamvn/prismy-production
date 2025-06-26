@@ -1,10 +1,8 @@
 'use client'
 
 import { Moon, Sun, Monitor } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { useTheme } from './ThemeProvider'
 import { Button } from '@/components/ui/Button'
-import { motionSafe, notebookLMButton } from '@/lib/motion'
 
 interface ThemeToggleProps {
   variant?: 'button' | 'dropdown'
@@ -111,10 +109,8 @@ export function ThemeToggle({
                 </div>
                 
                 {isActive && (
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="ml-auto w-2 h-2 rounded-full"
+                  <div
+                    className="ml-auto w-2 h-2 rounded-full animate-scale-in"
                     style={{ backgroundColor: 'var(--notebooklm-primary)' }}
                   />
                 )}
@@ -134,28 +130,22 @@ export function ThemeToggle({
   }
 
   return (
-    <motion.div {...motionSafe(notebookLMButton)} className={className}>
+    <div className={`${className} hover:scale-105 active:scale-95 transition-transform duration-200`}>
       <Button
         variant="outlined"
         onClick={cycleTheme}
         className="w-auto px-3 py-2 relative overflow-hidden"
         aria-label={`Current theme: ${currentTheme.label}. Click to cycle to next theme`}
       >
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={theme}
-            initial={{ opacity: 0, scale: 0.8, rotate: -90 }}
-            animate={{ opacity: 1, scale: 1, rotate: 0 }}
-            exit={{ opacity: 0, scale: 0.8, rotate: 90 }}
-            transition={{ duration: 0.2, ease: [0.2, 0, 0, 1] }}
-            className="flex items-center gap-2"
-          >
-            <CurrentIcon className="w-4 h-4" aria-hidden="true" />
-            {showLabel && (
-              <span className="text-sm font-medium">{currentTheme.label}</span>
-            )}
-          </motion.div>
-        </AnimatePresence>
+        <div
+          key={theme}
+          className="flex items-center gap-2 animate-theme-switch"
+        >
+          <CurrentIcon className="w-4 h-4" aria-hidden="true" />
+          {showLabel && (
+            <span className="text-sm font-medium">{currentTheme.label}</span>
+          )}
+        </div>
 
         {/* Visual indicator for resolved theme */}
         <div 
@@ -167,6 +157,6 @@ export function ThemeToggle({
           }}
         />
       </Button>
-    </motion.div>
+    </div>
   )
 }

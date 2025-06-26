@@ -1,8 +1,6 @@
 'use client'
 
 import React from 'react'
-import { motion } from 'framer-motion'
-import { slideUp, staggerContainer, motionSafe } from '@/lib/motion'
 
 interface StatCardProps {
   number: string
@@ -12,10 +10,8 @@ interface StatCardProps {
 
 function StatCard({ number, label, description }: StatCardProps) {
   return (
-    <motion.div
-      className="text-center"
-      variants={motionSafe(slideUp)}
-      whileHover={{ y: -2 }}
+    <div
+      className="text-center animate-slide-up hover:-translate-y-1 transition-transform duration-200"
     >
       <div 
         style={{
@@ -53,7 +49,7 @@ function StatCard({ number, label, description }: StatCardProps) {
           {description}
         </div>
       )}
-    </motion.div>
+    </div>
   )
 }
 
@@ -65,23 +61,20 @@ interface FeatureCardProps {
 
 function FeatureCard({ icon, title, description }: FeatureCardProps) {
   return (
-    <motion.div
-      className="p-6 text-center transition-all duration-300"
+    <div
+      className="p-6 text-center animate-slide-up hover:-translate-y-1 hover:shadow-lg transition-all duration-300"
       style={{
         backgroundColor: 'var(--surface-elevated)',
         borderRadius: 'var(--mat-card-elevated-container-shape)',
         border: '1px solid var(--surface-outline)',
         boxShadow: 'var(--elevation-level-1)'
       }}
-      variants={motionSafe(slideUp)}
-      whileHover={{ y: -4 }}
       onMouseEnter={(e) => {
         e.currentTarget.style.boxShadow = 'var(--elevation-level-3)'
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.boxShadow = 'var(--elevation-level-1)'
       }}
-      transition={{ duration: 0.15 }}
     >
       <div 
         className="flex justify-center mb-4 transition-transform duration-150"
@@ -112,7 +105,7 @@ function FeatureCard({ icon, title, description }: FeatureCardProps) {
       >
         {description}
       </p>
-    </motion.div>
+    </div>
   )
 }
 
@@ -223,16 +216,9 @@ export default function StatsAndFeatures({ language = 'en' }: StatsAndFeaturesPr
     >
       <div className="content-container">
         {/* Combined Stats and Features Section */}
-        <motion.div
-          className="text-center mb-20"
-          variants={motionSafe(staggerContainer)}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-        >
-          <motion.h2
-            variants={motionSafe(slideUp)}
-            className="mb-4"
+        <div className="text-center mb-20 animate-fade-in">
+          <h2
+            className="mb-4 animate-slide-up"
             style={{
               fontSize: 'var(--sys-headline-large-size)',
               lineHeight: 'var(--sys-headline-large-line-height)',
@@ -242,26 +228,23 @@ export default function StatsAndFeatures({ language = 'en' }: StatsAndFeaturesPr
             }}
           >
             {content[language].trustedTitle}
-          </motion.h2>
-          <motion.p
-            variants={motionSafe(slideUp)}
-            className="mb-12"
+          </h2>
+          <p
+            className="mb-12 animate-slide-up"
             style={{
               fontSize: 'var(--sys-body-large-size)',
               lineHeight: 'var(--sys-body-large-line-height)',
               fontFamily: 'var(--sys-body-large-font)',
               fontWeight: 'var(--sys-body-large-weight)',
-              color: 'var(--text-secondary)'
+              color: 'var(--text-secondary)',
+              animationDelay: '100ms'
             }}
           >
             {content[language].trustedSubtitle}
-          </motion.p>
+          </p>
 
           {/* Consolidated Stats - Single row, removed duplicates */}
-          <motion.div
-            className="grid grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto mb-20"
-            variants={motionSafe(staggerContainer)}
-          >
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto mb-20">
             {content[language].stats.map((stat, index) => (
               <StatCard
                 key={index}
@@ -270,22 +253,14 @@ export default function StatsAndFeatures({ language = 'en' }: StatsAndFeaturesPr
                 description={stat.description}
               />
             ))}
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
 
         {/* Why Prismy - 3 Core Pillars */}
-        <motion.div
-          variants={motionSafe(staggerContainer)}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-        >
-          <motion.div
-            variants={motionSafe(slideUp)}
-            className="text-center mb-12"
-          >
+        <div className="animate-fade-in">
+          <div className="text-center mb-12">
             <h2 
-              className="mb-4"
+              className="mb-4 animate-slide-up"
               style={{
                 fontSize: 'var(--sys-headline-large-size)',
                 lineHeight: 'var(--sys-headline-large-line-height)',
@@ -297,24 +272,22 @@ export default function StatsAndFeatures({ language = 'en' }: StatsAndFeaturesPr
               {content[language].whyChooseTitle}
             </h2>
             <p 
-              className="max-w-2xl mx-auto"
+              className="max-w-2xl mx-auto animate-slide-up"
               style={{
                 fontSize: 'var(--sys-body-large-size)',
                 lineHeight: 'var(--sys-body-large-line-height)',
                 fontFamily: 'var(--sys-body-large-font)',
                 fontWeight: 'var(--sys-body-large-weight)',
-                color: 'var(--text-secondary)'
+                color: 'var(--text-secondary)',
+                animationDelay: '100ms'
               }}
             >
               {content[language].whyChooseSubtitle}
             </p>
-          </motion.div>
+          </div>
 
           {/* 3 Core Features - Precision, Speed, Security */}
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto"
-            variants={motionSafe(staggerContainer)}
-          >
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {content[language].features.slice(0, 3).map((feature, index) => (
               <FeatureCard
                 key={index}
@@ -323,8 +296,8 @@ export default function StatsAndFeatures({ language = 'en' }: StatsAndFeaturesPr
                 description={feature.description}
               />
             ))}
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       </div>
     </section>
   )

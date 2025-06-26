@@ -1,8 +1,6 @@
 'use client'
 
 import React from 'react'
-import { motion } from 'framer-motion'
-import { motionSafe, slideUp, notebookLMElevated } from '@/lib/motion'
 import { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -36,11 +34,9 @@ export default function FeatureCard({
   tabIndex = onClick ? 0 : undefined
 }: FeatureCardProps) {
   return (
-    <motion.div
-      variants={motionSafe(slideUp)}
-      transition={{ delay }}
+    <div
       className={cn(
-        'group relative transition-all duration-300',
+        'group relative transition-all duration-300 animate-slide-up hover:shadow-lg hover:-translate-y-1',
         onClick && 'cursor-pointer focus-indicator card-focus touch-accessible',
         className
       )}
@@ -53,9 +49,9 @@ export default function FeatureCard({
         padding: '1.5rem',
         boxShadow: isSelected 
           ? 'var(--elevation-level-3)' 
-          : 'var(--elevation-level-1)'
+          : 'var(--elevation-level-1)',
+        animationDelay: `${delay * 100}ms`
       }}
-      {...(onClick && !isSelected ? motionSafe(notebookLMElevated) : {})}
       onClick={(e) => onClick?.(e)}
       onKeyDown={(e) => {
         if (onClick && (e.key === 'Enter' || e.key === ' ')) {
@@ -153,6 +149,6 @@ export default function FeatureCard({
           }}
         />
       )}
-    </motion.div>
+    </div>
   )
 }

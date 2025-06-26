@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Lightbulb, 
   X, 
@@ -252,18 +251,14 @@ export default function FeatureDiscovery({
       `}</style>
 
       {/* Tour tooltip */}
-      <AnimatePresence>
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.8, y: 20 }}
-          className="fixed z-[10000] bg-white rounded-2xl shadow-2xl border border-gray-200 max-w-sm"
-          style={{
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)'
-          }}
-        >
+      <div
+        className="fixed z-[10000] bg-white rounded-2xl shadow-2xl border border-gray-200 max-w-sm animate-feature-discovery"
+        style={{
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)'
+        }}
+      >
           {/* Header */}
           <div className="p-6 border-b border-gray-100">
             <div className="flex items-center justify-between mb-2">
@@ -341,8 +336,7 @@ export default function FeatureDiscovery({
               </button>
             </div>
           </div>
-        </motion.div>
-      </AnimatePresence>
+      </div>
     </>
   )
 }

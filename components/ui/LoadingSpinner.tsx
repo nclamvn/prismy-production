@@ -1,8 +1,5 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import { motionSafe } from '@/lib/motion'
-
 interface LoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg' | 'xl'
   variant?: 'primary' | 'secondary' | 'white'
@@ -38,28 +35,19 @@ export function LoadingSpinner({
   const sizeStyles = getSizeStyles()
   const color = getVariantColor()
 
-  const spinAnimation = {
-    rotate: [0, 360],
-    transition: {
-      duration: 1,
-      repeat: Infinity,
-      ease: 'linear'
-    }
-  }
-
   return (
     <div 
       className={`inline-flex items-center justify-center ${className}`}
       role="status"
       aria-label={label}
     >
-      <motion.svg
+      <svg
         width={sizeStyles.width}
         height={sizeStyles.height}
         viewBox="0 0 24 24"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        {...motionSafe(spinAnimation)}
+        className="animate-spin"
       >
         <circle
           cx="12"
@@ -81,7 +69,7 @@ export function LoadingSpinner({
           strokeDashoffset="23.562"
           style={{ color }}
         />
-      </motion.svg>
+      </svg>
       <span className="sr-only">{label}</span>
     </div>
   )
@@ -100,24 +88,14 @@ export function Skeleton({
   width = '100%',
   rounded = false
 }: SkeletonProps) {
-  const pulseAnimation = {
-    opacity: [0.5, 1, 0.5],
-    transition: {
-      duration: 1.5,
-      repeat: Infinity,
-      ease: 'easeInOut'
-    }
-  }
-
   return (
-    <motion.div
-      className={`bg-gray-200 ${rounded ? 'rounded-full' : 'rounded'} ${className}`}
+    <div
+      className={`bg-gray-200 animate-pulse ${rounded ? 'rounded-full' : 'rounded'} ${className}`}
       style={{
         height,
         width,
         backgroundColor: 'var(--surface-filled)'
       }}
-      {...motionSafe(pulseAnimation)}
       aria-hidden="true"
     />
   )
@@ -147,41 +125,28 @@ export function LoadingState({
   }
 
   if (variant === 'dots') {
-    const dotAnimation = {
-      scale: [1, 1.2, 1],
-      opacity: [0.7, 1, 0.7],
-      transition: {
-        duration: 0.6,
-        repeat: Infinity,
-        ease: 'easeInOut'
-      }
-    }
-
     return (
       <div className={`flex items-center justify-center space-x-1 ${className}`}>
-        <motion.div
-          className="w-2 h-2 rounded-full"
-          style={{ backgroundColor: 'var(--notebooklm-primary)' }}
-          {...motionSafe({
-            ...dotAnimation,
-            transition: { ...dotAnimation.transition, delay: 0 }
-          })}
+        <div
+          className="w-2 h-2 rounded-full animate-bounce"
+          style={{ 
+            backgroundColor: 'var(--notebooklm-primary)',
+            animationDelay: '0ms'
+          }}
         />
-        <motion.div
-          className="w-2 h-2 rounded-full"
-          style={{ backgroundColor: 'var(--notebooklm-primary)' }}
-          {...motionSafe({
-            ...dotAnimation,
-            transition: { ...dotAnimation.transition, delay: 0.2 }
-          })}
+        <div
+          className="w-2 h-2 rounded-full animate-bounce"
+          style={{ 
+            backgroundColor: 'var(--notebooklm-primary)',
+            animationDelay: '200ms'
+          }}
         />
-        <motion.div
-          className="w-2 h-2 rounded-full"
-          style={{ backgroundColor: 'var(--notebooklm-primary)' }}
-          {...motionSafe({
-            ...dotAnimation,
-            transition: { ...dotAnimation.transition, delay: 0.4 }
-          })}
+        <div
+          className="w-2 h-2 rounded-full animate-bounce"
+          style={{ 
+            backgroundColor: 'var(--notebooklm-primary)',
+            animationDelay: '400ms'
+          }}
         />
         {message && (
           <span 
@@ -229,11 +194,8 @@ export function LoadingOverlay({
   if (!isVisible) return null
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[200] flex items-center justify-center"
+    <div
+      className="fixed inset-0 z-[200] flex items-center justify-center animate-fade-in"
       style={{
         backgroundColor: 'rgba(0, 0, 0, 0.8)',
         backdropFilter: 'blur(4px)'
@@ -260,6 +222,6 @@ export function LoadingOverlay({
           {message}
         </p>
       </div>
-    </motion.div>
+    </div>
   )
 }

@@ -45,6 +45,9 @@ export const metadata: Metadata = {
     default: 'Prismy - AI-Powered Translation Platform',
     template: '%s | Prismy'
   },
+  other: {
+    charset: 'utf-8'
+  },
   description:
     "The world's most advanced AI translation platform. Translate text and documents instantly with 99.9% accuracy across 150+ languages. NotebookLM-inspired design for enterprise teams.",
   keywords: [

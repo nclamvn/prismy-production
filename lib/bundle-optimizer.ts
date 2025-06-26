@@ -54,18 +54,21 @@ export const CodeSplitting = {
     importFn: () => Promise<{ default: T }>,
     fallback?: React.ComponentType
   ) => {
-    const LazyComponent = React.lazy(importFn)
+    const { lazy, Suspense, createElement } = require('react')
+    const LazyComponent = lazy(importFn)
     
-    return (props: React.ComponentProps<T>) => (
-      <React.Suspense 
-        fallback={
-          fallback ? React.createElement(fallback, props) : 
-          <div className="animate-pulse bg-gray-200 rounded h-32 w-full" />
-        }
-      >
-        <LazyComponent {...props} />
-      </React.Suspense>
-    )
+    return (props: React.ComponentProps<T>) =>
+      createElement(
+        Suspense,
+        {
+          fallback: fallback 
+            ? createElement(fallback, props)
+            : createElement('div', {
+                className: 'animate-pulse bg-gray-200 rounded h-32 w-full'
+              })
+        },
+        createElement(LazyComponent, props)
+      )
   },
 
   // Route-level code splitting

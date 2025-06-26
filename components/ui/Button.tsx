@@ -1,11 +1,9 @@
 'use client'
 
 import React from 'react'
-import { motion, type HTMLMotionProps } from 'framer-motion'
 import { cn } from '@/lib/utils'
-import { notebookLMButton, motionSafe } from '@/lib/motion'
 
-interface ButtonProps extends Omit<HTMLMotionProps<'button'>, 'children'> {
+interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
   variant?: 'filled' | 'outlined' | 'text' | 'elevated'
   size?: 'sm' | 'md' | 'lg'
   children: React.ReactNode
@@ -27,7 +25,6 @@ export function Button({
   'aria-describedby': ariaDescribedBy,
   ...props
 }: ButtonProps) {
-  const motionProps = (disabled || loading) ? {} : motionSafe(notebookLMButton)
   const isInteractionDisabled = disabled || loading
   // Material Design 3 Button Styles using NotebookLM tokens
   const getButtonStyles = () => {
@@ -122,9 +119,9 @@ export function Button({
   }
 
   return (
-    <motion.button
+    <button
       className={cn(
-        'relative overflow-hidden focus-indicator btn-focus touch-accessible ripple-effect',
+        'relative overflow-hidden focus-indicator btn-focus touch-accessible ripple-effect hover:scale-105 active:scale-95 transition-transform duration-200',
         isInteractionDisabled && 'cursor-not-allowed',
         className
       )}
@@ -163,7 +160,6 @@ export function Button({
           setTimeout(() => ripple.remove(), 600)
         }
       }}
-      {...motionProps}
       {...props}
     >
       {loading && (
@@ -191,6 +187,6 @@ export function Button({
           }
         }
       `}</style>
-    </motion.button>
+    </button>
   )
 }

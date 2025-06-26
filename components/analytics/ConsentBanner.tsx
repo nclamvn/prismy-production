@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { X, Shield, Settings } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 
@@ -91,13 +90,7 @@ export function ConsentBanner({ onConsentChange }: ConsentBannerProps) {
   if (!isVisible) return null
 
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ y: 100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: 100, opacity: 0 }}
-        className="fixed bottom-0 left-0 right-0 z-50 p-4"
-      >
+    <div className="fixed bottom-0 left-0 right-0 z-50 p-4 animate-consent-banner">
         <div
           className="mx-auto max-w-4xl rounded-lg p-6 shadow-lg backdrop-blur-sm"
           style={{
@@ -149,12 +142,7 @@ export function ConsentBanner({ onConsentChange }: ConsentBannerProps) {
           </div>
 
           {showDetails && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="mb-6 space-y-4"
-            >
+            <div className="mb-6 space-y-4 animate-consent-details">
               <div className="grid gap-4">
                 {/* Necessary Cookies */}
                 <div className="flex items-center justify-between p-3 rounded-lg" 
@@ -256,7 +244,7 @@ export function ConsentBanner({ onConsentChange }: ConsentBannerProps) {
                   </button>
                 </div>
               </div>
-            </motion.div>
+            </div>
           )}
 
           <div className="flex flex-col sm:flex-row gap-3 justify-between items-center">
@@ -314,8 +302,7 @@ export function ConsentBanner({ onConsentChange }: ConsentBannerProps) {
             </p>
           </div>
         </div>
-      </motion.div>
-    </AnimatePresence>
+    </div>
   )
 }
 

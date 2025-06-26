@@ -1,8 +1,6 @@
 'use client'
 
 import React, { useState } from 'react'
-import { motion } from 'framer-motion'
-import { motionSafe, slideUp, notebookLMButton } from '@/lib/motion'
 import { Button } from './Button'
 
 interface NewsletterSignupProps {
@@ -145,9 +143,8 @@ export default function NewsletterSignup({
 
   if (isSubmitted) {
     return (
-      <motion.div
-        variants={motionSafe(slideUp)}
-        className={`${styles.container} ${className}`}
+      <div
+        className={`${styles.container} ${className} animate-slide-up`}
       >
         <div 
           className="text-center p-6"
@@ -188,14 +185,13 @@ export default function NewsletterSignup({
             {content[language].description}
           </p>
         </div>
-      </motion.div>
+      </div>
     )
   }
 
   return (
-    <motion.div
-      variants={motionSafe(slideUp)}
-      className={`${styles.container} ${className}`}
+    <div
+      className={`${styles.container} ${className} animate-slide-up`}
     >
       {variant !== 'inline' && (
         <>
@@ -239,6 +235,6 @@ export default function NewsletterSignup({
           {content[language].subscribe}
         </Button>
       </form>
-    </motion.div>
+    </div>
   )
 }

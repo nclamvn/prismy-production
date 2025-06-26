@@ -1,7 +1,5 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import { motionSafe, slideUp, notebookLMCard } from '@/lib/motion'
 import Link from 'next/link'
 import { Calendar, Clock, User } from 'lucide-react'
 
@@ -170,18 +168,15 @@ export default function BlogCard({
   }
 
   return (
-    <motion.article
-      variants={motionSafe(slideUp)}
-      transition={{ delay }}
-      className={`group overflow-hidden ${className}`}
+    <article
+      className={`group overflow-hidden animate-slide-up hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ${className}`}
       style={{ 
         backgroundColor: 'var(--surface-elevated)',
         border: '1px solid var(--surface-outline)',
         borderRadius: 'var(--mat-card-elevated-container-shape)',
         boxShadow: 'var(--elevation-level-1)',
-        transition: 'all 200ms cubic-bezier(0.2, 0, 0, 1)'
+        animationDelay: `${delay * 100}ms`
       }}
-      {...motionSafe(notebookLMCard)}
       onMouseEnter={(e) => {
         e.currentTarget.style.borderColor = 'var(--notebooklm-primary-light)';
         e.currentTarget.style.boxShadow = 'var(--elevation-level-2)';
@@ -310,6 +305,6 @@ export default function BlogCard({
           </div>
         </div>
       </div>
-    </motion.article>
+    </article>
   )
 }

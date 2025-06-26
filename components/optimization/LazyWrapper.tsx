@@ -1,7 +1,6 @@
 'use client'
 
 import React, { Suspense, lazy, useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
 import { BundleAnalyzer } from '@/lib/bundle-optimizer'
 
 interface LazyWrapperProps {
@@ -15,10 +14,8 @@ interface LazyWrapperProps {
 // Enhanced loading skeleton with NotebookLM styling
 function LoadingSkeleton({ name }: { name?: string }) {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="animate-pulse"
+    <div
+      className="animate-fade-in animate-pulse"
       style={{
         backgroundColor: 'var(--surface-filled)',
         borderRadius: 'var(--mat-card-elevated-container-shape)',
@@ -49,7 +46,7 @@ function LoadingSkeleton({ name }: { name?: string }) {
           </div>
         )}
       </div>
-    </motion.div>
+    </div>
   )
 }
 

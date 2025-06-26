@@ -2,8 +2,6 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { slideUp, staggerContainer, motionSafe } from '@/lib/motion'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { ChevronDown } from 'lucide-react'
 
@@ -60,44 +58,38 @@ export default function Footer({}: FooterProps) {
           />
         </button>
 
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              id={`mobile-section-${index}`}
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.2, ease: 'easeInOut' }}
-              className="overflow-hidden"
-            >
-              <ul className="pb-4 space-y-3">
-                {section.links.map((link: { name: string; href: string }) => (
-                  <li key={link.name}>
-                    <Link
-                      href={link.href}
-                      className="block py-1 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                      style={{
-                        fontSize: 'var(--sys-body-medium-size)',
-                        lineHeight: 'var(--sys-body-medium-line-height)',
-                        fontFamily: 'var(--sys-body-medium-font)',
-                        fontWeight: 'var(--sys-body-medium-weight)',
-                        color: 'var(--text-secondary)'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.color = 'var(--text-primary)'
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.color = 'var(--text-secondary)'
-                      }}
-                    >
-                      {link.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {isOpen && (
+          <div
+            id={`mobile-section-${index}`}
+            className="overflow-hidden animate-accordion-open"
+          >
+            <ul className="pb-4 space-y-3">
+              {section.links.map((link: { name: string; href: string }) => (
+                <li key={link.name}>
+                  <Link
+                    href={link.href}
+                    className="block py-1 hover:font-semibold transition-all focus-visible-ring rounded-md"
+                    style={{
+                      fontSize: 'var(--sys-body-medium-size)',
+                      lineHeight: 'var(--sys-body-medium-line-height)',
+                      fontFamily: 'var(--sys-body-medium-font)',
+                      fontWeight: 'var(--sys-body-medium-weight)',
+                      color: 'var(--text-secondary)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = 'var(--text-primary)'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = 'var(--text-secondary)'
+                    }}
+                  >
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     )
   }
@@ -204,21 +196,13 @@ export default function Footer({}: FooterProps) {
         className="footer-content-container pt-10 pb-6 md:pb-4"
         style={{ borderTop: 'none !important' }}
       >
-        <motion.div
-          variants={motionSafe(staggerContainer)}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-        >
+        <div className="animate-slide-up">
           {/* Main Footer Content - Bottom aligned */}
           <div className="flex flex-col md:flex-row justify-between items-end">
             {/* Simplified Desktop Layout - Brand only */}
             <div className="mb-4 md:mb-0">
               {/* Brand Section */}
-              <motion.div
-                variants={motionSafe(slideUp)}
-                className="flex flex-col gap-4 max-w-lg"
-              >
+              <div className="flex flex-col gap-4 max-w-lg animate-slide-up">
                 <div>
                   <Link
                     href="/"
@@ -274,14 +258,11 @@ export default function Footer({}: FooterProps) {
                     ))}
                   </div>
                 </div>
-              </motion.div>
+              </div>
             </div>
 
             {/* Copyright - Right aligned on same level */}
-            <motion.div
-              variants={motionSafe(slideUp)}
-              className="self-end"
-            >
+            <div className="self-end animate-slide-up">
               <p 
                 style={{
                   fontSize: 'var(--sys-body-medium-size)',
@@ -293,9 +274,9 @@ export default function Footer({}: FooterProps) {
               >
                 {language === 'vi' ? '© 2025 Prismy' : '© 2025 Prismy'}
               </p>
-            </motion.div>
+            </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </footer>
   )

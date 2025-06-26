@@ -1,7 +1,5 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import { motionSafe, slideUp, staggerContainer } from '@/lib/motion'
 import BlogCard from '@/components/ui/BlogCard'
 import Link from 'next/link'
 
@@ -91,18 +89,9 @@ export default function BlogSection({ language, className = '' }: BlogSectionPro
   return (
     <section className={`py-20 bg-gray-50 w-full ${className}`}>
       <div className="w-full">
-        <motion.div
-          variants={motionSafe(staggerContainer)}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          className="px-4 md:px-8 lg:px-12"
-        >
+        <div className="px-4 md:px-8 lg:px-12 animate-slide-up">
           {/* Header */}
-          <motion.div 
-            variants={motionSafe(slideUp)} 
-            className="text-center mb-16"
-          >
+          <div className="text-center mb-16 animate-slide-up" style={{ animationDelay: '200ms' }}>
             <h2 className="heading-2 text-gray-900 mb-4">
               {content[language].title}
             </h2>
@@ -120,10 +109,10 @@ export default function BlogSection({ language, className = '' }: BlogSectionPro
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </Link>
-          </motion.div>
+          </div>
           
           {/* Blog Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto animate-slide-up" style={{ animationDelay: '300ms' }}>
             {content[language].posts.map((post, index) => (
               <BlogCard
                 key={post.slug}
@@ -139,7 +128,7 @@ export default function BlogSection({ language, className = '' }: BlogSectionPro
               />
             ))}
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   )

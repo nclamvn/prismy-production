@@ -1,9 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { Activity, Zap, Eye, Settings, AlertTriangle, CheckCircle, Gauge, Accessibility } from 'lucide-react'
-import { motionSafe, slideUp, fadeIn } from '@/lib/motion'
 import {
   PerformanceMonitor,
   MemoryOptimizer,
@@ -249,12 +247,9 @@ export default function PerformanceAccessibilityMonitor({
   }
 
   return (
-    <motion.div
+    <div
       ref={monitorRef}
-      variants={motionSafe(slideUp)}
-      initial="hidden"
-      animate="visible"
-      className="bg-white rounded-xl border border-gray-200 p-6 space-y-6"
+      className="bg-white rounded-xl border border-gray-200 p-6 space-y-6 animate-slide-up"
     >
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -372,15 +367,8 @@ export default function PerformanceAccessibilityMonitor({
       </div>
 
       {/* Issues and Suggestions */}
-      <AnimatePresence>
-        {(accessibilityIssues.length > 0 || performanceLevel !== 'high') && (
-          <motion.div
-            variants={motionSafe(fadeIn)}
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
-            className="space-y-4"
-          >
+      {(accessibilityIssues.length > 0 || performanceLevel !== 'high') && (
+        <div className="space-y-4 animate-fade-in">
             {/* Accessibility Issues */}
             {accessibilityIssues.length > 0 && (
               <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg">
@@ -435,9 +423,8 @@ export default function PerformanceAccessibilityMonitor({
                 </div>
               </div>
             )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+        </div>
+      )}
 
       {/* Real-time Monitoring Indicator */}
       {isMonitoring && (
@@ -450,6 +437,6 @@ export default function PerformanceAccessibilityMonitor({
           </div>
         </div>
       )}
-    </motion.div>
+    </div>
   )
 }

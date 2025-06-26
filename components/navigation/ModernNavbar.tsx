@@ -11,6 +11,7 @@ import { useSmartNavigation } from '@/hooks/useSmartNavigation'
 import { useIsHydrated } from '@/hooks/useHydrationSafeAnimation'
 import UserMenu from '../auth/UserMenu'
 import UnifiedGetStartedButton from '../ui/UnifiedGetStartedButton'
+import CreditHUD from '../credits/CreditHUD'
 import {
   Globe,
   ChevronDown,
@@ -219,7 +220,24 @@ export default function ModernNavbar() {
     },
   }
 
-  const currentContent = content[language]
+  const currentContent = content[language] || content['en'] // Fallback to English if language is undefined
+
+  // Safety check for navigation content
+  if (!currentContent || !currentContent.navigation) {
+    console.error('Navigation content is missing:', { 
+      language, 
+      currentContent, 
+      contentKeys: currentContent ? Object.keys(currentContent) : 'null',
+      availableLanguages: Object.keys(content)
+    })
+    return (
+      <nav className="w-full bg-white border-b">
+        <div className="px-4 py-3">
+          <div className="text-sm text-gray-600">Loading navigation...</div>
+        </div>
+      </nav>
+    )
+  }
 
   return (
     <nav
@@ -305,11 +323,11 @@ export default function ModernNavbar() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={isHydrated ? { opacity: 0, y: 10, scale: 0.95 } : { opacity: 1, y: 0, scale: 1 }}
                       transition={isHydrated ? { duration: 0.2 } : { duration: 0 }}
-                      className="absolute top-full left-0 mt-2 w-80 p-6 backdrop-blur backdrop-blur-lg"
+                      className="absolute top-full left-0 mt-2 w-80 p-6 backdrop-blur-lg"
                       style={{
                         background: 'rgba(255, 255, 255, 0.65)',
-                        backdropFilter: 'blur(16px) saturate(180%)',
-                        WebkitBackdropFilter: 'blur(16px) saturate(180%)',
+                        backdropFilter: 'blur(16px) saturate(180%) !important',
+                        WebkitBackdropFilter: 'blur(16px) saturate(180%) !important',
                         borderRadius:
                           'var(--mat-card-elevated-container-shape)',
                         boxShadow: 'var(--elevation-level-2)',
@@ -402,11 +420,11 @@ export default function ModernNavbar() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={isHydrated ? { opacity: 0, y: 10, scale: 0.95 } : { opacity: 1, y: 0, scale: 1 }}
                       transition={isHydrated ? { duration: 0.2 } : { duration: 0 }}
-                      className="absolute top-full left-0 mt-2 w-80 p-6 backdrop-blur backdrop-blur-lg"
+                      className="absolute top-full left-0 mt-2 w-80 p-6 backdrop-blur-lg"
                       style={{
                         background: 'rgba(255, 255, 255, 0.65)',
-                        backdropFilter: 'blur(16px) saturate(180%)',
-                        WebkitBackdropFilter: 'blur(16px) saturate(180%)',
+                        backdropFilter: 'blur(16px) saturate(180%) !important',
+                        WebkitBackdropFilter: 'blur(16px) saturate(180%) !important',
                         borderRadius:
                           'var(--mat-card-elevated-container-shape)',
                         boxShadow: 'var(--elevation-level-2)',
@@ -499,11 +517,11 @@ export default function ModernNavbar() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={isHydrated ? { opacity: 0, y: 10, scale: 0.95 } : { opacity: 1, y: 0, scale: 1 }}
                       transition={isHydrated ? { duration: 0.2 } : { duration: 0 }}
-                      className="absolute top-full left-0 mt-2 w-80 p-6 backdrop-blur backdrop-blur-lg"
+                      className="absolute top-full left-0 mt-2 w-80 p-6 backdrop-blur-lg"
                       style={{
                         background: 'rgba(255, 255, 255, 0.65)',
-                        backdropFilter: 'blur(16px) saturate(180%)',
-                        WebkitBackdropFilter: 'blur(16px) saturate(180%)',
+                        backdropFilter: 'blur(16px) saturate(180%) !important',
+                        WebkitBackdropFilter: 'blur(16px) saturate(180%) !important',
                         borderRadius:
                           'var(--mat-card-elevated-container-shape)',
                         boxShadow: 'var(--elevation-level-2)',
@@ -613,7 +631,10 @@ export default function ModernNavbar() {
             {!loading && (
               <>
                 {user ? (
-                  <UserMenu />
+                  <div className="flex items-center gap-3">
+                    <CreditHUD />
+                    <UserMenu />
+                  </div>
                 ) : (
                   <div className="hidden lg:flex items-center space-x-3">
                     <button
@@ -637,8 +658,9 @@ export default function ModernNavbar() {
                         lineHeight: 'var(--sys-label-large-line-height)',
                         fontFamily: 'var(--sys-label-large-font)',
                         fontWeight: 'var(--sys-label-large-weight)',
-                        color: 'black',
-                        backgroundColor: 'transparent',
+                        color: 'black !important',
+                        backgroundColor: 'transparent !important',
+                        border: '2px solid black !important',
                       }}
                     >
                       {currentContent.getStarted}
@@ -752,8 +774,9 @@ export default function ModernNavbar() {
                       lineHeight: 'var(--sys-label-large-line-height)',
                       fontFamily: 'var(--sys-label-large-font)',
                       fontWeight: 'var(--sys-label-large-weight)',
-                      color: 'black',
-                      backgroundColor: 'transparent',
+                      color: 'black !important',
+                      backgroundColor: 'transparent !important',
+                      border: '2px solid black !important',
                     }}
                   >
                     {currentContent.getStarted}

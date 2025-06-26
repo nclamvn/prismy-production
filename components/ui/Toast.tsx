@@ -1,9 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, useCallback, ReactNode } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from 'lucide-react'
-import { motionSafe, notebookLMButton } from '@/lib/motion'
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info'
 
@@ -82,11 +80,9 @@ interface ToastContainerProps {
 function ToastContainer({ toasts, onRemove }: ToastContainerProps) {
   return (
     <div className="fixed top-4 right-4 z-[100] space-y-3 max-w-sm w-full pointer-events-none">
-      <AnimatePresence>
-        {toasts.map((toast) => (
-          <ToastItem key={toast.id} toast={toast} onRemove={onRemove} />
-        ))}
-      </AnimatePresence>
+      {toasts.map((toast) => (
+        <ToastItem key={toast.id} toast={toast} onRemove={onRemove} />
+      ))}
     </div>
   )
 }
@@ -131,15 +127,8 @@ function ToastItem({ toast, onRemove }: ToastItemProps) {
   const Icon = styles.icon
 
   return (
-    <motion.div
-      initial={{ opacity: 0, x: 100, scale: 0.95 }}
-      animate={{ opacity: 1, x: 0, scale: 1 }}
-      exit={{ opacity: 0, x: 100, scale: 0.95 }}
-      transition={{ 
-        duration: 0.3, 
-        ease: [0.2, 0, 0, 1] 
-      }}
-      className="pointer-events-auto relative"
+    <div
+      className="pointer-events-auto relative animate-toast-slide-in"
       style={{
         backgroundColor: styles.backgroundColor,
         border: `1px solid ${styles.borderColor}`,
@@ -194,7 +183,7 @@ function ToastItem({ toast, onRemove }: ToastItemProps) {
 
           {/* Action Button */}
           {toast.action && (
-            <motion.button
+            <button
               onClick={toast.action.onClick}
               className="mt-2 focus-indicator"
               style={{
@@ -210,7 +199,6 @@ function ToastItem({ toast, onRemove }: ToastItemProps) {
                 cursor: 'pointer',
                 transition: 'all 200ms cubic-bezier(0.2, 0, 0, 1)'
               }}
-              {...motionSafe(notebookLMButton)}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = styles.iconColor
                 e.currentTarget.style.color = 'white'
@@ -221,7 +209,7 @@ function ToastItem({ toast, onRemove }: ToastItemProps) {
               }}
             >
               {toast.action.label}
-            </motion.button>
+            </button>
           )}
         </div>
 
@@ -250,7 +238,7 @@ function ToastItem({ toast, onRemove }: ToastItemProps) {
           <X className="w-4 h-4" />
         </button>
       </div>
-    </motion.div>
+    </div>
   )
 }
 

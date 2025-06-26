@@ -2,7 +2,6 @@
 
 import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
 import { AlertCircle, X, RefreshCw } from 'lucide-react'
 
 interface AuthErrorHandlerProps {
@@ -90,15 +89,9 @@ function AuthErrorContent({ language = 'vi' }: AuthErrorHandlerProps) {
   if (!error) return null
 
   return (
-    <AnimatePresence>
+    <>
       {isVisible && (
-        <motion.div
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -50 }}
-          transition={{ duration: 0.3 }}
-          className="fixed top-4 left-1/2 transform -translate-x-1/2 z-[10000] w-full max-w-md mx-auto"
-        >
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-[10000] w-full max-w-md mx-auto animate-slide-down">
           <div className="bg-red-50 border border-red-200 rounded-lg shadow-lg p-4 mx-4">
             <div className="flex items-start">
               <div className="flex-shrink-0">
@@ -136,9 +129,9 @@ function AuthErrorContent({ language = 'vi' }: AuthErrorHandlerProps) {
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
       )}
-    </AnimatePresence>
+    </>
   )
 }
 

@@ -1,9 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '@/contexts/AuthContext'
-import { motionSafe } from '@/lib/motion'
 import ModalPortal from './ModalPortal'
 
 interface AuthModalProps {
@@ -321,48 +319,22 @@ export default function AuthModal({
 
   return (
     <ModalPortal>
-      <AnimatePresence>
-        {isOpen && (
-          <>
-            {/* Backdrop */}
-            <motion.div
-              className="fixed inset-0 z-[9998] bg-black/60 backdrop-blur-sm cursor-pointer"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
-              onClick={handleBackdropClick}
-              aria-label="Close modal"
-            />
+      {isOpen && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 z-[9998] bg-black/60 backdrop-blur-sm cursor-pointer animate-fade-in"
+            onClick={handleBackdropClick}
+            aria-label="Close modal"
+          />
 
-            {/* Modal Container */}
-            <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 lg:p-8 overflow-y-auto pointer-events-none">
-              {/* Modal */}
-              <motion.div
-                className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden my-auto pointer-events-auto"
-                variants={motionSafe({
-                  hidden: { opacity: 0, scale: 0.9, y: 20 },
-                  visible: {
-                    opacity: 1,
-                    scale: 1,
-                    y: 0,
-                    transition: {
-                      type: 'spring',
-                      duration: 0.3,
-                      bounce: 0.1,
-                    },
-                  },
-                })}
-                initial="hidden"
-                animate="visible"
-                exit={{
-                  opacity: 0,
-                  scale: 0.95,
-                  y: 10,
-                  transition: { duration: 0.2 },
-                }}
-                onClick={e => e.stopPropagation()}
-              >
+          {/* Modal Container */}
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 lg:p-8 overflow-y-auto pointer-events-none">
+            {/* Modal */}
+            <div
+              className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden my-auto pointer-events-auto animate-modal-spring"
+              onClick={e => e.stopPropagation()}
+            >
                 <div className="p-8">
                   {/* Header */}
                   <div className="text-center mb-8">
@@ -635,11 +607,10 @@ export default function AuthModal({
                     />
                   </svg>
                 </button>
-              </motion.div>
             </div>
-          </>
-        )}
-      </AnimatePresence>
+          </div>
+        </>
+      )}
     </ModalPortal>
   )
 }

@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { 
   CreditCard, 
   AlertTriangle, 
@@ -278,10 +277,8 @@ export default function CreditDisplay({
   if (variant === 'badge') {
     return (
       <div className="relative">
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className={`inline-flex items-center ${config.padding} ${config.badge} rounded-full border cursor-pointer transition-all ${colorClasses[statusColor]} ${className}`}
+        <div
+          className={`inline-flex items-center ${config.padding} ${config.badge} rounded-full border cursor-pointer transition-all hover:scale-105 active:scale-95 ${colorClasses[statusColor]} ${className}`}
           onClick={handleClick}
           onMouseEnter={() => setShowTooltip(true)}
           onMouseLeave={() => setShowTooltip(false)}
@@ -296,22 +293,15 @@ export default function CreditDisplay({
           {creditData.credits.current < 10 && creditData.credits.current > 0 && (
             <AlertTriangle className={`${config.icon} ml-1`} />
           )}
-        </motion.div>
+        </div>
 
         {/* Tooltip */}
-        <AnimatePresence>
-          {showTooltip && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap z-50"
-            >
-              {getTooltipText()}
-              <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {showTooltip && (
+          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap z-50 animate-tooltip-fade-in">
+            {getTooltipText()}
+            <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+          </div>
+        )}
       </div>
     )
   }

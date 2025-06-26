@@ -506,12 +506,12 @@ export function Experiment({ experimentId, variantId, fallback, children }: Expe
   const { variant, isInExperiment } = useExperiment(experimentId)
 
   if (!isInExperiment) {
-    return <>{fallback}</>
+    return fallback
   }
 
   if (variantId && variant?.id !== variantId) {
-    return <>{fallback}</>
+    return fallback
   }
 
-  return <>{children}</>
+  return children
 }

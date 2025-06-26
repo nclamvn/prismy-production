@@ -1,10 +1,8 @@
 'use client'
 
 import React, { Component, ErrorInfo, ReactNode } from 'react'
-import { motion } from 'framer-motion'
 import { AlertTriangle, RefreshCw, Home, Bug } from 'lucide-react'
 import { Button } from './Button'
-import { motionSafe, slideUp } from '@/lib/motion'
 
 interface Props {
   children: ReactNode
@@ -96,11 +94,8 @@ export function ErrorFallback({
 
   return (
     <div className={containerClass} style={containerStyle}>
-      <motion.div
-        variants={motionSafe(slideUp)}
-        initial="hidden"
-        animate="visible"
-        className="max-w-md w-full text-center"
+      <div
+        className="max-w-md w-full text-center animate-slide-up"
       >
         <div 
           className="p-8 rounded-lg"
@@ -240,7 +235,7 @@ export function ErrorFallback({
             </p>
           </div>
         </div>
-      </motion.div>
+      </div>
     </div>
   )
 }

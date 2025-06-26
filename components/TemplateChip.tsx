@@ -1,8 +1,5 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import { scaleIn, motionSafe } from '@/lib/motion'
-
 interface TemplateChipProps {
   label: string
   description: string
@@ -17,12 +14,9 @@ export default function TemplateChip({
   onClick 
 }: TemplateChipProps) {
   return (
-    <motion.button
-      className={`template-chip ${isActive ? 'template-chip-active' : ''}`}
+    <button
+      className={`template-chip animate-scale-in hover:scale-105 active:scale-95 transition-transform duration-200 ${isActive ? 'template-chip-active' : ''}`}
       onClick={onClick}
-      variants={motionSafe(scaleIn)}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
       aria-pressed={isActive}
       title={description}
     >
@@ -30,7 +24,7 @@ export default function TemplateChip({
         <div className="font-medium">{label}</div>
         <div className="text-xs opacity-75 mt-1">{description}</div>
       </div>
-    </motion.button>
+    </button>
   )
 }
 
@@ -81,22 +75,7 @@ export function TemplateChips({ language = 'en' }: TemplateChipsProps) {
 
         {/* Horizontal carousel for all screen sizes */}
         <div className="overflow-x-auto pb-4">
-          <motion.div
-            className="flex gap-4 min-w-max px-4"
-            variants={motionSafe({
-              hidden: { opacity: 0, x: -20 },
-              visible: {
-                opacity: 1,
-                x: 0,
-                transition: {
-                  staggerChildren: 0.1
-                }
-              }
-            })}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-          >
+          <div className="flex gap-4 min-w-max px-4 animate-fade-in">
             {content[language].templates.map((template) => (
               <div key={template.id} className="flex-shrink-0">
                 <TemplateChip
@@ -105,7 +84,7 @@ export function TemplateChips({ language = 'en' }: TemplateChipsProps) {
                 />
               </div>
             ))}
-          </motion.div>
+          </div>
         </div>
       </div>
     </section>

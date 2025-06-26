@@ -1,8 +1,6 @@
 'use client'
 
 import { useState, useCallback, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { motionSafe, slideUp, fadeIn } from '@/lib/motion'
 import { batchProcessor, BatchJob, BatchProcessingOptions } from '@/lib/batch-processor'
 
 interface BatchUploadProps {
@@ -223,12 +221,7 @@ export default function BatchUpload({
   }
 
   return (
-    <motion.div
-      className="w-full max-w-4xl mx-auto"
-      variants={motionSafe(slideUp)}
-      initial="hidden"
-      animate="visible"
-    >
+    <div className="w-full max-w-4xl mx-auto animate-slide-up">
       {/* Header */}
       <div className="mb-6">
         <h2 className="heading-3 text-gray-900 mb-2">{content[language].title}</h2>
@@ -236,13 +229,12 @@ export default function BatchUpload({
       </div>
 
       {/* File Drop Zone */}
-      <motion.div
-        className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center mb-6 hover:border-gray-400 transition-colors"
+      <div
+        className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center mb-6 hover:border-gray-400 hover:scale-105 transition-all duration-200 animate-fade-in"
         onDrop={handleDrop}
         onDragOver={(e) => e.preventDefault()}
         onDragEnter={(e) => e.preventDefault()}
-        variants={motionSafe(fadeIn)}
-        whileHover={{ scale: 1.01 }}
+        style={{ animationDelay: '200ms' }}
       >
         <input
           ref={fileInputRef}
@@ -275,42 +267,27 @@ export default function BatchUpload({
             {content[language].selectFiles}
           </button>
         </div>
-      </motion.div>
+      </div>
 
       {/* Batch Progress */}
-      <AnimatePresence>
-        {isProcessing && (
-          <motion.div
-            className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-          >
-            <div className="flex items-center justify-between mb-2">
-              <span className="font-medium text-blue-900">{content[language].progress}</span>
-              <span className="text-blue-700">{batchProgress}%</span>
-            </div>
-            <div className="w-full bg-blue-200 rounded-full h-2">
-              <motion.div
-                className="bg-blue-600 h-2 rounded-full"
-                initial={{ width: 0 }}
-                animate={{ width: `${batchProgress}%` }}
-                transition={{ duration: 0.3 }}
-              />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {isProcessing && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 animate-accordion-open">
+          <div className="flex items-center justify-between mb-2">
+            <span className="font-medium text-blue-900">{content[language].progress}</span>
+            <span className="text-blue-700">{batchProgress}%</span>
+          </div>
+          <div className="w-full bg-blue-200 rounded-full h-2">
+            <div
+              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${batchProgress}%` }}
+            />
+          </div>
+        </div>
+      )}
 
       {/* File List */}
-      <AnimatePresence>
-        {files.length > 0 && (
-          <motion.div
-            className="bg-white border border-gray-200 rounded-lg overflow-hidden mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-          >
+      {files.length > 0 && (
+        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden mb-6 animate-slide-up" style={{ animationDelay: '300ms' }}>
             <div className="p-4 border-b border-gray-200 flex items-center justify-between">
               <span className="font-medium text-gray-900">
                 {files.length} {content[language].fileCount}
@@ -346,12 +323,10 @@ export default function BatchUpload({
             
             <div className="max-h-96 overflow-y-auto">
               {files.map((fileItem, index) => (
-                <motion.div
+                <div
                   key={fileItem.id}
-                  className="flex items-center justify-between p-4 border-b border-gray-100 last:border-b-0"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.05 }}
+                  className="flex items-center justify-between p-4 border-b border-gray-100 last:border-b-0 animate-fade-in"
+                  style={{ animationDelay: `${index * 50}ms` }}
                 >
                   <div className="flex items-center space-x-3 flex-1 min-w-0">
                     {getStatusIcon(fileItem.status)}
@@ -379,12 +354,11 @@ export default function BatchUpload({
                       </svg>
                     </button>
                   )}
-                </motion.div>
+                </div>
               ))}
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
+        </div>
+      )}
+    </div>
   )
 }

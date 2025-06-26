@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { Lightbulb, X, ArrowRight, Sparkles } from 'lucide-react'
 import { useFeatureHint } from '@/contexts/FeatureDiscoveryContext'
 
@@ -83,14 +82,10 @@ export default function FeatureHint({
     <div className="relative inline-block">
       {children}
       
-      <AnimatePresence>
-        {isVisible && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: 10 }}
-            className={`absolute z-50 ${getPositionClasses()}`}
-          >
+      {isVisible && (
+        <div
+          className={`absolute z-50 animate-feature-hint ${getPositionClasses()}`}
+        >
             <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg shadow-lg max-w-xs">
               {/* Arrow pointing to element */}
               <div className={`absolute w-3 h-3 bg-purple-600 transform rotate-45 ${
@@ -133,9 +128,8 @@ export default function FeatureHint({
                 </div>
               </div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        </div>
+      )}
 
       {/* Subtle pulsing effect on the element when hint is available */}
       {shouldShow && !isVisible && (
@@ -171,16 +165,14 @@ export function FeatureBadge({ feature, type = 'new', size = 'sm' }: FeatureBadg
   }
 
   return (
-    <motion.span
-      initial={{ scale: 0 }}
-      animate={{ scale: 1 }}
+    <span
       className={`
-        inline-flex items-center font-medium rounded-full border
+        inline-flex items-center font-medium rounded-full border animate-scale-in
         ${sizeClasses[size]} ${typeClasses[type]}
       `}
     >
       {type.toUpperCase()}
-    </motion.span>
+    </span>
   )
 }
 

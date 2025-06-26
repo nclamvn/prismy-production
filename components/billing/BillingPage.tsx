@@ -1,9 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
 import { SUBSCRIPTION_PLANS, formatPrice, getPlanByPriceId } from '@/lib/stripe'
-import { motionSafe } from '@/lib/motion'
 import type { UserProfile } from '@/lib/supabase'
 
 interface BillingPageProps {
@@ -193,38 +191,17 @@ export default function BillingPage({ profile, language = 'en' }: BillingPagePro
     <div className="max-w-4xl mx-auto p-6">
       {/* Header */}
       <div className="mb-8">
-        <motion.h1 
-          className="heading-2 text-gray-900 mb-2"
-          {...motionSafe({
-            initial: { opacity: 0, y: 20 },
-            animate: { opacity: 1, y: 0 },
-            transition: { duration: 0.6 }
-          })}
-        >
+        <h1 className="heading-2 text-gray-900 mb-2 animate-slide-up">
           {content[language].title}
-        </motion.h1>
-        <motion.p 
-          className="body-base text-gray-600"
-          {...motionSafe({
-            initial: { opacity: 0, y: 20 },
-            animate: { opacity: 1, y: 0 },
-            transition: { duration: 0.6, delay: 0.1 }
-          })}
-        >
+        </h1>
+        <p className="body-base text-gray-600 animate-slide-up" style={{ animationDelay: '100ms' }}>
           {content[language].subtitle}
-        </motion.p>
+        </p>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-8">
         {/* Current Plan */}
-        <motion.div 
-          className="bg-white rounded-xl shadow-lg border border-gray-200 p-6"
-          {...motionSafe({
-            initial: { opacity: 0, y: 30 },
-            animate: { opacity: 1, y: 0 },
-            transition: { duration: 0.6, delay: 0.2 }
-          })}
-        >
+        <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 animate-slide-up" style={{ animationDelay: '200ms' }}>
           <h2 className="heading-3 text-gray-900 mb-6">{content[language].currentPlan}</h2>
           
           <div className="space-y-4">
@@ -270,17 +247,10 @@ export default function BillingPage({ profile, language = 'en' }: BillingPagePro
               )}
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Usage Stats */}
-        <motion.div 
-          className="bg-white rounded-xl shadow-lg border border-gray-200 p-6"
-          {...motionSafe({
-            initial: { opacity: 0, y: 30 },
-            animate: { opacity: 1, y: 0 },
-            transition: { duration: 0.6, delay: 0.3 }
-          })}
-        >
+        <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 animate-slide-up" style={{ animationDelay: '300ms' }}>
           <h2 className="heading-3 text-gray-900 mb-6">{content[language].usage.title}</h2>
           
           {usageLoading ? (
@@ -409,18 +379,11 @@ export default function BillingPage({ profile, language = 'en' }: BillingPagePro
               </div>
             </div>
           )}
-        </motion.div>
+        </div>
       </div>
 
       {/* Plan Features */}
-      <motion.div 
-        className="mt-8 bg-white rounded-xl shadow-lg border border-gray-200 p-6"
-        {...motionSafe({
-          initial: { opacity: 0, y: 30 },
-          animate: { opacity: 1, y: 0 },
-          transition: { duration: 0.6, delay: 0.4 }
-        })}
-      >
+      <div className="mt-8 bg-white rounded-xl shadow-lg border border-gray-200 p-6 animate-slide-up" style={{ animationDelay: '400ms' }}>
         <h2 className="heading-3 text-gray-900 mb-6">Plan Features</h2>
         <div className="grid md:grid-cols-2 gap-4">
           {planData.features.map((feature, index) => (
@@ -432,7 +395,7 @@ export default function BillingPage({ profile, language = 'en' }: BillingPagePro
             </div>
           ))}
         </div>
-      </motion.div>
+      </div>
     </div>
   )
 }

@@ -1,6 +1,5 @@
 'use client'
 
-import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { Star, Users, Globe, Zap, ArrowRight } from 'lucide-react'
@@ -81,54 +80,27 @@ export default function ModernHero() {
         />
 
         {/* Floating Elements */}
-        <motion.div
-          className="absolute top-20 left-10 w-20 h-20 blur-xl"
+        <div
+          className="absolute top-20 left-10 w-20 h-20 blur-xl animate-float-slow"
           style={{
             backgroundColor: 'rgba(0, 0, 0, 0.02)',
             borderRadius: 'var(--shape-corner-full)',
           }}
-          animate={{
-            x: [0, 30, 0],
-            y: [0, -20, 0],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
         />
 
-        <motion.div
-          className="absolute top-40 right-20 w-32 h-32 blur-xl"
+        <div
+          className="absolute top-40 right-20 w-32 h-32 blur-xl animate-float-medium"
           style={{
             backgroundColor: 'rgba(0, 0, 0, 0.015)',
             borderRadius: 'var(--shape-corner-full)',
           }}
-          animate={{
-            x: [0, -40, 0],
-            y: [0, 30, 0],
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
         />
 
-        <motion.div
-          className="absolute bottom-32 left-1/4 w-24 h-24 blur-xl"
+        <div
+          className="absolute bottom-32 left-1/4 w-24 h-24 blur-xl animate-float-fast"
           style={{
             backgroundColor: 'rgba(0, 0, 0, 0.01)',
             borderRadius: 'var(--shape-corner-full)',
-          }}
-          animate={{
-            x: [0, 20, 0],
-            y: [0, -40, 0],
-          }}
-          transition={{
-            duration: 12,
-            repeat: Infinity,
-            ease: 'easeInOut',
           }}
         />
       </div>
@@ -139,14 +111,12 @@ export default function ModernHero() {
         style={{ overflow: 'visible', zIndex: 1 }}
       >
         {/* Main Headlines - Spacing Optimized - Final Clean Version */}
-        <motion.div
-          initial={isHydrated ? { opacity: 0, y: 30 } : { opacity: 1, y: 0 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={isHydrated ? { duration: 0.8, delay: 0.2 } : { duration: 0 }}
-          className="mb-6"
+        <div
+          className={`mb-6 ${isHydrated ? 'animate-hero-slide-up' : ''}`}
           style={{
             overflow: 'visible',
             marginBottom: '1.5rem',
+            animationDelay: '200ms'
           }}
         >
           <h1
@@ -156,7 +126,7 @@ export default function ModernHero() {
               fontFamily: 'var(--sys-display-large-font)',
               fontWeight: '600',
               color: 'var(--text-primary)',
-              marginBottom: '0.05rem',
+              marginBottom: '0.05rem !important',
               overflow: 'visible',
               paddingTop: '0.25rem',
             }}
@@ -166,7 +136,7 @@ export default function ModernHero() {
           <h2
             className="font-extrabold tracking-tight gradient-text animate-gradient-text hero-title-reduced"
             style={{
-              lineHeight: '1.3',
+              lineHeight: '1.1',
               fontFamily: 'var(--sys-display-large-font)',
               fontWeight: '600',
               background: `linear-gradient(90deg, #6366f1 0%, #3b82f6 20%, #06b6d4 40%, #10b981 60%, #22c55e 80%, #6366f1 100%)`,
@@ -177,33 +147,30 @@ export default function ModernHero() {
               backgroundClip: 'text',
               overflow: 'visible',
               paddingTop: '0.25rem',
+              marginTop: '0rem !important',
             }}
           >
             {currentContent.subHeadline}
           </h2>
-        </motion.div>
+        </div>
 
         {/* Description - NotebookLM Style */}
-        <motion.p
-          initial={isHydrated ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={isHydrated ? { duration: 0.8, delay: 0.4 } : { duration: 0 }}
-          className="mb-8 max-w-xl sm:max-w-2xl lg:max-w-3xl mx-auto leading-relaxed text-lg sm:text-xl lg:text-2xl"
+        <p
+          className={`mb-8 max-w-xl sm:max-w-2xl lg:max-w-3xl mx-auto leading-relaxed text-lg sm:text-xl lg:text-2xl ${isHydrated ? 'animate-hero-slide-up' : ''}`}
           style={{
             fontFamily: 'var(--sys-title-large-font)',
             fontWeight: 'var(--sys-title-large-weight)',
             color: 'var(--text-secondary)',
+            animationDelay: '400ms'
           }}
         >
           {currentContent.description}
-        </motion.p>
+        </p>
 
         {/* CTA - Material Design 3 Style */}
-        <motion.div
-          initial={isHydrated ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={isHydrated ? { duration: 0.8, delay: 0.6 } : { duration: 0 }}
-          className="flex justify-center items-center mb-12"
+        <div
+          className={`flex justify-center items-center mb-12 ${isHydrated ? 'animate-hero-slide-up' : ''}`}
+          style={{ animationDelay: '600ms' }}
         >
           <UnifiedGetStartedButton
             className="w-full sm:w-auto"
@@ -244,14 +211,12 @@ export default function ModernHero() {
             {currentContent.primaryCTA}
             <ArrowRight className="ml-2 w-5 h-5" />
           </UnifiedGetStartedButton>
-        </motion.div>
+        </div>
 
         {/* Social Proof - NotebookLM Style */}
-        <motion.div
-          initial={isHydrated ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={isHydrated ? { duration: 0.8, delay: 0.8 } : { duration: 0 }}
-          className="flex items-center justify-center mb-16"
+        <div
+          className={`flex items-center justify-center mb-16 ${isHydrated ? 'animate-hero-slide-up' : ''}`}
+          style={{ animationDelay: '800ms' }}
         >
           <div
             className="flex items-center px-4 py-2"
@@ -291,13 +256,12 @@ export default function ModernHero() {
               {currentContent.socialProof}
             </span>
           </div>
-        </motion.div>
+        </div>
 
         {/* Live Stats - Material Design 3 Style */}
-        <motion.div
-          initial={isHydrated ? { opacity: 0, y: 30 } : { opacity: 1, y: 0 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={isHydrated ? { duration: 0.8, delay: 1.0 } : { duration: 0 }}
+        <div
+          className={isHydrated ? 'animate-hero-slide-up' : ''}
+          style={{ animationDelay: '1000ms' }}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto"
         >
           <div
@@ -309,12 +273,9 @@ export default function ModernHero() {
               boxShadow: 'var(--elevation-level-1)',
             }}
           >
-            <motion.div
+            <div
               key={userCount}
-              initial={{ scale: 1.2, opacity: 0.8 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.3 }}
-              className="mb-2"
+              className="mb-2 animate-user-count-update"
               style={{
                 fontSize: 'var(--sys-headline-large-size)',
                 lineHeight: 'var(--sys-headline-large-line-height)',
@@ -324,7 +285,7 @@ export default function ModernHero() {
               }}
             >
               {userCount.toLocaleString()}+
-            </motion.div>
+            </div>
             <div
               style={{
                 fontSize: 'var(--sys-body-medium-size)',
@@ -439,14 +400,12 @@ export default function ModernHero() {
               {currentContent.stats.accuracy}
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Feature Pills - Material Design 3 Style */}
-        <motion.div
-          initial={isHydrated ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={isHydrated ? { duration: 0.8, delay: 1.2 } : { duration: 0 }}
-          className="flex flex-wrap justify-center gap-2 sm:gap-3 mt-8 sm:mt-12"
+        <div
+          className={`flex flex-wrap justify-center gap-2 sm:gap-3 mt-8 sm:mt-12 ${isHydrated ? 'animate-hero-slide-up' : ''}`}
+          style={{ animationDelay: '1200ms' }}
         >
           {currentContent.features.map((feature, index) => (
             <div
@@ -471,7 +430,7 @@ export default function ModernHero() {
               {feature}
             </div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   )

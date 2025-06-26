@@ -1,9 +1,7 @@
 'use client'
 
 import React, { useState, useRef, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
-import { motionSafe, notebookLMButton } from '@/lib/motion'
 
 export interface DropdownOption {
   value: string
@@ -112,13 +110,13 @@ export default function UniversalDropdown({
       ref={dropdownRef}
     >
       {/* NotebookLM Dropdown Button */}
-      <motion.button
+      <button
         onClick={handleToggle}
         onTouchStart={handleToggle}
         disabled={disabled}
         className={`
           flex items-center justify-between w-full
-          focus-indicator touch-accessible
+          focus-indicator touch-accessible transition-all duration-200 hover:scale-105 active:scale-95
           ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
         `}
         style={{
@@ -128,10 +126,8 @@ export default function UniversalDropdown({
           borderRadius: 'var(--mat-button-outlined-container-shape)',
           color: 'var(--text-primary)',
           fontFamily: 'var(--sys-label-large-font)',
-          fontWeight: 'var(--sys-label-large-weight)',
-          transition: 'all 200ms cubic-bezier(0.2, 0, 0, 1)'
+          fontWeight: 'var(--sys-label-large-weight)'
         }}
-        {...(disabled ? {} : motionSafe(notebookLMButton))}
         onMouseEnter={(e) => {
           if (!disabled) {
             e.currentTarget.style.backgroundColor = 'var(--surface-filled)'
@@ -161,24 +157,19 @@ export default function UniversalDropdown({
           }`}
           style={{ color: 'var(--text-secondary)' }}
         />
-      </motion.button>
+      </button>
 
       {/* Dropdown Menu */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: -8 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -8 }}
-            transition={{ duration: 0.2, ease: [0.2, 0, 0, 1] }}
-            className="absolute z-[60] w-full mt-2 overflow-hidden"
-            style={{
-              backgroundColor: 'var(--surface-elevated)',
-              borderRadius: 'var(--mat-card-elevated-container-shape)',
-              border: '1px solid var(--surface-outline)',
-              boxShadow: 'var(--elevation-level-3)',
-            }}
-          >
+      {isOpen && (
+        <div
+          className="absolute z-[60] w-full mt-2 overflow-hidden animate-dropdown-open"
+          style={{
+            backgroundColor: 'var(--surface-elevated)',
+            borderRadius: 'var(--mat-card-elevated-container-shape)',
+            border: '1px solid var(--surface-outline)',
+            boxShadow: 'var(--elevation-level-3)',
+          }}
+        >
             <div className="max-h-60 overflow-y-auto">
               {options.map(option => {
                 const isSelected = value === option.value
@@ -223,9 +214,8 @@ export default function UniversalDropdown({
                 )
               })}
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        </div>
+      )}
     </div>
   )
 }

@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 
 /* ============================================================================ */
@@ -45,56 +44,36 @@ export function Skeleton({
     none: '',
   }
 
-  // Shimmer effect overlay
+  // Shimmer effect overlay - CSS only
   const shimmerOverlay = animation === 'shimmer' && (
-    <motion.div
-      className="absolute inset-0 -translate-x-full"
+    <div
+      className="absolute inset-0 -translate-x-full animate-shimmer"
       style={{
-        background: 'linear-gradient(to right, transparent, rgba(255, 255, 255, 0.4), transparent)'
-      }}
-      animate={{
-        translateX: ['100%', '-100%'],
-      }}
-      transition={{
-        duration,
-        repeat: Infinity,
-        ease: 'linear',
-      }}
-      style={{
+        background: 'linear-gradient(to right, transparent, rgba(255, 255, 255, 0.4), transparent)',
         willChange: 'transform',
+        animationDuration: `${duration}s`
       }}
     />
   )
 
-  // Wave animation
-  const waveAnimation = animation === 'wave' && {
-    animate: {
-      opacity: [0.5, 1, 0.5],
-    },
-    transition: {
-      duration,
-      repeat: Infinity,
-      ease: 'easeInOut',
-    },
-  }
-
   const skeletonElements = Array.from({ length: count }).map((_, index) => (
-    <motion.div
+    <div
       key={index}
       className={cn(
         variantClasses[variant],
         animationClasses[animation],
+        animation === 'wave' && 'animate-wave',
         className
       )}
       style={{
         backgroundColor: 'var(--surface-filled)',
         width: width || (variant === 'circular' ? height : undefined),
         height,
+        animationDuration: animation === 'wave' ? `${duration}s` : undefined
       }}
-      {...(animation === 'wave' ? waveAnimation : {})}
     >
       {shimmerOverlay}
-    </motion.div>
+    </div>
   ))
 
   return count > 1 ? (
@@ -361,22 +340,13 @@ export function SkeletonProvider({
   return (
     <div className={className}>
       {showSkeleton ? (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-        >
+        <div className="animate-fade-in">
           {skeleton}
-        </motion.div>
+        </div>
       ) : (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
-        >
+        <div className="animate-fade-in">
           {children}
-        </motion.div>
+        </div>
       )}
     </div>
   )

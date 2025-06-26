@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 
 interface ServiceWorkerRegistrationProps {
   onUpdate?: () => void
@@ -19,9 +18,11 @@ export default function ServiceWorkerRegistration({
   const [registration, setRegistration] = useState<ServiceWorkerRegistration | null>(null)
 
   useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      registerServiceWorker()
-    }
+    // Temporarily disabled to fix cache issues
+    // if ('serviceWorker' in navigator) {
+    //   registerServiceWorker()
+    // }
+    console.log('Service Worker temporarily disabled for debugging')
   }, [])
 
   const registerServiceWorker = async () => {
@@ -88,14 +89,8 @@ export default function ServiceWorkerRegistration({
   return (
     <>
       {/* Update Prompt */}
-      <AnimatePresence>
-        {showUpdatePrompt && (
-          <motion.div
-            className="fixed top-4 right-4 z-50 max-w-sm"
-            initial={{ opacity: 0, y: -20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.95 }}
-          >
+      {showUpdatePrompt && (
+        <div className="fixed top-4 right-4 z-50 max-w-sm animate-sw-update">
             <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-4">
               <div className="flex items-start">
                 <div className="flex-shrink-0">
@@ -135,9 +130,8 @@ export default function ServiceWorkerRegistration({
                 </button>
               </div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        </div>
+      )}
 
       {/* Service Worker Status (Development only) */}
       {process.env.NODE_ENV === 'development' && swStatus && (

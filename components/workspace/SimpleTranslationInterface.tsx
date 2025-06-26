@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState } from 'react'
-import { motion } from 'framer-motion'
 import { 
   Languages, 
   ArrowRight, 
@@ -12,6 +11,7 @@ import {
   CheckCircle
 } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface SimpleTranslationInterfaceProps {
   className?: string
@@ -23,6 +23,7 @@ export default function SimpleTranslationInterface({
   onTranslationComplete
 }: SimpleTranslationInterfaceProps) {
   const { language } = useLanguage()
+  const { user } = useAuth()
   const [sourceText, setSourceText] = useState('')
   const [translatedText, setTranslatedText] = useState('')
   const [sourceLang, setSourceLang] = useState('auto')
@@ -62,7 +63,11 @@ export default function SimpleTranslationInterface({
     })
 
     try {
-      const response = await fetch('/api/translate/public', {
+      // Use authenticated endpoint for logged-in users
+      const endpoint = user ? '/api/translate/authenticated' : '/api/translate/public'
+      const qualityTier = user ? 'standard' : 'free'
+      
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -71,7 +76,8 @@ export default function SimpleTranslationInterface({
           text: sourceText,
           sourceLang: sourceLang === 'auto' ? undefined : sourceLang,
           targetLang: targetLang,
-          qualityTier: 'free'
+          qualityTier: qualityTier,
+          serviceType: 'google_translate'
         })
       })
 
@@ -86,6 +92,11 @@ export default function SimpleTranslationInterface({
       if (data.success && data.result) {
         setTranslatedText(data.result.translatedText)
         setSuccess(true)
+        
+        // Show credit usage for authenticated users
+        if (data.credits) {
+          console.log(`💰 Credits used: ${data.credits.charged}, Remaining: ${data.credits.remaining}`)
+        }
         
         if (onTranslationComplete) {
           onTranslationComplete(data.result)
@@ -243,24 +254,16 @@ export default function SimpleTranslationInterface({
         <div className="flex items-center justify-between mt-6">
           <div className="flex items-center gap-3">
             {error && (
-              <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="flex items-center gap-2 text-red-600 text-sm"
-              >
+              <div className="flex items-center gap-2 text-red-600 text-sm animate-slide-in-left">
                 <AlertCircle className="w-4 h-4" />
                 {error}
-              </motion.div>
+              </div>
             )}
             {success && !error && (
-              <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="flex items-center gap-2 text-green-600 text-sm"
-              >
+              <div className="flex items-center gap-2 text-green-600 text-sm animate-slide-in-left">
                 <CheckCircle className="w-4 h-4" />
                 {language === 'vi' ? 'Thành công!' : 'Success!'}
-              </motion.div>
+              </div>
             )}
           </div>
 

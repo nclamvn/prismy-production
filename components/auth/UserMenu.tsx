@@ -3,9 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '@/contexts/AuthContext'
-import { motionSafe } from '@/lib/motion'
 
 export default function UserMenu() {
   const [isOpen, setIsOpen] = useState(false)
@@ -69,19 +67,8 @@ export default function UserMenu() {
       </button>
 
       {/* Dropdown Menu */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
-            variants={motionSafe({
-              hidden: { opacity: 0, scale: 0.95, y: -10 },
-              visible: { opacity: 1, scale: 1, y: 0 },
-            })}
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
-            transition={{ duration: 0.15 }}
-          >
+      {isOpen && (
+        <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50 animate-dropdown-open">
             {/* User Info */}
             <div className="px-4 py-3 border-b border-gray-100">
               <p className="body-sm font-medium text-gray-900">
@@ -138,9 +125,8 @@ export default function UserMenu() {
                 Sign Out
               </button>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        </div>
+      )}
     </div>
   )
 }

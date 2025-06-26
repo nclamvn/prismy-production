@@ -1,16 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import UniversalDropdown from '@/components/ui/UniversalDropdown'
-import { 
-  zenBreathe, 
-  invisiblePresence, 
-  whisperUp, 
-  getCulturalRhythm,
-  whisperHover,
-  breathHover
-} from '@/lib/motion'
+import { getCulturalRhythm } from '@/lib/motion'
 
 interface Language {
   code: string
@@ -127,23 +119,14 @@ export default function Workbench({ language = 'en' }: WorkbenchProps) {
   }
 
   return (
-    <AnimatePresence>
+    <>
       {isVisible && (
-        <motion.section 
-          className="relative"
-          variants={zenBreathe}
-          initial="hidden"
-          animate="visible"
-          exit="hidden"
-        >
+        <section className="relative animate-zen-breathe">
           {/* Zen Translation Interface - Single Column Flow */}
           <div className="space-zen">
             
             {/* Language Selectors - Invisible Presence */}
-            <motion.div 
-              className="flex items-center justify-center gap-8 mb-12"
-              variants={invisiblePresence}
-            >
+            <div className="flex items-center justify-center gap-8 mb-12 animate-fade-in" style={{ animationDelay: '200ms' }}>
               {/* Source Language */}
               <div className="flex items-center gap-3">
                 <span className="text-caption text-mono-medium vietnamese-text">
@@ -164,20 +147,18 @@ export default function Workbench({ language = 'en' }: WorkbenchProps) {
               </div>
 
               {/* Zen Swap - Invisible Until Needed */}
-              <motion.button
+              <button
                 onClick={handleSwap}
                 disabled={sourceLang === 'auto' || !targetText}
                 className="w-8 h-8 flex items-center justify-center text-mono-light 
-                         hover:text-mono-black transition-colors duration-200
-                         disabled:opacity-30"
-                {...whisperHover}
-                whileHover={{ rotate: 180 }}
+                         hover:text-mono-black transition-all duration-200 hover:rotate-180
+                         disabled:opacity-30 hover:scale-110"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} 
                         d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                 </svg>
-              </motion.button>
+              </button>
 
               {/* Target Language */}
               <div className="flex items-center gap-3">
@@ -197,18 +178,12 @@ export default function Workbench({ language = 'en' }: WorkbenchProps) {
                   />
                 </div>
               </div>
-            </motion.div>
+            </div>
 
             {/* Translation Canvas - Zen Simplicity */}
-            <motion.div 
-              className="grid gap-8 md:grid-cols-2"
-              variants={whisperUp}
-            >
+            <div className="grid gap-8 md:grid-cols-2 animate-slide-up" style={{ animationDelay: '300ms' }}>
               {/* Source Input - Breathing Space */}
-              <motion.div 
-                className="relative"
-                variants={invisiblePresence}
-              >
+              <div className="relative animate-fade-in" style={{ animationDelay: '400ms' }}>
                 <textarea
                   value={sourceText}
                   onChange={(e) => setSourceText(e.target.value)}
@@ -223,22 +198,14 @@ export default function Workbench({ language = 'en' }: WorkbenchProps) {
                   }}
                 />
                 {sourceText && (
-                  <motion.div 
-                    className="absolute bottom-4 right-4 text-caption text-mono-light"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.2 }}
-                  >
+                  <div className="absolute bottom-4 right-4 text-caption text-mono-light animate-fade-in">
                     {sourceText.length}
-                  </motion.div>
+                  </div>
                 )}
-              </motion.div>
+              </div>
 
               {/* Target Output - Zen Reception */}
-              <motion.div 
-                className="relative"
-                variants={invisiblePresence}
-              >
+              <div className="relative animate-fade-in" style={{ animationDelay: '500ms' }}>
                 <textarea
                   value={targetText}
                   readOnly
@@ -253,50 +220,39 @@ export default function Workbench({ language = 'en' }: WorkbenchProps) {
                   }}
                 />
                 {isTranslating && (
-                  <motion.div 
-                    className="absolute inset-0 flex items-center justify-center"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                  >
+                  <div className="absolute inset-0 flex items-center justify-center animate-fade-in">
                     <div className="text-mono-medium loading-breath">
                       {content[language].working}
                     </div>
-                  </motion.div>
+                  </div>
                 )}
-              </motion.div>
-            </motion.div>
+              </div>
+            </div>
 
             {/* Zen Action - Single Purpose */}
-            <motion.div 
-              className="flex justify-center mt-12"
-              variants={invisiblePresence}
-            >
-              <motion.button
+            <div className="flex justify-center mt-12 animate-fade-in" style={{ animationDelay: '600ms' }}>
+              <button
                 onClick={handleTranslate}
                 disabled={!sourceText.trim() || isTranslating}
-                className="btn btn-primary px-16 py-4 text-body hover-whisper focus-breath
+                className="btn btn-primary px-16 py-4 text-body hover:scale-105 active:scale-95 transition-transform
                          disabled:opacity-50 disabled:cursor-not-allowed vietnamese-text"
-                {...breathHover}
               >
                 {isTranslating ? content[language].working : content[language].action}
-              </motion.button>
-            </motion.div>
+              </button>
+            </div>
 
             {/* Invisible Status - Breath-Level Feedback */}
-            <motion.div 
-              className="flex justify-center mt-8"
-              variants={invisiblePresence}
-            >
+            <div className="flex justify-center mt-8 animate-fade-in" style={{ animationDelay: '700ms' }}>
               <div className="text-caption text-mono-light vietnamese-text">
                 {!sourceText.trim() ? content[language].ready : 
                  targetText ? '✓' : 
                  isTranslating ? '○' : ''}
               </div>
-            </motion.div>
+            </div>
 
           </div>
-        </motion.section>
+        </section>
       )}
-    </AnimatePresence>
+    </>
   )
 }

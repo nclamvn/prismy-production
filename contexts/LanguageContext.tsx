@@ -17,7 +17,7 @@ interface LanguageProviderProps {
 }
 
 export function LanguageProvider({ children }: LanguageProviderProps) {
-  const [language, setLanguageState] = useState<Language>('vi') // Default to Vietnamese
+  const [language, setLanguageState] = useState<Language>('en') // Default to English for stability
   const [isLoading, setIsLoading] = useState(true)
 
   // Load language preference from localStorage on mount
@@ -27,13 +27,13 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       if (savedLanguage === 'vi' || savedLanguage === 'en') {
         setLanguageState(savedLanguage)
       } else {
-        // If no valid saved language, default to Vietnamese
-        setLanguageState('vi')
-        localStorage.setItem('prismy-language', 'vi')
+        // If no valid saved language, default to English
+        setLanguageState('en')
+        localStorage.setItem('prismy-language', 'en')
       }
     } catch (error) {
-      // Fallback to Vietnamese if localStorage fails
-      setLanguageState('vi')
+      // Fallback to English if localStorage fails
+      setLanguageState('en')
     } finally {
       setIsLoading(false)
     }
