@@ -74,11 +74,11 @@ export default function PaymentResult({
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed':
-        return 'text-green-600 bg-green-100'
+        return 'text-gray-800 bg-gray-200'
       case 'failed':
-        return 'text-red-600 bg-red-100'
+        return 'text-gray-700 bg-gray-100'
       case 'pending':
-        return 'text-yellow-600 bg-yellow-100'
+        return 'text-gray-600 bg-gray-50'
       default:
         return 'text-gray-600 bg-gray-100'
     }
@@ -98,7 +98,7 @@ export default function PaymentResult({
           {/* Status Icon */}
           <motion.div
             className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center ${
-              success ? 'bg-green-100' : 'bg-red-100'
+              success ? 'bg-gray-200' : 'bg-gray-100'
             }`}
             {...motionSafe({
               initial: { scale: 0 },
@@ -107,11 +107,11 @@ export default function PaymentResult({
             })}
           >
             {success ? (
-              <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-8 h-8 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             ) : (
-              <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             )}
@@ -119,7 +119,7 @@ export default function PaymentResult({
 
           {/* Title and Message */}
           <motion.h1
-            className={`heading-3 mb-4 ${success ? 'text-green-600' : 'text-red-600'}`}
+            className={`heading-3 mb-4 ${success ? 'text-gray-800' : 'text-gray-700'}`}
             {...motionSafe({
               initial: { opacity: 0, y: 20 },
               animate: { opacity: 1, y: 0 },

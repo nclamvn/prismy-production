@@ -1,0 +1,51 @@
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes gradientFlow {
+  0% {
+    background-position: -100% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+.gradient-text {
+  background: linear-gradient(90deg, #6366f1 0%, #3b82f6 20%, #06b6d4 40%, #10b981 60%, #22c55e 80%, #6366f1 100%);
+  background-size: 200% 100%;
+  animation: gradientFlow 4s linear infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.animate-gradient {
+  background-size: 400% 400%;
+  animation: gradientMove 8s ease infinite;
+}
+
+.animate-gradient-text {
+  background-size: 200% 100%;
+  animation: gradientFlow 4s linear infinite;
+}

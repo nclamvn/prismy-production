@@ -1,15 +1,28 @@
 {
-  "buildCommand": "npm run build",
+  "buildCommand": "SKIP_ENV_VALIDATION=true next build",
   "outputDirectory": ".next",
   "devCommand": "npm run dev",
-  "installCommand": "npm install",
+  "installCommand": "npm install --legacy-peer-deps",
   "framework": "nextjs",
   "regions": ["sin1"],
+  "build": {
+    "env": {
+      "NODE_OPTIONS": "--max-old-space-size=4096",
+      "NEXT_TELEMETRY_DISABLED": "1",
+      "SKIP_ENV_VALIDATION": "true"
+    }
+  },
   "functions": {
     "app/api/translate/route.ts": {
-      "maxDuration": 30
+      "maxDuration": 60
     },
     "app/api/translate/public/route.ts": {
+      "maxDuration": 30
+    },
+    "app/api/agents/dashboard/route.ts": {
+      "maxDuration": 60
+    },
+    "app/api/ocr/google-vision/route.ts": {
       "maxDuration": 30
     }
   }

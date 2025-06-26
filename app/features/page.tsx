@@ -245,7 +245,7 @@ export default function Features() {
     <MainLayout>
       <div className="overflow-x-hidden">
         {/* Hero Section - Full Width */}
-        <section className="relative overflow-hidden bg-white pt-20 w-full">
+        <section className="relative overflow-hidden w-full" style={{ backgroundColor: 'rgba(251, 250, 249, 1)' }}>
           <div className="w-full py-20">
             <div className="w-full">
               <motion.div
@@ -305,7 +305,7 @@ export default function Features() {
 
         {/* Feature Sections */}
         {content[language].sections.map((section, sectionIndex) => (
-          <section key={sectionIndex} className="py-20 w-full">
+          <section key={sectionIndex} className="py-20 w-full" style={{ backgroundColor: 'rgba(251, 250, 249, 1)' }}>
             <div className="w-full">
               <div className="w-full">
                 <motion.div

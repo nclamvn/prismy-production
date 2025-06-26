@@ -148,15 +148,31 @@ export default function DocumentUpload({
   return (
     <div className="w-full">
       <motion.div
-        className={`
-          relative border-2 border-dashed rounded-2xl p-8 text-center
-          transition-all duration-200 cursor-pointer
-          ${isDragging 
-            ? 'border-gray-900 bg-gray-50' 
-            : 'border-gray-300 hover:border-gray-400 bg-white'
+        className="relative p-8 text-center transition-all duration-200 cursor-pointer"
+        style={{
+          border: `2px dashed ${
+            isDragging 
+              ? 'var(--notebooklm-primary)' 
+              : 'var(--surface-outline)'
+          }`,
+          borderRadius: 'var(--mat-card-elevated-container-shape)',
+          backgroundColor: isDragging 
+            ? 'var(--notebooklm-primary-light)' 
+            : 'var(--surface-elevated)',
+          opacity: isProcessing ? 0.5 : 1,
+          cursor: isProcessing ? 'not-allowed' : 'pointer',
+          boxShadow: isDragging ? 'var(--elevation-level-2)' : 'var(--elevation-level-1)'
+        }}
+        onMouseEnter={(e) => {
+          if (!isDragging && !isProcessing) {
+            e.currentTarget.style.borderColor = 'var(--notebooklm-primary)'
           }
-          ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}
-        `}
+        }}
+        onMouseLeave={(e) => {
+          if (!isDragging && !isProcessing) {
+            e.currentTarget.style.borderColor = 'var(--surface-outline)'
+          }
+        }}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
@@ -182,10 +198,13 @@ export default function DocumentUpload({
           {/* Upload Icon */}
           <div className="flex justify-center">
             <svg
-              className={`w-16 h-16 ${isDragging ? 'text-gray-900' : 'text-gray-400'}`}
+              className="w-16 h-16"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              style={{
+                color: isDragging ? 'var(--notebooklm-primary)' : 'var(--text-secondary)'
+              }}
             >
               <path
                 strokeLinecap="round"
@@ -198,16 +217,48 @@ export default function DocumentUpload({
 
           {/* Text Content */}
           <div className="space-y-2">
-            <h3 className="heading-4 text-gray-900">
+            <h3 
+              style={{
+                fontSize: 'var(--sys-title-large-size)',
+                lineHeight: 'var(--sys-title-large-line-height)',
+                fontFamily: 'var(--sys-title-large-font)',
+                fontWeight: 'var(--sys-title-large-weight)',
+                color: 'var(--text-primary)'
+              }}
+            >
               {isDragging ? content[language].dragActive : content[language].title}
             </h3>
-            <p className="body-base text-gray-600">
+            <p 
+              style={{
+                fontSize: 'var(--sys-body-large-size)',
+                lineHeight: 'var(--sys-body-large-line-height)',
+                fontFamily: 'var(--sys-body-large-font)',
+                fontWeight: 'var(--sys-body-large-weight)',
+                color: 'var(--text-secondary)'
+              }}
+            >
               {content[language].subtitle}
             </p>
-            <p className="body-sm text-gray-500">
+            <p 
+              style={{
+                fontSize: 'var(--sys-body-medium-size)',
+                lineHeight: 'var(--sys-body-medium-line-height)',
+                fontFamily: 'var(--sys-body-medium-font)',
+                fontWeight: 'var(--sys-body-medium-weight)',
+                color: 'var(--text-secondary)'
+              }}
+            >
               {content[language].supportedFormats}
             </p>
-            <p className="body-sm text-gray-500">
+            <p 
+              style={{
+                fontSize: 'var(--sys-body-medium-size)',
+                lineHeight: 'var(--sys-body-medium-line-height)',
+                fontFamily: 'var(--sys-body-medium-font)',
+                fontWeight: 'var(--sys-body-medium-weight)',
+                color: 'var(--text-secondary)'
+              }}
+            >
               {content[language].maxSize}
             </p>
           </div>
@@ -215,8 +266,36 @@ export default function DocumentUpload({
           {/* Upload Button */}
           <button
             type="button"
-            className="btn-primary"
+            className="transition-all"
             disabled={isProcessing}
+            style={{
+              backgroundColor: 'var(--notebooklm-primary)',
+              color: 'white',
+              border: 'none',
+              borderRadius: 'var(--mat-button-filled-container-shape)',
+              height: 'var(--mat-button-filled-container-height)',
+              paddingLeft: 'var(--mat-button-filled-horizontal-padding)',
+              paddingRight: 'var(--mat-button-filled-horizontal-padding)',
+              fontSize: 'var(--sys-label-large-size)',
+              lineHeight: 'var(--sys-label-large-line-height)',
+              fontFamily: 'var(--sys-label-large-font)',
+              fontWeight: 'var(--sys-label-large-weight)',
+              boxShadow: 'var(--elevation-level-1)',
+              cursor: isProcessing ? 'not-allowed' : 'pointer',
+              opacity: isProcessing ? 0.6 : 1
+            }}
+            onMouseEnter={(e) => {
+              if (!isProcessing) {
+                e.currentTarget.style.backgroundColor = 'var(--notebooklm-primary-dark)'
+                e.currentTarget.style.boxShadow = 'var(--elevation-level-2)'
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isProcessing) {
+                e.currentTarget.style.backgroundColor = 'var(--notebooklm-primary)'
+                e.currentTarget.style.boxShadow = 'var(--elevation-level-1)'
+              }
+            }}
           >
             {isProcessing ? (
               <span className="flex items-center">
@@ -234,13 +313,27 @@ export default function DocumentUpload({
       <AnimatePresence>
         {error && (
           <motion.div
-            className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg"
+            className="mt-4 p-4"
+            style={{
+              backgroundColor: 'rgba(239, 68, 68, 0.1)',
+              border: '1px solid rgba(239, 68, 68, 0.3)',
+              borderRadius: 'var(--mat-card-outlined-container-shape)'
+            }}
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
           >
-            <p className="body-sm text-red-600 flex items-center">
+            <p 
+              className="flex items-center"
+              style={{
+                fontSize: 'var(--sys-body-medium-size)',
+                lineHeight: 'var(--sys-body-medium-line-height)',
+                fontFamily: 'var(--sys-body-medium-font)',
+                fontWeight: 'var(--sys-body-medium-weight)',
+                color: 'rgb(185, 28, 28)'
+              }}
+            >
               <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
               </svg>
@@ -254,21 +347,68 @@ export default function DocumentUpload({
       <AnimatePresence>
         {selectedFile && !error && (
           <motion.div
-            className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg"
+            className="mt-4 p-4"
+            style={{
+              backgroundColor: 'rgba(34, 197, 94, 0.1)',
+              border: '1px solid rgba(34, 197, 94, 0.3)',
+              borderRadius: 'var(--mat-card-outlined-container-shape)'
+            }}
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
           >
             <div className="space-y-2">
-              <p className="body-sm text-green-800">
-                <span className="font-medium">{content[language].fileInfo.name}:</span> {selectedFile.name}
+              <p 
+                style={{
+                  fontSize: 'var(--sys-body-medium-size)',
+                  lineHeight: 'var(--sys-body-medium-line-height)',
+                  fontFamily: 'var(--sys-body-medium-font)',
+                  fontWeight: 'var(--sys-body-medium-weight)',
+                  color: 'rgb(21, 128, 61)'
+                }}
+              >
+                <span 
+                  style={{
+                    fontWeight: 'var(--sys-label-medium-weight)'
+                  }}
+                >
+                  {content[language].fileInfo.name}:
+                </span> {selectedFile.name}
               </p>
-              <p className="body-sm text-green-800">
-                <span className="font-medium">{content[language].fileInfo.size}:</span> {formatFileSize(selectedFile.size)}
+              <p 
+                style={{
+                  fontSize: 'var(--sys-body-medium-size)',
+                  lineHeight: 'var(--sys-body-medium-line-height)',
+                  fontFamily: 'var(--sys-body-medium-font)',
+                  fontWeight: 'var(--sys-body-medium-weight)',
+                  color: 'rgb(21, 128, 61)'
+                }}
+              >
+                <span 
+                  style={{
+                    fontWeight: 'var(--sys-label-medium-weight)'
+                  }}
+                >
+                  {content[language].fileInfo.size}:
+                </span> {formatFileSize(selectedFile.size)}
               </p>
-              <p className="body-sm text-green-800">
-                <span className="font-medium">{content[language].fileInfo.type}:</span> {selectedFile.type.split('/').pop()?.toUpperCase()}
+              <p 
+                style={{
+                  fontSize: 'var(--sys-body-medium-size)',
+                  lineHeight: 'var(--sys-body-medium-line-height)',
+                  fontFamily: 'var(--sys-body-medium-font)',
+                  fontWeight: 'var(--sys-body-medium-weight)',
+                  color: 'rgb(21, 128, 61)'
+                }}
+              >
+                <span 
+                  style={{
+                    fontWeight: 'var(--sys-label-medium-weight)'
+                  }}
+                >
+                  {content[language].fileInfo.type}:
+                </span> {selectedFile.type.split('/').pop()?.toUpperCase()}
               </p>
             </div>
           </motion.div>

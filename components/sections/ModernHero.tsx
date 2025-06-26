@@ -5,11 +5,13 @@ import { useState, useEffect } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { Star, Users, Globe, Zap, ArrowRight } from 'lucide-react'
 import UnifiedGetStartedButton from '@/components/ui/UnifiedGetStartedButton'
+import { useIsHydrated } from '@/hooks/useHydrationSafeAnimation'
 import './GradientKeyframes.css'
 
 export default function ModernHero() {
   const { language } = useLanguage()
   const [userCount, setUserCount] = useState(47832)
+  const isHydrated = useIsHydrated()
 
   // Animate user count
   useEffect(() => {
@@ -138,9 +140,9 @@ export default function ModernHero() {
       >
         {/* Main Headlines - Spacing Optimized - Final Clean Version */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={isHydrated ? { opacity: 0, y: 30 } : { opacity: 1, y: 0 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
+          transition={isHydrated ? { duration: 0.8, delay: 0.2 } : { duration: 0 }}
           className="mb-6"
           style={{
             overflow: 'visible',
@@ -183,9 +185,9 @@ export default function ModernHero() {
 
         {/* Description - NotebookLM Style */}
         <motion.p
-          initial={{ opacity: 0, y: 20 }}
+          initial={isHydrated ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
+          transition={isHydrated ? { duration: 0.8, delay: 0.4 } : { duration: 0 }}
           className="mb-8 max-w-xl sm:max-w-2xl lg:max-w-3xl mx-auto leading-relaxed text-lg sm:text-xl lg:text-2xl"
           style={{
             fontFamily: 'var(--sys-title-large-font)',
@@ -198,9 +200,9 @@ export default function ModernHero() {
 
         {/* CTA - Material Design 3 Style */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={isHydrated ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
+          transition={isHydrated ? { duration: 0.8, delay: 0.6 } : { duration: 0 }}
           className="flex justify-center items-center mb-12"
         >
           <UnifiedGetStartedButton
@@ -246,9 +248,9 @@ export default function ModernHero() {
 
         {/* Social Proof - NotebookLM Style */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={isHydrated ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
+          transition={isHydrated ? { duration: 0.8, delay: 0.8 } : { duration: 0 }}
           className="flex items-center justify-center mb-16"
         >
           <div
@@ -293,9 +295,9 @@ export default function ModernHero() {
 
         {/* Live Stats - Material Design 3 Style */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={isHydrated ? { opacity: 0, y: 30 } : { opacity: 1, y: 0 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1.0 }}
+          transition={isHydrated ? { duration: 0.8, delay: 1.0 } : { duration: 0 }}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto"
         >
           <div
@@ -441,9 +443,9 @@ export default function ModernHero() {
 
         {/* Feature Pills - Material Design 3 Style */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={isHydrated ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1.2 }}
+          transition={isHydrated ? { duration: 0.8, delay: 1.2 } : { duration: 0 }}
           className="flex flex-wrap justify-center gap-2 sm:gap-3 mt-8 sm:mt-12"
         >
           {currentContent.features.map((feature, index) => (

@@ -382,14 +382,32 @@ export default function EnhancedDocumentUpload({
       {/* Upload Area */}
       <motion.div
         variants={motionSafe(slideUp)}
-        className={`
-          relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300
-          ${isDragging 
-            ? 'border-blue-400 bg-blue-50' 
-            : 'border-gray-300 hover:border-gray-400'
+        className="relative p-8 text-center transition-all duration-300 cursor-pointer"
+        style={{
+          border: `2px dashed ${isDragging 
+            ? 'var(--notebooklm-primary)' 
+            : selectedFile
+              ? 'rgb(34, 197, 94)'
+              : 'var(--surface-outline)'
+          }`,
+          borderRadius: 'var(--mat-card-elevated-container-shape)',
+          backgroundColor: isDragging 
+            ? 'var(--notebooklm-primary-light)'
+            : selectedFile
+              ? 'rgba(34, 197, 94, 0.1)'
+              : 'var(--surface-elevated)',
+          boxShadow: (isDragging || selectedFile) ? 'var(--elevation-level-2)' : 'var(--elevation-level-1)'
+        }}
+        onMouseEnter={(e) => {
+          if (!isDragging && !selectedFile) {
+            e.currentTarget.style.borderColor = 'var(--notebooklm-primary)'
           }
-          ${selectedFile ? 'border-green-400 bg-green-50' : ''}
-        `}
+        }}
+        onMouseLeave={(e) => {
+          if (!isDragging && !selectedFile) {
+            e.currentTarget.style.borderColor = 'var(--surface-outline)'
+          }
+        }}
         onDrop={handleDrop}
         onDragOver={(e) => e.preventDefault()}
         onDragEnter={() => setIsDragging(true)}
@@ -409,8 +427,27 @@ export default function EnhancedDocumentUpload({
             <div className="flex items-center justify-center space-x-3">
               {getFileIcon(selectedFile)}
               <div>
-                <p className="font-medium text-gray-900">{selectedFile.name}</p>
-                <p className="text-sm text-gray-500">
+                <p 
+                  style={{
+                    fontSize: 'var(--sys-label-large-size)',
+                    lineHeight: 'var(--sys-label-large-line-height)',
+                    fontFamily: 'var(--sys-label-large-font)',
+                    fontWeight: 'var(--sys-label-large-weight)',
+                    color: 'var(--text-primary)'
+                  }}
+                >
+                  {selectedFile.name}
+                </p>
+                <p 
+                  className="text-sm"
+                  style={{
+                    fontSize: 'var(--sys-body-medium-size)',
+                    lineHeight: 'var(--sys-body-medium-line-height)',
+                    fontFamily: 'var(--sys-body-medium-font)',
+                    fontWeight: 'var(--sys-body-medium-weight)',
+                    color: 'var(--text-secondary)'
+                  }}
+                >
                   {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB
                 </p>
               </div>
@@ -419,16 +456,55 @@ export default function EnhancedDocumentUpload({
           ) : (
             <>
               <div className="flex justify-center">
-                <Upload className={`w-12 h-12 ${isDragging ? 'text-blue-600' : 'text-gray-400'}`} />
+                <Upload 
+                  className="w-12 h-12" 
+                  style={{ color: isDragging ? 'var(--notebooklm-primary)' : 'var(--text-secondary)' }}
+                />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                <h3 
+                  className="mb-2"
+                  style={{
+                    fontSize: 'var(--sys-title-large-size)',
+                    lineHeight: 'var(--sys-title-large-line-height)',
+                    fontFamily: 'var(--sys-title-large-font)',
+                    fontWeight: 'var(--sys-title-large-weight)',
+                    color: 'var(--text-primary)'
+                  }}
+                >
                   {content[language].title}
                 </h3>
-                <p className="text-gray-600 mb-4">
+                <p 
+                  className="mb-4"
+                  style={{
+                    fontSize: 'var(--sys-body-large-size)',
+                    lineHeight: 'var(--sys-body-large-line-height)',
+                    fontFamily: 'var(--sys-body-large-font)',
+                    fontWeight: 'var(--sys-body-large-weight)',
+                    color: 'var(--text-secondary)'
+                  }}
+                >
                   {isDragging ? content[language].dragActive : content[language].subtitle}
                 </p>
-                <button className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                <button 
+                  className="px-6 py-3 text-white transition-colors"
+                  style={{
+                    backgroundColor: 'var(--notebooklm-primary)',
+                    borderRadius: 'var(--mat-button-filled-container-shape)',
+                    fontSize: 'var(--sys-label-large-size)',
+                    lineHeight: 'var(--sys-label-large-line-height)',
+                    fontFamily: 'var(--sys-label-large-font)',
+                    fontWeight: 'var(--sys-label-large-weight)',
+                    border: 'none',
+                    boxShadow: 'var(--elevation-level-1)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--notebooklm-primary-dark)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--notebooklm-primary)'
+                  }}
+                >
                   {content[language].uploadButton}
                 </button>
               </div>
@@ -437,9 +513,34 @@ export default function EnhancedDocumentUpload({
         </div>
 
         {/* File format info */}
-        <div className="mt-6 pt-6 border-t border-gray-200">
-          <p className="text-xs text-gray-500 mb-1">{content[language].supportedFormats}</p>
-          <p className="text-xs text-gray-500">{content[language].maxSize}</p>
+        <div 
+          className="mt-6 pt-6"
+          style={{ borderTop: '1px solid var(--surface-outline)' }}
+        >
+          <p 
+            className="text-xs mb-1"
+            style={{
+              fontSize: 'var(--sys-body-small-size)',
+              lineHeight: 'var(--sys-body-small-line-height)',
+              fontFamily: 'var(--sys-body-small-font)',
+              fontWeight: 'var(--sys-body-small-weight)',
+              color: 'var(--text-secondary)'
+            }}
+          >
+            {content[language].supportedFormats}
+          </p>
+          <p 
+            className="text-xs"
+            style={{
+              fontSize: 'var(--sys-body-small-size)',
+              lineHeight: 'var(--sys-body-small-line-height)',
+              fontFamily: 'var(--sys-body-small-font)',
+              fontWeight: 'var(--sys-body-small-weight)',
+              color: 'var(--text-secondary)'
+            }}
+          >
+            {content[language].maxSize}
+          </p>
         </div>
 
         {/* Error display */}
@@ -447,11 +548,27 @@ export default function EnhancedDocumentUpload({
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg"
+            className="mt-4 p-3"
+            style={{
+              backgroundColor: 'rgba(239, 68, 68, 0.1)',
+              border: '1px solid rgba(239, 68, 68, 0.3)',
+              borderRadius: 'var(--mat-card-outlined-container-shape)'
+            }}
           >
             <div className="flex items-center space-x-2">
               <AlertTriangle className="w-4 h-4 text-red-600" />
-              <span className="text-sm text-red-700">{error}</span>
+              <span 
+                className="text-sm"
+                style={{
+                  fontSize: 'var(--sys-body-medium-size)',
+                  lineHeight: 'var(--sys-body-medium-line-height)',
+                  fontFamily: 'var(--sys-body-medium-font)',
+                  fontWeight: 'var(--sys-body-medium-weight)',
+                  color: 'rgb(185, 28, 28)'
+                }}
+              >
+                {error}
+              </span>
             </div>
           </motion.div>
         )}
@@ -461,47 +578,123 @@ export default function EnhancedDocumentUpload({
       {selectedFile && showAgentVisualization && (
         <motion.div
           variants={motionSafe(slideUp)}
-          className="bg-white rounded-xl border border-gray-200 p-6"
+          className="p-6"
+          style={{
+            backgroundColor: 'var(--surface-elevated)',
+            borderRadius: 'var(--mat-card-elevated-container-shape)',
+            border: '1px solid var(--surface-outline)',
+            boxShadow: 'var(--elevation-level-1)'
+          }}
         >
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
-            <Brain className="w-5 h-5 text-purple-600" />
+          <h3 
+            className="mb-4 flex items-center space-x-2"
+            style={{
+              fontSize: 'var(--sys-title-large-size)',
+              lineHeight: 'var(--sys-title-large-line-height)',
+              fontFamily: 'var(--sys-title-large-font)',
+              fontWeight: 'var(--sys-title-large-weight)',
+              color: 'var(--text-primary)'
+            }}
+          >
+            <Brain className="w-5 h-5" style={{ color: 'var(--notebooklm-primary)' }} />
             <span>{content[language].agentAssignment}</span>
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Agent Selection */}
             <div>
-              <h4 className="font-medium text-gray-900 mb-3">{content[language].recommendedAgent}</h4>
+              <h4 
+                className="mb-3"
+                style={{
+                  fontSize: 'var(--sys-title-medium-size)',
+                  lineHeight: 'var(--sys-title-medium-line-height)',
+                  fontFamily: 'var(--sys-title-medium-font)',
+                  fontWeight: 'var(--sys-title-medium-weight)',
+                  color: 'var(--text-primary)'
+                }}
+              >
+                {content[language].recommendedAgent}
+              </h4>
               <div className="space-y-3">
                 {suggestedAgents.map((agent) => (
                   <div
                     key={agent.id}
-                    className={`
-                      p-4 border rounded-lg cursor-pointer transition-all
-                      ${selectedAgent?.id === agent.id 
-                        ? 'border-purple-500 bg-purple-50' 
-                        : 'border-gray-200 hover:border-gray-300'
+                    className="p-4 cursor-pointer transition-all"
+                    style={{
+                      border: selectedAgent?.id === agent.id
+                        ? '2px solid var(--notebooklm-primary)'
+                        : '1px solid var(--surface-outline)',
+                      borderRadius: 'var(--mat-card-outlined-container-shape)',
+                      backgroundColor: selectedAgent?.id === agent.id
+                        ? 'var(--notebooklm-primary-light)'
+                        : 'var(--surface-filled)'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (selectedAgent?.id !== agent.id) {
+                        e.currentTarget.style.borderColor = 'var(--notebooklm-primary)'
                       }
-                    `}
+                    }}
+                    onMouseLeave={(e) => {
+                      if (selectedAgent?.id !== agent.id) {
+                        e.currentTarget.style.borderColor = 'var(--surface-outline)'
+                      }
+                    }}
                     onClick={() => setSelectedAgent(agent)}
                   >
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center space-x-2">
                         {getAgentIcon(agent.type)}
-                        <span className="font-medium text-gray-900">{agent.name}</span>
+                        <span 
+                          style={{
+                            fontSize: 'var(--sys-label-large-size)',
+                            lineHeight: 'var(--sys-label-large-line-height)',
+                            fontFamily: 'var(--sys-label-large-font)',
+                            fontWeight: 'var(--sys-label-large-weight)',
+                            color: 'var(--text-primary)'
+                          }}
+                        >
+                          {agent.name}
+                        </span>
                       </div>
-                      <span className="text-sm text-purple-600 font-medium">
+                      <span 
+                        className="text-sm"
+                        style={{
+                          fontSize: 'var(--sys-label-medium-size)',
+                          lineHeight: 'var(--sys-label-medium-line-height)',
+                          fontFamily: 'var(--sys-label-medium-font)',
+                          fontWeight: 'var(--sys-label-medium-weight)',
+                          color: 'var(--notebooklm-primary)'
+                        }}
+                      >
                         {Math.round(agent.confidence * 100)}% match
                       </span>
                     </div>
-                    <div className="text-sm text-gray-600 mb-2">
+                    <div 
+                      className="text-sm mb-2"
+                      style={{
+                        fontSize: 'var(--sys-body-medium-size)',
+                        lineHeight: 'var(--sys-body-medium-line-height)',
+                        fontFamily: 'var(--sys-body-medium-font)',
+                        fontWeight: 'var(--sys-body-medium-weight)',
+                        color: 'var(--text-secondary)'
+                      }}
+                    >
                       {content[language].estimatedTime}: {agent.estimatedTime}
                     </div>
                     <div className="flex flex-wrap gap-1">
                       {agent.capabilities.slice(0, 2).map((capability, index) => (
                         <span
                           key={index}
-                          className="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded-full"
+                          className="px-2 py-1 text-xs"
+                          style={{
+                            backgroundColor: 'var(--surface-panel)',
+                            color: 'var(--text-secondary)',
+                            borderRadius: 'var(--shape-corner-full)',
+                            fontSize: 'var(--sys-body-small-size)',
+                            lineHeight: 'var(--sys-body-small-line-height)',
+                            fontFamily: 'var(--sys-body-small-font)',
+                            fontWeight: 'var(--sys-body-small-weight)'
+                          }}
                         >
                           {capability}
                         </span>
@@ -514,7 +707,18 @@ export default function EnhancedDocumentUpload({
 
             {/* Processing Preview */}
             <div>
-              <h4 className="font-medium text-gray-900 mb-3">{content[language].processingSteps}</h4>
+              <h4 
+                className="mb-3"
+                style={{
+                  fontSize: 'var(--sys-title-medium-size)',
+                  lineHeight: 'var(--sys-title-medium-line-height)',
+                  fontFamily: 'var(--sys-title-medium-font)',
+                  fontWeight: 'var(--sys-title-medium-weight)',
+                  color: 'var(--text-primary)'
+                }}
+              >
+                {content[language].processingSteps}
+              </h4>
               <div className="space-y-2">
                 {processingSteps.map((step, index) => (
                   <div

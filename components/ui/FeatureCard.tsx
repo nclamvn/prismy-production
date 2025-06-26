@@ -2,8 +2,9 @@
 
 import React from 'react'
 import { motion } from 'framer-motion'
-import { motionSafe, slideUp } from '@/lib/motion'
+import { motionSafe, slideUp, notebookLMElevated } from '@/lib/motion'
 import { LucideIcon } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 interface FeatureCardProps {
   icon: LucideIcon
@@ -14,6 +15,10 @@ interface FeatureCardProps {
   isSelected?: boolean
   onClick?: (event: React.MouseEvent) => void
   className?: string
+  'aria-label'?: string
+  'aria-describedby'?: string
+  role?: string
+  tabIndex?: number
 }
 
 export default function FeatureCard({ 
@@ -24,58 +29,78 @@ export default function FeatureCard({
   tags = [],
   isSelected = false,
   onClick,
-  className = ''
+  className = '',
+  'aria-label': ariaLabel,
+  'aria-describedby': ariaDescribedBy,
+  role = onClick ? 'button' : 'article',
+  tabIndex = onClick ? 0 : undefined
 }: FeatureCardProps) {
   return (
     <motion.div
       variants={motionSafe(slideUp)}
       transition={{ delay }}
-      className={`
-        group relative bg-white rounded-2xl border transition-all duration-300 cursor-pointer
-        ${isSelected 
-          ? 'border-black shadow-lg ring-2 ring-black ring-offset-2' 
-          : 'border-gray-200 hover:border-gray-300'
-        }
-        ${className}
-      `}
+      className={cn(
+        'group relative transition-all duration-300',
+        onClick && 'cursor-pointer focus-indicator card-focus touch-accessible',
+        className
+      )}
       style={{
-        borderColor: isSelected ? '#111827' : '#e5e7eb',
-        borderRadius: '1rem',
+        backgroundColor: 'var(--surface-elevated)',
+        border: isSelected 
+          ? '2px solid var(--notebooklm-primary)' 
+          : '1px solid var(--surface-outline)',
+        borderRadius: 'var(--mat-card-elevated-container-shape)',
         padding: '1.5rem',
-        boxShadow: 'none',
-        transition: 'all 200ms ease-in-out'
+        boxShadow: isSelected 
+          ? 'var(--elevation-level-3)' 
+          : 'var(--elevation-level-1)'
       }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)';
-        e.currentTarget.style.boxShadow = '0px 4px 12px rgba(0,0,0,0.08)';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = 'translateY(0) scale(1)';
-        e.currentTarget.style.boxShadow = 'none';
-      }}
+      {...(onClick && !isSelected ? motionSafe(notebookLMElevated) : {})}
       onClick={(e) => onClick?.(e)}
+      onKeyDown={(e) => {
+        if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault()
+          onClick(e as any)
+        }
+      }}
+      role={role}
+      tabIndex={tabIndex}
+      aria-label={ariaLabel || `${title}. ${description}`}
+      aria-describedby={ariaDescribedBy}
+      aria-selected={isSelected}
     >
       {/* Horizontal Layout: Icon beside Title - Vietnamese Standard */}
       <div className="flex items-center gap-3 mb-4">
         {/* Icon Container */}
         <div className="flex-shrink-0">
-          <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center
-                        group-hover:bg-gray-100 transition-all duration-300">
+          <div 
+            className="w-10 h-10 flex items-center justify-center transition-all duration-300"
+            style={{
+              backgroundColor: 'var(--notebooklm-primary-light)',
+              borderRadius: 'var(--mat-card-outlined-container-shape)'
+            }}
+          >
             <Icon 
-              className="text-black transition-transform duration-200"
-              style={{ width: '40px', height: '40px' }}
+              className="transition-transform duration-200"
+              style={{ 
+                width: '24px', 
+                height: '24px',
+                color: 'var(--notebooklm-primary)'
+              }}
               strokeWidth={1.5}
             />
           </div>
         </div>
 
-        {/* Title - Vietnamese Typography Standards */}
+        {/* Title - NotebookLM Typography */}
         <h3 
-          className="font-optima font-bold text-black tracking-tight leading-tight group-hover:text-gray-900 transition-colors duration-200"
-          style={{ 
-            color: '#111827',
-            fontSize: '1.25rem', // Tăng từ kích thước hiện tại
-            fontWeight: 'bold'
+          className="transition-colors duration-200"
+          style={{
+            fontSize: 'var(--sys-title-large-size)',
+            lineHeight: 'var(--sys-title-large-line-height)',
+            fontFamily: 'var(--sys-title-large-font)',
+            fontWeight: 'var(--sys-title-large-weight)',
+            color: 'var(--text-primary)'
           }}
         >
           {title}
@@ -83,8 +108,16 @@ export default function FeatureCard({
       </div>
 
       {/* Description */}
-      <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3
-                   group-hover:text-gray-700 transition-colors duration-200">
+      <p 
+        className="mb-4 line-clamp-3 transition-colors duration-200"
+        style={{
+          fontSize: 'var(--sys-body-medium-size)',
+          lineHeight: 'var(--sys-body-medium-line-height)',
+          fontFamily: 'var(--sys-body-medium-font)',
+          fontWeight: 'var(--sys-body-medium-weight)',
+          color: 'var(--text-secondary)'
+        }}
+      >
         {description}
       </p>
 
@@ -94,8 +127,16 @@ export default function FeatureCard({
           {tags.slice(0, 3).map((tag, tagIndex) => (
             <span
               key={tag}
-              className="px-2 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-full
-                       group-hover:bg-gray-200 transition-all duration-200"
+              className="px-2 py-1 transition-all duration-200"
+              style={{
+                backgroundColor: 'var(--surface-panel)',
+                color: 'var(--text-secondary)',
+                fontSize: 'var(--sys-body-small-size)',
+                lineHeight: 'var(--sys-body-small-line-height)',
+                fontFamily: 'var(--sys-body-small-font)',
+                fontWeight: 'var(--sys-body-small-weight)',
+                borderRadius: 'var(--shape-corner-full)'
+              }}
             >
               {tag}
             </span>
@@ -105,7 +146,12 @@ export default function FeatureCard({
 
       {/* Selection Indicator */}
       {isSelected && (
-        <div className="absolute top-3 right-3 w-3 h-3 bg-black rounded-full" />
+        <div 
+          className="absolute top-3 right-3 w-3 h-3 rounded-full"
+          style={{
+            backgroundColor: 'var(--notebooklm-primary)'
+          }}
+        />
       )}
     </motion.div>
   )

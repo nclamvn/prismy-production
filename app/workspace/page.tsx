@@ -45,7 +45,7 @@ export default function Workspace() {
         return <SimpleTranslationInterface />
       case 'billing':
         return (
-          <div className="bg-white rounded-xl p-8 border border-gray-200">
+          <div className="rounded-xl p-8" style={{ backgroundColor: 'rgba(251, 250, 249, 1)', border: '1px solid var(--surface-outline)' }}>
             <h3 className="text-xl font-semibold text-gray-900 mb-4">
               Billing Management
             </h3>
@@ -54,7 +54,7 @@ export default function Workspace() {
         )
       case 'settings':
         return (
-          <div className="bg-white rounded-xl p-8 border border-gray-200">
+          <div className="rounded-xl p-8" style={{ backgroundColor: 'rgba(251, 250, 249, 1)', border: '1px solid var(--surface-outline)' }}>
             <h3 className="text-xl font-semibold text-gray-900 mb-4">
               Settings
             </h3>

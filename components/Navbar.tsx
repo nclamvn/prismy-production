@@ -12,6 +12,8 @@ import { useSmartNavigation } from '@/hooks/useSmartNavigation'
 import UserMenu from './auth/UserMenu'
 import UniversalDropdown from './ui/UniversalDropdown'
 import UnifiedGetStartedButton from './ui/UnifiedGetStartedButton'
+import { ThemeToggle } from './theme/ThemeToggle'
+import AccessibilityPanel from './accessibility/AccessibilityPanel'
 import { Globe, ChevronDown } from 'lucide-react'
 
 interface NavbarProps {
@@ -126,7 +128,16 @@ export default function Navbar({}: NavbarProps) {
               className="flex items-center focus-visible-ring rounded-md"
               aria-label={isAuthenticated ? 'Go to workspace' : 'Prismy home'}
             >
-              <img src="/logo.svg" alt="Prismy" className="h-8 w-auto mr-2" />
+              <img 
+                src="/icons/logo.svg" 
+                alt="Prismy" 
+                className="h-8 w-auto mr-2"
+                style={{
+                  borderRadius: 'var(--shape-corner-small)',
+                  boxShadow: 'var(--elevation-level-1)',
+                  overflow: 'hidden'
+                }}
+              />
               <span className="heading-4 font-bold">Prismy</span>
             </button>
 
@@ -203,9 +214,14 @@ export default function Navbar({}: NavbarProps) {
                   }
                 >
                   <img
-                    src="/logo.svg"
+                    src="/icons/logo.svg"
                     alt="Prismy"
                     className="h-8 w-auto mr-2"
+                    style={{
+                      borderRadius: 'var(--shape-corner-small)',
+                      boxShadow: 'var(--elevation-level-1)',
+                      overflow: 'hidden'
+                    }}
                   />
                   <span className="heading-4 font-bold">Prismy</span>
                 </button>
@@ -225,8 +241,11 @@ export default function Navbar({}: NavbarProps) {
                   ))}
                 </div>
 
-                {/* Desktop Right Section: Language Toggle + Auth */}
-                <div className="flex items-center space-x-2.5">
+                {/* Desktop Right Section: Theme + Language + Accessibility + Auth */}
+                <div className="flex items-center space-x-2">
+                  {/* Theme Toggle */}
+                  <ThemeToggle variant="button" className="shrink-0" />
+                  
                   {/* Language Selector */}
                   <UniversalDropdown
                     value={language}
@@ -244,7 +263,7 @@ export default function Navbar({}: NavbarProps) {
                         icon: <Globe size={14} strokeWidth={1.5} />,
                       },
                     ]}
-                    className="min-w-[100px] sm:min-w-[120px]"
+                    className="min-w-[100px] sm:min-w-[120px] shrink-0"
                   />
 
                   {!loading &&
@@ -295,27 +314,37 @@ export default function Navbar({}: NavbarProps) {
                 </Link>
               ))}
 
-              {/* Mobile Language Selector */}
-              <div className="py-2 border-t border-gray-100 mt-4">
+              {/* Mobile Settings Section */}
+              <div className="py-2 border-t border-gray-100 mt-4 space-y-4">
+                {/* Theme Toggle */}
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-gray-700">Theme</span>
+                  <ThemeToggle variant="dropdown" showLabel />
+                </div>
+                
+                {/* Mobile Language Selector */}
                 <div className="space-y-2">
-                  <button
-                    onClick={() => setLanguage('vi')}
-                    className={`w-full text-left px-4 py-3 text-sm transition-all duration-300 cubic-bezier(0.25, 0.46, 0.45, 0.94)
-                             hover:bg-gray-50 hover:font-semibold hover:-translate-y-px
-                             ${language === 'vi' ? 'font-semibold text-gray-900 bg-gray-50' : 'text-gray-600 bg-white'}`}
-                    style={{ borderRadius: 'var(--radius-md)' }}
-                  >
-                    {content[language].languages.vi}
-                  </button>
-                  <button
-                    onClick={() => setLanguage('en')}
-                    className={`w-full text-left px-4 py-3 text-sm transition-all duration-300 cubic-bezier(0.25, 0.46, 0.45, 0.94)
-                             hover:bg-gray-50 hover:font-semibold hover:-translate-y-px
-                             ${language === 'en' ? 'font-semibold text-gray-900 bg-gray-50' : 'text-gray-600 bg-white'}`}
-                    style={{ borderRadius: 'var(--radius-md)' }}
-                  >
-                    {content[language].languages.en}
-                  </button>
+                  <label className="text-sm font-medium text-gray-700">Language</label>
+                  <div className="space-y-1">
+                    <button
+                      onClick={() => setLanguage('vi')}
+                      className={`w-full text-left px-4 py-3 text-sm transition-all duration-300 cubic-bezier(0.25, 0.46, 0.45, 0.94)
+                               hover:bg-gray-50 hover:font-semibold hover:-translate-y-px
+                               ${language === 'vi' ? 'font-semibold text-gray-900 bg-gray-50' : 'text-gray-600 bg-white'}`}
+                      style={{ borderRadius: 'var(--radius-md)' }}
+                    >
+                      {content[language].languages.vi}
+                    </button>
+                    <button
+                      onClick={() => setLanguage('en')}
+                      className={`w-full text-left px-4 py-3 text-sm transition-all duration-300 cubic-bezier(0.25, 0.46, 0.45, 0.94)
+                               hover:bg-gray-50 hover:font-semibold hover:-translate-y-px
+                               ${language === 'en' ? 'font-semibold text-gray-900 bg-gray-50' : 'text-gray-600 bg-white'}`}
+                      style={{ borderRadius: 'var(--radius-md)' }}
+                    >
+                      {content[language].languages.en}
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -350,6 +379,9 @@ export default function Navbar({}: NavbarProps) {
           </motion.div>
         </div>
       )}
+
+      {/* Accessibility Panel - Floating Button */}
+      <AccessibilityPanel language={language} />
     </motion.header>
   )
 }

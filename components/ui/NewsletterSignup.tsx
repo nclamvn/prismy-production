@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { motionSafe, slideUp } from '@/lib/motion'
+import { motionSafe, slideUp, notebookLMButton } from '@/lib/motion'
+import { Button } from './Button'
 
 interface NewsletterSignupProps {
   language: 'vi' | 'en'
@@ -59,33 +60,83 @@ export default function NewsletterSignup({
   }
 
   const getVariantStyles = () => {
+    const baseInputStyle = {
+      backgroundColor: 'var(--surface-elevated)',
+      border: '1px solid var(--surface-outline)',
+      borderRadius: 'var(--mat-button-outlined-container-shape)',
+      color: 'var(--text-primary)',
+      fontSize: 'var(--sys-body-large-size)',
+      lineHeight: 'var(--sys-body-large-line-height)',
+      fontFamily: 'var(--sys-body-large-font)',
+      padding: '0 16px',
+      height: '48px',
+      outline: 'none',
+      transition: 'all 200ms cubic-bezier(0.2, 0, 0, 1)'
+    }
+    
     switch (variant) {
       case 'footer':
         return {
-          container: 'w-full email-pill-form', 
-          title: 'heading-5 text-white font-semibold mb-3',
-          description: 'body-sm text-gray-400 mb-5',
-          form: 'flex items-center bg-white rounded-full overflow-hidden h-10 border border-gray-300',
-          input: 'flex-1 px-3 text-sm bg-transparent outline-none placeholder:text-gray-500 text-gray-900',
-          button: 'bg-gray-900 text-white px-4 h-full text-sm font-medium hover:bg-gray-800 transition-colors whitespace-nowrap flex items-center justify-center'
+          container: 'w-full',
+          titleStyle: {
+            fontSize: 'var(--sys-headline-medium-size)',
+            lineHeight: 'var(--sys-headline-medium-line-height)',
+            fontFamily: 'var(--sys-headline-medium-font)',
+            fontWeight: 'var(--sys-headline-medium-weight)',
+            color: 'var(--text-primary)',
+            marginBottom: '12px'
+          },
+          descriptionStyle: {
+            fontSize: 'var(--sys-body-medium-size)',
+            lineHeight: 'var(--sys-body-medium-line-height)',
+            fontFamily: 'var(--sys-body-medium-font)',
+            color: 'var(--text-secondary)',
+            marginBottom: '20px'
+          },
+          form: 'flex flex-col sm:flex-row gap-3',
+          inputStyle: baseInputStyle
         }
       case 'inline':
         return {
           container: 'w-full',
-          title: 'heading-4 text-gray-900 mb-2',
-          description: 'body-sm text-gray-600 mb-4',
+          titleStyle: {
+            fontSize: 'var(--sys-title-large-size)',
+            lineHeight: 'var(--sys-title-large-line-height)',
+            fontFamily: 'var(--sys-title-large-font)',
+            fontWeight: 'var(--sys-title-large-weight)',
+            color: 'var(--text-primary)',
+            marginBottom: '8px'
+          },
+          descriptionStyle: {
+            fontSize: 'var(--sys-body-medium-size)',
+            lineHeight: 'var(--sys-body-medium-line-height)',
+            fontFamily: 'var(--sys-body-medium-font)',
+            color: 'var(--text-secondary)',
+            marginBottom: '16px'
+          },
           form: 'flex flex-col sm:flex-row gap-3',
-          input: 'flex-1 h-12 px-4 bg-white border border-gray-300 rounded-lg text-base text-gray-900 placeholder:text-gray-500 focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 transition-all',
-          button: 'h-12 bg-gray-900 text-white hover:bg-gray-800 px-6 rounded-lg font-semibold text-base transition-colors whitespace-nowrap'
+          inputStyle: baseInputStyle
         }
       default:
         return {
           container: 'max-w-lg mx-auto text-center',
-          title: 'heading-3 text-gray-900 mb-4',
-          description: 'body-base text-gray-600 mb-6',
+          titleStyle: {
+            fontSize: 'var(--sys-headline-large-size)',
+            lineHeight: 'var(--sys-headline-large-line-height)',
+            fontFamily: 'var(--sys-headline-large-font)',
+            fontWeight: 'var(--sys-headline-large-weight)',
+            color: 'var(--text-primary)',
+            marginBottom: '16px'
+          },
+          descriptionStyle: {
+            fontSize: 'var(--sys-body-large-size)',
+            lineHeight: 'var(--sys-body-large-line-height)',
+            fontFamily: 'var(--sys-body-large-font)',
+            color: 'var(--text-secondary)',
+            marginBottom: '24px'
+          },
           form: 'flex flex-col sm:flex-row gap-4',
-          input: 'flex-1 h-12 px-4 bg-white border border-gray-300 rounded-lg text-base text-gray-900 placeholder:text-gray-500 focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 transition-all',
-          button: 'h-12 bg-gray-900 text-white hover:bg-gray-800 px-8 rounded-lg font-semibold text-base transition-colors'
+          inputStyle: baseInputStyle
         }
     }
   }
@@ -98,14 +149,44 @@ export default function NewsletterSignup({
         variants={motionSafe(slideUp)}
         className={`${styles.container} ${className}`}
       >
-        <div className="text-center p-6 bg-green-50 rounded-lg border border-green-200">
-          <div className="w-12 h-12 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
-            <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div 
+          className="text-center p-6"
+          style={{
+            backgroundColor: 'var(--success-background)',
+            border: '1px solid var(--success-border)',
+            borderRadius: 'var(--mat-card-elevated-container-shape)'
+          }}
+        >
+          <div 
+            className="w-12 h-12 mx-auto mb-4 rounded-full flex items-center justify-center"
+            style={{ backgroundColor: 'var(--success-color)' }}
+          >
+            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h3 className="heading-4 text-green-900 mb-2">{content[language].success}</h3>
-          <p className="body-sm text-green-700">{content[language].description}</p>
+          <h3 
+            className="mb-2"
+            style={{
+              fontSize: 'var(--sys-title-large-size)',
+              lineHeight: 'var(--sys-title-large-line-height)',
+              fontFamily: 'var(--sys-title-large-font)',
+              fontWeight: 'var(--sys-title-large-weight)',
+              color: 'var(--success-color)'
+            }}
+          >
+            {content[language].success}
+          </h3>
+          <p 
+            style={{
+              fontSize: 'var(--sys-body-medium-size)',
+              lineHeight: 'var(--sys-body-medium-line-height)',
+              fontFamily: 'var(--sys-body-medium-font)',
+              color: 'var(--success-color)'
+            }}
+          >
+            {content[language].description}
+          </p>
         </div>
       </motion.div>
     )
@@ -118,8 +199,8 @@ export default function NewsletterSignup({
     >
       {variant !== 'inline' && (
         <>
-          <h3 className={styles.title}>{content[language].title}</h3>
-          <p className={styles.description}>{content[language].description}</p>
+          <h3 style={styles.titleStyle}>{content[language].title}</h3>
+          <p style={styles.descriptionStyle}>{content[language].description}</p>
         </>
       )}
       
@@ -129,17 +210,34 @@ export default function NewsletterSignup({
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder={content[language].placeholder}
-          className={styles.input}
+          style={{
+            ...styles.inputStyle,
+            '::placeholder': {
+              color: 'var(--text-disabled)'
+            }
+          }}
+          className="focus-indicator flex-1"
           required
           disabled={isSubmitting}
+          onFocus={(e) => {
+            e.target.style.borderColor = 'var(--notebooklm-primary)'
+            e.target.style.backgroundColor = 'var(--surface-panel)'
+          }}
+          onBlur={(e) => {
+            e.target.style.borderColor = 'var(--surface-outline)'
+            e.target.style.backgroundColor = 'var(--surface-elevated)'
+          }}
         />
-        <button
+        <Button
           type="submit"
+          variant="filled"
           disabled={isSubmitting || !email}
-          className={`${styles.button} disabled:opacity-50 disabled:cursor-not-allowed`}
+          loading={isSubmitting}
+          loadingText={content[language].subscribing}
+          className="whitespace-nowrap"
         >
-          {isSubmitting ? content[language].subscribing : content[language].subscribe}
-        </button>
+          {content[language].subscribe}
+        </Button>
       </form>
     </motion.div>
   )

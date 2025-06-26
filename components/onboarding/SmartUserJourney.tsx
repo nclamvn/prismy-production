@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Trophy, Target, Sparkles, Lock, CheckCircle, Brain, FileText, Users, Zap } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useProgressiveFeatures } from '@/contexts/FeatureDiscoveryContext'
-import { motionSafe, slideUp, fadeIn, scaleIn } from '@/lib/motion'
+import { motionSafe, slideUp, fadeIn, scaleIn, staggerContainer } from '@/lib/motion'
 
 interface UserMilestone {
   id: string

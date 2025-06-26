@@ -6,7 +6,6 @@ import { motion } from 'framer-motion'
 import { useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { motionSafe } from '@/lib/motion'
-import Footer from '@/components/Footer'
 import UniversalDropdown from '@/components/ui/UniversalDropdown'
 import {
   UNIFIED_SUBSCRIPTION_PLANS,
@@ -275,9 +274,9 @@ export default function PricingPage({}: PricingPageProps) {
 
   return (
     <div className="pricing-page">
-      <div className="min-h-screen bg-bg-main">
+      <div className="min-h-screen" style={{ backgroundColor: 'rgba(251, 250, 249, 1)' }}>
         {/* Hero Section - Prismy Full Width Structure */}
-        <section className="py-20 w-full">
+        <section className="py-20 w-full" style={{ backgroundColor: 'rgba(251, 250, 249, 1)' }}>
           <div className="w-full">
             <div className="w-full">
               <div className="text-center mb-16 px-4 md:px-8 lg:px-12">
@@ -360,9 +359,10 @@ export default function PricingPage({}: PricingPageProps) {
                           {quotaInfo.usage.toLocaleString()} /{' '}
                           {quotaInfo.limit.toLocaleString()}
                         </div>
-                        <div className="w-32 bg-gray-200 rounded-full h-2">
+                        <div className="w-32 rounded-full h-2" style={{ backgroundColor: 'var(--surface-outline)' }}>
                           <div
-                            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                            className="h-2 rounded-full transition-all duration-300"
+                            style={{ backgroundColor: 'var(--notebooklm-primary)' }}
                             style={{
                               width: `${Math.min((quotaInfo.usage / quotaInfo.limit) * 100, 100)}%`,
                             }}
@@ -383,7 +383,7 @@ export default function PricingPage({}: PricingPageProps) {
                   transition: { duration: 0.6 },
                 })}
               >
-                <div className="bg-gray-100 rounded-full p-1 shadow-sm">
+                <div className="rounded-full p-1 shadow-sm" style={{ backgroundColor: 'var(--surface-panel)' }}>
                   <button
                     onClick={() => setBillingPeriod('monthly')}
                     className={`btn-pill-md transition-all duration-300 cubic-bezier(0.25, 0.46, 0.45, 0.94) ${
@@ -403,7 +403,7 @@ export default function PricingPage({}: PricingPageProps) {
                     }`}
                   >
                     {t('pricing.yearly')}
-                    <span className="absolute -top-4 right-3 bg-gray-900 text-white text-xs font-bold px-2 py-1 rounded-full">
+                    <span className="absolute -top-4 right-3 text-white text-xs font-bold px-2 py-1 rounded-full" style={{ backgroundColor: 'var(--notebooklm-primary)' }}>
                       {t('pricing.save20')}
                     </span>
                   </button>
@@ -502,7 +502,7 @@ export default function PricingPage({}: PricingPageProps) {
                         {/* Current Plan Badge */}
                         {currentPlan && (
                           <div className="absolute -top-3 right-4">
-                            <span className="badge-base bg-green-500 text-white">
+                            <span className="badge-base text-white" style={{ backgroundColor: 'var(--notebooklm-primary)' }}>
                               {t('pricing.currentPlan')}
                             </span>
                           </div>
@@ -635,7 +635,7 @@ export default function PricingPage({}: PricingPageProps) {
                           {/* Current Plan Badge */}
                           {currentPlan && (
                             <div className="absolute -top-3 right-4">
-                              <span className="badge-base bg-green-500 text-white text-xs px-3 py-1">
+                              <span className="badge-base text-white text-xs px-3 py-1" style={{ backgroundColor: 'var(--notebooklm-primary)' }}>
                                 {t('pricing.currentPlan')}
                               </span>
                             </div>
@@ -665,7 +665,7 @@ export default function PricingPage({}: PricingPageProps) {
                               )}
                             </div>
                             {billingPeriod === 'yearly' && price > 0 && (
-                              <span className="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+                              <span className="inline-block px-2 py-1 text-xs rounded-full" style={{ backgroundColor: 'var(--notebooklm-primary-light)', color: 'var(--notebooklm-primary)' }}>
                                 {t('pricing.save20')}
                               </span>
                             )}
@@ -700,15 +700,16 @@ export default function PricingPage({}: PricingPageProps) {
                           <button
                             onClick={() => handleUpgrade(planId)}
                             disabled={isUpgrading || currentPlan}
-                            className={`w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
+                            className="w-full py-3 px-4 rounded-lg font-medium transition-all duration-200"
+                            style={
                               currentPlan
-                                ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
+                                ? { backgroundColor: 'var(--surface-panel)', color: 'var(--text-disabled)', cursor: 'not-allowed' }
                                 : isPopular
-                                  ? 'bg-gray-900 text-white hover:bg-gray-800'
+                                  ? { backgroundColor: 'var(--notebooklm-primary)', color: 'white' }
                                   : planId === 'free'
-                                    ? 'bg-gray-100 text-gray-900 hover:bg-gray-200'
-                                    : 'bg-gray-900 text-white hover:bg-gray-800'
-                            }`}
+                                    ? { backgroundColor: 'var(--surface-panel)', color: 'var(--text-primary)' }
+                                    : { backgroundColor: 'var(--notebooklm-primary)', color: 'white' }
+                            }
                           >
                             {isUpgrading ? (
                               <div className="flex items-center justify-center">
@@ -748,11 +749,13 @@ export default function PricingPage({}: PricingPageProps) {
                           })
                         }
                       }}
-                      className={`w-2 h-2 rounded-full transition-all duration-200 ${
-                        activeTierIndex === index
-                          ? 'bg-gray-900 w-6'
-                          : 'bg-gray-300 hover:bg-gray-400'
-                      }`}
+                      className="w-2 h-2 rounded-full transition-all duration-200"
+                      style={{
+                        backgroundColor: activeTierIndex === index 
+                          ? 'var(--notebooklm-primary)' 
+                          : 'var(--surface-outline)',
+                        width: activeTierIndex === index ? '1.5rem' : '0.5rem'
+                      }}
                     />
                   ))}
                 </div>
@@ -791,7 +794,7 @@ export default function PricingPage({}: PricingPageProps) {
                   >
                     <table className="w-full min-w-[800px] lg:min-w-full">
                       <thead>
-                        <tr className="border-b border-gray-200 bg-gray-50">
+                        <tr className="border-b" style={{ borderColor: 'var(--surface-outline)', backgroundColor: 'var(--surface-panel)' }}>
                           <th className="text-left py-4 px-6 font-semibold text-gray-900">
                             {language === 'vi' ? 'Tính năng' : 'Features'}
                           </th>
@@ -900,7 +903,8 @@ export default function PricingPage({}: PricingPageProps) {
               <div className="mt-24 w-full">
                 <div className="w-full px-4 md:px-8 lg:px-12">
                   <motion.div
-                    className="bg-gray-900 rounded-2xl p-8 md:p-12 text-center text-white relative overflow-hidden"
+                    className="rounded-2xl p-8 md:p-12 text-center text-white relative overflow-hidden"
+                    style={{ backgroundColor: 'var(--notebooklm-primary)' }}
                     {...motionSafe({
                       initial: { opacity: 0, y: 30 },
                       animate: { opacity: 1, y: 0 },
@@ -919,7 +923,7 @@ export default function PricingPage({}: PricingPageProps) {
                           : 'Contact our experts for custom translation solutions, system integrations, and 24/7 dedicated support.'}
                       </p>
                     </div>
-                    <div className="absolute inset-0 bg-gray-800/20"></div>
+                    <div className="absolute inset-0" style={{ backgroundColor: 'rgba(0, 0, 0, 0.1)' }}></div>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
                       <button className="btn-secondary btn-pill-lg">
                         {language === 'vi' ? 'Liên hệ tư vấn' : 'Contact Sales'}
@@ -1084,7 +1088,6 @@ export default function PricingPage({}: PricingPageProps) {
           </div>
         </section>
       </div>
-      <Footer />
     </div>
   )
 }

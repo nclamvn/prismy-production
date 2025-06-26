@@ -23,7 +23,8 @@
     "analyze:server": "BUNDLE_ANALYZE=server npm run build",
     "analyze:browser": "BUNDLE_ANALYZE=browser npm run build",
     "clean": "rm -rf .next out dist coverage",
-    "prepare": "husky"
+    "prepare": "husky",
+    "build-prod": "next build"
   },
   "engines": {
     "node": ">=18.17.0",

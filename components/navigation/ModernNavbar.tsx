@@ -8,6 +8,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useUnifiedAuthContext } from '@/contexts/UnifiedAuthProvider'
 import { useSmartNavigation } from '@/hooks/useSmartNavigation'
+import { useIsHydrated } from '@/hooks/useHydrationSafeAnimation'
 import UserMenu from '../auth/UserMenu'
 import UnifiedGetStartedButton from '../ui/UnifiedGetStartedButton'
 import {
@@ -35,6 +36,7 @@ export default function ModernNavbar() {
     useSmartNavigation()
   const router = useRouter()
   const pathname = usePathname()
+  const isHydrated = useIsHydrated()
 
   // Enhanced scroll detection with throttling
   useEffect(() => {
@@ -299,10 +301,10 @@ export default function ModernNavbar() {
                 <AnimatePresence>
                   {activeDropdown === 'product' && (
                     <motion.div
-                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      initial={isHydrated ? { opacity: 0, y: 10, scale: 0.95 } : { opacity: 1, y: 0, scale: 1 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                      transition={{ duration: 0.2 }}
+                      exit={isHydrated ? { opacity: 0, y: 10, scale: 0.95 } : { opacity: 1, y: 0, scale: 1 }}
+                      transition={isHydrated ? { duration: 0.2 } : { duration: 0 }}
                       className="absolute top-full left-0 mt-2 w-80 p-6 backdrop-blur backdrop-blur-lg"
                       style={{
                         background: 'rgba(255, 255, 255, 0.65)',
@@ -396,10 +398,10 @@ export default function ModernNavbar() {
                 <AnimatePresence>
                   {activeDropdown === 'solutions' && (
                     <motion.div
-                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      initial={isHydrated ? { opacity: 0, y: 10, scale: 0.95 } : { opacity: 1, y: 0, scale: 1 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                      transition={{ duration: 0.2 }}
+                      exit={isHydrated ? { opacity: 0, y: 10, scale: 0.95 } : { opacity: 1, y: 0, scale: 1 }}
+                      transition={isHydrated ? { duration: 0.2 } : { duration: 0 }}
                       className="absolute top-full left-0 mt-2 w-80 p-6 backdrop-blur backdrop-blur-lg"
                       style={{
                         background: 'rgba(255, 255, 255, 0.65)',
@@ -493,10 +495,10 @@ export default function ModernNavbar() {
                 <AnimatePresence>
                   {activeDropdown === 'resources' && (
                     <motion.div
-                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      initial={isHydrated ? { opacity: 0, y: 10, scale: 0.95 } : { opacity: 1, y: 0, scale: 1 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                      transition={{ duration: 0.2 }}
+                      exit={isHydrated ? { opacity: 0, y: 10, scale: 0.95 } : { opacity: 1, y: 0, scale: 1 }}
+                      transition={isHydrated ? { duration: 0.2 } : { duration: 0 }}
                       className="absolute top-full left-0 mt-2 w-80 p-6 backdrop-blur backdrop-blur-lg"
                       style={{
                         background: 'rgba(255, 255, 255, 0.65)',
@@ -669,10 +671,10 @@ export default function ModernNavbar() {
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
+            initial={isHydrated ? { opacity: 0, height: 0 } : { opacity: 1, height: 'auto' }}
             animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
+            exit={isHydrated ? { opacity: 0, height: 0 } : { opacity: 1, height: 'auto' }}
+            transition={isHydrated ? { duration: 0.3 } : { duration: 0 }}
             className="lg:hidden shadow-lg backdrop-blur backdrop-blur-lg"
             style={{
               background: 'rgba(255, 255, 255, 0.65)',

@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
+import { motionSafe, notebookLMButton } from '@/lib/motion'
 
 export interface DropdownOption {
   value: string
@@ -75,10 +76,28 @@ export default function UniversalDropdown({
     setIsOpen(false)
   }
 
-  const sizeClasses = {
-    sm: 'px-2.5 py-1.5 text-sm min-h-[40px]',
-    md: 'px-4 py-2.5 text-base min-h-[44px]',
-    lg: 'px-5 py-3 text-lg min-h-[48px]',
+  const getSizeStyles = (size: 'sm' | 'md' | 'lg') => {
+    const styles = {
+      sm: {
+        height: '36px',
+        padding: '0 12px',
+        fontSize: 'var(--sys-label-medium-size)',
+        lineHeight: 'var(--sys-label-medium-line-height)',
+      },
+      md: {
+        height: '44px',
+        padding: '0 16px',
+        fontSize: 'var(--sys-label-large-size)',
+        lineHeight: 'var(--sys-label-large-line-height)',
+      },
+      lg: {
+        height: '48px',
+        padding: '0 20px',
+        fontSize: 'var(--sys-title-medium-size)',
+        lineHeight: 'var(--sys-title-medium-line-height)',
+      }
+    }
+    return styles[size]
   }
 
   const iconSizes = {
@@ -92,22 +111,39 @@ export default function UniversalDropdown({
       className={`relative mobile-dropdown-rectangular ${className}`}
       ref={dropdownRef}
     >
-      {/* Dropdown Button */}
-      <button
+      {/* NotebookLM Dropdown Button */}
+      <motion.button
         onClick={handleToggle}
         onTouchStart={handleToggle}
         disabled={disabled}
         className={`
           flex items-center justify-between w-full
-          bg-transparent rounded-full
-          font-medium text-gray-900
-          hover:font-semibold hover:bg-gray-50 hover:-translate-y-px
-          focus:outline-none focus:ring-1 focus:ring-gray-300
-          transition-all duration-300 cubic-bezier(0.25, 0.46, 0.45, 0.94)
-          touch-manipulation mobile-dropdown-zen
-          ${sizeClasses[size]}
+          focus-indicator touch-accessible
           ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
         `}
+        style={{
+          ...getSizeStyles(size),
+          backgroundColor: 'var(--surface-elevated)',
+          border: '1px solid var(--surface-outline)',
+          borderRadius: 'var(--mat-button-outlined-container-shape)',
+          color: 'var(--text-primary)',
+          fontFamily: 'var(--sys-label-large-font)',
+          fontWeight: 'var(--sys-label-large-weight)',
+          transition: 'all 200ms cubic-bezier(0.2, 0, 0, 1)'
+        }}
+        {...(disabled ? {} : motionSafe(notebookLMButton))}
+        onMouseEnter={(e) => {
+          if (!disabled) {
+            e.currentTarget.style.backgroundColor = 'var(--surface-filled)'
+            e.currentTarget.style.borderColor = 'var(--notebooklm-primary)'
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (!disabled) {
+            e.currentTarget.style.backgroundColor = 'var(--surface-elevated)'
+            e.currentTarget.style.borderColor = 'var(--surface-outline)'
+          }
+        }}
       >
         <div className="flex items-center gap-2">
           {selectedOption?.icon && (
@@ -123,8 +159,9 @@ export default function UniversalDropdown({
           className={`flex-shrink-0 transition-transform duration-200 ml-2 ${
             isOpen ? 'rotate-180' : ''
           }`}
+          style={{ color: 'var(--text-secondary)' }}
         />
-      </button>
+      </motion.button>
 
       {/* Dropdown Menu */}
       <AnimatePresence>
@@ -133,30 +170,58 @@ export default function UniversalDropdown({
             initial={{ opacity: 0, scale: 0.95, y: -8 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -8 }}
-            transition={{ duration: 0.15 }}
-            className="absolute z-[60] w-full mt-1 bg-white rounded-md overflow-hidden mobile-dropdown-zen"
+            transition={{ duration: 0.2, ease: [0.2, 0, 0, 1] }}
+            className="absolute z-[60] w-full mt-2 overflow-hidden"
             style={{
-              boxShadow: 'var(--shadow-lg)',
+              backgroundColor: 'var(--surface-elevated)',
+              borderRadius: 'var(--mat-card-elevated-container-shape)',
+              border: '1px solid var(--surface-outline)',
+              boxShadow: 'var(--elevation-level-3)',
             }}
           >
             <div className="max-h-60 overflow-y-auto">
-              {options.map(option => (
-                <button
-                  key={option.value}
-                  onClick={e => handleOptionSelect(option.value, e)}
-                  onTouchStart={e => handleOptionSelect(option.value, e)}
-                  className={`
-                    w-full flex items-center gap-2 px-3 py-2.5 sm:py-2 text-left text-sm
-                    font-medium text-gray-900
-                    hover:font-semibold hover:bg-gray-50
-                    transition-all duration-150
-                    touch-manipulation
-                    ${value === option.value ? 'bg-gray-50 font-semibold' : ''}
-                  `}
-                >
-                  <span className="truncate">{option.label}</span>
-                </button>
-              ))}
+              {options.map(option => {
+                const isSelected = value === option.value
+                return (
+                  <button
+                    key={option.value}
+                    onClick={e => handleOptionSelect(option.value, e)}
+                    onTouchStart={e => handleOptionSelect(option.value, e)}
+                    className="w-full flex items-center gap-2 text-left touch-accessible transition-all duration-150"
+                    style={{
+                      padding: '12px 16px',
+                      backgroundColor: isSelected ? 'var(--notebooklm-primary-light)' : 'transparent',
+                      color: isSelected ? 'var(--notebooklm-primary)' : 'var(--text-primary)',
+                      fontSize: 'var(--sys-body-medium-size)',
+                      lineHeight: 'var(--sys-body-medium-line-height)',
+                      fontFamily: 'var(--sys-body-medium-font)',
+                      fontWeight: isSelected ? '600' : 'var(--sys-body-medium-weight)',
+                      borderRadius: isSelected ? 'var(--mat-card-outlined-container-shape)' : '0'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isSelected) {
+                        e.currentTarget.style.backgroundColor = 'var(--surface-filled)'
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isSelected) {
+                        e.currentTarget.style.backgroundColor = 'transparent'
+                      }
+                    }}
+                  >
+                    {option.icon && (
+                      <span className="flex-shrink-0">{option.icon}</span>
+                    )}
+                    <span className="truncate">{option.label}</span>
+                    {isSelected && (
+                      <div 
+                        className="ml-auto w-2 h-2 rounded-full"
+                        style={{ backgroundColor: 'var(--notebooklm-primary)' }}
+                      />
+                    )}
+                  </button>
+                )
+              })}
             </div>
           </motion.div>
         )}

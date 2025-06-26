@@ -412,67 +412,158 @@ export default function AgentSwarmInterface({ language = 'en', onObjectiveComple
         animate="visible"
         className="space-y-6"
       >
-      {/* Header */}
+      {/* Header - NotebookLM Style */}
       <motion.div variants={motionSafe(slideUp)}>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+        <h2 
+          className="mb-2"
+          style={{
+            fontSize: 'var(--sys-headline-large-size)',
+            lineHeight: 'var(--sys-headline-large-line-height)',
+            fontFamily: 'var(--sys-headline-large-font)',
+            fontWeight: 'var(--sys-headline-large-weight)',
+            color: 'var(--text-primary)'
+          }}
+        >
           {content[language].title}
         </h2>
-        <p className="text-gray-600">{content[language].subtitle}</p>
+        <p 
+          style={{
+            fontSize: 'var(--sys-body-large-size)',
+            lineHeight: 'var(--sys-body-large-line-height)',
+            fontFamily: 'var(--sys-body-large-font)',
+            fontWeight: 'var(--sys-body-large-weight)',
+            color: 'var(--text-secondary)'
+          }}
+        >
+          {content[language].subtitle}
+        </p>
       </motion.div>
 
       {/* Main Interface */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Network Visualization */}
+        {/* Network Visualization - Material Design 3 Style */}
         <motion.div
           variants={motionSafe(slideUp)}
-          className="lg:col-span-2 bg-white rounded-xl border border-gray-200 p-6"
+          className="lg:col-span-2 p-6"
+          style={{
+            backgroundColor: 'var(--surface-elevated)',
+            borderRadius: 'var(--mat-card-elevated-container-shape)',
+            border: '1px solid var(--surface-outline)',
+            boxShadow: 'var(--elevation-level-1)'
+          }}
         >
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="font-semibold text-gray-900">Agent Network</h3>
+            <h3 
+              style={{
+                fontSize: 'var(--sys-title-medium-size)',
+                lineHeight: 'var(--sys-title-medium-line-height)',
+                fontFamily: 'var(--sys-title-medium-font)',
+                fontWeight: 'var(--sys-title-medium-weight)',
+                color: 'var(--text-primary)'
+              }}
+            >
+              Agent Network
+            </h3>
             <div className="flex items-center space-x-2">
               <div className="flex items-center space-x-1">
                 <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                <span className="text-xs text-gray-600">Active</span>
+                <span 
+                  className="text-xs"
+                  style={{ color: 'var(--text-secondary)' }}
+                >
+                  Active
+                </span>
               </div>
               <div className="flex items-center space-x-1">
                 <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                <span className="text-xs text-gray-600">Processing</span>
+                <span 
+                  className="text-xs"
+                  style={{ color: 'var(--text-secondary)' }}
+                >
+                  Processing
+                </span>
               </div>
               <div className="flex items-center space-x-1">
                 <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-                <span className="text-xs text-gray-600">Collaborating</span>
+                <span 
+                  className="text-xs"
+                  style={{ color: 'var(--text-secondary)' }}
+                >
+                  Collaborating
+                </span>
               </div>
             </div>
           </div>
           
           <canvas
             ref={canvasRef}
-            className="w-full h-96 bg-gray-50 rounded-lg"
-            style={{ minHeight: '384px' }}
+            className="w-full h-96"
+            style={{ 
+              minHeight: '384px',
+              backgroundColor: 'var(--surface-panel)',
+              borderRadius: 'var(--shape-corner-medium)'
+            }}
           />
 
           {/* Agent Selection */}
           <div className="mt-6 space-y-3">
-            <h4 className="font-medium text-gray-900">{content[language].selectAgents}</h4>
+            <h4 
+              style={{
+                fontSize: 'var(--sys-label-large-size)',
+                lineHeight: 'var(--sys-label-large-line-height)',
+                fontFamily: 'var(--sys-label-large-font)',
+                fontWeight: 'var(--sys-label-large-weight)',
+                color: 'var(--text-primary)'
+              }}
+            >
+              {content[language].selectAgents}
+            </h4>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {agents.map((agent) => (
                 <button
                   key={agent.id}
                   onClick={() => handleAgentSelect(agent.id)}
                   disabled={swarmActive}
-                  className={`p-3 rounded-lg border-2 transition-all ${
-                    selectedAgents.includes(agent.id)
-                      ? 'border-purple-500 bg-purple-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  } ${swarmActive ? 'opacity-60 cursor-not-allowed' : ''}`}
+                  className="p-3 transition-all"
+                  style={{
+                    borderRadius: 'var(--mat-card-outlined-container-shape)',
+                    border: selectedAgents.includes(agent.id) 
+                      ? '2px solid var(--notebooklm-primary)'
+                      : '1px solid var(--surface-outline)',
+                    backgroundColor: selectedAgents.includes(agent.id)
+                      ? 'var(--notebooklm-primary-light)'
+                      : 'var(--surface-elevated)',
+                    opacity: swarmActive ? 0.6 : 1,
+                    cursor: swarmActive ? 'not-allowed' : 'pointer'
+                  }}
                 >
                   <div className="flex items-center space-x-2">
                     <div className={`w-8 h-8 bg-gradient-to-r ${getAgentColor(agent.type)} rounded-full flex items-center justify-center`}>
                       <Brain className="w-4 h-4 text-white" />
                     </div>
                     <div className="text-left">
-                      <p className="text-sm font-medium text-gray-900">{agent.name}</p>
-                      <p className="text-xs text-gray-500">
+                      <p 
+                        className="text-sm"
+                        style={{
+                          fontSize: 'var(--sys-label-medium-size)',
+                          lineHeight: 'var(--sys-label-medium-line-height)',
+                          fontFamily: 'var(--sys-label-medium-font)',
+                          fontWeight: 'var(--sys-label-medium-weight)',
+                          color: 'var(--text-primary)'
+                        }}
+                      >
+                        {agent.name}
+                      </p>
+                      <p 
+                        className="text-xs"
+                        style={{
+                          fontSize: 'var(--sys-body-small-size)',
+                          lineHeight: 'var(--sys-body-small-line-height)',
+                          fontFamily: 'var(--sys-body-small-font)',
+                          fontWeight: 'var(--sys-body-small-weight)',
+                          color: 'var(--text-secondary)'
+                        }}
+                      >
                         {content[language].agentStatus[agent.status]}
                       </p>
                     </div>
@@ -488,7 +579,28 @@ export default function AgentSwarmInterface({ language = 'en', onObjectiveComple
               <button
                 onClick={handleStartSwarm}
                 disabled={selectedAgents.length < 2}
-                className="flex-1 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                className="flex-1 py-3 text-white flex items-center justify-center space-x-2 transition-all"
+                style={{
+                  backgroundColor: 'var(--notebooklm-primary)',
+                  borderRadius: 'var(--mat-button-filled-container-shape)',
+                  fontSize: 'var(--sys-label-large-size)',
+                  lineHeight: 'var(--sys-label-large-line-height)',
+                  fontFamily: 'var(--sys-label-large-font)',
+                  fontWeight: 'var(--sys-label-large-weight)',
+                  border: 'none',
+                  opacity: selectedAgents.length < 2 ? 0.5 : 1,
+                  cursor: selectedAgents.length < 2 ? 'not-allowed' : 'pointer'
+                }}
+                onMouseEnter={(e) => {
+                  if (selectedAgents.length >= 2) {
+                    e.currentTarget.style.backgroundColor = 'var(--notebooklm-primary-dark)'
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (selectedAgents.length >= 2) {
+                    e.currentTarget.style.backgroundColor = 'var(--notebooklm-primary)'
+                  }
+                }}
               >
                 <Play className="w-5 h-5" />
                 <span>{content[language].startSwarm}</span>
@@ -496,7 +608,22 @@ export default function AgentSwarmInterface({ language = 'en', onObjectiveComple
             ) : (
               <button
                 onClick={handleStopSwarm}
-                className="flex-1 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all font-medium flex items-center justify-center space-x-2"
+                className="flex-1 py-3 text-white flex items-center justify-center space-x-2 transition-all"
+                style={{
+                  backgroundColor: '#DC2626',
+                  borderRadius: 'var(--mat-button-filled-container-shape)',
+                  fontSize: 'var(--sys-label-large-size)',
+                  lineHeight: 'var(--sys-label-large-line-height)',
+                  fontFamily: 'var(--sys-label-large-font)',
+                  fontWeight: 'var(--sys-label-large-weight)',
+                  border: 'none'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#B91C1C'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#DC2626'
+                }}
               >
                 <Pause className="w-5 h-5" />
                 <span>{content[language].stopSwarm}</span>
@@ -510,60 +637,201 @@ export default function AgentSwarmInterface({ language = 'en', onObjectiveComple
           variants={motionSafe(slideUp)}
           className="space-y-4"
         >
-          {/* Efficiency Meter */}
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <h3 className="font-semibold text-gray-900 mb-4">{content[language].efficiency}</h3>
+          {/* Efficiency Meter - Material Design 3 Style */}
+          <div 
+            className="p-6"
+            style={{
+              backgroundColor: 'var(--surface-elevated)',
+              borderRadius: 'var(--mat-card-elevated-container-shape)',
+              border: '1px solid var(--surface-outline)',
+              boxShadow: 'var(--elevation-level-1)'
+            }}
+          >
+            <h3 
+              className="mb-4"
+              style={{
+                fontSize: 'var(--sys-title-medium-size)',
+                lineHeight: 'var(--sys-title-medium-line-height)',
+                fontFamily: 'var(--sys-title-medium-font)',
+                fontWeight: 'var(--sys-title-medium-weight)',
+                color: 'var(--text-primary)'
+              }}
+            >
+              {content[language].efficiency}
+            </h3>
             <div className="relative">
-              <div className="w-full h-32 bg-gray-100 rounded-lg overflow-hidden">
+              <div 
+                className="w-full h-32 overflow-hidden"
+                style={{
+                  backgroundColor: 'var(--surface-panel)',
+                  borderRadius: 'var(--shape-corner-medium)'
+                }}
+              >
                 <motion.div
-                  className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-purple-500 to-purple-300"
+                  className="absolute bottom-0 left-0 right-0"
+                  style={{
+                    background: `linear-gradient(to top, var(--notebooklm-primary), var(--notebooklm-primary-light))`
+                  }}
                   animate={{ height: `${swarmEfficiency}%` }}
                   transition={{ duration: 0.5 }}
                 />
               </div>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-3xl font-bold text-gray-900">
+                <span 
+                  className="text-3xl font-bold"
+                  style={{
+                    fontSize: 'var(--sys-headline-medium-size)',
+                    lineHeight: 'var(--sys-headline-medium-line-height)',
+                    fontFamily: 'var(--sys-headline-medium-font)',
+                    fontWeight: 'var(--sys-headline-medium-weight)',
+                    color: 'var(--text-primary)'
+                  }}
+                >
                   {Math.round(swarmEfficiency)}%
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Metrics */}
-          <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
+          {/* Metrics - Material Design 3 Style */}
+          <div 
+            className="p-6 space-y-4"
+            style={{
+              backgroundColor: 'var(--surface-elevated)',
+              borderRadius: 'var(--mat-card-elevated-container-shape)',
+              border: '1px solid var(--surface-outline)',
+              boxShadow: 'var(--elevation-level-1)'
+            }}
+          >
             <div>
-              <p className="text-sm text-gray-600">{content[language].activeConnections}</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p 
+                className="text-sm"
+                style={{
+                  fontSize: 'var(--sys-body-medium-size)',
+                  lineHeight: 'var(--sys-body-medium-line-height)',
+                  fontFamily: 'var(--sys-body-medium-font)',
+                  fontWeight: 'var(--sys-body-medium-weight)',
+                  color: 'var(--text-secondary)'
+                }}
+              >
+                {content[language].activeConnections}
+              </p>
+              <p 
+                className="text-2xl font-bold"
+                style={{
+                  fontSize: 'var(--sys-headline-medium-size)',
+                  lineHeight: 'var(--sys-headline-medium-line-height)',
+                  fontFamily: 'var(--sys-headline-medium-font)',
+                  fontWeight: 'var(--sys-headline-medium-weight)',
+                  color: 'var(--text-primary)'
+                }}
+              >
                 {swarmActive ? selectedAgents.length * (selectedAgents.length - 1) / 2 : 0}
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-600">{content[language].messagesExchanged}</p>
-              <p className="text-2xl font-bold text-gray-900">{messages.length}</p>
+              <p 
+                className="text-sm"
+                style={{
+                  fontSize: 'var(--sys-body-medium-size)',
+                  lineHeight: 'var(--sys-body-medium-line-height)',
+                  fontFamily: 'var(--sys-body-medium-font)',
+                  fontWeight: 'var(--sys-body-medium-weight)',
+                  color: 'var(--text-secondary)'
+                }}
+              >
+                {content[language].messagesExchanged}
+              </p>
+              <p 
+                className="text-2xl font-bold"
+                style={{
+                  fontSize: 'var(--sys-headline-medium-size)',
+                  lineHeight: 'var(--sys-headline-medium-line-height)',
+                  fontFamily: 'var(--sys-headline-medium-font)',
+                  fontWeight: 'var(--sys-headline-medium-weight)',
+                  color: 'var(--text-primary)'
+                }}
+              >
+                {messages.length}
+              </p>
             </div>
           </div>
 
           {/* Objective Progress */}
           {currentObjective && (
-            <div className="bg-white rounded-xl border border-gray-200 p-6">
-              <h3 className="font-semibold text-gray-900 mb-2">
+            <div 
+              className="p-6"
+              style={{
+                backgroundColor: 'var(--surface-elevated)',
+                borderRadius: 'var(--mat-card-elevated-container-shape)',
+                border: '1px solid var(--surface-outline)',
+                boxShadow: 'var(--elevation-level-1)'
+              }}
+            >
+              <h3 
+                className="mb-2"
+                style={{
+                  fontSize: 'var(--sys-title-medium-size)',
+                  lineHeight: 'var(--sys-title-medium-line-height)',
+                  fontFamily: 'var(--sys-title-medium-font)',
+                  fontWeight: 'var(--sys-title-medium-weight)',
+                  color: 'var(--text-primary)'
+                }}
+              >
                 {currentObjective.title}
               </h3>
-              <p className="text-sm text-gray-600 mb-4">
+              <p 
+                className="text-sm mb-4"
+                style={{
+                  fontSize: 'var(--sys-body-medium-size)',
+                  lineHeight: 'var(--sys-body-medium-line-height)',
+                  fontFamily: 'var(--sys-body-medium-font)',
+                  fontWeight: 'var(--sys-body-medium-weight)',
+                  color: 'var(--text-secondary)'
+                }}
+              >
                 {currentObjective.description}
               </p>
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-600">
+                  <span 
+                    className="text-sm"
+                    style={{
+                      fontSize: 'var(--sys-body-medium-size)',
+                      lineHeight: 'var(--sys-body-medium-line-height)',
+                      fontFamily: 'var(--sys-body-medium-font)',
+                      fontWeight: 'var(--sys-body-medium-weight)',
+                      color: 'var(--text-secondary)'
+                    }}
+                  >
                     {content[language].objectiveProgress}
                   </span>
-                  <span className="text-sm font-medium text-purple-600">
+                  <span 
+                    className="text-sm font-medium"
+                    style={{
+                      fontSize: 'var(--sys-label-medium-size)',
+                      lineHeight: 'var(--sys-label-medium-line-height)',
+                      fontFamily: 'var(--sys-label-medium-font)',
+                      fontWeight: 'var(--sys-label-medium-weight)',
+                      color: 'var(--notebooklm-primary)'
+                    }}
+                  >
                     {Math.round(currentObjective.progress)}%
                   </span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="w-full h-2"
+                  style={{
+                    backgroundColor: 'var(--surface-panel)',
+                    borderRadius: 'var(--shape-corner-full)'
+                  }}
+                >
                   <motion.div
-                    className="h-2 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500"
+                    className="h-2"
+                    style={{
+                      borderRadius: 'var(--shape-corner-full)',
+                      background: `linear-gradient(to right, var(--notebooklm-primary), var(--notebooklm-primary-dark))`
+                    }}
                     animate={{ width: `${currentObjective.progress}%` }}
                     transition={{ duration: 0.5 }}
                   />
@@ -578,9 +846,28 @@ export default function AgentSwarmInterface({ language = 'en', onObjectiveComple
             </div>
           )}
 
-          {/* Message Stream */}
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <h3 className="font-semibold text-gray-900 mb-4">Message Stream</h3>
+          {/* Message Stream - Material Design 3 Style */}
+          <div 
+            className="p-6"
+            style={{
+              backgroundColor: 'var(--surface-elevated)',
+              borderRadius: 'var(--mat-card-elevated-container-shape)',
+              border: '1px solid var(--surface-outline)',
+              boxShadow: 'var(--elevation-level-1)'
+            }}
+          >
+            <h3 
+              className="mb-4"
+              style={{
+                fontSize: 'var(--sys-title-medium-size)',
+                lineHeight: 'var(--sys-title-medium-line-height)',
+                fontFamily: 'var(--sys-title-medium-font)',
+                fontWeight: 'var(--sys-title-medium-weight)',
+                color: 'var(--text-primary)'
+              }}
+            >
+              Message Stream
+            </h3>
             <div className="space-y-2 max-h-48 overflow-y-auto">
               {messages.length > 0 ? (
                 messages.map((message) => (
@@ -591,19 +878,47 @@ export default function AgentSwarmInterface({ language = 'en', onObjectiveComple
                     className="text-xs"
                   >
                     <div className="flex items-center space-x-1">
-                      <span className="font-medium text-purple-600">
+                      <span 
+                        className="font-medium"
+                        style={{ color: 'var(--notebooklm-primary)' }}
+                      >
                         {agents.find(a => a.id === message.from)?.name}
                       </span>
-                      <span className="text-gray-400">→</span>
-                      <span className="font-medium text-blue-600">
+                      <span style={{ color: 'var(--text-secondary)' }}>→</span>
+                      <span 
+                        className="font-medium"
+                        style={{ color: 'var(--notebooklm-primary-dark)' }}
+                      >
                         {agents.find(a => a.id === message.to)?.name}
                       </span>
                     </div>
-                    <p className="text-gray-600 mt-1">{message.content}</p>
+                    <p 
+                      className="mt-1"
+                      style={{
+                        fontSize: 'var(--sys-body-small-size)',
+                        lineHeight: 'var(--sys-body-small-line-height)',
+                        fontFamily: 'var(--sys-body-small-font)',
+                        fontWeight: 'var(--sys-body-small-weight)',
+                        color: 'var(--text-secondary)'
+                      }}
+                    >
+                      {message.content}
+                    </p>
                   </motion.div>
                 ))
               ) : (
-                <p className="text-gray-400 text-center">No messages yet</p>
+                <p 
+                  className="text-center"
+                  style={{
+                    fontSize: 'var(--sys-body-medium-size)',
+                    lineHeight: 'var(--sys-body-medium-line-height)',
+                    fontFamily: 'var(--sys-body-medium-font)',
+                    fontWeight: 'var(--sys-body-medium-weight)',
+                    color: 'var(--text-disabled)'
+                  }}
+                >
+                  No messages yet
+                </p>
               )}
             </div>
           </div>

@@ -502,24 +502,57 @@ export default function RealtimeDataVisualization({
         animate="visible"
         className="space-y-6"
       >
-        {/* Header */}
+        {/* Header - NotebookLM Style */}
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 flex items-center space-x-2">
-              <Activity className="w-6 h-6 text-blue-600" />
+            <h2 
+              className="flex items-center space-x-2"
+              style={{
+                fontSize: 'var(--sys-headline-large-size)',
+                lineHeight: 'var(--sys-headline-large-line-height)',
+                fontFamily: 'var(--sys-headline-large-font)',
+                fontWeight: 'var(--sys-headline-large-weight)',
+                color: 'var(--text-primary)'
+              }}
+            >
+              <Activity className="w-6 h-6" style={{ color: 'var(--notebooklm-primary)' }} />
               <span>{content[language].title}</span>
             </h2>
-            <p className="text-gray-600 mt-1">{content[language].subtitle}</p>
+            <p 
+              className="mt-1"
+              style={{
+                fontSize: 'var(--sys-body-large-size)',
+                lineHeight: 'var(--sys-body-large-line-height)',
+                fontFamily: 'var(--sys-body-large-font)',
+                fontWeight: 'var(--sys-body-large-weight)',
+                color: 'var(--text-secondary)'
+              }}
+            >
+              {content[language].subtitle}
+            </p>
           </div>
 
           <div className="flex items-center space-x-3">
             <button
               onClick={handlePlayPause}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-                isPlaying
-                  ? 'bg-red-600 text-white hover:bg-red-700'
-                  : 'bg-green-600 text-white hover:bg-green-700'
-              }`}
+              className="flex items-center space-x-2 px-4 py-2 text-white transition-colors"
+              style={{
+                backgroundColor: isPlaying ? '#DC2626' : '#059669',
+                borderRadius: 'var(--mat-button-filled-container-shape)',
+                fontSize: 'var(--sys-label-medium-size)',
+                lineHeight: 'var(--sys-label-medium-line-height)',
+                fontFamily: 'var(--sys-label-medium-font)',
+                fontWeight: 'var(--sys-label-medium-weight)',
+                border: 'none',
+                boxShadow: 'var(--elevation-level-1)',
+                cursor: 'pointer'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = isPlaying ? '#B91C1C' : '#047857'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = isPlaying ? '#DC2626' : '#059669'
+              }}
               aria-label={isPlaying ? content[language].controls.pause : content[language].controls.play}
             >
               {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
@@ -528,7 +561,24 @@ export default function RealtimeDataVisualization({
 
             <button
               onClick={handleRefresh}
-              className="flex items-center space-x-2 px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="flex items-center space-x-2 px-4 py-2 transition-colors"
+              style={{
+                color: 'var(--notebooklm-primary)',
+                border: '1px solid var(--notebooklm-primary)',
+                borderRadius: 'var(--mat-button-outlined-container-shape)',
+                backgroundColor: 'transparent',
+                fontSize: 'var(--sys-label-medium-size)',
+                lineHeight: 'var(--sys-label-medium-line-height)',
+                fontFamily: 'var(--sys-label-medium-font)',
+                fontWeight: 'var(--sys-label-medium-weight)',
+                cursor: 'pointer'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'var(--notebooklm-primary-light)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent'
+              }}
             >
               <RefreshCw className="w-4 h-4" />
               <span>{content[language].controls.refresh}</span>
@@ -537,20 +587,53 @@ export default function RealtimeDataVisualization({
         </div>
 
         {/* Real-time Status */}
-        <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+        <div 
+          className="flex items-center space-x-4 p-4"
+          style={{
+            backgroundColor: 'var(--surface-filled)',
+            borderRadius: 'var(--mat-card-outlined-container-shape)'
+          }}
+        >
           <div className="flex items-center space-x-2">
             <div className={`w-3 h-3 rounded-full ${isPlaying ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
-            <span className="text-sm font-medium text-gray-900">
+            <span 
+              className="text-sm font-medium"
+              style={{
+                fontSize: 'var(--sys-label-medium-size)',
+                lineHeight: 'var(--sys-label-medium-line-height)',
+                fontFamily: 'var(--sys-label-medium-font)',
+                fontWeight: 'var(--sys-label-medium-weight)',
+                color: 'var(--text-primary)'
+              }}
+            >
               {isPlaying 
                 ? (language === 'vi' ? 'Đang cập nhật...' : 'Live updating...')
                 : (language === 'vi' ? 'Tạm dừng' : 'Paused')
               }
             </span>
           </div>
-          <div className="text-sm text-gray-600">
+          <div 
+            className="text-sm"
+            style={{
+              fontSize: 'var(--sys-body-medium-size)',
+              lineHeight: 'var(--sys-body-medium-line-height)',
+              fontFamily: 'var(--sys-body-medium-font)',
+              fontWeight: 'var(--sys-body-medium-weight)',
+              color: 'var(--text-secondary)'
+            }}
+          >
             {language === 'vi' ? 'Số biểu đồ:' : 'Charts:'} {charts.length}
           </div>
-          <div className="text-sm text-gray-600">
+          <div 
+            className="text-sm"
+            style={{
+              fontSize: 'var(--sys-body-medium-size)',
+              lineHeight: 'var(--sys-body-medium-line-height)',
+              fontFamily: 'var(--sys-body-medium-font)',
+              fontWeight: 'var(--sys-body-medium-weight)',
+              color: 'var(--text-secondary)'
+            }}
+          >
             {language === 'vi' ? 'Điểm dữ liệu:' : 'Data points:'} {Object.values(chartData).reduce((sum, data) => sum + data.length, 0)}
           </div>
         </div>
@@ -566,13 +649,39 @@ export default function RealtimeDataVisualization({
               exit="hidden"
               className="fixed inset-0 z-50 bg-white flex flex-col"
             >
-              <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-                <h3 className="text-xl font-semibold text-gray-900">
+              <div 
+                className="p-6 flex items-center justify-between"
+                style={{
+                  borderBottom: '1px solid var(--surface-outline)'
+                }}
+              >
+                <h3 
+                  style={{
+                    fontSize: 'var(--sys-headline-medium-size)',
+                    lineHeight: 'var(--sys-headline-medium-line-height)',
+                    fontFamily: 'var(--sys-headline-medium-font)',
+                    fontWeight: 'var(--sys-headline-medium-weight)',
+                    color: 'var(--text-primary)'
+                  }}
+                >
                   {charts.find(c => c.id === selectedChart)?.title}
                 </h3>
                 <button
                   onClick={() => handleFullscreen(selectedChart)}
-                  className="flex items-center space-x-2 px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  className="flex items-center space-x-2 px-4 py-2 transition-colors"
+                  style={{
+                    color: 'var(--text-secondary)',
+                    border: '1px solid var(--surface-outline)',
+                    borderRadius: 'var(--mat-button-outlined-container-shape)',
+                    backgroundColor: 'transparent',
+                    cursor: 'pointer'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--surface-filled)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent'
+                  }}
                 >
                   <Minimize2 className="w-4 h-4" />
                   <span>{content[language].controls.minimize}</span>
@@ -585,8 +694,16 @@ export default function RealtimeDataVisualization({
                       canvasRefs.current[selectedChart] = el
                     }
                   }}
-                  className="w-full h-full border border-gray-200 rounded-lg"
-                  style={{ minHeight: '500px' }}
+                  className="w-full h-full"
+                  style={{
+                    border: '1px solid var(--surface-outline)',
+                    borderRadius: 'var(--mat-card-outlined-container-shape)'
+                  }}
+                  style={{
+                    border: '1px solid var(--surface-outline)',
+                    borderRadius: 'var(--mat-card-outlined-container-shape)',
+                    minHeight: '500px'
+                  }}
                 />
               </div>
             </motion.div>
@@ -597,24 +714,69 @@ export default function RealtimeDataVisualization({
                 <motion.div
                   key={chart.id}
                   variants={motionSafe(slideUp)}
-                  className="bg-white p-6 rounded-xl border border-gray-200"
+                  className="p-6 transition-all"
+                  style={{
+                    backgroundColor: 'var(--surface-elevated)',
+                    borderRadius: 'var(--mat-card-elevated-container-shape)',
+                    border: '1px solid var(--surface-outline)',
+                    boxShadow: 'var(--elevation-level-1)',
+                    cursor: 'pointer'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.boxShadow = 'var(--elevation-level-3)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.boxShadow = 'var(--elevation-level-1)'
+                  }}
                 >
                   <div className="flex items-center justify-between mb-4">
                     <div>
-                      <h3 className="font-semibold text-gray-900">{chart.title}</h3>
+                      <h3 
+                        style={{
+                          fontSize: 'var(--sys-title-medium-size)',
+                          lineHeight: 'var(--sys-title-medium-line-height)',
+                          fontFamily: 'var(--sys-title-medium-font)',
+                          fontWeight: 'var(--sys-title-medium-weight)',
+                          color: 'var(--text-primary)'
+                        }}
+                      >
+                        {chart.title}
+                      </h3>
                       <div className="flex items-center space-x-2 mt-1">
                         <div 
                           className="w-3 h-3 rounded-full"
                           style={{ backgroundColor: chart.color }}
                         />
-                        <span className="text-sm text-gray-600 capitalize">
+                        <span 
+                          className="text-sm capitalize"
+                          style={{
+                            fontSize: 'var(--sys-body-medium-size)',
+                            lineHeight: 'var(--sys-body-medium-line-height)',
+                            fontFamily: 'var(--sys-body-medium-font)',
+                            fontWeight: 'var(--sys-body-medium-weight)',
+                            color: 'var(--text-secondary)'
+                          }}
+                        >
                           {content[language].chartTypes[chart.type]}
                         </span>
                       </div>
                     </div>
                     <button
                       onClick={() => handleFullscreen(chart.id)}
-                      className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
+                      className="p-2 transition-colors"
+                      style={{
+                        color: 'var(--text-secondary)',
+                        borderRadius: 'var(--mat-button-text-container-shape)',
+                        backgroundColor: 'transparent'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = 'var(--surface-filled)'
+                        e.currentTarget.style.color = 'var(--text-primary)'
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'transparent'
+                        e.currentTarget.style.color = 'var(--text-secondary)'
+                      }}
                       aria-label={content[language].controls.fullscreen}
                     >
                       <Maximize2 className="w-4 h-4" />
@@ -627,10 +789,23 @@ export default function RealtimeDataVisualization({
                         canvasRefs.current[chart.id] = el
                       }
                     }}
-                    className="w-full h-64 border border-gray-100 rounded-lg"
+                    className="w-full h-64"
+                    style={{
+                      border: '1px solid var(--surface-outline)',
+                      borderRadius: 'var(--mat-card-outlined-container-shape)'
+                    }}
                   />
 
-                  <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
+                  <div 
+                    className="mt-4 flex items-center justify-between text-sm"
+                    style={{
+                      fontSize: 'var(--sys-body-medium-size)',
+                      lineHeight: 'var(--sys-body-medium-line-height)',
+                      fontFamily: 'var(--sys-body-medium-font)',
+                      fontWeight: 'var(--sys-body-medium-weight)',
+                      color: 'var(--text-secondary)'
+                    }}
+                  >
                     <span>
                       {language === 'vi' ? 'Điểm dữ liệu:' : 'Data points:'} {chartData[chart.id]?.length || 0}
                     </span>

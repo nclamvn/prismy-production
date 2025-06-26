@@ -1,0 +1,328 @@
+/* ============================================================================ */
+/* NOTEBOOKLM DARK THEME - Material Design 3 Dark Mode */
+/* Based on Google's NotebookLM dark theme specifications */
+/* ============================================================================ */
+
+/* Dark theme CSS custom properties */
+:root[data-theme="dark"] {
+  /* ========================================================================== */
+  /* NotebookLM Dark Primary Colors */
+  /* ========================================================================== */
+  
+  --notebooklm-primary: #7b9eff; /* NotebookLM Light Blue for Dark Mode */
+  --notebooklm-primary-light: rgba(123, 158, 255, 0.15);
+  --notebooklm-primary-dark: #5c7cdc;
+  
+  /* ========================================================================== */
+  /* Dark Surface Colors */
+  /* ========================================================================== */
+  
+  --surface-elevated: #1e1e1e; /* Dark elevated surfaces */
+  --surface-filled: #2a2a2a;   /* Dark filled containers */
+  --surface-panel: #121212;    /* Dark panels/background */
+  --surface-outline: #404040;  /* Dark outlines */
+  
+  /* ========================================================================== */
+  /* Dark Text Colors */
+  /* ========================================================================== */
+  
+  --text-primary: #ffffff;     /* Primary text on dark */
+  --text-secondary: #b3b3b3;   /* Secondary text on dark */
+  --text-disabled: #666666;    /* Disabled text on dark */
+  --text-on-primary: #000000;  /* Text on primary blue */
+  
+  /* ========================================================================== */
+  /* Dark State Colors */
+  /* ========================================================================== */
+  
+  --state-hover: rgba(255, 255, 255, 0.08);
+  --state-focus: rgba(123, 158, 255, 0.12);
+  --state-pressed: rgba(255, 255, 255, 0.12);
+  --state-dragged: rgba(255, 255, 255, 0.16);
+  --state-selected: rgba(123, 158, 255, 0.16);
+  
+  /* ========================================================================== */
+  /* Dark Elevation Shadows */
+  /* ========================================================================== */
+  
+  --elevation-level-1: 0px 1px 3px rgba(0, 0, 0, 0.4), 0px 1px 2px rgba(0, 0, 0, 0.3);
+  --elevation-level-2: 0px 2px 6px rgba(0, 0, 0, 0.4), 0px 1px 2px rgba(0, 0, 0, 0.3);
+  --elevation-level-3: 0px 4px 8px rgba(0, 0, 0, 0.4), 0px 1px 3px rgba(0, 0, 0, 0.3);
+  --elevation-level-4: 0px 6px 10px rgba(0, 0, 0, 0.4), 0px 1px 3px rgba(0, 0, 0, 0.3);
+  --elevation-level-5: 0px 8px 12px rgba(0, 0, 0, 0.4), 0px 4px 6px rgba(0, 0, 0, 0.3);
+  
+  /* ========================================================================== */
+  /* Dark Semantic Colors */
+  /* ========================================================================== */
+  
+  --success-color: #d4d4d4;
+  --success-background: rgba(212, 212, 212, 0.1);
+  --success-border: rgba(212, 212, 212, 0.3);
+  
+  --warning-color: #a3a3a3;
+  --warning-background: rgba(163, 163, 163, 0.1);
+  --warning-border: rgba(163, 163, 163, 0.3);
+  
+  --error-color: #737373;
+  --error-background: rgba(115, 115, 115, 0.1);
+  --error-border: rgba(115, 115, 115, 0.3);
+  
+  --info-color: #a3a3a3;
+  --info-background: rgba(163, 163, 163, 0.1);
+  --info-border: rgba(163, 163, 163, 0.3);
+}
+
+/* ============================================================================ */
+/* DARK MODE COMPONENT OVERRIDES */
+/* ============================================================================ */
+
+[data-theme="dark"] {
+  /* Update scrollbar for dark mode */
+  scrollbar-color: var(--surface-outline) var(--surface-panel);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: var(--surface-panel);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background-color: var(--surface-outline);
+  border-radius: 4px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background-color: var(--text-secondary);
+}
+
+/* ========================================================================== */
+/* Dark Mode Button Variants */
+/* ========================================================================== */
+
+[data-theme="dark"] .btn-md3-filled {
+  background-color: var(--notebooklm-primary);
+  color: var(--text-on-primary);
+}
+
+[data-theme="dark"] .btn-md3-filled:hover {
+  background-color: var(--notebooklm-primary-dark);
+  box-shadow: var(--elevation-level-2);
+}
+
+[data-theme="dark"] .btn-md3-outlined {
+  border-color: var(--surface-outline);
+  color: var(--notebooklm-primary);
+  background-color: transparent;
+}
+
+[data-theme="dark"] .btn-md3-outlined:hover {
+  background-color: var(--state-hover);
+  border-color: var(--notebooklm-primary);
+}
+
+[data-theme="dark"] .btn-md3-text {
+  color: var(--notebooklm-primary);
+  background-color: transparent;
+}
+
+[data-theme="dark"] .btn-md3-text:hover {
+  background-color: var(--state-hover);
+}
+
+[data-theme="dark"] .btn-md3-elevated {
+  background-color: var(--surface-elevated);
+  color: var(--text-primary);
+  box-shadow: var(--elevation-level-1);
+}
+
+[data-theme="dark"] .btn-md3-elevated:hover {
+  box-shadow: var(--elevation-level-2);
+  background-color: var(--surface-filled);
+}
+
+/* ========================================================================== */
+/* Dark Mode Form Elements */
+/* ========================================================================== */
+
+[data-theme="dark"] .form-md3-input {
+  background-color: var(--surface-filled);
+  border-color: var(--surface-outline);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .form-md3-input:focus {
+  border-color: var(--notebooklm-primary);
+  background-color: var(--surface-elevated);
+}
+
+[data-theme="dark"] .form-md3-input::placeholder {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .form-md3-label {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .form-md3-label-active {
+  color: var(--notebooklm-primary);
+}
+
+/* ========================================================================== */
+/* Dark Mode Cards and Surfaces */
+/* ========================================================================== */
+
+[data-theme="dark"] .card-elevated {
+  background-color: var(--surface-elevated);
+  border-color: var(--surface-outline);
+}
+
+[data-theme="dark"] .card-outlined {
+  background-color: var(--surface-panel);
+  border-color: var(--surface-outline);
+}
+
+[data-theme="dark"] .card-filled {
+  background-color: var(--surface-filled);
+}
+
+/* ========================================================================== */
+/* Dark Mode Navigation */
+/* ========================================================================== */
+
+[data-theme="dark"] .nav-item {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .nav-item:hover {
+  color: var(--text-primary);
+  background-color: var(--state-hover);
+}
+
+[data-theme="dark"] .nav-item-active {
+  color: var(--notebooklm-primary);
+  background-color: var(--state-selected);
+}
+
+/* ========================================================================== */
+/* Dark Mode Focus Indicators */
+/* ========================================================================== */
+
+[data-theme="dark"] .focus-indicator:focus-visible {
+  outline-color: var(--notebooklm-primary);
+  box-shadow: 0 0 0 4px var(--state-focus);
+}
+
+/* ========================================================================== */
+/* Dark Mode Accessibility */
+/* ========================================================================== */
+
+[data-theme="dark"] .high-contrast-element {
+  border-color: var(--text-primary);
+  background-color: var(--surface-elevated);
+}
+
+[data-theme="dark"] .sr-only-focusable:focus {
+  background-color: var(--notebooklm-primary);
+  color: var(--text-on-primary);
+}
+
+[data-theme="dark"] .skip-link {
+  background-color: var(--notebooklm-primary);
+  color: var(--text-on-primary);
+}
+
+/* ========================================================================== */
+/* Dark Mode Status Colors */
+/* ========================================================================== */
+
+[data-theme="dark"] .status-success {
+  background-color: var(--success-background);
+  color: var(--success-color);
+  border-color: var(--success-border);
+}
+
+[data-theme="dark"] .status-warning {
+  background-color: var(--warning-background);
+  color: var(--warning-color);
+  border-color: var(--warning-border);
+}
+
+[data-theme="dark"] .status-error {
+  background-color: var(--error-background);
+  color: var(--error-color);
+  border-color: var(--error-border);
+}
+
+[data-theme="dark"] .status-info {
+  background-color: var(--info-background);
+  color: var(--info-color);
+  border-color: var(--info-border);
+}
+
+/* ========================================================================== */
+/* Dark Mode Animations */
+/* ========================================================================== */
+
+[data-theme="dark"] .loading-spinner {
+  border-color: var(--surface-outline);
+  border-top-color: var(--notebooklm-primary);
+}
+
+/* ========================================================================== */
+/* Dark Mode Media Overrides */
+/* ========================================================================== */
+
+/* Respect system dark mode preference */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --notebooklm-primary: #7b9eff;
+    --notebooklm-primary-light: rgba(123, 158, 255, 0.15);
+    --notebooklm-primary-dark: #5c7cdc;
+    
+    --surface-elevated: #1e1e1e;
+    --surface-filled: #2a2a2a;
+    --surface-panel: #121212;
+    --surface-outline: #404040;
+    
+    --text-primary: #ffffff;
+    --text-secondary: #b3b3b3;
+    --text-disabled: #666666;
+    --text-on-primary: #000000;
+    
+    --state-hover: rgba(255, 255, 255, 0.08);
+    --state-focus: rgba(123, 158, 255, 0.12);
+    --state-pressed: rgba(255, 255, 255, 0.12);
+    --state-selected: rgba(123, 158, 255, 0.16);
+    
+    --elevation-level-1: 0px 1px 3px rgba(0, 0, 0, 0.4), 0px 1px 2px rgba(0, 0, 0, 0.3);
+    --elevation-level-2: 0px 2px 6px rgba(0, 0, 0, 0.4), 0px 1px 2px rgba(0, 0, 0, 0.3);
+    --elevation-level-3: 0px 4px 8px rgba(0, 0, 0, 0.4), 0px 1px 3px rgba(0, 0, 0, 0.3);
+    --elevation-level-4: 0px 6px 10px rgba(0, 0, 0, 0.4), 0px 1px 3px rgba(0, 0, 0, 0.3);
+    --elevation-level-5: 0px 8px 12px rgba(0, 0, 0, 0.4), 0px 4px 6px rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* ========================================================================== */
+/* Dark Mode Transition */
+/* ========================================================================== */
+
+.theme-transition {
+  transition: 
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+/* Apply transitions to all elements when theme changes */
+[data-theme] * {
+  transition: 
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}

@@ -13,14 +13,45 @@ interface StatCardProps {
 function StatCard({ number, label, description }: StatCardProps) {
   return (
     <motion.div
-      className="stat-card"
+      className="text-center"
       variants={motionSafe(slideUp)}
       whileHover={{ y: -2 }}
     >
-      <div className="stat-number">{number}</div>
-      <div className="stat-label">{label}</div>
+      <div 
+        style={{
+          fontSize: 'var(--sys-display-medium-size)',
+          lineHeight: 'var(--sys-display-medium-line-height)',
+          fontFamily: 'var(--sys-display-medium-font)',
+          fontWeight: 'var(--sys-display-medium-weight)',
+          color: 'var(--notebooklm-primary)'
+        }}
+      >
+        {number}
+      </div>
+      <div 
+        style={{
+          fontSize: 'var(--sys-title-medium-size)',
+          lineHeight: 'var(--sys-title-medium-line-height)',
+          fontFamily: 'var(--sys-title-medium-font)',
+          fontWeight: 'var(--sys-title-medium-weight)',
+          color: 'var(--text-primary)'
+        }}
+      >
+        {label}
+      </div>
       {description && (
-        <div className="text-xs text-gray-400 mt-1">{description}</div>
+        <div 
+          className="mt-1"
+          style={{
+            fontSize: 'var(--sys-body-small-size)',
+            lineHeight: 'var(--sys-body-small-line-height)',
+            fontFamily: 'var(--sys-body-small-font)',
+            fontWeight: 'var(--sys-body-small-weight)',
+            color: 'var(--text-secondary)'
+          }}
+        >
+          {description}
+        </div>
       )}
     </motion.div>
   )
@@ -35,16 +66,52 @@ interface FeatureCardProps {
 function FeatureCard({ icon, title, description }: FeatureCardProps) {
   return (
     <motion.div
-      className="card-base card-hover p-6 text-center"
+      className="p-6 text-center transition-all duration-300"
+      style={{
+        backgroundColor: 'var(--surface-elevated)',
+        borderRadius: 'var(--mat-card-elevated-container-shape)',
+        border: '1px solid var(--surface-outline)',
+        boxShadow: 'var(--elevation-level-1)'
+      }}
       variants={motionSafe(slideUp)}
-      whileHover={{ y: -4, scale: 1.05 }}
+      whileHover={{ y: -4 }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.boxShadow = 'var(--elevation-level-3)'
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.boxShadow = 'var(--elevation-level-1)'
+      }}
       transition={{ duration: 0.15 }}
     >
-      <div className="flex justify-center mb-4 text-black hover:scale-105 transition-transform duration-150">
+      <div 
+        className="flex justify-center mb-4 transition-transform duration-150"
+        style={{ color: 'var(--notebooklm-primary)' }}
+      >
         {icon}
       </div>
-      <h3 className="heading-4 text-black mb-3">{title}</h3>
-      <p className="body-base text-gray-600">{description}</p>
+      <h3 
+        className="mb-3"
+        style={{
+          fontSize: 'var(--sys-title-medium-size)',
+          lineHeight: 'var(--sys-title-medium-line-height)',
+          fontFamily: 'var(--sys-title-medium-font)',
+          fontWeight: 'var(--sys-title-medium-weight)',
+          color: 'var(--text-primary)'
+        }}
+      >
+        {title}
+      </h3>
+      <p 
+        style={{
+          fontSize: 'var(--sys-body-medium-size)',
+          lineHeight: 'var(--sys-body-medium-line-height)',
+          fontFamily: 'var(--sys-body-medium-font)',
+          fontWeight: 'var(--sys-body-medium-weight)',
+          color: 'var(--text-secondary)'
+        }}
+      >
+        {description}
+      </p>
     </motion.div>
   )
 }
@@ -150,7 +217,10 @@ export default function StatsAndFeatures({ language = 'en' }: StatsAndFeaturesPr
   ]
 
   return (
-    <section className="w-full py-24 bg-main">
+    <section 
+      className="w-full py-24"
+      style={{ backgroundColor: 'var(--surface-panel)' }}
+    >
       <div className="content-container">
         {/* Combined Stats and Features Section */}
         <motion.div
@@ -162,13 +232,27 @@ export default function StatsAndFeatures({ language = 'en' }: StatsAndFeaturesPr
         >
           <motion.h2
             variants={motionSafe(slideUp)}
-            className="heading-2 text-black mb-4"
+            className="mb-4"
+            style={{
+              fontSize: 'var(--sys-headline-large-size)',
+              lineHeight: 'var(--sys-headline-large-line-height)',
+              fontFamily: 'var(--sys-headline-large-font)',
+              fontWeight: 'var(--sys-headline-large-weight)',
+              color: 'var(--text-primary)'
+            }}
           >
             {content[language].trustedTitle}
           </motion.h2>
           <motion.p
             variants={motionSafe(slideUp)}
-            className="body-lg text-gray-600 mb-12"
+            className="mb-12"
+            style={{
+              fontSize: 'var(--sys-body-large-size)',
+              lineHeight: 'var(--sys-body-large-line-height)',
+              fontFamily: 'var(--sys-body-large-font)',
+              fontWeight: 'var(--sys-body-large-weight)',
+              color: 'var(--text-secondary)'
+            }}
           >
             {content[language].trustedSubtitle}
           </motion.p>
@@ -200,10 +284,28 @@ export default function StatsAndFeatures({ language = 'en' }: StatsAndFeaturesPr
             variants={motionSafe(slideUp)}
             className="text-center mb-12"
           >
-            <h2 className="heading-2 text-black mb-4">
+            <h2 
+              className="mb-4"
+              style={{
+                fontSize: 'var(--sys-headline-large-size)',
+                lineHeight: 'var(--sys-headline-large-line-height)',
+                fontFamily: 'var(--sys-headline-large-font)',
+                fontWeight: 'var(--sys-headline-large-weight)',
+                color: 'var(--text-primary)'
+              }}
+            >
               {content[language].whyChooseTitle}
             </h2>
-            <p className="body-lg text-gray-600 max-w-2xl mx-auto">
+            <p 
+              className="max-w-2xl mx-auto"
+              style={{
+                fontSize: 'var(--sys-body-large-size)',
+                lineHeight: 'var(--sys-body-large-line-height)',
+                fontFamily: 'var(--sys-body-large-font)',
+                fontWeight: 'var(--sys-body-large-weight)',
+                color: 'var(--text-secondary)'
+              }}
+            >
               {content[language].whyChooseSubtitle}
             </p>
           </motion.div>

@@ -143,21 +143,58 @@ export default function WorkspaceLayout({
   ]
 
   return (
-    <div className="h-screen flex bg-bg-main">
-      {/* Sidebar */}
+    <div 
+      className="h-screen flex"
+      style={{ backgroundColor: 'var(--surface-panel)' }}
+    >
+      {/* Sidebar - NotebookLM Style */}
       <motion.aside
         variants={motionSafe(slideUp)}
         initial="hidden"
         animate="visible"
-        className="hidden lg:flex lg:flex-col lg:w-80 bg-white border-r border-border-subtle"
+        className="hidden lg:flex lg:flex-col lg:w-80"
+        style={{
+          backgroundColor: 'var(--surface-elevated)',
+          borderRight: `1px solid var(--surface-outline)`,
+          boxShadow: 'var(--elevation-level-1)'
+        }}
       >
-        {/* Sidebar Header - Static Branding Only */}
-        <div className="p-6 border-b border-border-subtle">
+        {/* Sidebar Header - NotebookLM Style */}
+        <div 
+          className="p-6"
+          style={{ borderBottom: `1px solid var(--surface-outline)` }}
+        >
           <div className="flex items-center">
-            <img src="/logo.svg" alt="Prismy" className="h-8 w-auto mr-3" />
+            <img 
+              src="/icons/logo.svg" 
+              alt="Prismy" 
+              className="h-8 w-auto mr-3"
+              style={{
+                borderRadius: 'var(--shape-corner-small)',
+                boxShadow: 'var(--elevation-level-1)',
+                overflow: 'hidden'
+              }}
+            />
             <div>
-              <span className="heading-4 font-bold text-gray-900">Prismy</span>
-              <p className="body-sm text-gray-500">
+              <span 
+                className="font-bold"
+                style={{
+                  fontSize: 'var(--sys-title-medium-size)',
+                  lineHeight: 'var(--sys-title-medium-line-height)',
+                  fontFamily: 'var(--sys-title-medium-font)',
+                  color: 'var(--text-primary)'
+                }}
+              >
+                Prismy
+              </span>
+              <p 
+                style={{
+                  fontSize: 'var(--sys-body-small-size)',
+                  lineHeight: 'var(--sys-body-small-line-height)',
+                  fontFamily: 'var(--sys-body-small-font)',
+                  color: 'var(--text-secondary)'
+                }}
+              >
                 {content[language].workspace}
               </p>
             </div>
@@ -174,29 +211,52 @@ export default function WorkspaceLayout({
               <button
                 key={item.id}
                 onClick={() => onModeChange(item.id)}
-                className={`w-full flex items-center p-4 rounded-2xl transition-all duration-200 group ${
-                  isActive
-                    ? 'bg-gray-50 border border-border-subtle shadow-sm'
-                    : 'hover:bg-gray-50'
-                }`}
+                className="w-full flex items-center p-4 transition-all duration-200 group"
+                style={{
+                  borderRadius: 'var(--shape-corner-medium)',
+                  backgroundColor: isActive ? 'var(--notebooklm-primary-light)' : 'transparent',
+                  border: isActive ? `1px solid var(--surface-outline)` : '1px solid transparent',
+                  boxShadow: isActive ? 'var(--elevation-level-1)' : 'none'
+                }}
+                onMouseEnter={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.backgroundColor = 'var(--surface-filled)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }
+                }}
               >
                 <IconComponent
                   size={20}
-                  className={`mr-3 transition-colors ${
-                    isActive
-                      ? 'text-gray-900'
-                      : 'text-gray-500 group-hover:text-gray-700'
-                  }`}
+                  className="mr-3 transition-colors"
+                  style={{
+                    color: isActive ? 'var(--notebooklm-primary)' : 'var(--text-secondary)'
+                  }}
                 />
                 <div className="flex-1 text-left">
                   <div
-                    className={`body-sm font-medium ${
-                      isActive ? 'text-gray-900' : 'text-gray-700'
-                    }`}
+                    className="font-medium"
+                    style={{
+                      fontSize: 'var(--sys-body-medium-size)',
+                      lineHeight: 'var(--sys-body-medium-line-height)',
+                      fontFamily: 'var(--sys-body-medium-font)',
+                      color: isActive ? 'var(--notebooklm-primary)' : 'var(--text-primary)'
+                    }}
                   >
                     {item.label}
                   </div>
-                  <div className="body-xs text-gray-500 mt-0.5">
+                  <div 
+                    className="mt-0.5"
+                    style={{
+                      fontSize: 'var(--sys-body-small-size)',
+                      lineHeight: 'var(--sys-body-small-line-height)',
+                      fontFamily: 'var(--sys-body-small-font)',
+                      color: 'var(--text-secondary)'
+                    }}
+                  >
                     {item.description}
                   </div>
                 </div>
@@ -206,45 +266,86 @@ export default function WorkspaceLayout({
         </nav>
       </motion.aside>
 
-      {/* Mobile Sidebar Overlay */}
+      {/* Mobile Sidebar Overlay - NotebookLM Style */}
       <AnimatePresence>
         {isSidebarOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="lg:hidden fixed inset-0 z-50 bg-black bg-opacity-50"
+            className="lg:hidden fixed inset-0 z-50"
+            style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}
             onClick={() => setIsSidebarOpen(false)}
           >
             <motion.aside
               initial={{ x: -320 }}
               animate={{ x: 0 }}
               exit={{ x: -320 }}
-              className="w-80 h-full bg-white border-r border-border-subtle"
+              className="w-80 h-full"
+              style={{
+                backgroundColor: 'var(--surface-elevated)',
+                borderRight: `1px solid var(--surface-outline)`,
+                boxShadow: 'var(--elevation-level-2)'
+              }}
               onClick={e => e.stopPropagation()}
             >
-              {/* Mobile sidebar content - Static branding */}
-              <div className="p-6 border-b border-border-subtle flex items-center justify-between">
+              {/* Mobile sidebar content - NotebookLM Style */}
+              <div 
+                className="p-6 flex items-center justify-between"
+                style={{ borderBottom: `1px solid var(--surface-outline)` }}
+              >
                 <div className="flex items-center">
                   <img
-                    src="/logo.svg"
+                    src="/icons/logo.svg"
                     alt="Prismy"
                     className="h-8 w-auto mr-3"
+                    style={{
+                      borderRadius: 'var(--shape-corner-small)',
+                      boxShadow: 'var(--elevation-level-1)',
+                      overflow: 'hidden'
+                    }}
                   />
                   <div>
-                    <span className="heading-4 font-bold text-gray-900">
+                    <span 
+                      className="font-bold"
+                      style={{
+                        fontSize: 'var(--sys-title-medium-size)',
+                        lineHeight: 'var(--sys-title-medium-line-height)',
+                        fontFamily: 'var(--sys-title-medium-font)',
+                        color: 'var(--text-primary)'
+                      }}
+                    >
                       Prismy
                     </span>
-                    <p className="body-sm text-gray-500">
+                    <p 
+                      style={{
+                        fontSize: 'var(--sys-body-small-size)',
+                        lineHeight: 'var(--sys-body-small-line-height)',
+                        fontFamily: 'var(--sys-body-small-font)',
+                        color: 'var(--text-secondary)'
+                      }}
+                    >
                       {content[language].workspace}
                     </p>
                   </div>
                 </div>
                 <button
                   onClick={() => setIsSidebarOpen(false)}
-                  className="p-2 hover:bg-gray-100 rounded-lg"
+                  className="p-2 transition-colors"
+                  style={{
+                    color: 'var(--text-secondary)',
+                    borderRadius: 'var(--shape-corner-small)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--surface-filled)';
+                    e.currentTarget.style.color = 'var(--text-primary)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.color = 'var(--text-secondary)';
+                  }}
                 >
-                  <X size={20} className="text-gray-500" />
+                  <X size={20} />
                 </button>
               </div>
 
@@ -260,29 +361,52 @@ export default function WorkspaceLayout({
                         onModeChange(item.id)
                         setIsSidebarOpen(false)
                       }}
-                      className={`w-full flex items-center p-4 rounded-2xl transition-all duration-200 group ${
-                        isActive
-                          ? 'bg-gray-50 border border-border-subtle shadow-sm'
-                          : 'hover:bg-gray-50'
-                      }`}
+                      className="w-full flex items-center p-4 transition-all duration-200 group"
+                      style={{
+                        borderRadius: 'var(--shape-corner-medium)',
+                        backgroundColor: isActive ? 'var(--notebooklm-primary-light)' : 'transparent',
+                        border: isActive ? `1px solid var(--surface-outline)` : '1px solid transparent',
+                        boxShadow: isActive ? 'var(--elevation-level-1)' : 'none'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!isActive) {
+                          e.currentTarget.style.backgroundColor = 'var(--surface-filled)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isActive) {
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                        }
+                      }}
                     >
                       <IconComponent
                         size={20}
-                        className={`mr-3 transition-colors ${
-                          isActive
-                            ? 'text-gray-900'
-                            : 'text-gray-500 group-hover:text-gray-700'
-                        }`}
+                        className="mr-3 transition-colors"
+                        style={{
+                          color: isActive ? 'var(--notebooklm-primary)' : 'var(--text-secondary)'
+                        }}
                       />
                       <div className="flex-1 text-left">
                         <div
-                          className={`body-sm font-medium ${
-                            isActive ? 'text-gray-900' : 'text-gray-700'
-                          }`}
+                          className="font-medium"
+                          style={{
+                            fontSize: 'var(--sys-body-medium-size)',
+                            lineHeight: 'var(--sys-body-medium-line-height)',
+                            fontFamily: 'var(--sys-body-medium-font)',
+                            color: isActive ? 'var(--notebooklm-primary)' : 'var(--text-primary)'
+                          }}
                         >
                           {item.label}
                         </div>
-                        <div className="body-xs text-gray-500 mt-0.5">
+                        <div 
+                          className="mt-0.5"
+                          style={{
+                            fontSize: 'var(--sys-body-small-size)',
+                            lineHeight: 'var(--sys-body-small-line-height)',
+                            fontFamily: 'var(--sys-body-small-font)',
+                            color: 'var(--text-secondary)'
+                          }}
+                        >
                           {item.description}
                         </div>
                       </div>
@@ -297,25 +421,60 @@ export default function WorkspaceLayout({
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Clean Workspace Header - Professional & Minimal */}
-        <header className="bg-white border-b border-border-subtle px-4 py-3 lg:px-6 lg:py-4">
+        {/* Clean Workspace Header - NotebookLM Style */}
+        <header 
+          className="px-4 py-3 lg:px-6 lg:py-4"
+          style={{
+            backgroundColor: 'var(--surface-elevated)',
+            borderBottom: `1px solid var(--surface-outline)`,
+            boxShadow: 'var(--elevation-level-1)'
+          }}
+        >
           <div className="flex items-center justify-between">
             {/* Left Section: Mobile Menu + Current Section */}
             <div className="flex items-center">
               {/* Mobile Menu Button */}
               <button
                 onClick={() => setIsSidebarOpen(true)}
-                className="lg:hidden p-2 hover:bg-gray-100 rounded-lg mr-3 transition-colors"
+                className="lg:hidden p-2 mr-3 transition-colors"
+                style={{
+                  color: 'var(--text-secondary)',
+                  borderRadius: 'var(--shape-corner-small)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--surface-filled)';
+                  e.currentTarget.style.color = 'var(--text-primary)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.color = 'var(--text-secondary)';
+                }}
               >
-                <Menu size={20} className="text-gray-600" />
+                <Menu size={20} />
               </button>
 
               {/* Current Section Info */}
               <div className="hidden lg:block">
-                <h1 className="text-lg font-semibold text-gray-900">
+                <h1 
+                  className="font-semibold"
+                  style={{
+                    fontSize: 'var(--sys-title-medium-size)',
+                    lineHeight: 'var(--sys-title-medium-line-height)',
+                    fontFamily: 'var(--sys-title-medium-font)',
+                    color: 'var(--text-primary)'
+                  }}
+                >
                   {navigationItems.find(item => item.id === currentMode)?.label}
                 </h1>
-                <p className="text-sm text-gray-500 mt-0.5">
+                <p 
+                  className="mt-0.5"
+                  style={{
+                    fontSize: 'var(--sys-body-small-size)',
+                    lineHeight: 'var(--sys-body-small-line-height)',
+                    fontFamily: 'var(--sys-body-small-font)',
+                    color: 'var(--text-secondary)'
+                  }}
+                >
                   {
                     navigationItems.find(item => item.id === currentMode)
                       ?.description
@@ -325,7 +484,15 @@ export default function WorkspaceLayout({
 
               {/* Mobile Section Title */}
               <div className="lg:hidden">
-                <h1 className="text-lg font-semibold text-gray-900">
+                <h1 
+                  className="font-semibold"
+                  style={{
+                    fontSize: 'var(--sys-title-medium-size)',
+                    lineHeight: 'var(--sys-title-medium-line-height)',
+                    fontFamily: 'var(--sys-title-medium-font)',
+                    color: 'var(--text-primary)'
+                  }}
+                >
                   {navigationItems.find(item => item.id === currentMode)?.label}
                 </h1>
               </div>
@@ -344,32 +511,95 @@ export default function WorkspaceLayout({
               />
 
               {/* Quick Stats - Desktop Only */}
-              <div className="hidden xl:flex items-center space-x-6 text-center pr-6 border-r border-gray-200">
+              <div 
+                className="hidden xl:flex items-center space-x-6 text-center pr-6"
+                style={{ borderRight: `1px solid var(--surface-outline)` }}
+              >
                 <div>
-                  <div className="text-sm font-medium text-gray-900">247</div>
-                  <div className="text-xs text-gray-500">
+                  <div 
+                    className="font-medium"
+                    style={{
+                      fontSize: 'var(--sys-body-medium-size)',
+                      lineHeight: 'var(--sys-body-medium-line-height)',
+                      color: 'var(--text-primary)'
+                    }}
+                  >
+                    247
+                  </div>
+                  <div 
+                    style={{
+                      fontSize: 'var(--sys-body-small-size)',
+                      lineHeight: 'var(--sys-body-small-line-height)',
+                      color: 'var(--text-secondary)'
+                    }}
+                  >
                     {content[language].quickStats.documents}
                   </div>
                 </div>
                 <div>
-                  <div className="text-sm font-medium text-gray-900">1.2M</div>
-                  <div className="text-xs text-gray-500">
+                  <div 
+                    className="font-medium"
+                    style={{
+                      fontSize: 'var(--sys-body-medium-size)',
+                      lineHeight: 'var(--sys-body-medium-line-height)',
+                      color: 'var(--text-primary)'
+                    }}
+                  >
+                    1.2M
+                  </div>
+                  <div 
+                    style={{
+                      fontSize: 'var(--sys-body-small-size)',
+                      lineHeight: 'var(--sys-body-small-line-height)',
+                      color: 'var(--text-secondary)'
+                    }}
+                  >
                     {content[language].quickStats.usage}
                   </div>
                 </div>
                 <div>
-                  <div className="text-sm font-medium text-gray-900">15</div>
-                  <div className="text-xs text-gray-500">
+                  <div 
+                    className="font-medium"
+                    style={{
+                      fontSize: 'var(--sys-body-medium-size)',
+                      lineHeight: 'var(--sys-body-medium-line-height)',
+                      color: 'var(--text-primary)'
+                    }}
+                  >
+                    15
+                  </div>
+                  <div 
+                    style={{
+                      fontSize: 'var(--sys-body-small-size)',
+                      lineHeight: 'var(--sys-body-small-line-height)',
+                      color: 'var(--text-secondary)'
+                    }}
+                  >
                     {content[language].quickStats.languages}
                   </div>
                 </div>
               </div>
 
-              {/* Back to Home - Direct HTML Link (DỨT ĐIỂM) */}
+              {/* Back to Home - NotebookLM Style */}
               {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
               <a
                 href="/"
-                className="flex items-center text-sm text-gray-600 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 rounded-md px-3 py-1.5 hover:bg-gray-50 no-underline"
+                className="flex items-center px-3 py-1.5 transition-colors focus:outline-none no-underline"
+                style={{
+                  fontSize: 'var(--sys-body-medium-size)',
+                  lineHeight: 'var(--sys-body-medium-line-height)',
+                  fontFamily: 'var(--sys-body-medium-font)',
+                  color: 'var(--text-secondary)',
+                  borderRadius: 'var(--shape-corner-small)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = 'var(--text-primary)';
+                  e.currentTarget.style.backgroundColor = 'var(--surface-filled)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = 'var(--text-secondary)';
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                }}
               >
                 <Home size={16} className="mr-2" />
                 <span className="hidden sm:inline">
@@ -383,8 +613,11 @@ export default function WorkspaceLayout({
           </div>
         </header>
 
-        {/* Main Content */}
-        <main className="flex-1 overflow-auto">
+        {/* Main Content - NotebookLM Style */}
+        <main 
+          className="flex-1 overflow-auto"
+          style={{ backgroundColor: 'var(--surface-panel)' }}
+        >
           <motion.div
             key={currentMode}
             variants={motionSafe(fadeIn)}

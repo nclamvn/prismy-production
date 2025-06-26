@@ -1,69 +1,83 @@
 /* Professional SaaS Design Tokens - Vietnamese Market Ready */
 :root {
-  /* Primary Brand Colors - Modern Blue for Trust */
-  --primary-50: #eff6ff;
-  --primary-100: #dbeafe;
-  --primary-200: #bfdbfe;
-  --primary-300: #93c5fd;
-  --primary-400: #60a5fa;
-  --primary-500: #3b82f6;
-  --primary-600: #2563eb;
-  --primary-700: #1d4ed8;
-  --primary-800: #1e40af;
-  --primary-900: #1e3a8a;
+  /* NotebookLM Primary Colors - Monochromatic */
+  --notebooklm-primary: #000000; /* Pure Black */
+  --notebooklm-primary-light: rgba(0, 0, 0, 0.08); /* Light Gray Tint */
+  --notebooklm-primary-dark: #1a1a1a; /* Darker Gray */
   
-  /* Secondary Colors - Emerald for Success */
-  --secondary-50: #ecfdf5;
-  --secondary-100: #d1fae5;
-  --secondary-200: #a7f3d0;
-  --secondary-300: #6ee7b7;
-  --secondary-400: #34d399;
-  --secondary-500: #10b981;
-  --secondary-600: #059669;
-  --secondary-700: #047857;
-  --secondary-800: #065f46;
-  --secondary-900: #064e3b;
+  /* Primary Brand Colors - Monochromatic Scale */
+  --primary-50: #f9f9f9;
+  --primary-100: #f0f0f0;  
+  --primary-200: #e4e4e4;
+  --primary-300: #d1d1d1;
+  --primary-400: #b4b4b4;
+  --primary-500: var(--notebooklm-primary);
+  --primary-600: var(--notebooklm-primary-dark);
+  --primary-700: #333333;
+  --primary-800: #262626;
+  --primary-900: #171717;
   
-  /* Professional Gray Scale */
-  --gray-50: #f9fafb;
-  --gray-100: #f3f4f6;
-  --gray-200: #e5e7eb;
-  --gray-300: #d1d5db;
-  --gray-400: #9ca3af;
-  --gray-500: #6b7280;
-  --gray-600: #4b5563;
-  --gray-700: #374151;
-  --gray-800: #1f2937;
-  --gray-900: #111827;
+  /* Secondary Colors - Grayscale */
+  --secondary-50: #f8f8f8;
+  --secondary-100: #f0f0f0;
+  --secondary-200: #e4e4e4;
+  --secondary-300: #d1d1d1;
+  --secondary-400: #b4b4b4;
+  --secondary-500: #737373;
+  --secondary-600: #525252;
+  --secondary-700: #404040;
+  --secondary-800: #262626;
+  --secondary-900: #171717;
   
-  /* Semantic Colors */
-  --error-50: #fef2f2;
-  --error-500: #ef4444;
-  --error-600: #dc2626;
-  --warning-50: #fffbeb;
-  --warning-500: #f59e0b;
-  --warning-600: #d97706;
-  --success-50: #f0fdf4;
-  --success-500: #22c55e;
-  --success-600: #16a34a;
+  /* NotebookLM Surface Colors - Authentic Tones */
+  --surface-elevated: #F8FAFD; /* NotebookLM Elevated Surface */
+  --surface-filled: #F0F4F9;   /* NotebookLM Filled Containers */
+  --surface-panel: #FBFAF9;    /* NotebookLM Panel Background */
+  --surface-outline: #F8F8FA;  /* NotebookLM Subtle Outlines */
   
-  /* Vietnamese Payment Colors */
-  --vnpay-blue: #1a5490;
-  --momo-purple: #a50064;
-  --stripe-purple: #635bff;
+  /* Unified Background System */
+  --unified-background: rgba(251, 250, 249, 1); /* Solid version of navbar color for complete unity */
   
-  /* Main Application Colors - Flat Design */
-  --bg-main: var(--gray-50);
-  --bg-secondary: var(--white);
-  --bg-accent: var(--gray-50);
-  --bg-footer: #000000; /* Pure black for visual bookend */
+  /* Professional Gray Scale - Monochromatic */
+  --gray-50: var(--surface-elevated);
+  --gray-100: var(--surface-panel);
+  --gray-200: var(--surface-filled);
+  --gray-300: var(--surface-outline);
+  --gray-400: #a3a3a3;
+  --gray-500: #737373; /* Monochromatic secondary text */
+  --gray-600: #525252;
+  --gray-700: #404040;
+  --gray-800: #262626;
+  --gray-900: #171717;
   
-  /* Text Colors - Refined Hierarchy */
-  --text-primary: #0f172a; /* Softer than pure black for better readability */
-  --text-secondary: #64748b; /* Mid-tone for descriptions */
-  --text-muted: var(--gray-500);
-  --text-inverse: #f8fafc; /* Soft white for dark backgrounds */
-  --text-accent: var(--primary-600);
+  /* Semantic Colors - Grayscale */
+  --error-50: #f8f8f8;
+  --error-500: #525252;
+  --error-600: #404040;
+  --warning-50: #f8f8f8;
+  --warning-500: #737373;
+  --warning-600: #525252;
+  --success-50: #f8f8f8;
+  --success-500: #404040;
+  --success-600: #262626;
+  
+  /* Payment Colors - Grayscale */
+  --vnpay-blue: #404040;
+  --momo-purple: #525252;
+  --stripe-purple: #737373;
+  
+  /* Main Application Colors - NotebookLM Style */
+  --bg-main: var(--surface-panel);
+  --bg-secondary: var(--surface-elevated);
+  --bg-accent: var(--surface-filled);
+  --bg-footer: #000000; /* Dark footer for contrast */
+  
+  /* Text Colors - NotebookLM Hierarchy */
+  --text-primary: #000000; /* Pure black for maximum contrast */
+  --text-secondary: #8181A5; /* NotebookLM secondary text */
+  --text-muted: #A8A8C4; /* NotebookLM muted text */
+  --text-inverse: #ffffff; /* Pure white for dark backgrounds */
+  --text-accent: var(--notebooklm-primary);
   
   /* Border Colors - Enhanced System */
   --border-subtle: #e2e8f0; /* Ultra-light for gentle separation */
@@ -75,10 +89,10 @@
   --white: #ffffff;
   --black: #000000;
 
-  /* Accent laser */
+  /* Accent gradient - Monochromatic */
   --accent-rainbow: linear-gradient(90deg,
-    #ff5757 0%, #ffca46 25%, #34d97b 45%,
-    #45b2ff 65%, #c47bff 85%, #ff5790 100%);
+    #f5f5f5 0%, #e5e5e5 25%, #d4d4d4 45%,
+    #a3a3a3 65%, #737373 85%, #404040 100%);
 
   /* Radius */
   --radius-sm: 0.5rem;
@@ -104,18 +118,122 @@
   --tablet-padding: 1.5rem;      /* Tablet breathing room only */
   --max-content-width: none;      /* No desktop constraints */
   
-  /* Font sizes */
-  --text-xs: 0.75rem;
-  --text-sm: 0.875rem;
-  --text-base: 1rem;
-  --text-lg: 1.125rem;
-  --text-xl: 1.25rem;
-  --text-2xl: 1.5rem;
-  --text-3xl: 1.875rem;
-  --text-4xl: 2.25rem;
-  --text-5xl: 3rem;
+  /* NotebookLM Typography System - Material Design 3 Tokens */
   
-  /* Line heights */
+  /* Font Family Variables */
+  --font-google-sans: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-google-sans-text: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-google-sans-display: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  
+  /* Material Design 3 Typography Scale */
+  
+  /* Display Levels */
+  --sys-display-large-font: var(--font-google-sans);
+  --sys-display-large-size: 3.562rem;
+  --sys-display-large-line-height: 4rem;
+  --sys-display-large-weight: 400;
+  --sys-display-large-tracking: 0;
+  
+  --sys-display-medium-font: var(--font-google-sans);
+  --sys-display-medium-size: 2.812rem;
+  --sys-display-medium-line-height: 3.25rem;
+  --sys-display-medium-weight: 400;
+  --sys-display-medium-tracking: 0;
+  
+  --sys-display-small-font: var(--font-google-sans);
+  --sys-display-small-size: 2.25rem;
+  --sys-display-small-line-height: 2.75rem;
+  --sys-display-small-weight: 400;
+  --sys-display-small-tracking: 0;
+  
+  /* Headlines */
+  --sys-headline-large-font: var(--font-google-sans);
+  --sys-headline-large-size: 2rem;
+  --sys-headline-large-line-height: 2.5rem;
+  --sys-headline-large-weight: 400;
+  --sys-headline-large-tracking: 0;
+  
+  --sys-headline-medium-font: var(--font-google-sans);
+  --sys-headline-medium-size: 1.75rem;
+  --sys-headline-medium-line-height: 2.25rem;
+  --sys-headline-medium-weight: 400;
+  --sys-headline-medium-tracking: 0;
+  
+  --sys-headline-small-font: var(--font-google-sans);
+  --sys-headline-small-size: 1.5rem;
+  --sys-headline-small-line-height: 2rem;
+  --sys-headline-small-weight: 400;
+  --sys-headline-small-tracking: 0;
+  
+  /* Titles */
+  --sys-title-large-font: var(--font-google-sans);
+  --sys-title-large-size: 1.375rem;
+  --sys-title-large-line-height: 1.75rem;
+  --sys-title-large-weight: 400;
+  --sys-title-large-tracking: 0;
+  
+  --sys-title-medium-font: var(--font-google-sans-text);
+  --sys-title-medium-size: 1rem;
+  --sys-title-medium-line-height: 1.5rem;
+  --sys-title-medium-weight: 500;
+  --sys-title-medium-tracking: 0;
+  
+  --sys-title-small-font: var(--font-google-sans-text);
+  --sys-title-small-size: 0.875rem;
+  --sys-title-small-line-height: 1.25rem;
+  --sys-title-small-weight: 500;
+  --sys-title-small-tracking: 0;
+  
+  /* Body Text */
+  --sys-body-large-font: var(--font-google-sans-text);
+  --sys-body-large-size: 1rem;
+  --sys-body-large-line-height: 1.5rem;
+  --sys-body-large-weight: 400;
+  --sys-body-large-tracking: 0;
+  
+  --sys-body-medium-font: var(--font-google-sans-text);
+  --sys-body-medium-size: 0.875rem;
+  --sys-body-medium-line-height: 1.25rem;
+  --sys-body-medium-weight: 400;
+  --sys-body-medium-tracking: 0;
+  
+  --sys-body-small-font: var(--font-google-sans-text);
+  --sys-body-small-size: 0.75rem;
+  --sys-body-small-line-height: 1rem;
+  --sys-body-small-weight: 400;
+  --sys-body-small-tracking: 0.006rem;
+  
+  /* Labels */
+  --sys-label-large-font: var(--font-google-sans-text);
+  --sys-label-large-size: 0.875rem;
+  --sys-label-large-line-height: 1.25rem;
+  --sys-label-large-weight: 500;
+  --sys-label-large-tracking: 0;
+  
+  --sys-label-medium-font: var(--font-google-sans-text);
+  --sys-label-medium-size: 0.75rem;
+  --sys-label-medium-line-height: 1rem;
+  --sys-label-medium-weight: 500;
+  --sys-label-medium-tracking: 0.006rem;
+  
+  --sys-label-small-font: var(--font-google-sans-text);
+  --sys-label-small-size: 0.688rem;
+  --sys-label-small-line-height: 1rem;
+  --sys-label-small-weight: 500;
+  --sys-label-small-tracking: 0.006rem;
+  
+  /* Legacy font sizes for compatibility */
+  --text-xs: var(--sys-body-small-size);
+  --text-sm: var(--sys-body-medium-size);
+  --text-base: var(--sys-body-large-size);
+  --text-lg: 1.125rem;
+  --text-xl: var(--sys-title-large-size);
+  --text-2xl: var(--sys-headline-small-size);
+  --text-3xl: var(--sys-headline-medium-size);
+  --text-4xl: var(--sys-headline-large-size);
+  --text-5xl: var(--sys-display-small-size);
+  
+  /* Legacy line heights */
   --leading-tight: 1.25;
   --leading-normal: 1.5;
   --leading-relaxed: 1.75;
@@ -128,6 +246,104 @@
   /* Zen Transitions */
   --transition-base: all var(--duration-breath) cubic-bezier(0.25, 0.46, 0.45, 0.94);
   --transition-slow: all var(--duration-meditation) cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  
+  /* ========================================================================== */
+  /* MATERIAL DESIGN 3 COMPONENT TOKENS - NotebookLM Style */
+  /* ========================================================================== */
+  
+  /* Button Tokens */
+  --mat-button-filled-container-height: 40px;
+  --mat-button-filled-horizontal-padding: 24px;
+  --mat-button-filled-container-shape: 9999px; /* Fully rounded */
+  --mat-button-filled-container-color: var(--notebooklm-primary);
+  --mat-button-filled-label-text-color: white;
+  --mat-button-filled-hover-state-layer-opacity: 0.08;
+  --mat-button-filled-focus-state-layer-opacity: 0.12;
+  
+  --mat-button-outlined-outline-width: 1px;
+  --mat-button-outlined-outline-color: var(--surface-outline);
+  --mat-button-outlined-label-text-color: var(--notebooklm-primary);
+  --mat-button-outlined-container-shape: 9999px;
+  --mat-button-outlined-horizontal-padding: 24px;
+  
+  --mat-button-text-horizontal-padding: 12px;
+  --mat-button-text-with-icon-horizontal-padding: 16px;
+  --mat-button-text-container-shape: 9999px;
+  --mat-button-text-label-text-color: var(--notebooklm-primary);
+  
+  /* Form Field Tokens */
+  --mat-form-field-container-height: 56px;
+  --mat-form-field-outlined-container-shape: 4px;
+  --mat-form-field-outlined-outline-color: var(--surface-outline);
+  --mat-form-field-outlined-focus-outline-color: var(--notebooklm-primary);
+  --mat-form-field-outlined-outline-width: 1px;
+  --mat-form-field-outlined-focus-outline-width: 2px;
+  
+  /* Card Tokens */
+  --mat-card-elevated-container-shape: 12px;
+  --mat-card-elevated-container-color: var(--surface-elevated);
+  --mat-card-elevated-container-elevation: 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12);
+  --mat-card-outlined-container-shape: 12px;
+  --mat-card-outlined-outline-width: 1px;
+  --mat-card-outlined-outline-color: var(--surface-outline);
+  
+  /* Elevation System */
+  --elevation-level-0: 0px 0px 0px 0px rgba(0,0,0,0.2), 0px 0px 0px 0px rgba(0,0,0,0.14), 0px 0px 0px 0px rgba(0,0,0,0.12);
+  --elevation-level-1: 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12);
+  --elevation-level-2: 0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12);
+  --elevation-level-3: 0px 3px 3px -2px rgba(0,0,0,0.2), 0px 3px 4px 0px rgba(0,0,0,0.14), 0px 1px 8px 0px rgba(0,0,0,0.12);
+  
+  /* Shape Tokens */
+  --shape-corner-none: 0px;
+  --shape-corner-small: 4px;
+  --shape-corner-medium: 12px;
+  --shape-corner-large: 16px;
+  --shape-corner-full: 9999px;
+  
+  /* State Layer Colors */
+  --state-layer-hover: color-mix(in srgb, black 8%, transparent);
+  --state-layer-focus: color-mix(in srgb, black 12%, transparent);
+  --state-layer-pressed: color-mix(in srgb, black 12%, transparent);
+  --state-layer-disabled: color-mix(in srgb, black 38%, transparent);
+}
+
+/* Responsive Typography Adjustments - NotebookLM Mobile Scaling */
+@media (max-width: 991px) {
+  :root {
+    --sys-display-large-size: 4.5rem;
+    --sys-display-large-line-height: 4.625rem;
+    --sys-display-medium-size: 2.2rem;
+    --sys-display-medium-line-height: 2.5rem;
+    --sys-display-small-size: 2rem;
+    --sys-display-small-line-height: 2.5rem;
+    --sys-headline-large-size: 1.75rem;
+    --sys-headline-large-line-height: 1.55rem;
+    --sys-headline-small-size: 1.2rem;
+    --sys-headline-small-line-height: 2rem;
+    --sys-title-large-size: 1.2rem;
+    --sys-title-large-line-height: 2rem;
+    --sys-body-large-size: 1rem;
+    --sys-body-large-line-height: 1.55rem;
+  }
+}
+
+@media (max-width: 767px) {
+  :root {
+    --sys-display-large-size: 3.5rem;
+    --sys-display-large-line-height: 3.625rem;
+    --sys-display-medium-size: 1.912rem;
+    --sys-display-medium-line-height: 2.25rem;
+    --sys-display-small-size: 1.8125rem;
+    --sys-display-small-line-height: 2.25rem;
+    --sys-headline-large-size: 1.5rem;
+    --sys-headline-large-line-height: 2rem;
+    --sys-headline-small-size: 1.1rem;
+    --sys-headline-small-line-height: 1.75rem;
+    --sys-title-large-size: 1.1rem;
+    --sys-title-large-line-height: 1.75rem;
+    --sys-body-large-size: 0.9rem;
+    --sys-body-large-line-height: 1.4rem;
+  }
 }
 
 /* Reduced motion variants */

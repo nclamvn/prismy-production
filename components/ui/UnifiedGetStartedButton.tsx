@@ -13,6 +13,7 @@ interface UnifiedGetStartedButtonProps {
   redirectTo?: string
   children?: React.ReactNode
   onClick?: () => void
+  style?: React.CSSProperties
 }
 
 export default function UnifiedGetStartedButton({
@@ -22,6 +23,7 @@ export default function UnifiedGetStartedButton({
   redirectTo = '/workspace',
   children,
   onClick,
+  style,
 }: UnifiedGetStartedButtonProps) {
   const { user, loading } = useAuth()
   const { handleGetStarted } = useUnifiedAuthContext()
@@ -105,6 +107,7 @@ export default function UnifiedGetStartedButton({
       <button
         disabled
         className={`${getButtonClasses()} opacity-50 cursor-not-allowed`}
+        style={style}
       >
         <span className="animate-pulse">{content[language].getStarted}</span>
       </button>
@@ -112,7 +115,7 @@ export default function UnifiedGetStartedButton({
   }
 
   return (
-    <button onClick={handleClick} className={getButtonClasses()} type="button">
+    <button onClick={handleClick} className={getButtonClasses()} style={style} type="button">
       {getButtonText()}
     </button>
   )

@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { motionSafe, slideUp } from '@/lib/motion'
+import { motionSafe, slideUp, notebookLMCard } from '@/lib/motion'
 import Link from 'next/link'
 import { Calendar, Clock, User } from 'lucide-react'
 
@@ -173,23 +173,29 @@ export default function BlogCard({
     <motion.article
       variants={motionSafe(slideUp)}
       transition={{ delay }}
-      className={`group bg-white rounded-2xl border border-gray-200 overflow-hidden 
-                  hover:border-gray-300 transition-all duration-300 ${className}`}
+      className={`group overflow-hidden ${className}`}
       style={{ 
-        transition: 'all 200ms ease-in-out',
-        borderRadius: '1rem'
+        backgroundColor: 'var(--surface-elevated)',
+        border: '1px solid var(--surface-outline)',
+        borderRadius: 'var(--mat-card-elevated-container-shape)',
+        boxShadow: 'var(--elevation-level-1)',
+        transition: 'all 200ms cubic-bezier(0.2, 0, 0, 1)'
       }}
+      {...motionSafe(notebookLMCard)}
       onMouseEnter={(e) => {
-        e.currentTarget.style.transform = 'translateY(-2px)';
-        e.currentTarget.style.boxShadow = '0px 4px 10px rgba(0,0,0,0.05)';
+        e.currentTarget.style.borderColor = 'var(--notebooklm-primary-light)';
+        e.currentTarget.style.boxShadow = 'var(--elevation-level-2)';
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.transform = 'translateY(0)';
-        e.currentTarget.style.boxShadow = 'none';
+        e.currentTarget.style.borderColor = 'var(--surface-outline)';
+        e.currentTarget.style.boxShadow = 'var(--elevation-level-1)';
       }}
     >
       {/* Artline Illustration Header */}
-      <div className="bg-gray-50 p-6">
+      <div 
+        className="p-6"
+        style={{ backgroundColor: 'var(--surface-filled)' }}
+      >
         {getArtlineIllustration()}
       </div>
       
@@ -197,38 +203,109 @@ export default function BlogCard({
       <div className="p-6">
         {/* Category */}
         <div className="mb-3">
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                         bg-gray-100 text-gray-800 group-hover:bg-gray-200 transition-colors">
+          <span 
+            className="inline-flex items-center px-3 py-1 transition-colors"
+            style={{
+              backgroundColor: 'var(--notebooklm-primary-light)',
+              color: 'var(--notebooklm-primary)',
+              borderRadius: 'var(--shape-corner-full)',
+              fontSize: 'var(--sys-label-small-size)',
+              lineHeight: 'var(--sys-label-small-line-height)',
+              fontFamily: 'var(--sys-label-small-font)',
+              fontWeight: 'var(--sys-label-small-weight)'
+            }}
+          >
             {category}
           </span>
         </div>
         
         {/* Title */}
-        <h3 className="heading-4 font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-gray-700 transition-colors">
-          <Link href={`/blog/${slug}`} className="hover:underline">
+        <h3 
+          className="mb-3 line-clamp-2 transition-colors group-hover:opacity-80"
+          style={{
+            fontSize: 'var(--sys-title-large-size)',
+            lineHeight: 'var(--sys-title-large-line-height)',
+            fontFamily: 'var(--sys-title-large-font)',
+            fontWeight: 'var(--sys-title-large-weight)',
+            color: 'var(--text-primary)'
+          }}
+        >
+          <Link 
+            href={`/blog/${slug}`} 
+            className="hover:underline focus-indicator"
+            style={{ textDecorationColor: 'var(--notebooklm-primary)' }}
+          >
             {title}
           </Link>
         </h3>
         
         {/* Excerpt */}
-        <p className="body-sm text-gray-600 mb-4 line-clamp-3 group-hover:text-gray-700 transition-colors">
+        <p 
+          className="mb-4 line-clamp-3 transition-colors"
+          style={{
+            fontSize: 'var(--sys-body-medium-size)',
+            lineHeight: 'var(--sys-body-medium-line-height)',
+            fontFamily: 'var(--sys-body-medium-font)',
+            fontWeight: 'var(--sys-body-medium-weight)',
+            color: 'var(--text-secondary)'
+          }}
+        >
           {excerpt}
         </p>
         
         {/* Meta */}
-        <div className="flex items-center justify-between text-xs text-gray-500">
+        <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-1">
-              <User className="w-3 h-3" />
-              <span>{author}</span>
+              <User 
+                className="w-3 h-3" 
+                style={{ color: 'var(--text-disabled)' }}
+              />
+              <span
+                style={{
+                  fontSize: 'var(--sys-body-small-size)',
+                  lineHeight: 'var(--sys-body-small-line-height)',
+                  fontFamily: 'var(--sys-body-small-font)',
+                  fontWeight: 'var(--sys-body-small-weight)',
+                  color: 'var(--text-disabled)'
+                }}
+              >
+                {author}
+              </span>
             </div>
             <div className="flex items-center space-x-1">
-              <Calendar className="w-3 h-3" />
-              <span>{publishDate}</span>
+              <Calendar 
+                className="w-3 h-3" 
+                style={{ color: 'var(--text-disabled)' }}
+              />
+              <span
+                style={{
+                  fontSize: 'var(--sys-body-small-size)',
+                  lineHeight: 'var(--sys-body-small-line-height)',
+                  fontFamily: 'var(--sys-body-small-font)',
+                  fontWeight: 'var(--sys-body-small-weight)',
+                  color: 'var(--text-disabled)'
+                }}
+              >
+                {publishDate}
+              </span>
             </div>
             <div className="flex items-center space-x-1">
-              <Clock className="w-3 h-3" />
-              <span>{readTime}</span>
+              <Clock 
+                className="w-3 h-3" 
+                style={{ color: 'var(--text-disabled)' }}
+              />
+              <span
+                style={{
+                  fontSize: 'var(--sys-body-small-size)',
+                  lineHeight: 'var(--sys-body-small-line-height)',
+                  fontFamily: 'var(--sys-body-small-font)',
+                  fontWeight: 'var(--sys-body-small-weight)',
+                  color: 'var(--text-disabled)'
+                }}
+              >
+                {readTime}
+              </span>
             </div>
           </div>
         </div>

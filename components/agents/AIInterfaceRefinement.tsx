@@ -107,31 +107,85 @@ export default function AIInterfaceRefinement({ language = 'en' }: AIInterfaceRe
       animate="visible"
       className="space-y-6"
     >
-      {/* Header */}
+      {/* Header - NotebookLM Style */}
       <motion.div variants={motionSafe(slideUp)}>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        <h1 
+          className="mb-2"
+          style={{
+            fontSize: 'var(--sys-display-medium-size)',
+            lineHeight: 'var(--sys-display-medium-line-height)',
+            fontFamily: 'var(--sys-display-medium-font)',
+            fontWeight: 'var(--sys-display-medium-weight)',
+            color: 'var(--text-primary)'
+          }}
+        >
           {content[language].title}
         </h1>
-        <p className="text-gray-600">{content[language].subtitle}</p>
+        <p 
+          style={{
+            fontSize: 'var(--sys-body-large-size)',
+            lineHeight: 'var(--sys-body-large-line-height)',
+            fontFamily: 'var(--sys-body-large-font)',
+            fontWeight: 'var(--sys-body-large-weight)',
+            color: 'var(--text-secondary)'
+          }}
+        >
+          {content[language].subtitle}
+        </p>
       </motion.div>
 
-      {/* Mode Selector */}
+      {/* Mode Selector - Material Design 3 Style */}
       <motion.div
         variants={motionSafe(slideUp)}
-        className="bg-white rounded-xl border border-gray-200 p-6"
+        className="p-6"
+        style={{
+          backgroundColor: 'var(--surface-elevated)',
+          borderRadius: 'var(--mat-card-elevated-container-shape)',
+          border: '1px solid var(--surface-outline)',
+          boxShadow: 'var(--elevation-level-1)'
+        }}
       >
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-gray-900">Interface Mode</h2>
+          <h2 
+            style={{
+              fontSize: 'var(--sys-headline-medium-size)',
+              lineHeight: 'var(--sys-headline-medium-line-height)',
+              fontFamily: 'var(--sys-headline-medium-font)',
+              fontWeight: 'var(--sys-headline-medium-weight)',
+              color: 'var(--text-primary)'
+            }}
+          >
+            Interface Mode
+          </h2>
           <div className="flex items-center space-x-3">
             {(['swarm', 'voice', 'hybrid'] as InterfaceMode[]).map((modeOption) => (
               <button
                 key={modeOption}
                 onClick={() => handleModeSwitch(modeOption)}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${
-                  mode === modeOption
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
+                className="flex items-center space-x-2 px-4 py-2 transition-all"
+                style={{
+                  borderRadius: 'var(--mat-button-filled-container-shape)',
+                  backgroundColor: mode === modeOption 
+                    ? 'var(--notebooklm-primary)' 
+                    : 'var(--surface-filled)',
+                  color: mode === modeOption 
+                    ? 'white' 
+                    : 'var(--text-secondary)',
+                  fontSize: 'var(--sys-label-medium-size)',
+                  lineHeight: 'var(--sys-label-medium-line-height)',
+                  fontFamily: 'var(--sys-label-medium-font)',
+                  fontWeight: 'var(--sys-label-medium-weight)'
+                }}
+                onMouseEnter={(e) => {
+                  if (mode !== modeOption) {
+                    e.currentTarget.style.backgroundColor = 'var(--surface-panel)'
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (mode !== modeOption) {
+                    e.currentTarget.style.backgroundColor = 'var(--surface-filled)'
+                  }
+                }}
               >
                 {getModeIcon(modeOption)}
                 <span>{content[language].modes[modeOption]}</span>
@@ -144,39 +198,122 @@ export default function AIInterfaceRefinement({ language = 'en' }: AIInterfaceRe
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Performance Metrics */}
           <div className="space-y-4">
-            <h3 className="font-medium text-gray-900">
+            <h3 
+              style={{
+                fontSize: 'var(--sys-title-medium-size)',
+                lineHeight: 'var(--sys-title-medium-line-height)',
+                fontFamily: 'var(--sys-title-medium-font)',
+                fontWeight: 'var(--sys-title-medium-weight)',
+                color: 'var(--text-primary)'
+              }}
+            >
               {content[language].settings.performance}
             </h3>
             
             <div className="space-y-3">
-              <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
+              <div 
+                className="p-4"
+                style={{
+                  background: `linear-gradient(to right, rgba(34, 197, 94, 0.1), rgba(16, 185, 129, 0.1))`,
+                  borderRadius: 'var(--mat-card-outlined-container-shape)',
+                  border: '1px solid rgba(34, 197, 94, 0.3)'
+                }}
+              >
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-green-700">
+                  <span 
+                    className="text-sm"
+                    style={{
+                      color: 'rgb(21, 128, 61)',
+                      fontSize: 'var(--sys-body-medium-size)',
+                      lineHeight: 'var(--sys-body-medium-line-height)',
+                      fontFamily: 'var(--sys-body-medium-font)',
+                      fontWeight: 'var(--sys-body-medium-weight)'
+                    }}
+                  >
                     {content[language].metrics.responseTime}
                   </span>
-                  <span className="font-bold text-green-800">
+                  <span 
+                    className="font-bold"
+                    style={{
+                      color: 'rgb(22, 101, 52)',
+                      fontSize: 'var(--sys-label-large-size)',
+                      lineHeight: 'var(--sys-label-large-line-height)',
+                      fontFamily: 'var(--sys-label-large-font)',
+                      fontWeight: 'var(--sys-label-large-weight)'
+                    }}
+                  >
                     {performance.responseTime}{content[language].metrics.milliseconds}
                   </span>
                 </div>
               </div>
               
-              <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+              <div 
+                className="p-4"
+                style={{
+                  background: `linear-gradient(to right, rgba(59, 130, 246, 0.1), rgba(99, 102, 241, 0.1))`,
+                  borderRadius: 'var(--mat-card-outlined-container-shape)',
+                  border: '1px solid rgba(59, 130, 246, 0.3)'
+                }}
+              >
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-blue-700">
+                  <span 
+                    className="text-sm"
+                    style={{
+                      color: 'rgb(29, 78, 216)',
+                      fontSize: 'var(--sys-body-medium-size)',
+                      lineHeight: 'var(--sys-body-medium-line-height)',
+                      fontFamily: 'var(--sys-body-medium-font)',
+                      fontWeight: 'var(--sys-body-medium-weight)'
+                    }}
+                  >
                     {content[language].metrics.accuracy}
                   </span>
-                  <span className="font-bold text-blue-800">
+                  <span 
+                    className="font-bold"
+                    style={{
+                      color: 'rgb(30, 64, 175)',
+                      fontSize: 'var(--sys-label-large-size)',
+                      lineHeight: 'var(--sys-label-large-line-height)',
+                      fontFamily: 'var(--sys-label-large-font)',
+                      fontWeight: 'var(--sys-label-large-weight)'
+                    }}
+                  >
                     {performance.accuracy}%
                   </span>
                 </div>
               </div>
               
-              <div className="p-4 bg-gradient-to-r from-purple-50 to-violet-50 rounded-lg border border-purple-200">
+              <div 
+                className="p-4"
+                style={{
+                  background: `linear-gradient(to right, var(--notebooklm-primary-light), rgba(139, 92, 246, 0.1))`,
+                  borderRadius: 'var(--mat-card-outlined-container-shape)',
+                  border: '1px solid var(--notebooklm-primary)'
+                }}
+              >
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-purple-700">
+                  <span 
+                    className="text-sm"
+                    style={{
+                      color: 'var(--notebooklm-primary-dark)',
+                      fontSize: 'var(--sys-body-medium-size)',
+                      lineHeight: 'var(--sys-body-medium-line-height)',
+                      fontFamily: 'var(--sys-body-medium-font)',
+                      fontWeight: 'var(--sys-body-medium-weight)'
+                    }}
+                  >
                     {content[language].metrics.uptime}
                   </span>
-                  <span className="font-bold text-purple-800">
+                  <span 
+                    className="font-bold"
+                    style={{
+                      color: 'var(--notebooklm-primary-dark)',
+                      fontSize: 'var(--sys-label-large-size)',
+                      lineHeight: 'var(--sys-label-large-line-height)',
+                      fontFamily: 'var(--sys-label-large-font)',
+                      fontWeight: 'var(--sys-label-large-weight)'
+                    }}
+                  >
                     {performance.uptime}%
                   </span>
                 </div>
@@ -186,23 +323,57 @@ export default function AIInterfaceRefinement({ language = 'en' }: AIInterfaceRe
 
           {/* Settings Controls */}
           <div className="space-y-4">
-            <h3 className="font-medium text-gray-900">
+            <h3 
+              style={{
+                fontSize: 'var(--sys-title-medium-size)',
+                lineHeight: 'var(--sys-title-medium-line-height)',
+                fontFamily: 'var(--sys-title-medium-font)',
+                fontWeight: 'var(--sys-title-medium-weight)',
+                color: 'var(--text-primary)'
+              }}
+            >
               {content[language].settings.title}
             </h3>
             
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div 
+                className="flex items-center justify-between p-4"
+                style={{
+                  backgroundColor: 'var(--surface-filled)',
+                  borderRadius: 'var(--mat-card-outlined-container-shape)'
+                }}
+              >
                 <div>
-                  <p className="font-medium text-gray-900">
+                  <p 
+                    style={{
+                      fontSize: 'var(--sys-label-large-size)',
+                      lineHeight: 'var(--sys-label-large-line-height)',
+                      fontFamily: 'var(--sys-label-large-font)',
+                      fontWeight: 'var(--sys-label-large-weight)',
+                      color: 'var(--text-primary)'
+                    }}
+                  >
                     {content[language].settings.voiceControl}
                   </p>
-                  <p className="text-sm text-gray-600">Enable voice commands</p>
+                  <p 
+                    className="text-sm"
+                    style={{
+                      fontSize: 'var(--sys-body-medium-size)',
+                      lineHeight: 'var(--sys-body-medium-line-height)',
+                      fontFamily: 'var(--sys-body-medium-font)',
+                      fontWeight: 'var(--sys-body-medium-weight)',
+                      color: 'var(--text-secondary)'
+                    }}
+                  >
+                    Enable voice commands
+                  </p>
                 </div>
                 <button
                   onClick={() => setIsVoiceEnabled(!isVoiceEnabled)}
-                  className={`transition-colors ${
-                    isVoiceEnabled ? 'text-purple-600' : 'text-gray-400'
-                  }`}
+                  className="transition-colors"
+                  style={{
+                    color: isVoiceEnabled ? 'var(--notebooklm-primary)' : 'var(--text-disabled)'
+                  }}
                 >
                   {isVoiceEnabled ? (
                     <ToggleRight className="w-8 h-8" />
@@ -212,18 +383,44 @@ export default function AIInterfaceRefinement({ language = 'en' }: AIInterfaceRe
                 </button>
               </div>
               
-              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div 
+                className="flex items-center justify-between p-4"
+                style={{
+                  backgroundColor: 'var(--surface-filled)',
+                  borderRadius: 'var(--mat-card-outlined-container-shape)'
+                }}
+              >
                 <div>
-                  <p className="font-medium text-gray-900">
+                  <p 
+                    style={{
+                      fontSize: 'var(--sys-label-large-size)',
+                      lineHeight: 'var(--sys-label-large-line-height)',
+                      fontFamily: 'var(--sys-label-large-font)',
+                      fontWeight: 'var(--sys-label-large-weight)',
+                      color: 'var(--text-primary)'
+                    }}
+                  >
                     {content[language].settings.advancedMode}
                   </p>
-                  <p className="text-sm text-gray-600">Show advanced options</p>
+                  <p 
+                    className="text-sm"
+                    style={{
+                      fontSize: 'var(--sys-body-medium-size)',
+                      lineHeight: 'var(--sys-body-medium-line-height)',
+                      fontFamily: 'var(--sys-body-medium-font)',
+                      fontWeight: 'var(--sys-body-medium-weight)',
+                      color: 'var(--text-secondary)'
+                    }}
+                  >
+                    Show advanced options
+                  </p>
                 </div>
                 <button
                   onClick={() => setAdvancedMode(!advancedMode)}
-                  className={`transition-colors ${
-                    advancedMode ? 'text-purple-600' : 'text-gray-400'
-                  }`}
+                  className="transition-colors"
+                  style={{
+                    color: advancedMode ? 'var(--notebooklm-primary)' : 'var(--text-disabled)'
+                  }}
                 >
                   {advancedMode ? (
                     <ToggleRight className="w-8 h-8" />
@@ -237,13 +434,44 @@ export default function AIInterfaceRefinement({ language = 'en' }: AIInterfaceRe
 
           {/* Features */}
           <div className="space-y-4">
-            <h3 className="font-medium text-gray-900">Features</h3>
+            <h3 
+              style={{
+                fontSize: 'var(--sys-title-medium-size)',
+                lineHeight: 'var(--sys-title-medium-line-height)',
+                fontFamily: 'var(--sys-title-medium-font)',
+                fontWeight: 'var(--sys-title-medium-weight)',
+                color: 'var(--text-primary)'
+              }}
+            >
+              Features
+            </h3>
             
             <div className="space-y-3">
               {Object.entries(content[language].features).map(([key, feature]) => (
-                <div key={key} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span className="text-sm text-gray-700">{feature}</span>
+                <div 
+                  key={key} 
+                  className="flex items-center space-x-3 p-3"
+                  style={{
+                    backgroundColor: 'var(--surface-filled)',
+                    borderRadius: 'var(--mat-card-outlined-container-shape)'
+                  }}
+                >
+                  <div 
+                    className="w-2 h-2 rounded-full"
+                    style={{ backgroundColor: 'var(--notebooklm-primary)' }}
+                  ></div>
+                  <span 
+                    className="text-sm"
+                    style={{
+                      fontSize: 'var(--sys-body-medium-size)',
+                      lineHeight: 'var(--sys-body-medium-line-height)',
+                      fontFamily: 'var(--sys-body-medium-font)',
+                      fontWeight: 'var(--sys-body-medium-weight)',
+                      color: 'var(--text-primary)'
+                    }}
+                  >
+                    {feature}
+                  </span>
                 </div>
               ))}
             </div>
@@ -319,30 +547,90 @@ export default function AIInterfaceRefinement({ language = 'en' }: AIInterfaceRe
               </p>
               
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="text-center p-4 bg-white rounded-lg">
-                  <Brain className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-                  <p className="text-sm font-medium text-gray-900">
+                <div 
+                  className="text-center p-4"
+                  style={{
+                    backgroundColor: 'var(--surface-elevated)',
+                    borderRadius: 'var(--mat-card-outlined-container-shape)'
+                  }}
+                >
+                  <Brain className="w-8 h-8 mx-auto mb-2" style={{ color: 'var(--notebooklm-primary)' }} />
+                  <p 
+                    className="text-sm font-medium"
+                    style={{
+                      fontSize: 'var(--sys-label-medium-size)',
+                      lineHeight: 'var(--sys-label-medium-line-height)',
+                      fontFamily: 'var(--sys-label-medium-font)',
+                      fontWeight: 'var(--sys-label-medium-weight)',
+                      color: 'var(--text-primary)'
+                    }}
+                  >
                     {language === 'vi' ? 'AI Thông minh' : 'Smart AI'}
                   </p>
                 </div>
                 
-                <div className="text-center p-4 bg-white rounded-lg">
-                  <Mic className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-                  <p className="text-sm font-medium text-gray-900">
+                <div 
+                  className="text-center p-4"
+                  style={{
+                    backgroundColor: 'var(--surface-elevated)',
+                    borderRadius: 'var(--mat-card-outlined-container-shape)'
+                  }}
+                >
+                  <Mic className="w-8 h-8 mx-auto mb-2" style={{ color: 'var(--notebooklm-primary)' }} />
+                  <p 
+                    className="text-sm font-medium"
+                    style={{
+                      fontSize: 'var(--sys-label-medium-size)',
+                      lineHeight: 'var(--sys-label-medium-line-height)',
+                      fontFamily: 'var(--sys-label-medium-font)',
+                      fontWeight: 'var(--sys-label-medium-weight)',
+                      color: 'var(--text-primary)'
+                    }}
+                  >
                     {language === 'vi' ? 'Giọng nói' : 'Voice'}
                   </p>
                 </div>
                 
-                <div className="text-center p-4 bg-white rounded-lg">
-                  <Users className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-                  <p className="text-sm font-medium text-gray-900">
+                <div 
+                  className="text-center p-4"
+                  style={{
+                    backgroundColor: 'var(--surface-elevated)',
+                    borderRadius: 'var(--mat-card-outlined-container-shape)'
+                  }}
+                >
+                  <Users className="w-8 h-8 mx-auto mb-2" style={{ color: 'var(--notebooklm-primary)' }} />
+                  <p 
+                    className="text-sm font-medium"
+                    style={{
+                      fontSize: 'var(--sys-label-medium-size)',
+                      lineHeight: 'var(--sys-label-medium-line-height)',
+                      fontFamily: 'var(--sys-label-medium-font)',
+                      fontWeight: 'var(--sys-label-medium-weight)',
+                      color: 'var(--text-primary)'
+                    }}
+                  >
                     {language === 'vi' ? 'Cộng tác' : 'Collaboration'}
                   </p>
                 </div>
                 
-                <div className="text-center p-4 bg-white rounded-lg">
-                  <Eye className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-                  <p className="text-sm font-medium text-gray-900">
+                <div 
+                  className="text-center p-4"
+                  style={{
+                    backgroundColor: 'var(--surface-elevated)',
+                    borderRadius: 'var(--mat-card-outlined-container-shape)'
+                  }}
+                >
+                  <Eye className="w-8 h-8 mx-auto mb-2" style={{ color: 'var(--notebooklm-primary)' }} />
+                  <p 
+                    className="text-sm font-medium"
+                    style={{
+                      fontSize: 'var(--sys-label-medium-size)',
+                      lineHeight: 'var(--sys-label-medium-line-height)',
+                      fontFamily: 'var(--sys-label-medium-font)',
+                      fontWeight: 'var(--sys-label-medium-weight)',
+                      color: 'var(--text-primary)'
+                    }}
+                  >
                     {language === 'vi' ? 'Giám sát' : 'Monitoring'}
                   </p>
                 </div>
@@ -360,36 +648,86 @@ export default function AIInterfaceRefinement({ language = 'en' }: AIInterfaceRe
             initial="hidden"
             animate="visible"
             exit="hidden"
-            className="bg-white rounded-xl border border-gray-200 p-6"
+            className="p-6"
+            style={{
+              backgroundColor: 'var(--surface-elevated)',
+              borderRadius: 'var(--mat-card-elevated-container-shape)',
+              border: '1px solid var(--surface-outline)',
+              boxShadow: 'var(--elevation-level-1)'
+            }}
           >
             <div className="flex items-center space-x-3 mb-4">
-              <Settings className="w-6 h-6 text-gray-600" />
-              <h3 className="text-lg font-semibold text-gray-900">
+              <Settings className="w-6 h-6" style={{ color: 'var(--text-secondary)' }} />
+              <h3 
+                style={{
+                  fontSize: 'var(--sys-title-large-size)',
+                  lineHeight: 'var(--sys-title-large-line-height)',
+                  fontFamily: 'var(--sys-title-large-font)',
+                  fontWeight: 'var(--sys-title-large-weight)',
+                  color: 'var(--text-primary)'
+                }}
+              >
                 {language === 'vi' ? 'Tùy chọn nâng cao' : 'Advanced Options'}
               </h3>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div>
-                <h4 className="font-medium text-gray-900 mb-3">
+                <h4 
+                  className="mb-3"
+                  style={{
+                    fontSize: 'var(--sys-title-medium-size)',
+                    lineHeight: 'var(--sys-title-medium-line-height)',
+                    fontFamily: 'var(--sys-title-medium-font)',
+                    fontWeight: 'var(--sys-title-medium-weight)',
+                    color: 'var(--text-primary)'
+                  }}
+                >
                   {language === 'vi' ? 'Hiệu năng' : 'Performance'}
                 </h4>
                 <div className="space-y-2">
                   <label className="flex items-center">
                     <input type="checkbox" className="mr-2" defaultChecked />
-                    <span className="text-sm text-gray-700">
+                    <span 
+                      className="text-sm"
+                      style={{
+                        fontSize: 'var(--sys-body-medium-size)',
+                        lineHeight: 'var(--sys-body-medium-line-height)',
+                        fontFamily: 'var(--sys-body-medium-font)',
+                        fontWeight: 'var(--sys-body-medium-weight)',
+                        color: 'var(--text-primary)'
+                      }}
+                    >
                       {language === 'vi' ? 'Tối ưu hóa bộ nhớ' : 'Memory optimization'}
                     </span>
                   </label>
                   <label className="flex items-center">
                     <input type="checkbox" className="mr-2" defaultChecked />
-                    <span className="text-sm text-gray-700">
+                    <span 
+                      className="text-sm"
+                      style={{
+                        fontSize: 'var(--sys-body-medium-size)',
+                        lineHeight: 'var(--sys-body-medium-line-height)',
+                        fontFamily: 'var(--sys-body-medium-font)',
+                        fontWeight: 'var(--sys-body-medium-weight)',
+                        color: 'var(--text-primary)'
+                      }}
+                    >
                       {language === 'vi' ? 'Cache thông minh' : 'Smart caching'}
                     </span>
                   </label>
                   <label className="flex items-center">
                     <input type="checkbox" className="mr-2" />
-                    <span className="text-sm text-gray-700">
+                    <span 
+                      className="text-sm"
+                      style={{
+                        fontSize: 'var(--sys-body-medium-size)',
+                        lineHeight: 'var(--sys-body-medium-line-height)',
+                        fontFamily: 'var(--sys-body-medium-font)',
+                        fontWeight: 'var(--sys-body-medium-weight)',
+                        color: 'var(--text-primary)'
+                      }}
+                    >
                       {language === 'vi' ? 'Chế độ tiết kiệm' : 'Power saving mode'}
                     </span>
                   </label>
@@ -403,19 +741,46 @@ export default function AIInterfaceRefinement({ language = 'en' }: AIInterfaceRe
                 <div className="space-y-2">
                   <label className="flex items-center">
                     <input type="checkbox" className="mr-2" defaultChecked />
-                    <span className="text-sm text-gray-700">
+                    <span 
+                      className="text-sm"
+                      style={{
+                        fontSize: 'var(--sys-body-medium-size)',
+                        lineHeight: 'var(--sys-body-medium-line-height)',
+                        fontFamily: 'var(--sys-body-medium-font)',
+                        fontWeight: 'var(--sys-body-medium-weight)',
+                        color: 'var(--text-primary)'
+                      }}
+                    >
                       {language === 'vi' ? 'Mã hóa dữ liệu' : 'Data encryption'}
                     </span>
                   </label>
                   <label className="flex items-center">
                     <input type="checkbox" className="mr-2" defaultChecked />
-                    <span className="text-sm text-gray-700">
+                    <span 
+                      className="text-sm"
+                      style={{
+                        fontSize: 'var(--sys-body-medium-size)',
+                        lineHeight: 'var(--sys-body-medium-line-height)',
+                        fontFamily: 'var(--sys-body-medium-font)',
+                        fontWeight: 'var(--sys-body-medium-weight)',
+                        color: 'var(--text-primary)'
+                      }}
+                    >
                       {language === 'vi' ? 'Xác thực 2 lớp' : '2FA authentication'}
                     </span>
                   </label>
                   <label className="flex items-center">
                     <input type="checkbox" className="mr-2" />
-                    <span className="text-sm text-gray-700">
+                    <span 
+                      className="text-sm"
+                      style={{
+                        fontSize: 'var(--sys-body-medium-size)',
+                        lineHeight: 'var(--sys-body-medium-line-height)',
+                        fontFamily: 'var(--sys-body-medium-font)',
+                        fontWeight: 'var(--sys-body-medium-weight)',
+                        color: 'var(--text-primary)'
+                      }}
+                    >
                       {language === 'vi' ? 'Chế độ riêng tư' : 'Privacy mode'}
                     </span>
                   </label>
@@ -429,19 +794,46 @@ export default function AIInterfaceRefinement({ language = 'en' }: AIInterfaceRe
                 <div className="space-y-2">
                   <label className="flex items-center">
                     <input type="checkbox" className="mr-2" defaultChecked />
-                    <span className="text-sm text-gray-700">
+                    <span 
+                      className="text-sm"
+                      style={{
+                        fontSize: 'var(--sys-body-medium-size)',
+                        lineHeight: 'var(--sys-body-medium-line-height)',
+                        fontFamily: 'var(--sys-body-medium-font)',
+                        fontWeight: 'var(--sys-body-medium-weight)',
+                        color: 'var(--text-primary)'
+                      }}
+                    >
                       {language === 'vi' ? 'Hiệu ứng đồ họa' : 'Visual effects'}
                     </span>
                   </label>
                   <label className="flex items-center">
                     <input type="checkbox" className="mr-2" defaultChecked />
-                    <span className="text-sm text-gray-700">
+                    <span 
+                      className="text-sm"
+                      style={{
+                        fontSize: 'var(--sys-body-medium-size)',
+                        lineHeight: 'var(--sys-body-medium-line-height)',
+                        fontFamily: 'var(--sys-body-medium-font)',
+                        fontWeight: 'var(--sys-body-medium-weight)',
+                        color: 'var(--text-primary)'
+                      }}
+                    >
                       {language === 'vi' ? 'Thông báo thời gian thực' : 'Real-time notifications'}
                     </span>
                   </label>
                   <label className="flex items-center">
                     <input type="checkbox" className="mr-2" />
-                    <span className="text-sm text-gray-700">
+                    <span 
+                      className="text-sm"
+                      style={{
+                        fontSize: 'var(--sys-body-medium-size)',
+                        lineHeight: 'var(--sys-body-medium-line-height)',
+                        fontFamily: 'var(--sys-body-medium-font)',
+                        fontWeight: 'var(--sys-body-medium-weight)',
+                        color: 'var(--text-primary)'
+                      }}
+                    >
                       {language === 'vi' ? 'Chế độ tối' : 'Dark mode'}
                     </span>
                   </label>

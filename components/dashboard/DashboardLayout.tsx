@@ -146,25 +146,56 @@ function DashboardLayoutInner({ children, language = 'en' }: DashboardLayoutProp
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Sidebar */}
+    <div 
+      className="min-h-screen"
+      style={{ backgroundColor: 'var(--surface-panel)' }}
+    >
+      {/* Sidebar - NotebookLM Style */}
       <motion.aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
         } lg:translate-x-0 lg:static lg:inset-0`}
+        style={{
+          backgroundColor: 'var(--surface-elevated)',
+          borderRight: `1px solid var(--surface-outline)`,
+          boxShadow: 'var(--elevation-level-1)'
+        }}
         initial={false}
       >
         <div className="flex flex-col h-full">
-          {/* Logo */}
-          <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
+          {/* Logo - NotebookLM Style */}
+          <div 
+            className="flex items-center justify-between h-16 px-6"
+            style={{ borderBottom: `1px solid var(--surface-outline)` }}
+          >
             <Link href="/" className="flex items-center">
-              <span className="font-optima text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+              <span 
+                className="font-bold"
+                style={{
+                  fontSize: 'var(--sys-title-large-size)',
+                  lineHeight: 'var(--sys-title-large-line-height)',
+                  fontFamily: 'var(--sys-title-large-font)',
+                  color: 'var(--notebooklm-primary)'
+                }}
+              >
                 Prismy
               </span>
             </Link>
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="lg:hidden p-2 text-gray-500 hover:text-gray-700"
+              className="lg:hidden p-2 transition-colors duration-200"
+              style={{
+                color: 'var(--text-secondary)',
+                borderRadius: 'var(--shape-corner-small)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = 'var(--text-primary)';
+                e.currentTarget.style.backgroundColor = 'var(--surface-filled)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = 'var(--text-secondary)';
+                e.currentTarget.style.backgroundColor = 'transparent';
+              }}
               aria-label={navigation[language].toggleSidebar}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -173,19 +204,53 @@ function DashboardLayoutInner({ children, language = 'en' }: DashboardLayoutProp
             </button>
           </div>
 
-          {/* User Info */}
-          <div className="px-6 py-4 border-b border-gray-200">
+          {/* User Info - NotebookLM Style */}
+          <div 
+            className="px-6 py-4"
+            style={{ borderBottom: `1px solid var(--surface-outline)` }}
+          >
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                <span className="text-gray-600 font-medium">
+              <div 
+                className="w-10 h-10 flex items-center justify-center"
+                style={{
+                  backgroundColor: 'var(--notebooklm-primary-light)',
+                  borderRadius: 'var(--shape-corner-medium)'
+                }}
+              >
+                <span 
+                  className="font-medium"
+                  style={{
+                    color: 'var(--notebooklm-primary)',
+                    fontSize: 'var(--sys-label-medium-size)',
+                    fontFamily: 'var(--sys-label-medium-font)',
+                    fontWeight: 'var(--sys-label-medium-weight)'
+                  }}
+                >
                   {user?.email?.charAt(0).toUpperCase()}
                 </span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">
+                <p 
+                  className="truncate"
+                  style={{
+                    fontSize: 'var(--sys-body-medium-size)',
+                    lineHeight: 'var(--sys-body-medium-line-height)',
+                    fontFamily: 'var(--sys-body-medium-font)',
+                    fontWeight: 'var(--sys-body-medium-weight)',
+                    color: 'var(--text-primary)'
+                  }}
+                >
                   {user?.user_metadata?.full_name || user?.email}
                 </p>
-                <p className="text-xs text-gray-500 truncate">
+                <p 
+                  className="truncate"
+                  style={{
+                    fontSize: 'var(--sys-body-small-size)',
+                    lineHeight: 'var(--sys-body-small-line-height)',
+                    fontFamily: 'var(--sys-body-small-font)',
+                    color: 'var(--text-secondary)'
+                  }}
+                >
                   {user?.email}
                 </p>
               </div>
@@ -199,7 +264,16 @@ function DashboardLayoutInner({ children, language = 'en' }: DashboardLayoutProp
               
               return (
                 <div key={categoryKey} className="mb-6">
-                  <h3 className="px-3 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  <h3 
+                    className="px-3 mb-2 uppercase tracking-wider"
+                    style={{
+                      fontSize: 'var(--sys-label-small-size)',
+                      lineHeight: 'var(--sys-label-small-line-height)',
+                      fontFamily: 'var(--sys-label-small-font)',
+                      fontWeight: 'var(--sys-label-small-weight)',
+                      color: 'var(--text-muted)'
+                    }}
+                  >
                     {categoryName}
                   </h3>
                   <div className="space-y-1">
@@ -223,17 +297,37 @@ function DashboardLayoutInner({ children, language = 'en' }: DashboardLayoutProp
                         >
                           <Link
                             href={item.href}
-                            className={`
-                              flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg
-                              transition-all duration-200 group
-                              ${isActive 
-                                ? 'bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-900 shadow-sm' 
-                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                            className="flex items-center justify-between px-3 py-2 transition-all duration-200 group"
+                            style={{
+                              fontSize: 'var(--sys-label-medium-size)',
+                              lineHeight: 'var(--sys-label-medium-line-height)',
+                              fontFamily: 'var(--sys-label-medium-font)',
+                              fontWeight: 'var(--sys-label-medium-weight)',
+                              borderRadius: 'var(--shape-corner-small)',
+                              backgroundColor: isActive ? 'var(--notebooklm-primary-light)' : 'transparent',
+                              color: isActive ? 'var(--notebooklm-primary)' : 'var(--text-secondary)',
+                              boxShadow: isActive ? 'var(--elevation-level-1)' : 'none'
+                            }}
+                            onMouseEnter={(e) => {
+                              if (!isActive) {
+                                e.currentTarget.style.backgroundColor = 'var(--surface-filled)';
+                                e.currentTarget.style.color = 'var(--text-primary)';
                               }
-                            `}
+                            }}
+                            onMouseLeave={(e) => {
+                              if (!isActive) {
+                                e.currentTarget.style.backgroundColor = 'transparent';
+                                e.currentTarget.style.color = 'var(--text-secondary)';
+                              }
+                            }}
                           >
                             <div className="flex items-center">
-                              <item.icon className={`w-5 h-5 mr-3 ${isActive ? 'text-blue-600' : ''}`} />
+                              <item.icon 
+                                className="w-5 h-5 mr-3"
+                                style={{
+                                  color: isActive ? 'var(--notebooklm-primary)' : 'currentColor'
+                                }}
+                              />
                               <span>{item.name}</span>
                               {categoryKey === 'ai' && (
                                 <FeatureBadge 
@@ -244,17 +338,30 @@ function DashboardLayoutInner({ children, language = 'en' }: DashboardLayoutProp
                               )}
                             </div>
                             {item.badge && (
-                              <span className={`
-                                px-2 py-1 text-xs font-medium rounded-full
-                                ${isActive 
-                                  ? 'bg-blue-200 text-blue-800' 
-                                  : item.badge === 'Pro' 
-                                    ? 'bg-purple-100 text-purple-700'
-                                    : item.badge === 'AI'
-                                      ? 'bg-indigo-100 text-indigo-700'
-                                      : 'bg-green-100 text-green-700'
-                                }
-                              `}>
+                              <span 
+                                className="px-2 py-1"
+                                style={{
+                                  fontSize: 'var(--sys-label-small-size)',
+                                  lineHeight: 'var(--sys-label-small-line-height)',
+                                  fontFamily: 'var(--sys-label-small-font)',
+                                  fontWeight: 'var(--sys-label-small-weight)',
+                                  borderRadius: 'var(--shape-corner-full)',
+                                  backgroundColor: isActive 
+                                    ? 'rgba(11, 40, 255, 0.15)' 
+                                    : item.badge === 'Pro' 
+                                      ? 'var(--notebooklm-primary-light)'
+                                      : item.badge === 'AI'
+                                        ? 'var(--notebooklm-primary-light)'
+                                        : 'var(--success-50)',
+                                  color: isActive 
+                                    ? 'var(--notebooklm-primary)' 
+                                    : item.badge === 'Pro' 
+                                      ? 'var(--notebooklm-primary)'
+                                      : item.badge === 'AI'
+                                        ? 'var(--notebooklm-primary)'
+                                        : 'var(--success-600)'
+                                }}
+                              >
                                 {item.badge}
                               </span>
                             )}
@@ -268,21 +375,43 @@ function DashboardLayoutInner({ children, language = 'en' }: DashboardLayoutProp
             })}
           </nav>
 
-          {/* Bottom section */}
-          <div className="p-4 border-t border-gray-200">
+          {/* Bottom section - NotebookLM Style */}
+          <div 
+            className="p-4"
+            style={{ borderTop: `1px solid var(--surface-outline)` }}
+          >
             <UserMenu />
           </div>
         </div>
       </motion.aside>
 
-      {/* Main content */}
+      {/* Main content - NotebookLM Style */}
       <div className={`flex-1 ${isSidebarOpen ? 'lg:ml-64' : ''}`}>
         {/* Top bar */}
-        <header className="bg-white border-b border-gray-200 dashboard-header">
+        <header 
+          className="dashboard-header"
+          style={{
+            backgroundColor: 'var(--surface-elevated)',
+            borderBottom: `1px solid var(--surface-outline)`,
+            boxShadow: 'var(--elevation-level-1)'
+          }}
+        >
           <div className="flex items-center justify-between h-16 px-6">
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="p-2 text-gray-500 hover:text-gray-700 lg:hidden"
+              className="p-2 lg:hidden transition-colors duration-200"
+              style={{
+                color: 'var(--text-secondary)',
+                borderRadius: 'var(--shape-corner-small)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = 'var(--text-primary)';
+                e.currentTarget.style.backgroundColor = 'var(--surface-filled)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = 'var(--text-secondary)';
+                e.currentTarget.style.backgroundColor = 'transparent';
+              }}
               aria-label={navigation[language].toggleSidebar}
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -301,7 +430,25 @@ function DashboardLayoutInner({ children, language = 'en' }: DashboardLayoutProp
               >
                 <button
                   onClick={showDiscovery}
-                  className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-purple-600 hover:text-purple-700 border border-purple-300 rounded-lg hover:bg-purple-50 transition-colors"
+                  className="flex items-center space-x-2 px-3 py-2 transition-colors border"
+                  style={{
+                    fontSize: 'var(--sys-label-medium-size)',
+                    lineHeight: 'var(--sys-label-medium-line-height)',
+                    fontFamily: 'var(--sys-label-medium-font)',
+                    fontWeight: 'var(--sys-label-medium-weight)',
+                    color: 'var(--notebooklm-primary)',
+                    borderColor: 'var(--surface-outline)',
+                    borderRadius: 'var(--shape-corner-small)',
+                    backgroundColor: 'transparent'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--notebooklm-primary-light)';
+                    e.currentTarget.style.borderColor = 'var(--notebooklm-primary)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.borderColor = 'var(--surface-outline)';
+                  }}
                 >
                   <Sparkles className="w-4 h-4" />
                   <span>{language === 'vi' ? 'Khám phá tính năng' : 'Discover Features'}</span>
@@ -310,7 +457,19 @@ function DashboardLayoutInner({ children, language = 'en' }: DashboardLayoutProp
 
               <button
                 onClick={showDiscovery}
-                className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 transition-colors"
+                style={{
+                  color: 'var(--text-secondary)',
+                  borderRadius: 'var(--shape-corner-small)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = 'var(--text-primary)';
+                  e.currentTarget.style.backgroundColor = 'var(--surface-filled)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = 'var(--text-secondary)';
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                }}
                 title={language === 'vi' ? 'Trợ giúp' : 'Help'}
               >
                 <HelpCircle className="w-5 h-5" />
@@ -319,8 +478,11 @@ function DashboardLayoutInner({ children, language = 'en' }: DashboardLayoutProp
           </div>
         </header>
 
-        {/* Page content */}
-        <main className="p-6">
+        {/* Page content - NotebookLM Style */}
+        <main 
+          className="p-6"
+          style={{ backgroundColor: 'var(--surface-panel)' }}
+        >
           {children}
         </main>
       </div>
@@ -328,7 +490,8 @@ function DashboardLayoutInner({ children, language = 'en' }: DashboardLayoutProp
       {/* Mobile sidebar overlay */}
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"
+          className="fixed inset-0 z-40 lg:hidden"
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}
           onClick={() => setIsSidebarOpen(false)}
         />
       )}

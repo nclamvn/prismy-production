@@ -104,7 +104,16 @@ export default function InviteRedemptionPage({ userEmail }: InviteRedemptionPage
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <img src="/logo.svg" alt="Prismy" className="h-8 w-auto mr-3" />
+              <img 
+                src="/icons/logo.svg" 
+                alt="Prismy" 
+                className="h-8 w-auto mr-3"
+                style={{
+                  borderRadius: 'var(--shape-corner-small)',
+                  boxShadow: 'var(--elevation-level-1)',
+                  overflow: 'hidden'
+                }}
+              />
               <span className="text-xl font-bold text-gray-900">Prismy</span>
             </div>
             <button

@@ -1,0 +1,339 @@
+/* ============================================================================ */
+/* MOBILE PERFORMANCE OPTIMIZATIONS - NotebookLM Design System */
+/* Touch-First Design with 44px minimum targets */
+/* ============================================================================ */
+
+/* Touch Target Standards - Minimum 44px */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* Enhanced touch targets for small elements */
+.touch-target-enhanced {
+  position: relative;
+}
+
+.touch-target-enhanced::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 44px;
+  min-height: 44px;
+  z-index: -1;
+}
+
+/* Mobile-optimized button sizes */
+.btn-mobile-primary {
+  min-height: 48px;
+  padding: 12px 24px;
+  font-size: var(--sys-label-large-size);
+  line-height: var(--sys-label-large-line-height);
+}
+
+.btn-mobile-secondary {
+  min-height: 44px;
+  padding: 10px 20px;
+  font-size: var(--sys-label-medium-size);
+  line-height: var(--sys-label-medium-line-height);
+}
+
+/* Mobile navigation touch targets */
+.nav-touch-target {
+  min-height: 48px;
+  min-width: 48px;
+  padding: 12px;
+  margin: 4px;
+}
+
+/* Mobile form inputs */
+.input-mobile {
+  min-height: 48px;
+  padding: 12px 16px;
+  font-size: var(--sys-body-large-size);
+  line-height: var(--sys-body-large-line-height);
+}
+
+/* Tablet optimizations */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .touch-target {
+    min-height: 40px;
+    min-width: 40px;
+  }
+  
+  .btn-mobile-primary {
+    min-height: 44px;
+    padding: 10px 20px;
+  }
+}
+
+/* Large mobile devices */
+@media (min-width: 414px) and (max-width: 767px) {
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Larger touch targets for accessibility */
+  .touch-target-large {
+    min-height: 48px;
+    min-width: 48px;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 413px) {
+  .touch-target {
+    min-height: 48px;
+    min-width: 48px;
+  }
+  
+  .btn-mobile-primary {
+    min-height: 52px;
+    padding: 14px 28px;
+    font-size: var(--sys-label-large-size);
+  }
+  
+  /* Increase spacing for smaller screens */
+  .mobile-spacing {
+    margin: 8px;
+  }
+}
+
+/* ============================================================================ */
+/* MOBILE PERFORMANCE OPTIMIZATIONS */
+/* ============================================================================ */
+
+/* Hardware acceleration for mobile */
+.mobile-optimized {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-perspective: 1000;
+  perspective: 1000;
+}
+
+/* Smooth scrolling for mobile */
+.mobile-scroll {
+  -webkit-overflow-scrolling: touch;
+  overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Reduce animations on low-end devices */
+@media (max-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .mobile-animation {
+    animation-duration: 0.2s !important;
+    transition-duration: 0.2s !important;
+  }
+}
+
+/* Disable animations on very small screens or reduced motion */
+@media (max-width: 320px), (prefers-reduced-motion: reduce) {
+  .mobile-animation,
+  .mobile-animation * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0.01ms !important;
+  }
+}
+
+/* ============================================================================ */
+/* MOBILE GESTURE SUPPORT */
+/* ============================================================================ */
+
+/* Swipe gesture zones */
+.swipe-zone {
+  touch-action: pan-x pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Horizontal swipe only */
+.swipe-horizontal {
+  touch-action: pan-y pinch-zoom;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* Vertical swipe only */
+.swipe-vertical {
+  touch-action: pan-x pinch-zoom;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Prevent accidental zoom on form inputs */
+.no-zoom {
+  font-size: 16px !important;
+}
+
+@media (max-width: 768px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
+/* ============================================================================ */
+/* MOBILE LAYOUT OPTIMIZATIONS */
+/* ============================================================================ */
+
+/* Mobile-first grid system */
+.mobile-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .mobile-grid-sm-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .mobile-grid-md-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .mobile-grid-lg-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Mobile spacing utilities */
+.mobile-p-4 { padding: 16px; }
+.mobile-p-6 { padding: 24px; }
+.mobile-p-8 { padding: 32px; }
+
+.mobile-m-4 { margin: 16px; }
+.mobile-m-6 { margin: 24px; }
+.mobile-m-8 { margin: 32px; }
+
+/* Mobile typography scaling */
+@media (max-width: 640px) {
+  .mobile-text-scale {
+    font-size: calc(var(--sys-body-large-size) * 1.1);
+    line-height: calc(var(--sys-body-large-line-height) * 1.1);
+  }
+  
+  .mobile-heading-scale {
+    font-size: calc(var(--sys-headline-medium-size) * 0.9);
+    line-height: calc(var(--sys-headline-medium-line-height) * 0.9);
+  }
+}
+
+/* ============================================================================ */
+/* MOBILE ACCESSIBILITY ENHANCEMENTS */
+/* ============================================================================ */
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .mobile-high-contrast {
+    border: 2px solid var(--text-primary);
+    background-color: var(--surface-elevated);
+  }
+}
+
+/* Reduced transparency for better mobile readability */
+@media (max-width: 768px) {
+  .mobile-opacity {
+    background-color: var(--surface-elevated) !important;
+    backdrop-filter: none !important;
+  }
+}
+
+/* Focus indicators for mobile keyboard navigation */
+.mobile-focus:focus-visible {
+  outline: 3px solid var(--notebooklm-primary);
+  outline-offset: 2px;
+  border-radius: var(--mat-button-outlined-container-shape);
+}
+
+/* ============================================================================ */
+/* MOBILE SAFE AREAS */
+/* ============================================================================ */
+
+/* iPhone safe areas */
+.mobile-safe-top {
+  padding-top: max(16px, env(safe-area-inset-top));
+}
+
+.mobile-safe-bottom {
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+}
+
+.mobile-safe-left {
+  padding-left: max(16px, env(safe-area-inset-left));
+}
+
+.mobile-safe-right {
+  padding-right: max(16px, env(safe-area-inset-right));
+}
+
+.mobile-safe-all {
+  padding-top: max(16px, env(safe-area-inset-top));
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+}
+
+/* ============================================================================ */
+/* PERFORMANCE OPTIMIZATIONS */
+/* ============================================================================ */
+
+/* Optimize images for mobile */
+.mobile-image {
+  max-width: 100%;
+  height: auto;
+  object-fit: cover;
+  loading: lazy;
+}
+
+/* Reduce shadow complexity on mobile */
+@media (max-width: 768px) {
+  .mobile-shadow {
+    box-shadow: var(--elevation-level-1) !important;
+  }
+}
+
+/* Optimize transforms for mobile */
+.mobile-transform {
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+}
+
+/* ============================================================================ */
+/* MOBILE DARK MODE OPTIMIZATIONS */
+/* ============================================================================ */
+
+@media (prefers-color-scheme: dark) {
+  .mobile-dark-optimized {
+    background-color: #121212;
+    color: #ffffff;
+  }
+  
+  .mobile-dark-surface {
+    background-color: #1e1e1e;
+  }
+  
+  .mobile-dark-elevated {
+    background-color: #2a2a2a;
+  }
+}

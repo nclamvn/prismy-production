@@ -249,8 +249,8 @@ export default function InviteRedemptionModal({
           <div className="p-6 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <Gift className="w-5 h-5 text-blue-600" />
+                <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <Gift className="w-5 h-5 text-gray-600" />
                 </div>
                 <div>
                   <h2 className="text-lg font-semibold text-gray-900">{t.title}</h2>
@@ -285,8 +285,8 @@ export default function InviteRedemptionModal({
                       placeholder={t.inputPlaceholder}
                       className={`w-full px-4 py-3 border rounded-lg text-center text-lg font-mono tracking-wider focus:outline-none focus:ring-2 transition-colors ${
                         error 
-                          ? 'border-red-300 focus:ring-red-500' 
-                          : 'border-gray-300 focus:ring-blue-500'
+                          ? 'border-gray-400 focus:ring-gray-500' 
+                          : 'border-gray-300 focus:ring-gray-500'
                       }`}
                       disabled={loading}
                       maxLength={13}
@@ -300,19 +300,19 @@ export default function InviteRedemptionModal({
                     <motion.div
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="flex items-center space-x-2 p-3 bg-red-50 border border-red-200 rounded-lg"
+                      className="flex items-center space-x-2 p-3 bg-gray-50 border border-gray-200 rounded-lg"
                     >
-                      <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
-                      <span className="text-sm text-red-700">{error}</span>
+                      <AlertCircle className="w-4 h-4 text-gray-500 flex-shrink-0" />
+                      <span className="text-sm text-gray-700">{error}</span>
                     </motion.div>
                   )}
 
                   {/* Format Info */}
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                    <div className="text-sm text-blue-800">
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                    <div className="text-sm text-gray-800">
                       <div className="font-medium">{t.formatInfo.title}:</div>
                       <div className="font-mono">{t.formatInfo.format}</div>
-                      <div className="text-blue-600 mt-1">{t.formatInfo.example}</div>
+                      <div className="text-gray-600 mt-1">{t.formatInfo.example}</div>
                     </div>
                   </div>
 
@@ -329,7 +329,7 @@ export default function InviteRedemptionModal({
                     <button
                       type="submit"
                       disabled={loading || !inviteCode.trim() || !isValidFormat(inviteCode)}
-                      className="flex-1 flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex-1 flex items-center justify-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {loading ? (
                         <>
@@ -347,8 +347,8 @@ export default function InviteRedemptionModal({
               <>
                 {/* Success State */}
                 <div className="text-center space-y-4">
-                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-                    <Check className="w-8 h-8 text-green-600" />
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
+                    <Check className="w-8 h-8 text-gray-600" />
                   </div>
                   
                   <div>
@@ -358,16 +358,16 @@ export default function InviteRedemptionModal({
 
                   {/* Credit Information */}
                   {result.credits && (
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-4 space-y-3">
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-green-700">{t.success.creditsAdded}:</span>
-                        <span className="text-lg font-semibold text-green-800">
+                        <span className="text-sm text-gray-700">{t.success.creditsAdded}:</span>
+                        <span className="text-lg font-semibold text-gray-800">
                           +{result.credits.added.toLocaleString()}
                         </span>
                       </div>
-                      <div className="flex items-center justify-between border-t border-green-200 pt-3">
-                        <span className="text-sm text-green-700">{t.success.totalCredits}:</span>
-                        <span className="text-lg font-semibold text-green-800">
+                      <div className="flex items-center justify-between border-t border-gray-200 pt-3">
+                        <span className="text-sm text-gray-700">{t.success.totalCredits}:</span>
+                        <span className="text-lg font-semibold text-gray-800">
                           {result.credits.total.toLocaleString()}
                         </span>
                       </div>
@@ -376,8 +376,8 @@ export default function InviteRedemptionModal({
 
                   {/* Trial Information */}
                   {result.trial && (
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                      <div className="text-sm text-blue-700">
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                      <div className="text-sm text-gray-700">
                         <CreditCard className="w-4 h-4 inline mr-2" />
                         {t.success.trialInfo}: {formatDate(result.trial.endsAt)}
                       </div>
@@ -387,7 +387,7 @@ export default function InviteRedemptionModal({
                   {/* Continue Button */}
                   <button
                     onClick={handleClose}
-                    className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    className="w-full px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
                   >
                     {t.success.continueButton}
                   </button>

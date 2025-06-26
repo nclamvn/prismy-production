@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Mic, MicOff, Volume2, Zap, Brain, FileText, Users, Settings, AlertCircle, CheckCircle } from 'lucide-react'
-import { motionSafe, slideUp, fadeIn, scaleIn } from '@/lib/motion'
+import { motionSafe, slideUp, fadeIn, scaleIn, staggerContainer } from '@/lib/motion'
 
 interface VoiceCommand {
   id: string
@@ -263,13 +263,38 @@ export default function VoiceControlInterface({ language = 'en', onCommand }: Vo
 
   if (!isSupported) {
     return (
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
+      <div 
+        className="p-6"
+        style={{
+          backgroundColor: 'var(--surface-elevated)',
+          borderRadius: 'var(--mat-card-elevated-container-shape)',
+          border: '1px solid var(--surface-outline)',
+          boxShadow: 'var(--elevation-level-1)'
+        }}
+      >
         <div className="text-center">
-          <AlertCircle className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          <AlertCircle className="w-12 h-12 mx-auto mb-4" style={{ color: '#F59E0B' }} />
+          <h3 
+            className="mb-2"
+            style={{
+              fontSize: 'var(--sys-title-large-size)',
+              lineHeight: 'var(--sys-title-large-line-height)',
+              fontFamily: 'var(--sys-title-large-font)',
+              fontWeight: 'var(--sys-title-large-weight)',
+              color: 'var(--text-primary)'
+            }}
+          >
             {content[language].title}
           </h3>
-          <p className="text-gray-600">
+          <p 
+            style={{
+              fontSize: 'var(--sys-body-large-size)',
+              lineHeight: 'var(--sys-body-large-line-height)',
+              fontFamily: 'var(--sys-body-large-font)',
+              fontWeight: 'var(--sys-body-large-weight)',
+              color: 'var(--text-secondary)'
+            }}
+          >
             {content[language].notSupported}
           </p>
         </div>
@@ -284,29 +309,66 @@ export default function VoiceControlInterface({ language = 'en', onCommand }: Vo
       animate="visible"
       className="space-y-6"
     >
-      {/* Header */}
+      {/* Header - NotebookLM Style */}
       <motion.div variants={motionSafe(slideUp)}>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+        <h2 
+          className="mb-2"
+          style={{
+            fontSize: 'var(--sys-headline-large-size)',
+            lineHeight: 'var(--sys-headline-large-line-height)',
+            fontFamily: 'var(--sys-headline-large-font)',
+            fontWeight: 'var(--sys-headline-large-weight)',
+            color: 'var(--text-primary)'
+          }}
+        >
           {content[language].title}
         </h2>
-        <p className="text-gray-600">{content[language].subtitle}</p>
+        <p 
+          style={{
+            fontSize: 'var(--sys-body-large-size)',
+            lineHeight: 'var(--sys-body-large-line-height)',
+            fontFamily: 'var(--sys-body-large-font)',
+            fontWeight: 'var(--sys-body-large-weight)',
+            color: 'var(--text-secondary)'
+          }}
+        >
+          {content[language].subtitle}
+        </p>
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Voice Control Panel */}
+        {/* Voice Control Panel - Material Design 3 Style */}
         <motion.div
           variants={motionSafe(slideUp)}
-          className="bg-white rounded-xl border border-gray-200 p-6"
+          className="p-6"
+          style={{
+            backgroundColor: 'var(--surface-elevated)',
+            borderRadius: 'var(--mat-card-elevated-container-shape)',
+            border: '1px solid var(--surface-outline)',
+            boxShadow: 'var(--elevation-level-1)'
+          }}
         >
           {/* Microphone Button */}
           <div className="flex flex-col items-center">
             <motion.button
               onClick={toggleListening}
-              className={`relative w-32 h-32 rounded-full transition-all ${
-                isListening 
-                  ? 'bg-gradient-to-r from-red-500 to-pink-500 shadow-lg' 
-                  : 'bg-gradient-to-r from-purple-500 to-indigo-500 hover:shadow-lg'
-              }`}
+              className="relative w-32 h-32 rounded-full transition-all"
+              style={{
+                background: isListening 
+                  ? 'linear-gradient(to right, #EF4444, #EC4899)'
+                  : `linear-gradient(to right, var(--notebooklm-primary), var(--notebooklm-primary-dark))`,
+                boxShadow: isListening ? 'var(--elevation-level-3)' : 'var(--elevation-level-1)'
+              }}
+              onMouseEnter={(e) => {
+                if (!isListening) {
+                  e.currentTarget.style.boxShadow = 'var(--elevation-level-2)'
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isListening) {
+                  e.currentTarget.style.boxShadow = 'var(--elevation-level-1)'
+                }
+              }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -340,12 +402,30 @@ export default function VoiceControlInterface({ language = 'en', onCommand }: Vo
               )}
             </motion.button>
             
-            <p className="mt-4 text-lg font-medium text-gray-900">
+            <p 
+              className="mt-4"
+              style={{
+                fontSize: 'var(--sys-title-medium-size)',
+                lineHeight: 'var(--sys-title-medium-line-height)',
+                fontFamily: 'var(--sys-title-medium-font)',
+                fontWeight: 'var(--sys-title-medium-weight)',
+                color: 'var(--text-primary)'
+              }}
+            >
               {isListening ? content[language].listening : content[language].startListening}
             </p>
             
             {isListening && (
-              <p className="text-sm text-gray-600 mt-2">
+              <p 
+                className="text-sm mt-2"
+                style={{
+                  fontSize: 'var(--sys-body-medium-size)',
+                  lineHeight: 'var(--sys-body-medium-line-height)',
+                  fontFamily: 'var(--sys-body-medium-font)',
+                  fontWeight: 'var(--sys-body-medium-weight)',
+                  color: 'var(--text-secondary)'
+                }}
+              >
                 {content[language].speak}
               </p>
             )}
@@ -355,14 +435,39 @@ export default function VoiceControlInterface({ language = 'en', onCommand }: Vo
           {(transcript || interimTranscript) && (
             <motion.div
               variants={motionSafe(fadeIn)}
-              className="mt-6 p-4 bg-gray-50 rounded-lg"
+              className="mt-6 p-4"
+              style={{
+                backgroundColor: 'var(--surface-panel)',
+                borderRadius: 'var(--mat-card-outlined-container-shape)'
+              }}
             >
               <div className="flex items-start space-x-2">
-                <Volume2 className="w-5 h-5 text-gray-500 mt-0.5" />
+                <Volume2 className="w-5 h-5 mt-0.5" style={{ color: 'var(--text-secondary)' }} />
                 <div className="flex-1">
-                  <p className="text-gray-900">{transcript}</p>
+                  <p 
+                    style={{
+                      fontSize: 'var(--sys-body-large-size)',
+                      lineHeight: 'var(--sys-body-large-line-height)',
+                      fontFamily: 'var(--sys-body-large-font)',
+                      fontWeight: 'var(--sys-body-large-weight)',
+                      color: 'var(--text-primary)'
+                    }}
+                  >
+                    {transcript}
+                  </p>
                   {interimTranscript && (
-                    <p className="text-gray-500 italic">{interimTranscript}</p>
+                    <p 
+                      className="italic"
+                      style={{
+                        fontSize: 'var(--sys-body-medium-size)',
+                        lineHeight: 'var(--sys-body-medium-line-height)',
+                        fontFamily: 'var(--sys-body-medium-font)',
+                        fontWeight: 'var(--sys-body-medium-weight)',
+                        color: 'var(--text-secondary)'
+                      }}
+                    >
+                      {interimTranscript}
+                    </p>
                   )}
                 </div>
               </div>
@@ -371,14 +476,38 @@ export default function VoiceControlInterface({ language = 'en', onCommand }: Vo
 
           {/* Example Commands */}
           <div className="mt-6">
-            <h3 className="font-medium text-gray-900 mb-3">
+            <h3 
+              className="mb-3"
+              style={{
+                fontSize: 'var(--sys-title-medium-size)',
+                lineHeight: 'var(--sys-title-medium-line-height)',
+                fontFamily: 'var(--sys-title-medium-font)',
+                fontWeight: 'var(--sys-title-medium-weight)',
+                color: 'var(--text-primary)'
+              }}
+            >
               {content[language].examples.title}
             </h3>
             <div className="space-y-2">
               {content[language].examples.commands.map((example, index) => (
                 <div
                   key={index}
-                  className="p-3 bg-gray-50 rounded-lg text-sm text-gray-600 hover:bg-gray-100 cursor-pointer transition-colors"
+                  className="p-3 text-sm cursor-pointer transition-colors"
+                  style={{
+                    backgroundColor: 'var(--surface-filled)',
+                    borderRadius: 'var(--mat-card-outlined-container-shape)',
+                    fontSize: 'var(--sys-body-medium-size)',
+                    lineHeight: 'var(--sys-body-medium-line-height)',
+                    fontFamily: 'var(--sys-body-medium-font)',
+                    fontWeight: 'var(--sys-body-medium-weight)',
+                    color: 'var(--text-secondary)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--surface-panel)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--surface-filled)'
+                  }}
                   onClick={() => processCommand(example)}
                 >
                   "{example}"
@@ -388,12 +517,27 @@ export default function VoiceControlInterface({ language = 'en', onCommand }: Vo
           </div>
         </motion.div>
 
-        {/* Command History */}
+        {/* Command History - Material Design 3 Style */}
         <motion.div
           variants={motionSafe(slideUp)}
-          className="bg-white rounded-xl border border-gray-200 p-6"
+          className="p-6"
+          style={{
+            backgroundColor: 'var(--surface-elevated)',
+            borderRadius: 'var(--mat-card-elevated-container-shape)',
+            border: '1px solid var(--surface-outline)',
+            boxShadow: 'var(--elevation-level-1)'
+          }}
         >
-          <h3 className="font-semibold text-gray-900 mb-4">
+          <h3 
+            className="mb-4"
+            style={{
+              fontSize: 'var(--sys-title-medium-size)',
+              lineHeight: 'var(--sys-title-medium-line-height)',
+              fontFamily: 'var(--sys-title-medium-font)',
+              fontWeight: 'var(--sys-title-medium-weight)',
+              color: 'var(--text-primary)'
+            }}
+          >
             {content[language].commandHistory}
           </h3>
           
@@ -404,34 +548,87 @@ export default function VoiceControlInterface({ language = 'en', onCommand }: Vo
                   key={command.id}
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="p-4 bg-gray-50 rounded-lg"
+                  className="p-4"
+                  style={{
+                    backgroundColor: 'var(--surface-filled)',
+                    borderRadius: 'var(--mat-card-outlined-container-shape)'
+                  }}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex items-start space-x-3">
-                      <div className={`p-2 rounded-lg ${
-                        command.status === 'completed' 
-                          ? 'bg-green-100 text-green-600'
-                          : command.status === 'failed'
-                            ? 'bg-red-100 text-red-600'
-                            : 'bg-blue-100 text-blue-600'
-                      }`}>
+                      <div 
+                        className="p-2"
+                        style={{
+                          borderRadius: 'var(--mat-card-outlined-container-shape)',
+                          backgroundColor: command.status === 'completed' 
+                            ? 'rgba(34, 197, 94, 0.1)'
+                            : command.status === 'failed'
+                              ? 'rgba(239, 68, 68, 0.1)'
+                              : 'rgba(59, 130, 246, 0.1)',
+                          color: command.status === 'completed' 
+                            ? 'rgb(21, 128, 61)'
+                            : command.status === 'failed'
+                              ? 'rgb(185, 28, 28)'
+                              : 'var(--notebooklm-primary)'
+                        }}
+                      >
                         {getIntentIcon(command.intent)}
                       </div>
                       <div>
-                        <p className="font-medium text-gray-900">
+                        <p 
+                          style={{
+                            fontSize: 'var(--sys-label-large-size)',
+                            lineHeight: 'var(--sys-label-large-line-height)',
+                            fontFamily: 'var(--sys-label-large-font)',
+                            fontWeight: 'var(--sys-label-large-weight)',
+                            color: 'var(--text-primary)'
+                          }}
+                        >
                           {command.transcript}
                         </p>
                         <div className="flex items-center space-x-2 mt-1">
-                          <span className="text-xs text-gray-500">
+                          <span 
+                            className="text-xs"
+                            style={{
+                              fontSize: 'var(--sys-body-small-size)',
+                              lineHeight: 'var(--sys-body-small-line-height)',
+                              fontFamily: 'var(--sys-body-small-font)',
+                              fontWeight: 'var(--sys-body-small-weight)',
+                              color: 'var(--text-secondary)'
+                            }}
+                          >
                             {command.intent}
                           </span>
-                          <span className="text-xs text-gray-400">•</span>
-                          <span className="text-xs text-gray-500">
+                          <span 
+                            className="text-xs"
+                            style={{ color: 'var(--text-disabled)' }}
+                          >
+                            •
+                          </span>
+                          <span 
+                            className="text-xs"
+                            style={{
+                              fontSize: 'var(--sys-body-small-size)',
+                              lineHeight: 'var(--sys-body-small-line-height)',
+                              fontFamily: 'var(--sys-body-small-font)',
+                              fontWeight: 'var(--sys-body-small-weight)',
+                              color: 'var(--text-secondary)'
+                            }}
+                          >
                             {Math.round(command.confidence * 100)}% confidence
                           </span>
                         </div>
                         {command.result && (
-                          <p className="text-sm text-green-600 mt-2">
+                          <p 
+                            className="text-sm mt-2"
+                            style={{
+                              fontSize: 'var(--sys-body-medium-size)',
+                              lineHeight: 'var(--sys-body-medium-line-height)',
+                              fontFamily: 'var(--sys-body-medium-font)',
+                              fontWeight: 'var(--sys-body-medium-weight)',
+                              color: 'rgb(21, 128, 61)'
+                            }}
+                          >
                             {command.result}
                           </p>
                         )}
@@ -439,13 +636,25 @@ export default function VoiceControlInterface({ language = 'en', onCommand }: Vo
                     </div>
                     <div className="text-right">
                       {command.status === 'processing' ? (
-                        <div className="animate-spin w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full" />
+                        <div 
+                          className="animate-spin w-4 h-4 border-2 border-t-transparent rounded-full"
+                          style={{ borderColor: 'var(--notebooklm-primary)' }}
+                        />
                       ) : command.status === 'completed' ? (
-                        <CheckCircle className="w-4 h-4 text-green-600" />
+                        <CheckCircle className="w-4 h-4" style={{ color: 'rgb(21, 128, 61)' }} />
                       ) : (
-                        <AlertCircle className="w-4 h-4 text-red-600" />
+                        <AlertCircle className="w-4 h-4" style={{ color: 'rgb(185, 28, 28)' }} />
                       )}
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p 
+                        className="text-xs mt-1"
+                        style={{
+                          fontSize: 'var(--sys-body-small-size)',
+                          lineHeight: 'var(--sys-body-small-line-height)',
+                          fontFamily: 'var(--sys-body-small-font)',
+                          fontWeight: 'var(--sys-body-small-weight)',
+                          color: 'var(--text-secondary)'
+                        }}
+                      >
                         {new Date(command.timestamp).toLocaleTimeString()}
                       </p>
                     </div>
@@ -454,8 +663,16 @@ export default function VoiceControlInterface({ language = 'en', onCommand }: Vo
               ))
             ) : (
               <div className="text-center py-8">
-                <Mic className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-500">
+                <Mic className="w-12 h-12 mx-auto mb-3" style={{ color: 'var(--text-disabled)' }} />
+                <p 
+                  style={{
+                    fontSize: 'var(--sys-body-large-size)',
+                    lineHeight: 'var(--sys-body-large-line-height)',
+                    fontFamily: 'var(--sys-body-large-font)',
+                    fontWeight: 'var(--sys-body-large-weight)',
+                    color: 'var(--text-secondary)'
+                  }}
+                >
                   {content[language].noCommands}
                 </p>
               </div>

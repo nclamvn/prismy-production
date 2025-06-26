@@ -1,6 +1,5 @@
 'use client'
 
-import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { motion } from 'framer-motion'
 import { motionSafe, fadeIn } from '@/lib/motion'
@@ -15,16 +14,14 @@ export default function MainLayout({
   showFooter = true,
 }: MainLayoutProps) {
   return (
-    <div className="min-h-screen bg-bg-main flex flex-col">
-      {/* Global Navbar - Always visible on public pages */}
-      <Navbar />
-
-      {/* Main Content Area */}
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--surface-panel)' }}>
+      {/* Main Content Area - Add top padding for fixed navbar (now in RootLayout) */}
       <motion.main
-        className="flex-1"
+        className="pt-16 lg:pt-20"
         variants={motionSafe(fadeIn)}
         initial="hidden"
         animate="visible"
+        style={{ backgroundColor: 'var(--surface-panel)', minHeight: 'calc(100vh - 64px)' }}
       >
         {children}
       </motion.main>

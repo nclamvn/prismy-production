@@ -9,6 +9,11 @@ import { Variants } from 'framer-motion'
 export const zenEasing = [0.25, 0.46, 0.45, 0.94] as const
 export const hardwareEasing = [0.4, 0, 0.2, 1] as const // Optimized for GPU
 
+// NotebookLM-specific easing curves
+export const notebookLMEasing = [0.2, 0, 0, 1] as const // NotebookLM standard curve
+export const notebookLMEmphasized = [0.05, 0.7, 0.1, 1] as const // For emphasized motions
+export const notebookLMDecelerate = [0, 0, 0.2, 1] as const // For entering elements
+
 // Duration constants - 60fps frame-perfect timing
 export const DURATION = {
   instant: 0.1,
@@ -19,6 +24,23 @@ export const DURATION = {
   frame: 0.016, // Single frame at 60fps
   twoFrame: 0.033, // Two frames at 60fps
   smooth: 0.25, // 15 frames - optimal for smooth perception
+  // NotebookLM Material Design 3 durations
+  short1: 0.05, // 50ms - Very quick actions
+  short2: 0.1,  // 100ms - Quick actions
+  short3: 0.15, // 150ms - Quick actions
+  short4: 0.2,  // 200ms - Quick actions
+  medium1: 0.25, // 250ms - Standard actions
+  medium2: 0.3,  // 300ms - Standard actions
+  medium3: 0.35, // 350ms - Standard actions
+  medium4: 0.4,  // 400ms - Standard actions
+  long1: 0.45,   // 450ms - Complex actions
+  long2: 0.5,    // 500ms - Complex actions
+  long3: 0.55,   // 550ms - Complex actions
+  long4: 0.6,    // 600ms - Complex actions
+  extraLong1: 0.7, // 700ms - Page transitions
+  extraLong2: 0.8, // 800ms - Page transitions
+  extraLong3: 0.9, // 900ms - Page transitions
+  extraLong4: 1.0, // 1000ms - Page transitions
 } as const
 
 // Hardware acceleration hints
@@ -290,8 +312,17 @@ export const getHardwareCapability = () => {
   }
 }
 
-// Motion-safe wrapper with hardware optimization
+// Motion-safe wrapper with hardware optimization - SSR safe
 export const motionSafe = (variants: any): any => {
+  // Skip hardware detection during SSR
+  if (typeof window === 'undefined') {
+    return {
+      initial: { opacity: 0 },
+      animate: { opacity: 1 },
+      transition: { duration: 0.01, type: 'tween' },
+    }
+  }
+
   if (!getMotionPreference()) {
     return {
       initial: { opacity: 0 },
@@ -413,15 +444,21 @@ export const getAdaptiveMotion = (baseVariants: Variants): Variants => {
 /* LEGACY COMPATIBILITY - Smooth Transition */
 /* ============================================================================ */
 
-// Performance-optimized legacy mappings
-export const fadeIn = smooth60fps(zenFade)
-export const slideUp = smooth60fps(whisperUp)
-export const slideDown = smooth60fps(microFloat)
-export const scaleIn = smooth60fps(zenFade)
-export const staggerContainer = smooth60fps(zenBreathe)
-export const listItem = smooth60fps(whisperUp)
-export const hoverScale = zenScale  // Remove performanceCritical to avoid SSR issues
-export const hoverLift = whisperHover  // Remove performanceCritical to avoid SSR issues
+// Performance-optimized legacy mappings - SSR safe
+export const fadeIn = zenFade
+export const slideUp = whisperUp
+export const slideDown = microFloat
+export const scaleIn = zenFade
+export const staggerContainer = zenBreathe
+export const listItem = whisperUp
+export const hoverScale = zenScale
+export const hoverLift = whisperHover
+
+// NotebookLM optimized mappings
+export const notebookLMFade = notebookLMCard
+export const notebookLMSlide = notebookLMListItem
+export const notebookLMHover = notebookLMElevated
+export const notebookLMContainer = notebookLMStagger
 
 // New hardware-accelerated variants
 export const ultraSmooth = {
@@ -450,6 +487,221 @@ export const instantResponse = {
     transition: {
       duration: DURATION.frame,
       ease: hardwareEasing,
+      type: 'tween',
+    },
+  },
+}
+
+/* ============================================================================ */
+/* NOTEBOOKLM MATERIAL DESIGN 3 VARIANTS */
+/* ============================================================================ */
+
+// NotebookLM card entrance with stagger
+export const notebookLMCard: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 8,
+    scale: 0.96,
+    ...GPU_OPTIMIZED,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    ...GPU_OPTIMIZED,
+    transition: {
+      duration: DURATION.medium2,
+      ease: notebookLMDecelerate,
+      type: 'tween',
+    },
+  },
+}
+
+// NotebookLM stagger container with proper timing
+export const notebookLMStagger: Variants = {
+  hidden: {
+    opacity: 0,
+  },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+      delayChildren: 0.1,
+      duration: DURATION.short2,
+      ease: notebookLMEasing,
+    },
+  },
+}
+
+// NotebookLM button interactions
+export const notebookLMButton = {
+  whileHover: {
+    y: -1,
+    scale: 1.02,
+    ...GPU_OPTIMIZED,
+    transition: {
+      duration: DURATION.short1,
+      ease: notebookLMEasing,
+      type: 'tween',
+    },
+  },
+  whileTap: {
+    scale: 0.98,
+    ...GPU_OPTIMIZED,
+    transition: {
+      duration: DURATION.short1,
+      ease: notebookLMEmphasized,
+      type: 'tween',
+    },
+  },
+}
+
+// NotebookLM elevated card hover
+export const notebookLMElevated = {
+  whileHover: {
+    y: -2,
+    scale: 1.01,
+    ...GPU_OPTIMIZED,
+    transition: {
+      duration: DURATION.short3,
+      ease: notebookLMEasing,
+      type: 'tween',
+    },
+  },
+  whileTap: {
+    scale: 0.995,
+    ...GPU_OPTIMIZED,
+    transition: {
+      duration: DURATION.short1,
+      ease: notebookLMEmphasized,
+      type: 'tween',
+    },
+  },
+}
+
+// NotebookLM page transition
+export const notebookLMPageTransition: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 12,
+    ...GPU_OPTIMIZED,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    ...GPU_OPTIMIZED,
+    transition: {
+      duration: DURATION.medium4,
+      ease: notebookLMDecelerate,
+      type: 'tween',
+    },
+  },
+  exit: {
+    opacity: 0,
+    y: -12,
+    ...GPU_OPTIMIZED,
+    transition: {
+      duration: DURATION.short4,
+      ease: notebookLMEasing,
+      type: 'tween',
+    },
+  },
+}
+
+// NotebookLM modal/dialog entrance
+export const notebookLMModal: Variants = {
+  hidden: {
+    opacity: 0,
+    scale: 0.95,
+    y: 20,
+    ...GPU_OPTIMIZED,
+  },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    ...GPU_OPTIMIZED,
+    transition: {
+      duration: DURATION.medium3,
+      ease: notebookLMEmphasized,
+      type: 'tween',
+    },
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.95,
+    y: 20,
+    ...GPU_OPTIMIZED,
+    transition: {
+      duration: DURATION.short4,
+      ease: notebookLMEasing,
+      type: 'tween',
+    },
+  },
+}
+
+// NotebookLM list item entrance
+export const notebookLMListItem: Variants = {
+  hidden: {
+    opacity: 0,
+    x: -8,
+    ...GPU_OPTIMIZED,
+  },
+  visible: {
+    opacity: 1,
+    x: 0,
+    ...GPU_OPTIMIZED,
+    transition: {
+      duration: DURATION.short4,
+      ease: notebookLMDecelerate,
+      type: 'tween',
+    },
+  },
+}
+
+// NotebookLM form field focus
+export const notebookLMFormField = {
+  focus: {
+    scale: 1.01,
+    ...GPU_OPTIMIZED,
+    transition: {
+      duration: DURATION.short2,
+      ease: notebookLMEasing,
+      type: 'tween',
+    },
+  },
+  blur: {
+    scale: 1,
+    ...GPU_OPTIMIZED,
+    transition: {
+      duration: DURATION.short3,
+      ease: notebookLMDecelerate,
+      type: 'tween',
+    },
+  },
+}
+
+// NotebookLM navigation drawer
+export const notebookLMDrawer: Variants = {
+  hidden: {
+    x: '-100%',
+    ...GPU_OPTIMIZED,
+  },
+  visible: {
+    x: 0,
+    ...GPU_OPTIMIZED,
+    transition: {
+      duration: DURATION.medium4,
+      ease: notebookLMEmphasized,
+      type: 'tween',
+    },
+  },
+  exit: {
+    x: '-100%',
+    ...GPU_OPTIMIZED,
+    transition: {
+      duration: DURATION.medium2,
+      ease: notebookLMEasing,
       type: 'tween',
     },
   },

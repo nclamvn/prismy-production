@@ -312,7 +312,7 @@ function EnterpriseContent() {
     <MainLayout>
       <div className="overflow-x-hidden">
         {/* Hero Section */}
-        <section className="relative overflow-hidden bg-white pt-20 w-full">
+        <section className="relative overflow-hidden w-full" style={{ backgroundColor: 'rgba(251, 250, 249, 1)' }}>
           <div className="w-full py-20 px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
               <motion.div
@@ -383,7 +383,7 @@ function EnterpriseContent() {
         </section>
 
         {/* Stats Section */}
-        <section className="py-20 bg-gray-50 w-full">
+        <section className="py-20 w-full" style={{ backgroundColor: 'rgba(251, 250, 249, 1)' }}>
           <div className="w-full px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -410,7 +410,7 @@ function EnterpriseContent() {
         </section>
 
         {/* Why Enterprise Section */}
-        <section className="py-20 w-full">
+        <section className="py-20 w-full" style={{ backgroundColor: 'rgba(251, 250, 249, 1)' }}>
           <div className="w-full px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
               <motion.div
@@ -465,7 +465,7 @@ function EnterpriseContent() {
         </section>
 
         {/* Case Studies Section */}
-        <section className="py-20 bg-gray-50 w-full">
+        <section className="py-20 w-full" style={{ backgroundColor: 'rgba(251, 250, 249, 1)' }}>
           <div className="w-full px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
               <motion.div
@@ -532,7 +532,8 @@ function EnterpriseContent() {
                               >
                                 <CheckCircle
                                   size={16}
-                                  className="text-green-600 mt-0.5 flex-shrink-0"
+                                  className="mt-0.5 flex-shrink-0"
+                                  style={{ color: 'var(--notebooklm-primary)' }}
                                 />
                                 <span className="body-sm text-text-secondary">
                                   {result}
@@ -551,7 +552,7 @@ function EnterpriseContent() {
         </section>
 
         {/* Vietnamese Market Focus */}
-        <section className="py-20 bg-white w-full">
+        <section className="py-20 w-full" style={{ backgroundColor: 'rgba(251, 250, 249, 1)' }}>
           <div className="w-full px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
               <motion.div
@@ -648,12 +649,17 @@ function EnterpriseContent() {
                     <motion.div
                       key={index}
                       variants={motionSafe(slideUp)}
-                      className="bg-white rounded-2xl p-6 border border-gray-200 hover:border-gray-300 transition-all duration-300 shadow-sm hover:shadow-md"
+                      className="rounded-2xl p-6 transition-all duration-300 shadow-sm hover:shadow-md"
+                      style={{ 
+                        backgroundColor: 'rgba(251, 250, 249, 1)', 
+                        border: '1px solid var(--surface-outline)' 
+                      }}
                     >
                       <div className="mb-4">
                         <item.icon
                           size={32}
-                          className="text-gray-700"
+                          className=""
+                          style={{ color: 'var(--notebooklm-primary)' }}
                           strokeWidth={1.5}
                         />
                       </div>
@@ -672,7 +678,7 @@ function EnterpriseContent() {
         </section>
 
         {/* Testimonials Section */}
-        <section className="py-20 w-full">
+        <section className="py-20 w-full" style={{ backgroundColor: 'rgba(251, 250, 249, 1)' }}>
           <div className="w-full px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
               <motion.div
@@ -751,13 +757,17 @@ function EnterpriseContent() {
                     <motion.div
                       key={index}
                       variants={motionSafe(slideUp)}
-                      className="bg-white rounded-2xl p-8 border border-gray-200 shadow-lg"
+                      className="rounded-2xl p-8 shadow-lg"
+                      style={{ 
+                        backgroundColor: 'rgba(251, 250, 249, 1)', 
+                        border: '1px solid var(--surface-outline)' 
+                      }}
                     >
                       <p className="body-base text-text-secondary mb-6 italic leading-relaxed">
                         {testimonial.quote}
                       </p>
                       <div className="flex items-center">
-                        <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold mr-4">
+                        <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold mr-4" style={{ backgroundColor: 'var(--notebooklm-primary)' }}>
                           {testimonial.author
                             .split(' ')
                             .map(n => n[0])
@@ -781,7 +791,7 @@ function EnterpriseContent() {
         </section>
 
         {/* Enterprise Pricing */}
-        <section className="py-20 w-full">
+        <section className="py-20 w-full" style={{ backgroundColor: 'rgba(251, 250, 249, 1)' }}>
           <div className="w-full px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto">
               <motion.div
@@ -820,7 +830,8 @@ function EnterpriseContent() {
                         <div key={index} className="flex items-start space-x-3">
                           <CheckCircle
                             size={20}
-                            className="text-green-600 mt-0.5 flex-shrink-0"
+                            className="mt-0.5 flex-shrink-0"
+                            style={{ color: 'var(--notebooklm-primary)' }}
                           />
                           <span className="body-sm text-text-secondary text-left">
                             {feature}
@@ -840,7 +851,7 @@ function EnterpriseContent() {
         </section>
 
         {/* Contact Section */}
-        <section className="py-20 bg-black w-full">
+        <section className="py-20 w-full" style={{ backgroundColor: 'var(--notebooklm-primary)' }}>
           <div className="w-full px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto">
               <motion.div
@@ -856,7 +867,7 @@ function EnterpriseContent() {
                   <h2 className="heading-2 text-white mb-4">
                     {content[language].contact.title}
                   </h2>
-                  <p className="body-lg text-gray-300">
+                  <p className="body-lg" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
                     {content[language].contact.subtitle}
                   </p>
                 </motion.div>

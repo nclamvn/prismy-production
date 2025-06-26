@@ -554,13 +554,32 @@ export default function AdvancedMetricsDashboard({
         animate="visible"
         className="space-y-8"
       >
-        {/* Header */}
+        {/* Header - NotebookLM Style */}
         <motion.div variants={motionSafe(slideUp)} className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            <h2 
+              className="mb-2"
+              style={{
+                fontSize: 'var(--sys-headline-large-size)',
+                lineHeight: 'var(--sys-headline-large-line-height)',
+                fontFamily: 'var(--sys-headline-large-font)',
+                fontWeight: 'var(--sys-headline-large-weight)',
+                color: 'var(--text-primary)'
+              }}
+            >
               {content[language].title}
             </h2>
-            <p className="text-gray-600">{content[language].subtitle}</p>
+            <p 
+              style={{
+                fontSize: 'var(--sys-body-large-size)',
+                lineHeight: 'var(--sys-body-large-line-height)',
+                fontFamily: 'var(--sys-body-large-font)',
+                fontWeight: 'var(--sys-body-large-weight)',
+                color: 'var(--text-secondary)'
+              }}
+            >
+              {content[language].subtitle}
+            </p>
           </div>
 
           <div className="flex items-center space-x-4">
@@ -568,7 +587,25 @@ export default function AdvancedMetricsDashboard({
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-2 focus:ring-2 focus:outline-none transition-all"
+              style={{
+                border: '1px solid var(--surface-outline)',
+                borderRadius: 'var(--mat-menu-container-shape)',
+                backgroundColor: 'var(--surface-elevated)',
+                color: 'var(--text-primary)',
+                fontSize: 'var(--sys-body-medium-size)',
+                lineHeight: 'var(--sys-body-medium-line-height)',
+                fontFamily: 'var(--sys-body-medium-font)',
+                fontWeight: 'var(--sys-body-medium-weight)'
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = 'var(--notebooklm-primary)'
+                e.currentTarget.style.boxShadow = `0 0 0 2px rgba(11, 40, 255, 0.1)`
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = 'var(--surface-outline)'
+                e.currentTarget.style.boxShadow = 'none'
+              }}
             >
               {Object.entries(content[language].categories).map(([key, label]) => (
                 <option key={key} value={key}>{label}</option>
@@ -583,13 +620,43 @@ export default function AdvancedMetricsDashboard({
                 onChange={(e) => setAutoRefresh(e.target.checked)}
                 className="rounded"
               />
-              <span className="text-sm text-gray-700">Auto-refresh</span>
+              <span 
+                className="text-sm"
+                style={{
+                  fontSize: 'var(--sys-body-medium-size)',
+                  lineHeight: 'var(--sys-body-medium-line-height)',
+                  fontFamily: 'var(--sys-body-medium-font)',
+                  fontWeight: 'var(--sys-body-medium-weight)',
+                  color: 'var(--text-primary)'
+                }}
+              >
+                Auto-refresh
+              </span>
             </label>
 
             {/* Export button */}
             <button
               onClick={handleExport}
-              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              className="flex items-center space-x-2 px-4 py-2 text-white transition-all"
+              style={{
+                backgroundColor: 'var(--notebooklm-primary)',
+                borderRadius: 'var(--mat-button-filled-container-shape)',
+                fontSize: 'var(--sys-label-medium-size)',
+                lineHeight: 'var(--sys-label-medium-line-height)',
+                fontFamily: 'var(--sys-label-medium-font)',
+                fontWeight: 'var(--sys-label-medium-weight)',
+                border: 'none',
+                boxShadow: 'var(--elevation-level-1)',
+                cursor: 'pointer'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'var(--notebooklm-primary-dark)'
+                e.currentTarget.style.boxShadow = 'var(--elevation-level-2)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'var(--notebooklm-primary)'
+                e.currentTarget.style.boxShadow = 'var(--elevation-level-1)'
+              }}
             >
               <Download className="w-4 h-4" />
               <span>{content[language].actions.export}</span>
@@ -605,16 +672,41 @@ export default function AdvancedMetricsDashboard({
               initial="hidden"
               animate="visible"
               exit="hidden"
-              className="bg-red-50 border border-red-200 rounded-xl p-4"
+              className="p-4"
+              style={{
+                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                borderRadius: 'var(--mat-card-elevated-container-shape)'
+              }}
             >
               <div className="flex items-center justify-between mb-3">
-                <h3 className="font-semibold text-red-900 flex items-center space-x-2">
+                <h3 
+                  className="flex items-center space-x-2"
+                  style={{
+                    fontSize: 'var(--sys-title-medium-size)',
+                    lineHeight: 'var(--sys-title-medium-line-height)',
+                    fontFamily: 'var(--sys-title-medium-font)',
+                    fontWeight: 'var(--sys-title-medium-weight)',
+                    color: 'rgb(127, 29, 29)'
+                  }}
+                >
                   <AlertTriangle className="w-5 h-5" />
                   <span>{content[language].alerts.title}</span>
                 </h3>
                 <button
                   onClick={() => setShowAlerts(false)}
-                  className="text-red-600 hover:text-red-800"
+                  className="transition-colors"
+                  style={{
+                    color: 'rgb(185, 28, 28)',
+                    cursor: 'pointer',
+                    fontSize: '18px'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = 'rgb(127, 29, 29)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = 'rgb(185, 28, 28)'
+                  }}
                 >
                   ×
                 </button>
@@ -626,8 +718,25 @@ export default function AdvancedMetricsDashboard({
                     className={`p-3 rounded-lg border ${getAlertSeverityColor(alert.severity)}`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-medium">{alert.message}</span>
-                      <span className="text-xs uppercase">
+                      <span 
+                        style={{
+                          fontSize: 'var(--sys-label-medium-size)',
+                          lineHeight: 'var(--sys-label-medium-line-height)',
+                          fontFamily: 'var(--sys-label-medium-font)',
+                          fontWeight: 'var(--sys-label-medium-weight)'
+                        }}
+                      >
+                        {alert.message}
+                      </span>
+                      <span 
+                        className="text-xs uppercase"
+                        style={{
+                          fontSize: 'var(--sys-body-small-size)',
+                          lineHeight: 'var(--sys-body-small-line-height)',
+                          fontFamily: 'var(--sys-body-small-font)',
+                          fontWeight: 'var(--sys-body-small-weight)'
+                        }}
+                      >
                         {content[language].alerts[alert.severity as keyof typeof content[typeof language]['alerts']]}
                       </span>
                     </div>
@@ -648,53 +757,140 @@ export default function AdvancedMetricsDashboard({
                 <motion.div
                   key={metric.id}
                   variants={motionSafe(slideUp)}
-                  className="bg-white p-6 rounded-xl border border-gray-200 hover:shadow-lg transition-shadow cursor-pointer"
+                  className="p-6 transition-shadow cursor-pointer"
+                  style={{
+                    backgroundColor: 'var(--surface-elevated)',
+                    borderRadius: 'var(--mat-card-elevated-container-shape)',
+                    border: '1px solid var(--surface-outline)',
+                    boxShadow: 'var(--elevation-level-1)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.boxShadow = 'var(--elevation-level-3)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.boxShadow = 'var(--elevation-level-1)'
+                  }}
                   onClick={() => onMetricClick?.(metric)}
                 >
                   <div className="flex items-center justify-between mb-4">
-                    <div className={`p-2 bg-gradient-to-r ${getCategoryColor(metric.category)} rounded-lg text-white`}>
+                    <div 
+                      className="p-2 text-white"
+                      style={{
+                        background: `linear-gradient(to right, var(--notebooklm-primary), var(--notebooklm-primary-dark))`,
+                        borderRadius: 'var(--mat-card-outlined-container-shape)'
+                      }}
+                    >
                       {getMetricIcon(metric)}
                     </div>
                     <div className="flex items-center space-x-1">
                       {getTrendIcon(metric)}
-                      <span className={`text-sm font-medium ${
-                        trend.isNeutral ? 'text-gray-500' : 
-                        trend.isImprovement ? 'text-green-600' : 'text-red-600'
-                      }`}>
+                      <span 
+                        className="text-sm font-medium"
+                        style={{
+                          fontSize: 'var(--sys-label-medium-size)',
+                          lineHeight: 'var(--sys-label-medium-line-height)',
+                          fontFamily: 'var(--sys-label-medium-font)',
+                          fontWeight: 'var(--sys-label-medium-weight)',
+                          color: trend.isNeutral 
+                            ? 'var(--text-secondary)' 
+                            : trend.isImprovement 
+                              ? 'rgb(21, 128, 61)' 
+                              : 'rgb(185, 28, 28)'
+                        }}
+                      >
                         {trend.percent}%
                       </span>
                     </div>
                   </div>
 
                   <div className="mb-2">
-                    <h3 className="text-2xl font-bold text-gray-900">
+                    <h3 
+                      style={{
+                        fontSize: 'var(--sys-headline-medium-size)',
+                        lineHeight: 'var(--sys-headline-medium-line-height)',
+                        fontFamily: 'var(--sys-headline-medium-font)',
+                        fontWeight: 'var(--sys-headline-medium-weight)',
+                        color: 'var(--text-primary)'
+                      }}
+                    >
                       {formatValue(metric)}
                     </h3>
-                    <p className="text-sm text-gray-600">{metric.name}</p>
+                    <p 
+                      className="text-sm"
+                      style={{
+                        fontSize: 'var(--sys-body-medium-size)',
+                        lineHeight: 'var(--sys-body-medium-line-height)',
+                        fontFamily: 'var(--sys-body-medium-font)',
+                        fontWeight: 'var(--sys-body-medium-weight)',
+                        color: 'var(--text-secondary)'
+                      }}
+                    >
+                      {metric.name}
+                    </p>
                   </div>
 
                   {metric.target && (
                     <div className="mb-3">
-                      <div className="flex justify-between text-xs text-gray-500 mb-1">
+                      <div 
+                        className="flex justify-between text-xs mb-1"
+                        style={{
+                          fontSize: 'var(--sys-body-small-size)',
+                          lineHeight: 'var(--sys-body-small-line-height)',
+                          fontFamily: 'var(--sys-body-small-font)',
+                          fontWeight: 'var(--sys-body-small-weight)',
+                          color: 'var(--text-secondary)'
+                        }}
+                      >
                         <span>Target: {formatValue({...metric, value: metric.target})}</span>
                         <span>{((metric.value / metric.target) * 100).toFixed(0)}%</span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="w-full h-2"
+                        style={{
+                          backgroundColor: 'var(--surface-panel)',
+                          borderRadius: 'var(--shape-corner-full)'
+                        }}
+                      >
                         <div
-                          className={`h-2 rounded-full ${
-                            metric.value >= metric.target ? 'bg-green-500' : 'bg-blue-500'
-                          }`}
-                          style={{ width: `${Math.min((metric.value / metric.target) * 100, 100)}%` }}
+                          className="h-2"
+                          style={{
+                            borderRadius: 'var(--shape-corner-full)',
+                            backgroundColor: metric.value >= metric.target 
+                              ? 'rgb(34, 197, 94)' 
+                              : 'var(--notebooklm-primary)',
+                            width: `${Math.min((metric.value / metric.target) * 100, 100)}%`
+                          }}
                         />
                       </div>
                     </div>
                   )}
 
-                  <div className="flex items-center justify-between text-xs text-gray-500">
+                  <div 
+                    className="flex items-center justify-between text-xs"
+                    style={{
+                      fontSize: 'var(--sys-body-small-size)',
+                      lineHeight: 'var(--sys-body-small-line-height)',
+                      fontFamily: 'var(--sys-body-small-font)',
+                      fontWeight: 'var(--sys-body-small-weight)',
+                      color: 'var(--text-secondary)'
+                    }}
+                  >
                     <span className="capitalize">{metric.category}</span>
                     <button
-                      className="text-blue-600 hover:text-blue-800"
+                      className="transition-colors"
                       title={metric.description}
+                      style={{
+                        color: 'var(--notebooklm-primary)',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.color = 'var(--notebooklm-primary-dark)'
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.color = 'var(--notebooklm-primary)'
+                      }}
                     >
                       <Info className="w-3 h-3" />
                     </button>

@@ -213,7 +213,11 @@ function DocumentsPageContent() {
 
           {/* Language Selection - Redesigned */}
           <motion.div
-            className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8"
+            className="rounded-2xl shadow-sm p-6 mb-8"
+            style={{ 
+              backgroundColor: 'rgba(251, 250, 249, 1)', 
+              border: '1px solid var(--surface-outline)' 
+            }}
             variants={motionSafe(slideUp)}
           >
             <h3 className="heading-4 text-gray-900 mb-6">

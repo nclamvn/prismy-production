@@ -129,7 +129,10 @@ export function GlobalLoadingIndicator() {
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50">
-      <div className="h-1 bg-blue-600 animate-pulse"></div>
+      <div 
+        className="h-1 animate-pulse"
+        style={{ backgroundColor: 'var(--notebooklm-primary)' }}
+      ></div>
     </div>
   )
 }
@@ -154,18 +157,37 @@ export function LoadingSpinner({
 
   if (!isVisible) return null
 
-  const sizeClasses = {
-    sm: 'w-4 h-4',
-    md: 'w-8 h-8',
-    lg: 'w-12 h-12',
+  const getSizeStyles = () => {
+    const sizes = {
+      sm: { width: '16px', height: '16px' },
+      md: { width: '24px', height: '24px' },
+      lg: { width: '32px', height: '32px' }
+    }
+    return sizes[size]
   }
+
+  const sizeStyles = getSizeStyles()
 
   return (
     <div className={`flex items-center justify-center space-x-3 ${className}`}>
       <div
-        className={`animate-spin rounded-full border-2 border-gray-300 border-t-gray-900 ${sizeClasses[size]}`}
+        className="animate-spin rounded-full border-2"
+        style={{
+          ...sizeStyles,
+          borderColor: 'var(--surface-outline)',
+          borderTopColor: 'var(--notebooklm-primary)'
+        }}
       />
-      {message && <span className="text-gray-600 text-sm">{message}</span>}
+      {message && (
+        <span 
+          style={{
+            color: 'var(--text-secondary)',
+            fontSize: 'var(--sys-body-small-size)'
+          }}
+        >
+          {message}
+        </span>
+      )}
     </div>
   )
 }

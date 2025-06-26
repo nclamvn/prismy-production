@@ -48,7 +48,10 @@ export function Skeleton({
   // Shimmer effect overlay
   const shimmerOverlay = animation === 'shimmer' && (
     <motion.div
-      className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent"
+      className="absolute inset-0 -translate-x-full"
+      style={{
+        background: 'linear-gradient(to right, transparent, rgba(255, 255, 255, 0.4), transparent)'
+      }}
       animate={{
         translateX: ['100%', '-100%'],
       }}
@@ -79,12 +82,12 @@ export function Skeleton({
     <motion.div
       key={index}
       className={cn(
-        'bg-gray-200',
         variantClasses[variant],
         animationClasses[animation],
         className
       )}
       style={{
+        backgroundColor: 'var(--surface-filled)',
         width: width || (variant === 'circular' ? height : undefined),
         height,
       }}
@@ -132,10 +135,12 @@ export function SkeletonText({
 export function SkeletonCard({ className }: { className?: string }) {
   return (
     <div
-      className={cn(
-        'bg-white rounded-3xl border border-gray-100 p-6 space-y-4',
-        className
-      )}
+      className={cn('p-6 space-y-4', className)}
+      style={{
+        backgroundColor: 'var(--surface-elevated)',
+        borderRadius: 'var(--mat-card-elevated-container-shape)',
+        border: '1px solid var(--surface-outline)'
+      }}
     >
       <Skeleton variant="rectangular" height={200} className="mb-4" />
       <Skeleton variant="text" width="80%" />
@@ -203,10 +208,12 @@ export function SkeletonListItem({ className }: { className?: string }) {
 export function SkeletonPricingCard({ className }: { className?: string }) {
   return (
     <div
-      className={cn(
-        'bg-white rounded-3xl border border-gray-100 p-8 space-y-6',
-        className
-      )}
+      className={cn('p-8 space-y-6', className)}
+      style={{
+        backgroundColor: 'var(--surface-elevated)',
+        borderRadius: 'var(--mat-card-elevated-container-shape)',
+        border: '1px solid var(--surface-outline)'
+      }}
     >
       <div className="text-center space-y-4">
         <Skeleton variant="text" width="60%" className="mx-auto" />
@@ -234,7 +241,14 @@ export function SkeletonPricingCard({ className }: { className?: string }) {
 // Dashboard stat skeleton
 export function SkeletonStat({ className }: { className?: string }) {
   return (
-    <div className={cn('mini-card space-y-2', className)}>
+    <div 
+      className={cn('space-y-2 p-4', className)}
+      style={{
+        backgroundColor: 'var(--surface-elevated)',
+        borderRadius: 'var(--mat-card-outlined-container-shape)',
+        border: '1px solid var(--surface-outline)'
+      }}
+    >
       <Skeleton variant="text" width="50%" height={14} />
       <Skeleton variant="rectangular" width="80%" height={32} />
       <Skeleton variant="text" width="60%" height={12} />

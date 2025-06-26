@@ -30,21 +30,33 @@ export default function Footer({}: FooterProps) {
     const isOpen = openSection === index
 
     return (
-      <div className="border-b border-gray-800 last:border-b-0">
+      <div 
+        className="last:border-b-0"
+        style={{ borderBottom: '1px solid var(--surface-outline)' }}
+      >
         <button
           onClick={() => toggleSection(index)}
           className="w-full flex items-center justify-between py-4 text-left focus:outline-none"
           aria-expanded={isOpen}
           aria-controls={`mobile-section-${index}`}
         >
-          <h3 className="heading-5 text-gray-900 font-semibold">
+          <h3 
+            style={{
+              fontSize: 'var(--sys-title-medium-size)',
+              lineHeight: 'var(--sys-title-medium-line-height)',
+              fontFamily: 'var(--sys-title-medium-font)',
+              fontWeight: 'var(--sys-title-medium-weight)',
+              color: 'var(--text-primary)'
+            }}
+          >
             {section.title}
           </h3>
           <ChevronDown
             size={16}
-            className={`text-gray-400 transition-transform duration-200 ${
+            className={`transition-transform duration-200 ${
               isOpen ? 'rotate-180' : ''
             }`}
+            style={{ color: 'var(--text-secondary)' }}
           />
         </button>
 
@@ -63,8 +75,20 @@ export default function Footer({}: FooterProps) {
                   <li key={link.name}>
                     <Link
                       href={link.href}
-                      className="block body-sm text-gray-600 hover:text-gray-900 hover:font-semibold 
-                               transition-all focus-visible-ring rounded-md py-1"
+                      className="block py-1 hover:font-semibold transition-all focus-visible-ring rounded-md"
+                      style={{
+                        fontSize: 'var(--sys-body-medium-size)',
+                        lineHeight: 'var(--sys-body-medium-line-height)',
+                        fontFamily: 'var(--sys-body-medium-font)',
+                        fontWeight: 'var(--sys-body-medium-weight)',
+                        color: 'var(--text-secondary)'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.color = 'var(--text-primary)'
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.color = 'var(--text-secondary)'
+                      }}
                     >
                       {link.name}
                     </Link>
@@ -79,43 +103,9 @@ export default function Footer({}: FooterProps) {
   }
   const content = {
     vi: {
-      sections: [
-        {
-          title: 'Sản phẩm',
-          links: [
-            { name: 'Tính năng', href: '/features' },
-            { name: 'Doanh nghiệp', href: '/enterprise' },
-            { name: 'Bảng giá', href: '/pricing' },
-          ],
-        },
-        {
-          title: 'Tài nguyên',
-          links: [
-            { name: 'Tài liệu API', href: '/api-docs' },
-            { name: 'Blog', href: '/blog' },
-          ],
-        },
-      ],
       description: 'Nền tảng dịch thuật AI hàng đầu',
     },
     en: {
-      sections: [
-        {
-          title: 'Product',
-          links: [
-            { name: 'Features', href: '/features' },
-            { name: 'Enterprise', href: '/enterprise' },
-            { name: 'Pricing', href: '/pricing' },
-          ],
-        },
-        {
-          title: 'Resources',
-          links: [
-            { name: 'API Documentation', href: '/api-docs' },
-            { name: 'Blog', href: '/blog' },
-          ],
-        },
-      ],
       description: 'Leading AI translation platform',
     },
   }
@@ -126,7 +116,7 @@ export default function Footer({}: FooterProps) {
       href: 'https://twitter.com/prismy',
       icon: (
         <svg
-          className="w-6 h-6"
+          className="w-[18px] h-[18px]"
           fill="currentColor"
           viewBox="0 0 24 24"
           aria-hidden="true"
@@ -140,7 +130,7 @@ export default function Footer({}: FooterProps) {
       href: 'https://github.com/prismy',
       icon: (
         <svg
-          className="w-6 h-6"
+          className="w-[18px] h-[18px]"
           fill="currentColor"
           viewBox="0 0 24 24"
           aria-hidden="true"
@@ -158,7 +148,7 @@ export default function Footer({}: FooterProps) {
       href: 'https://linkedin.com/company/prismy',
       icon: (
         <svg
-          className="w-6 h-6"
+          className="w-[18px] h-[18px]"
           fill="currentColor"
           viewBox="0 0 24 24"
           aria-hidden="true"
@@ -176,7 +166,7 @@ export default function Footer({}: FooterProps) {
       href: 'https://facebook.com/prismy',
       icon: (
         <svg
-          className="w-6 h-6"
+          className="w-[18px] h-[18px]"
           fill="currentColor"
           viewBox="0 0 24 24"
           aria-hidden="true"
@@ -190,7 +180,7 @@ export default function Footer({}: FooterProps) {
       href: 'https://tiktok.com/@prismy',
       icon: (
         <svg
-          className="w-6 h-6"
+          className="w-[18px] h-[18px]"
           fill="currentColor"
           viewBox="0 0 24 24"
           aria-hidden="true"
@@ -203,8 +193,12 @@ export default function Footer({}: FooterProps) {
 
   return (
     <footer
-      className="w-full bg-bg-main text-gray-900 border-0 outline-0"
-      style={{ borderTop: 'none !important' }}
+      className="w-full border-0 outline-0"
+      style={{
+        backgroundColor: 'rgba(251, 250, 249, 1)',
+        color: 'var(--text-primary)',
+        borderTop: 'none !important'
+      }}
     >
       <div
         className="footer-content-container pt-10 pb-6 md:pb-4"
@@ -216,14 +210,14 @@ export default function Footer({}: FooterProps) {
           whileInView="visible"
           viewport={{ once: true }}
         >
-          {/* Main Footer Content */}
-          <div className="mb-6 sm:mb-8">
-            {/* Simplified Desktop Layout - Only existing routes */}
-            <div className="hidden md:flex md:justify-between md:items-start">
+          {/* Main Footer Content - Bottom aligned */}
+          <div className="flex flex-col md:flex-row justify-between items-end">
+            {/* Simplified Desktop Layout - Brand only */}
+            <div className="mb-4 md:mb-0">
               {/* Brand Section */}
               <motion.div
                 variants={motionSafe(slideUp)}
-                className="flex flex-col gap-4 flex-1 max-w-lg"
+                className="flex flex-col gap-4 max-w-lg"
               >
                 <div>
                   <Link
@@ -231,15 +225,33 @@ export default function Footer({}: FooterProps) {
                     className="mb-2 inline-flex items-center group"
                   >
                     <img
-                      src="/logo.svg"
+                      src="/icons/logo.svg"
                       alt="Prismy"
                       className="h-7 w-auto mr-2"
                     />
-                    <span className="heading-4 font-bold text-gray-900 transition-colors">
+                    <span 
+                      className="transition-colors"
+                      style={{
+                        fontSize: 'var(--sys-title-large-size)',
+                        lineHeight: 'var(--sys-title-large-line-height)',
+                        fontFamily: 'var(--sys-title-large-font)',
+                        fontWeight: 'var(--sys-title-large-weight)',
+                        color: 'var(--text-primary)'
+                      }}
+                    >
                       Prismy
                     </span>
                   </Link>
-                  <p className="text-sm text-gray-600 italic mt-1 mb-3 max-w-sm">
+                  <p 
+                    className="italic mt-1 mb-3 max-w-sm"
+                    style={{
+                      fontSize: 'var(--sys-body-medium-size)',
+                      lineHeight: 'var(--sys-body-medium-line-height)',
+                      fontFamily: 'var(--sys-body-medium-font)',
+                      fontWeight: 'var(--sys-body-medium-weight)',
+                      color: 'var(--text-secondary)'
+                    }}
+                  >
                     {content[language].description}
                   </p>
                   <div className="flex space-x-5 mt-3">
@@ -247,8 +259,14 @@ export default function Footer({}: FooterProps) {
                       <Link
                         key={social.name}
                         href={social.href}
-                        className="text-gray-700 hover:text-gray-900 hover:scale-110 transition-all duration-150 
-                               focus-visible-ring rounded-md p-1"
+                        className="hover:scale-110 transition-all duration-150 focus-visible-ring rounded-md p-1"
+                        style={{ color: 'var(--text-secondary)' }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.color = 'var(--text-primary)'
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.color = 'var(--text-secondary)'
+                        }}
                         aria-label={social.name}
                       >
                         {social.icon}
@@ -257,100 +275,26 @@ export default function Footer({}: FooterProps) {
                   </div>
                 </div>
               </motion.div>
-
-              {/* Navigation Sections - Right Aligned */}
-              <div className="flex gap-12 justify-end">
-                {content[language].sections.map(section => (
-                  <motion.div
-                    key={section.title}
-                    variants={motionSafe(slideUp)}
-                    className="min-w-0"
-                  >
-                    <h3 className="heading-4 text-gray-900 mb-4">
-                      {section.title}
-                    </h3>
-                    <ul className="space-y-3">
-                      {section.links.map(link => (
-                        <li key={link.name}>
-                          <Link
-                            href={link.href}
-                            className="body-sm text-gray-600 hover:text-gray-900 hover:font-semibold transition-all focus-visible-ring rounded-md"
-                          >
-                            {link.name}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </motion.div>
-                ))}
-              </div>
             </div>
 
-            {/* Mobile Accordion Layout - Visible only on mobile */}
-            <div className="md:hidden">
-              {/* Brand Section for Mobile */}
-              <motion.div variants={motionSafe(slideUp)} className="mb-6">
-                <div>
-                  <Link
-                    href="/"
-                    className="mb-2 inline-flex items-center group"
-                  >
-                    <img
-                      src="/logo.svg"
-                      alt="Prismy"
-                      className="h-7 w-auto mr-2"
-                    />
-                    <span className="heading-4 font-bold text-gray-900 transition-colors">
-                      Prismy
-                    </span>
-                  </Link>
-                  <p className="text-sm text-gray-600 italic mt-1 mb-3 max-w-sm">
-                    {content[language].description}
-                  </p>
-                  <div className="flex space-x-5 mt-3">
-                    {socialLinks.map(social => (
-                      <Link
-                        key={social.name}
-                        href={social.href}
-                        className="text-gray-700 hover:text-gray-900 hover:scale-110 transition-all duration-150 
-                                 focus-visible-ring rounded-md p-1"
-                        aria-label={social.name}
-                      >
-                        {social.icon}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Mobile Accordion Sections */}
-              <motion.div variants={motionSafe(slideUp)} className="space-y-0">
-                {content[language].sections.map((section, index) => (
-                  <MobileAccordionSection
-                    key={section.title}
-                    section={section}
-                    index={index}
-                  />
-                ))}
-              </motion.div>
-            </div>
+            {/* Copyright - Right aligned on same level */}
+            <motion.div
+              variants={motionSafe(slideUp)}
+              className="self-end"
+            >
+              <p 
+                style={{
+                  fontSize: 'var(--sys-body-medium-size)',
+                  lineHeight: 'var(--sys-body-medium-line-height)',
+                  fontFamily: 'var(--sys-body-medium-font)',
+                  fontWeight: 'var(--sys-body-medium-weight)',
+                  color: 'var(--text-secondary)'
+                }}
+              >
+                {language === 'vi' ? '© 2025 Prismy' : '© 2025 Prismy'}
+              </p>
+            </motion.div>
           </div>
-
-          {/* Bottom Bar - Simplified Pure White Text */}
-          <motion.div
-            variants={motionSafe(slideUp)}
-            className="flex flex-col md:flex-row justify-between items-center 
-                     mt-6 md:mt-8 pt-4"
-          >
-            <p className="text-sm text-gray-600">
-              {language === 'vi' ? '© 2025 Prismy' : '© 2025 Prismy'}
-            </p>
-
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-              <span className="text-sm text-gray-600">Enterprise Ready</span>
-            </div>
-          </motion.div>
         </motion.div>
       </div>
     </footer>
