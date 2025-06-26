@@ -40,7 +40,7 @@ async function extractTextFromDOCX(buffer: Buffer): Promise<{ text: string; page
 }
 
 export async function POST(request: NextRequest) {
-  let tempFilePath: string | null = null
+  const tempFilePath: string | null = null
   
   try {
     const supabase = createRouteHandlerClient({ cookies })

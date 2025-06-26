@@ -180,7 +180,7 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: blob: https://*.supabase.co https://prismy.in https://prismy.ai",
-              "connect-src 'self' https: wss: data: blob: wss://*.supabase.co https://*.supabase.co https://api.stripe.com https://checkout.stripe.com https://*.vnpayment.vn https://test-payment.momo.vn https://payment.momo.vn https://translate.googleapis.com https://analytics.prismy.in wss://analytics.prismy.in",
+              "connect-src 'self' https: wss: data: blob: wss://*.supabase.co https://*.supabase.co wss://ziyereoasqiqhjvedgit.supabase.co https://api.stripe.com https://checkout.stripe.com https://*.vnpayment.vn https://test-payment.momo.vn https://payment.momo.vn https://translate.googleapis.com https://analytics.prismy.in wss://analytics.prismy.in",
               "media-src 'self' blob:",
               "object-src 'none'",
               "base-uri 'self'",

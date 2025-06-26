@@ -18,7 +18,7 @@ interface LanguageProviderProps {
 
 export function LanguageProvider({ children }: LanguageProviderProps) {
   const [language, setLanguageState] = useState<Language>('en') // Default to English for stability
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false) // Start with false, load immediately
 
   // Load language preference from localStorage on mount
   useEffect(() => {
@@ -27,15 +27,12 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       if (savedLanguage === 'vi' || savedLanguage === 'en') {
         setLanguageState(savedLanguage)
       } else {
-        // If no valid saved language, default to English
-        setLanguageState('en')
+        // If no valid saved language, ensure English is saved
         localStorage.setItem('prismy-language', 'en')
       }
     } catch (error) {
-      // Fallback to English if localStorage fails
-      setLanguageState('en')
-    } finally {
-      setIsLoading(false)
+      // Fallback to English if localStorage fails - already set as default
+      console.warn('Failed to load language preference:', error)
     }
   }, [])
 

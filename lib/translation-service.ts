@@ -34,7 +34,7 @@ export class PrismyTranslationService {
     })
 
     // Determine best authentication method
-    let authConfig: any = {
+    const authConfig: any = {
       projectId: process.env.GOOGLE_CLOUD_PROJECT_ID
     }
 

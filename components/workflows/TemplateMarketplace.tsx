@@ -449,7 +449,7 @@ export default function TemplateMarketplace({
   }
 
   const filteredAndSortedTemplates = useMemo(() => {
-    let filtered = templates.filter(template => {
+    const filtered = templates.filter(template => {
       const matchesSearch = template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                            template.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
                            template.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))

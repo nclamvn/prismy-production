@@ -220,16 +220,12 @@ export default function ModernNavbar() {
     },
   }
 
-  const currentContent = content[language] || content['en'] // Fallback to English if language is undefined
+  // Ensure language has a valid value, fallback to 'en'
+  const safeLanguage = (language && (language === 'vi' || language === 'en')) ? language : 'en'
+  const currentContent = content[safeLanguage]
 
-  // Safety check for navigation content
+  // Show loading state if content is missing
   if (!currentContent || !currentContent.navigation) {
-    console.error('Navigation content is missing:', { 
-      language, 
-      currentContent, 
-      contentKeys: currentContent ? Object.keys(currentContent) : 'null',
-      availableLanguages: Object.keys(content)
-    })
     return (
       <nav className="w-full bg-white border-b">
         <div className="px-4 py-3">
@@ -609,7 +605,7 @@ export default function ModernNavbar() {
             {/* Language Selector - NotebookLM Style */}
             <div className="relative">
               <button
-                onClick={() => setLanguage(language === 'vi' ? 'en' : 'vi')}
+                onClick={() => setLanguage(safeLanguage === 'vi' ? 'en' : 'vi')}
                 className="flex items-center px-3 py-2  transition-all duration-200"
                 style={{
                   fontSize: 'var(--sys-label-large-size)',
@@ -622,7 +618,7 @@ export default function ModernNavbar() {
               >
                 <Globe className="w-4 h-4 mr-2" />
                 <span className="hidden sm:inline">
-                  {currentContent.languages[language]}
+                  {currentContent.languages[safeLanguage]}
                 </span>
               </button>
             </div>
