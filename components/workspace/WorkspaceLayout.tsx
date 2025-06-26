@@ -33,7 +33,7 @@ interface WorkspaceLayoutProps {
 export default function WorkspaceLayout({
   currentMode,
   onModeChange,
-  language,
+  language = 'en', // Safe fallback
   user,
   children,
 }: WorkspaceLayoutProps) {
@@ -89,56 +89,69 @@ export default function WorkspaceLayout({
     },
   }
 
+  // Ensure safe language access
+  const safeLanguage = (language && (language === 'vi' || language === 'en')) ? language : 'en'
+  const currentContent = content[safeLanguage]
+
+  // Safety check
+  if (!currentContent) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <div className="text-center text-gray-600">Loading workspace...</div>
+      </div>
+    )
+  }
+
   const navigationItems = [
     {
       id: 'documents' as WorkspaceMode,
-      label: content[language].navigation.documents,
+      label: currentContent.navigation.documents,
       icon: FileText,
       description:
-        language === 'vi'
+        safeLanguage === 'vi'
           ? 'Dịch và xử lý tài liệu'
           : 'Translate and process documents',
     },
     {
       id: 'intelligence' as WorkspaceMode,
-      label: content[language].navigation.intelligence,
+      label: currentContent.navigation.intelligence,
       icon: Brain,
       description:
-        language === 'vi'
+        safeLanguage === 'vi'
           ? 'AI phân tích thông minh'
           : 'AI intelligent analysis',
     },
     {
       id: 'analytics' as WorkspaceMode,
-      label: content[language].navigation.analytics,
+      label: currentContent.navigation.analytics,
       icon: BarChart3,
-      description: language === 'vi' ? 'Thống kê sử dụng' : 'Usage analytics',
+      description: safeLanguage === 'vi' ? 'Thống kê sử dụng' : 'Usage analytics',
     },
     {
       id: 'api' as WorkspaceMode,
-      label: content[language].navigation.api,
+      label: currentContent.navigation.api,
       icon: Settings,
-      description: language === 'vi' ? 'Quản lý API' : 'API management',
+      description: safeLanguage === 'vi' ? 'Quản lý API' : 'API management',
     },
     {
       id: 'enterprise' as WorkspaceMode,
-      label: content[language].navigation.enterprise,
+      label: currentContent.navigation.enterprise,
       icon: Building2,
       description:
-        language === 'vi' ? 'Giải pháp doanh nghiệp' : 'Enterprise solutions',
+        safeLanguage === 'vi' ? 'Giải pháp doanh nghiệp' : 'Enterprise solutions',
     },
     {
       id: 'billing' as WorkspaceMode,
-      label: content[language].navigation.billing,
+      label: currentContent.navigation.billing,
       icon: CreditCard,
       description:
-        language === 'vi' ? 'Thanh toán & sử dụng' : 'Billing & usage',
+        safeLanguage === 'vi' ? 'Thanh toán & sử dụng' : 'Billing & usage',
     },
     {
       id: 'settings' as WorkspaceMode,
-      label: content[language].navigation.settings,
+      label: currentContent.navigation.settings,
       icon: User,
-      description: language === 'vi' ? 'Cài đặt tài khoản' : 'Account settings',
+      description: safeLanguage === 'vi' ? 'Cài đặt tài khoản' : 'Account settings',
     },
   ]
 
@@ -195,7 +208,7 @@ export default function WorkspaceLayout({
                   color: 'var(--text-secondary)'
                 }}
               >
-                {content[language].workspace}
+                {currentContent.workspace}
               </p>
             </div>
           </div>
@@ -325,7 +338,7 @@ export default function WorkspaceLayout({
                         color: 'var(--text-secondary)'
                       }}
                     >
-                      {content[language].workspace}
+                      {currentContent.workspace}
                     </p>
                   </div>
                 </div>
@@ -533,7 +546,7 @@ export default function WorkspaceLayout({
                       color: 'var(--text-secondary)'
                     }}
                   >
-                    {content[language].quickStats.documents}
+                    {currentContent.quickStats.documents}
                   </div>
                 </div>
                 <div>
@@ -554,7 +567,7 @@ export default function WorkspaceLayout({
                       color: 'var(--text-secondary)'
                     }}
                   >
-                    {content[language].quickStats.usage}
+                    {currentContent.quickStats.usage}
                   </div>
                 </div>
                 <div>
@@ -575,7 +588,7 @@ export default function WorkspaceLayout({
                       color: 'var(--text-secondary)'
                     }}
                   >
-                    {content[language].quickStats.languages}
+                    {currentContent.quickStats.languages}
                   </div>
                 </div>
               </div>
@@ -603,7 +616,7 @@ export default function WorkspaceLayout({
               >
                 <Home size={16} className="mr-2" />
                 <span className="hidden sm:inline">
-                  {content[language].backToHome}
+                  {currentContent.backToHome}
                 </span>
               </a>
 

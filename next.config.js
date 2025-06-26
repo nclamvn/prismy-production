@@ -37,7 +37,7 @@ const nextConfig = {
 
   // Progressive Web App
   generateBuildId: async () => {
-    return `prismy-${Date.now()}`
+    return `prismy-fixed-${Date.now()}`
   },
 
   // Bundle analysis

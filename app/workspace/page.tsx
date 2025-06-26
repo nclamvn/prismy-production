@@ -69,48 +69,18 @@ export default function Workspace() {
   return (
     <AuthGuard>
       <AuthenticatedLayout>
-        <WorkspaceLayout>
+        <WorkspaceLayout
+          currentMode={activeMode}
+          onModeChange={setActiveMode}
+          language={language}
+          user={user}
+        >
           <motion.div
-            className="space-y-6"
+            className="space-y-6 p-6"
             variants={motionSafe(staggerContainer)}
             initial="hidden"
             animate="visible"
           >
-            {/* Header */}
-            <motion.div
-              className="flex flex-col sm:flex-row justify-between items-start sm:items-center"
-              variants={motionSafe(slideUp)}
-            >
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                  {content[language].title}
-                </h1>
-                <p className="text-gray-600">
-                  {content[language].subtitle}
-                </p>
-              </div>
-            </motion.div>
-
-            {/* Mode Navigation */}
-            <motion.div
-              className="flex space-x-1 bg-gray-100 rounded-lg p-1"
-              variants={motionSafe(slideUp)}
-            >
-              {(Object.keys(content[language].modes) as WorkspaceMode[]).map((mode) => (
-                <button
-                  key={mode}
-                  onClick={() => setActiveMode(mode)}
-                  className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                    activeMode === mode
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  {content[language].modes[mode]}
-                </button>
-              ))}
-            </motion.div>
-
             {/* Active Mode Content */}
             <motion.div variants={motionSafe(slideUp)}>
               {renderActiveMode()}
