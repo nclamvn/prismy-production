@@ -36,15 +36,16 @@ const supabaseClientConfig = {
 // Connection pool for optimized performance
 const connectionPool = new Map<string, any>()
 const MAX_POOL_SIZE = 10
+const CONNECTION_TIMEOUT = 300000 // 5 minutes for connection pool cleanup
 // Global singleton registry to prevent multiple GoTrueClient instances
 const globalClientRegistry = (() => {
   if (typeof window !== 'undefined') {
     // Use window object to ensure truly global singleton
     if (!(window as any).__supabase_client_registry__) {
-      (window as any).__supabase_client_registry__ = {
+      ;(window as any).__supabase_client_registry__ = {
         browserClient: null,
         initialized: false,
-        createdAt: Date.now()
+        createdAt: Date.now(),
       }
     }
     return (window as any).__supabase_client_registry__
@@ -64,17 +65,21 @@ export const createClientComponentClient = () => {
 
   // Client-side: use truly global singleton pattern
   // Only create a new client if we don't have one yet
-  if (!globalClientRegistry.browserClient || !globalClientRegistry.initialized) {
-    
+  if (
+    !globalClientRegistry.browserClient ||
+    !globalClientRegistry.initialized
+  ) {
     // Development debugging
     if (process.env.NODE_ENV === 'development') {
       if (globalClientRegistry.browserClient) {
-        console.warn('🔄 [Supabase Singleton] Recreating client (should only happen once)')
+        console.warn(
+          '🔄 [Supabase Singleton] Recreating client (should only happen once)'
+        )
       } else {
         console.log('🚀 [Supabase Singleton] Creating initial client instance')
       }
     }
-    
+
     if (globalClientRegistry.browserClient) {
       // Clean up old client safely
       try {
@@ -83,7 +88,7 @@ export const createClientComponentClient = () => {
         // Silent cleanup failure
       }
     }
-    
+
     globalClientRegistry.browserClient = createBrowserClient(
       supabaseUrl,
       supabaseAnonKey,
@@ -92,14 +97,15 @@ export const createClientComponentClient = () => {
         // Use default Supabase auth configuration for consistency
         auth: {
           ...supabaseClientConfig.auth,
-          storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+          storage:
+            typeof window !== 'undefined' ? window.localStorage : undefined,
           // Use default Supabase storage key for better compatibility
-        }
+        },
       }
     )
     globalClientRegistry.initialized = true
     globalClientRegistry.createdAt = Date.now()
-    
+
     // Development debugging
     if (process.env.NODE_ENV === 'development') {
       console.log('✅ [Supabase Singleton] Client created successfully')
@@ -246,7 +252,6 @@ export const batchQueries = async <T>(
 // Connection cleanup utility
 export const cleanupConnections = () => {
   const now = Date.now()
-  const CONNECTION_TIMEOUT = 300000 // 5 minutes for connection pool cleanup
 
   // Clean up connection pool entries
   for (const [key, value] of connectionPool.entries()) {
@@ -271,23 +276,26 @@ export const debugClientInstances = () => {
   console.log('Has Client:', !!registry.browserClient)
   console.log('Created At:', new Date(registry.createdAt).toISOString())
   console.log('Pool Size:', connectionPool.size)
-  
+
   // Check if there are multiple instances by looking at window properties
   if (typeof window !== 'undefined') {
-    const windowProps = Object.keys(window).filter(key => 
-      key.includes('supabase') || key.includes('gotrue')
+    const windowProps = Object.keys(window).filter(
+      key => key.includes('supabase') || key.includes('gotrue')
     )
     if (windowProps.length > 1) {
-      console.warn('⚠️ Multiple Supabase-related properties detected:', windowProps)
+      console.warn(
+        '⚠️ Multiple Supabase-related properties detected:',
+        windowProps
+      )
     }
   }
-  
+
   console.groupEnd()
 }
 
 // Make debug function available globally in development
 if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
-  (window as any).debugSupabaseClients = debugClientInstances
+  ;(window as any).debugSupabaseClients = debugClientInstances
 }
 
 // Auto cleanup every 5 minutes
@@ -298,35 +306,40 @@ if (typeof window !== 'undefined') {
 // Session validation and retry helpers for 401 error handling
 export const validateAndRefreshSession = async (client: any) => {
   try {
-    const { data: { session }, error } = await client.auth.getSession()
-    
+    const {
+      data: { session },
+      error,
+    } = await client.auth.getSession()
+
     if (error) {
       console.warn('Session validation error:', error.message)
       return null
     }
-    
+
     if (!session) {
       console.warn('No active session found')
       return null
     }
-    
+
     // Check if session is close to expiry (within 5 minutes)
     const expiresAt = session.expires_at
     const now = Math.floor(Date.now() / 1000)
     const timeUntilExpiry = expiresAt ? expiresAt - now : 0
-    
-    if (timeUntilExpiry < 300) { // Less than 5 minutes
+
+    if (timeUntilExpiry < 300) {
+      // Less than 5 minutes
       console.log('Session close to expiry, refreshing...')
-      const { data: refreshData, error: refreshError } = await client.auth.refreshSession()
-      
+      const { data: refreshData, error: refreshError } =
+        await client.auth.refreshSession()
+
       if (refreshError) {
         console.error('Session refresh failed:', refreshError.message)
         return null
       }
-      
+
       return refreshData.session
     }
-    
+
     return session
   } catch (error) {
     console.error('Session validation failed:', error)
@@ -340,30 +353,30 @@ export const withAuthRetry = async <T>(
   maxRetries: number = 2
 ): Promise<T> => {
   let lastError: any
-  
+
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
       // Validate session before operation
       if (attempt > 0) {
         await validateAndRefreshSession(client)
       }
-      
+
       return await operation()
     } catch (error: any) {
       lastError = error
-      
+
       // Check if it's a 401 error and we can retry
       if (error?.status === 401 && attempt < maxRetries) {
         console.warn(`Auth error on attempt ${attempt + 1}, retrying...`)
         await new Promise(resolve => setTimeout(resolve, 500 * (attempt + 1))) // Exponential backoff
         continue
       }
-      
+
       // If not a 401 or max retries reached, throw the error
       throw error
     }
   }
-  
+
   throw lastError
 }
 
