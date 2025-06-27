@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '@/contexts/AuthContext'
-import { useLanguage } from '@/contexts/LanguageContext'
+import { useSSRSafeLanguage } from '@/contexts/SSRSafeLanguageContext'
 import { useUnifiedAuthContext } from '@/contexts/UnifiedAuthProvider'
 import { useSmartNavigation } from '@/hooks/useSmartNavigation'
 import { useIsHydrated } from '@/hooks/useHydrationSafeAnimation'
@@ -27,7 +27,7 @@ import {
 } from 'lucide-react'
 
 export default function ModernNavbar() {
-  const { language, setLanguage } = useLanguage()
+  const { language, setLanguage } = useSSRSafeLanguage()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
@@ -221,7 +221,8 @@ export default function ModernNavbar() {
   }
 
   // Ensure language has a valid value, fallback to 'en'
-  const safeLanguage = (language && (language === 'vi' || language === 'en')) ? language : 'en'
+  const safeLanguage =
+    language && (language === 'vi' || language === 'en') ? language : 'en'
   const currentContent = content[safeLanguage]
 
   // Show loading state if content is missing
@@ -315,15 +316,26 @@ export default function ModernNavbar() {
                 <AnimatePresence>
                   {activeDropdown === 'product' && (
                     <motion.div
-                      initial={isHydrated ? { opacity: 0, y: 10, scale: 0.95 } : { opacity: 1, y: 0, scale: 1 }}
+                      initial={
+                        isHydrated
+                          ? { opacity: 0, y: 10, scale: 0.95 }
+                          : { opacity: 1, y: 0, scale: 1 }
+                      }
                       animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={isHydrated ? { opacity: 0, y: 10, scale: 0.95 } : { opacity: 1, y: 0, scale: 1 }}
-                      transition={isHydrated ? { duration: 0.2 } : { duration: 0 }}
+                      exit={
+                        isHydrated
+                          ? { opacity: 0, y: 10, scale: 0.95 }
+                          : { opacity: 1, y: 0, scale: 1 }
+                      }
+                      transition={
+                        isHydrated ? { duration: 0.2 } : { duration: 0 }
+                      }
                       className="absolute top-full left-0 mt-2 w-80 p-6 backdrop-blur-lg"
                       style={{
                         background: 'rgba(255, 255, 255, 0.65)',
                         backdropFilter: 'blur(16px) saturate(180%) !important',
-                        WebkitBackdropFilter: 'blur(16px) saturate(180%) !important',
+                        WebkitBackdropFilter:
+                          'blur(16px) saturate(180%) !important',
                         borderRadius:
                           'var(--mat-card-elevated-container-shape)',
                         boxShadow: 'var(--elevation-level-2)',
@@ -412,15 +424,26 @@ export default function ModernNavbar() {
                 <AnimatePresence>
                   {activeDropdown === 'solutions' && (
                     <motion.div
-                      initial={isHydrated ? { opacity: 0, y: 10, scale: 0.95 } : { opacity: 1, y: 0, scale: 1 }}
+                      initial={
+                        isHydrated
+                          ? { opacity: 0, y: 10, scale: 0.95 }
+                          : { opacity: 1, y: 0, scale: 1 }
+                      }
                       animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={isHydrated ? { opacity: 0, y: 10, scale: 0.95 } : { opacity: 1, y: 0, scale: 1 }}
-                      transition={isHydrated ? { duration: 0.2 } : { duration: 0 }}
+                      exit={
+                        isHydrated
+                          ? { opacity: 0, y: 10, scale: 0.95 }
+                          : { opacity: 1, y: 0, scale: 1 }
+                      }
+                      transition={
+                        isHydrated ? { duration: 0.2 } : { duration: 0 }
+                      }
                       className="absolute top-full left-0 mt-2 w-80 p-6 backdrop-blur-lg"
                       style={{
                         background: 'rgba(255, 255, 255, 0.65)',
                         backdropFilter: 'blur(16px) saturate(180%) !important',
-                        WebkitBackdropFilter: 'blur(16px) saturate(180%) !important',
+                        WebkitBackdropFilter:
+                          'blur(16px) saturate(180%) !important',
                         borderRadius:
                           'var(--mat-card-elevated-container-shape)',
                         boxShadow: 'var(--elevation-level-2)',
@@ -509,15 +532,26 @@ export default function ModernNavbar() {
                 <AnimatePresence>
                   {activeDropdown === 'resources' && (
                     <motion.div
-                      initial={isHydrated ? { opacity: 0, y: 10, scale: 0.95 } : { opacity: 1, y: 0, scale: 1 }}
+                      initial={
+                        isHydrated
+                          ? { opacity: 0, y: 10, scale: 0.95 }
+                          : { opacity: 1, y: 0, scale: 1 }
+                      }
                       animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={isHydrated ? { opacity: 0, y: 10, scale: 0.95 } : { opacity: 1, y: 0, scale: 1 }}
-                      transition={isHydrated ? { duration: 0.2 } : { duration: 0 }}
+                      exit={
+                        isHydrated
+                          ? { opacity: 0, y: 10, scale: 0.95 }
+                          : { opacity: 1, y: 0, scale: 1 }
+                      }
+                      transition={
+                        isHydrated ? { duration: 0.2 } : { duration: 0 }
+                      }
                       className="absolute top-full left-0 mt-2 w-80 p-6 backdrop-blur-lg"
                       style={{
                         background: 'rgba(255, 255, 255, 0.65)',
                         backdropFilter: 'blur(16px) saturate(180%) !important',
-                        WebkitBackdropFilter: 'blur(16px) saturate(180%) !important',
+                        WebkitBackdropFilter:
+                          'blur(16px) saturate(180%) !important',
                         borderRadius:
                           'var(--mat-card-elevated-container-shape)',
                         boxShadow: 'var(--elevation-level-2)',
@@ -689,9 +723,17 @@ export default function ModernNavbar() {
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
-            initial={isHydrated ? { opacity: 0, height: 0 } : { opacity: 1, height: 'auto' }}
+            initial={
+              isHydrated
+                ? { opacity: 0, height: 0 }
+                : { opacity: 1, height: 'auto' }
+            }
             animate={{ opacity: 1, height: 'auto' }}
-            exit={isHydrated ? { opacity: 0, height: 0 } : { opacity: 1, height: 'auto' }}
+            exit={
+              isHydrated
+                ? { opacity: 0, height: 0 }
+                : { opacity: 1, height: 'auto' }
+            }
             transition={isHydrated ? { duration: 0.3 } : { duration: 0 }}
             className="lg:hidden shadow-lg backdrop-blur backdrop-blur-lg"
             style={{

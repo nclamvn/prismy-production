@@ -1,29 +1,32 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { useUnifiedAuthContext } from '@/contexts/UnifiedAuthProvider'
-import { useLanguage } from '@/contexts/LanguageContext'
+import { useSSRSafeLanguage } from '@/contexts/SSRSafeLanguageContext'
+import WorkspaceSkeleton from '@/components/workspace/WorkspaceSkeleton'
 
 interface AuthGuardProps {
   children: React.ReactNode
   fallback?: React.ReactNode
-  redirectTo?: string
   requireAuth?: boolean
 }
 
 export default function AuthGuard({
   children,
   fallback,
-  redirectTo = '/',
   requireAuth = true,
 }: AuthGuardProps) {
   const { user, loading, sessionRestored } = useAuth()
   const { handleSignIn } = useUnifiedAuthContext()
-  const { language } = useLanguage()
-  const router = useRouter()
+  const { language } = useSSRSafeLanguage()
+  const pathname = usePathname()
   const authCheckedRef = useRef(false)
+
+  // Check if we're on workspace pages for better skeleton loading
+  const isWorkspacePage =
+    pathname.startsWith('/workspace') || pathname.startsWith('/dashboard')
 
   useEffect(() => {
     // Wait for session to be restored before checking auth
@@ -31,57 +34,45 @@ export default function AuthGuard({
       return
     }
 
-    // If auth is required and no user, handle redirect
+    // If auth is required and no user, open auth modal (but stay on current page)
     if (requireAuth && !user && !authCheckedRef.current) {
-      console.log('🔒 AuthGuard: No user found, redirecting to auth modal')
       authCheckedRef.current = true
 
-      // Open auth modal and redirect to fallback
+      // Open auth modal with current page as redirect target
       handleSignIn({
         initialMode: 'signin',
         redirectTo: window.location.pathname,
       })
-
-      // Navigate to fallback page
-      router.push(redirectTo)
     }
 
     // Reset auth check when user becomes available
     if (user) {
       authCheckedRef.current = false
     }
-  }, [
-    sessionRestored,
-    loading,
-    user,
-    requireAuth,
-    handleSignIn,
-    redirectTo,
-    router,
-  ])
+  }, [sessionRestored, loading, user, requireAuth, handleSignIn])
 
-  // Show loading state while checking auth
+  // Optimized loading states - prevent flicker with immediate rendering
   if (!sessionRestored || loading) {
     if (fallback) {
       return <>{fallback}</>
     }
 
-    return (
-      <div className="min-h-screen bg-bg-main flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin w-8 h-8 border-2 border-gray-300 border-t-gray-900 rounded-full mb-4 mx-auto"></div>
-          <p className="body-base text-gray-600">
-            {language === 'vi'
-              ? 'Đang kiểm tra phiên...'
-              : 'Checking session...'}
-          </p>
-        </div>
-      </div>
-    )
+    // Show workspace skeleton for workspace pages only
+    if (isWorkspacePage) {
+      return <WorkspaceSkeleton />
+    }
+
+    // For other pages, render nothing to prevent flicker
+    return null
   }
 
-  // If auth is required and no user, don't render children
+  // If auth is required and no user, show workspace skeleton only for workspace pages
   if (requireAuth && !user) {
+    if (isWorkspacePage) {
+      return <WorkspaceSkeleton />
+    }
+
+    // For other pages, render nothing to prevent flicker
     return null
   }
 

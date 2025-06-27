@@ -4,15 +4,17 @@ import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { Gift, ArrowLeft, CreditCard, Users, Zap } from 'lucide-react'
-import { useLanguage } from '@/contexts/LanguageContext'
+import { useSSRSafeLanguage } from '@/contexts/SSRSafeLanguageContext'
 import InviteRedemptionModal from '@/components/auth/InviteRedemptionModal'
 
 interface InviteRedemptionPageProps {
   userEmail?: string
 }
 
-export default function InviteRedemptionPage({ userEmail }: InviteRedemptionPageProps) {
-  const { language } = useLanguage()
+export default function InviteRedemptionPage({
+  userEmail,
+}: InviteRedemptionPageProps) {
+  const { language } = useSSRSafeLanguage()
   const router = useRouter()
   const [showModal, setShowModal] = useState(false)
   const [hasRedeemed, setHasRedeemed] = useState(false)
@@ -21,55 +23,58 @@ export default function InviteRedemptionPage({ userEmail }: InviteRedemptionPage
     vi: {
       title: 'Chào mừng đến với Prismy',
       subtitle: 'Sử dụng mã mời để bắt đầu trải nghiệm dịch thuật AI tiên tiến',
-      description: 'Prismy đang ở giai đoạn private beta. Để truy cập, bạn cần mã mời từ đội ngũ phát triển.',
+      description:
+        'Prismy đang ở giai đoạn private beta. Để truy cập, bạn cần mã mời từ đội ngũ phát triển.',
       redeemButton: 'Đổi Mã Mời',
       backToHome: 'Về Trang Chủ',
       features: {
         title: 'Những gì bạn sẽ nhận được',
         translation: {
           title: 'Dịch Thuật AI',
-          description: 'Dịch văn bản, tài liệu với độ chính xác cao'
+          description: 'Dịch văn bản, tài liệu với độ chính xác cao',
         },
         credits: {
           title: 'Credits Miễn Phí',
-          description: 'Nhận credits để trải nghiệm tất cả tính năng'
+          description: 'Nhận credits để trải nghiệm tất cả tính năng',
         },
         priority: {
           title: 'Hỗ Trợ Ưu Tiên',
-          description: 'Hỗ trợ trực tiếp từ đội ngũ phát triển'
-        }
+          description: 'Hỗ trợ trực tiếp từ đội ngũ phát triển',
+        },
       },
       alreadyHave: 'Đã có tài khoản?',
       loginLink: 'Đăng nhập',
       needInvite: 'Cần mã mời?',
-      contactUs: 'Liên hệ chúng tôi'
+      contactUs: 'Liên hệ chúng tôi',
     },
     en: {
       title: 'Welcome to Prismy',
-      subtitle: 'Use your invite code to start experiencing advanced AI translation',
-      description: 'Prismy is currently in private beta. To access the platform, you need an invite code from our development team.',
+      subtitle:
+        'Use your invite code to start experiencing advanced AI translation',
+      description:
+        'Prismy is currently in private beta. To access the platform, you need an invite code from our development team.',
       redeemButton: 'Redeem Invite Code',
       backToHome: 'Back to Home',
       features: {
-        title: 'What you\'ll get',
+        title: "What you'll get",
         translation: {
           title: 'AI Translation',
-          description: 'Translate text and documents with high accuracy'
+          description: 'Translate text and documents with high accuracy',
         },
         credits: {
           title: 'Free Credits',
-          description: 'Get credits to experience all features'
+          description: 'Get credits to experience all features',
         },
         priority: {
           title: 'Priority Support',
-          description: 'Direct support from our development team'
-        }
+          description: 'Direct support from our development team',
+        },
       },
       alreadyHave: 'Already have an account?',
       loginLink: 'Sign in',
       needInvite: 'Need an invite?',
-      contactUs: 'Contact us'
-    }
+      contactUs: 'Contact us',
+    },
   }
 
   const t = content[language]
@@ -79,10 +84,13 @@ export default function InviteRedemptionPage({ userEmail }: InviteRedemptionPage
     setShowModal(true)
   }, [])
 
-  const handleRedemptionSuccess = (result: { credits: number; total: number }) => {
+  const handleRedemptionSuccess = (result: {
+    credits: number
+    total: number
+  }) => {
     setHasRedeemed(true)
     setShowModal(false)
-    
+
     // Redirect to workspace after a short delay
     setTimeout(() => {
       router.push('/workspace?welcome=true')
@@ -104,14 +112,14 @@ export default function InviteRedemptionPage({ userEmail }: InviteRedemptionPage
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <img 
-                src="/icons/logo.svg" 
-                alt="Prismy" 
+              <img
+                src="/icons/logo.svg"
+                alt="Prismy"
                 className="h-8 w-auto mr-3"
                 style={{
                   borderRadius: 'var(--shape-corner-small)',
                   boxShadow: 'var(--elevation-level-1)',
-                  overflow: 'hidden'
+                  overflow: 'hidden',
                 }}
               />
               <span className="text-xl font-bold text-gray-900">Prismy</span>
@@ -167,29 +175,39 @@ export default function InviteRedemptionPage({ userEmail }: InviteRedemptionPage
           transition={{ duration: 0.6, delay: 0.4 }}
           className="mb-16"
         >
-          <h2 className="text-2xl font-bold text-gray-900 text-center mb-8">{t.features.title}</h2>
+          <h2 className="text-2xl font-bold text-gray-900 text-center mb-8">
+            {t.features.title}
+          </h2>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
               <div className="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4">
                 <Zap className="w-8 h-8 text-blue-600" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">{t.features.translation.title}</h3>
-              <p className="text-gray-600">{t.features.translation.description}</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                {t.features.translation.title}
+              </h3>
+              <p className="text-gray-600">
+                {t.features.translation.description}
+              </p>
             </div>
-            
+
             <div className="text-center">
               <div className="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-4">
                 <CreditCard className="w-8 h-8 text-green-600" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">{t.features.credits.title}</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                {t.features.credits.title}
+              </h3>
               <p className="text-gray-600">{t.features.credits.description}</p>
             </div>
-            
+
             <div className="text-center">
               <div className="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-4">
                 <Users className="w-8 h-8 text-purple-600" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">{t.features.priority.title}</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                {t.features.priority.title}
+              </h3>
               <p className="text-gray-600">{t.features.priority.description}</p>
             </div>
           </div>
@@ -203,7 +221,9 @@ export default function InviteRedemptionPage({ userEmail }: InviteRedemptionPage
             transition={{ duration: 0.6, delay: 0.6 }}
             className="text-center text-gray-600"
           >
-            <p>Signed in as: <span className="font-medium">{userEmail}</span></p>
+            <p>
+              Signed in as: <span className="font-medium">{userEmail}</span>
+            </p>
           </motion.div>
         )}
       </main>
@@ -213,8 +233,8 @@ export default function InviteRedemptionPage({ userEmail }: InviteRedemptionPage
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-center items-center space-x-6 text-sm text-gray-500">
             <span>{t.needInvite}</span>
-            <a 
-              href="mailto:hello@prismy.com" 
+            <a
+              href="mailto:hello@prismy.com"
               className="text-blue-600 hover:text-blue-700 transition-colors"
             >
               {t.contactUs}
@@ -235,13 +255,14 @@ export default function InviteRedemptionPage({ userEmail }: InviteRedemptionPage
               <Gift className="w-8 h-8 text-green-600" />
             </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              {language === 'vi' ? 'Chào mừng đến với Prismy!' : 'Welcome to Prismy!'}
+              {language === 'vi'
+                ? 'Chào mừng đến với Prismy!'
+                : 'Welcome to Prismy!'}
             </h3>
             <p className="text-gray-600 mb-4">
-              {language === 'vi' 
-                ? 'Đang chuyển đến workspace...' 
-                : 'Redirecting to workspace...'
-              }
+              {language === 'vi'
+                ? 'Đang chuyển đến workspace...'
+                : 'Redirecting to workspace...'}
             </p>
             <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
           </div>

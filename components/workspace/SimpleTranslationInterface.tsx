@@ -1,16 +1,16 @@
 'use client'
 
 import React, { useState } from 'react'
-import { 
-  Languages, 
-  ArrowRight, 
-  Copy, 
+import {
+  Languages,
+  ArrowRight,
+  Copy,
   Download,
   Loader2,
   AlertCircle,
-  CheckCircle
+  CheckCircle,
 } from 'lucide-react'
-import { useLanguage } from '@/contexts/LanguageContext'
+import { useSSRSafeLanguage } from '@/contexts/SSRSafeLanguageContext'
 import { useAuth } from '@/contexts/AuthContext'
 
 interface SimpleTranslationInterfaceProps {
@@ -20,9 +20,9 @@ interface SimpleTranslationInterfaceProps {
 
 export default function SimpleTranslationInterface({
   className = '',
-  onTranslationComplete
+  onTranslationComplete,
 }: SimpleTranslationInterfaceProps) {
-  const { language } = useLanguage()
+  const { language } = useSSRSafeLanguage()
   const { user } = useAuth()
   const [sourceText, setSourceText] = useState('')
   const [translatedText, setTranslatedText] = useState('')
@@ -43,12 +43,16 @@ export default function SimpleTranslationInterface({
     { code: 'fr', name: 'French', nameVi: 'Tiếng Pháp' },
     { code: 'de', name: 'German', nameVi: 'Tiếng Đức' },
     { code: 'es', name: 'Spanish', nameVi: 'Tiếng Tây Ban Nha' },
-    { code: 'th', name: 'Thai', nameVi: 'Tiếng Thái' }
+    { code: 'th', name: 'Thai', nameVi: 'Tiếng Thái' },
   ]
 
   const handleTranslate = async () => {
     if (!sourceText.trim()) {
-      setError(language === 'vi' ? 'Vui lòng nhập văn bản cần dịch' : 'Please enter text to translate')
+      setError(
+        language === 'vi'
+          ? 'Vui lòng nhập văn bản cần dịch'
+          : 'Please enter text to translate'
+      )
       return
     }
 
@@ -59,14 +63,16 @@ export default function SimpleTranslationInterface({
     console.log('🚀 Starting simple translation', {
       textLength: sourceText.length,
       sourceLang,
-      targetLang
+      targetLang,
     })
 
     try {
       // Use authenticated endpoint for logged-in users
-      const endpoint = user ? '/api/translate/authenticated' : '/api/translate/public'
+      const endpoint = user
+        ? '/api/translate/authenticated'
+        : '/api/translate/public'
       const qualityTier = user ? 'standard' : 'free'
-      
+
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
@@ -77,8 +83,8 @@ export default function SimpleTranslationInterface({
           sourceLang: sourceLang === 'auto' ? undefined : sourceLang,
           targetLang: targetLang,
           qualityTier: qualityTier,
-          serviceType: 'google_translate'
-        })
+          serviceType: 'google_translate',
+        }),
       })
 
       const data = await response.json()
@@ -92,19 +98,20 @@ export default function SimpleTranslationInterface({
       if (data.success && data.result) {
         setTranslatedText(data.result.translatedText)
         setSuccess(true)
-        
+
         // Show credit usage for authenticated users
         if (data.credits) {
-          console.log(`💰 Credits used: ${data.credits.charged}, Remaining: ${data.credits.remaining}`)
+          console.log(
+            `💰 Credits used: ${data.credits.charged}, Remaining: ${data.credits.remaining}`
+          )
         }
-        
+
         if (onTranslationComplete) {
           onTranslationComplete(data.result)
         }
       } else {
         throw new Error('Invalid response format')
       }
-
     } catch (error) {
       console.error('❌ Simple translation error:', error)
       setError(error instanceof Error ? error.message : 'Translation failed')
@@ -133,7 +140,9 @@ export default function SimpleTranslationInterface({
   }
 
   return (
-    <div className={`simple-translation-interface bg-white rounded-lg shadow-sm border ${className}`}>
+    <div
+      className={`simple-translation-interface bg-white rounded-lg shadow-sm border ${className}`}
+    >
       {/* Header */}
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center gap-3 mb-4">
@@ -147,7 +156,7 @@ export default function SimpleTranslationInterface({
         <div className="flex items-center gap-4">
           <select
             value={sourceLang}
-            onChange={(e) => setSourceLang(e.target.value)}
+            onChange={e => setSourceLang(e.target.value)}
             className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             {languageOptions.map(option => (
@@ -168,14 +177,16 @@ export default function SimpleTranslationInterface({
 
           <select
             value={targetLang}
-            onChange={(e) => setTargetLang(e.target.value)}
+            onChange={e => setTargetLang(e.target.value)}
             className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            {languageOptions.filter(option => option.code !== 'auto').map(option => (
-              <option key={option.code} value={option.code}>
-                {language === 'vi' ? option.nameVi : option.name}
-              </option>
-            ))}
+            {languageOptions
+              .filter(option => option.code !== 'auto')
+              .map(option => (
+                <option key={option.code} value={option.code}>
+                  {language === 'vi' ? option.nameVi : option.name}
+                </option>
+              ))}
           </select>
         </div>
       </div>
@@ -190,16 +201,19 @@ export default function SimpleTranslationInterface({
             </label>
             <textarea
               value={sourceText}
-              onChange={(e) => setSourceText(e.target.value)}
-              placeholder={language === 'vi' 
-                ? 'Nhập văn bản cần dịch...'
-                : 'Enter text to translate...'}
+              onChange={e => setSourceText(e.target.value)}
+              placeholder={
+                language === 'vi'
+                  ? 'Nhập văn bản cần dịch...'
+                  : 'Enter text to translate...'
+              }
               className="w-full h-40 p-3 border border-gray-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
               maxLength={10240}
             />
             <div className="flex justify-between items-center mt-2">
               <span className="text-xs text-gray-500">
-                {sourceText.length}/10,240 {language === 'vi' ? 'ký tự' : 'characters'}
+                {sourceText.length}/10,240{' '}
+                {language === 'vi' ? 'ký tự' : 'characters'}
               </span>
               {sourceText && (
                 <button
@@ -222,9 +236,11 @@ export default function SimpleTranslationInterface({
               <textarea
                 value={translatedText}
                 readOnly
-                placeholder={language === 'vi' 
-                  ? 'Bản dịch sẽ xuất hiện ở đây...'
-                  : 'Translation will appear here...'}
+                placeholder={
+                  language === 'vi'
+                    ? 'Bản dịch sẽ xuất hiện ở đây...'
+                    : 'Translation will appear here...'
+                }
                 className="w-full h-40 p-3 border border-gray-300 rounded-md resize-none bg-gray-50 focus:outline-none"
               />
               {isTranslating && (
@@ -235,7 +251,8 @@ export default function SimpleTranslationInterface({
             </div>
             <div className="flex justify-between items-center mt-2">
               <span className="text-xs text-gray-500">
-                {translatedText.length} {language === 'vi' ? 'ký tự' : 'characters'}
+                {translatedText.length}{' '}
+                {language === 'vi' ? 'ký tự' : 'characters'}
               </span>
               {translatedText && (
                 <button

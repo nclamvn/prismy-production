@@ -1,6 +1,12 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react'
 import { logger } from '@/lib/logger'
 
 // Supported languages with premium localization
@@ -37,8 +43,8 @@ const LANGUAGE_CONFIGS: Record<Language, LanguageConfig> = {
     currencySymbol: '₫',
     translationDirection: {
       primary: 'vi',
-      secondary: 'en'
-    }
+      secondary: 'en',
+    },
   },
   en: {
     code: 'en',
@@ -52,9 +58,9 @@ const LANGUAGE_CONFIGS: Record<Language, LanguageConfig> = {
     currencySymbol: '$',
     translationDirection: {
       primary: 'en',
-      secondary: 'vi'
-    }
-  }
+      secondary: 'vi',
+    },
+  },
 }
 
 // Translation content type
@@ -82,7 +88,9 @@ interface LanguageContextType extends LanguageState {
   detectUserLanguage: () => Language
 }
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
+const LanguageContext = createContext<LanguageContextType | undefined>(
+  undefined
+)
 
 interface LanguageProviderProps {
   children: ReactNode
@@ -90,10 +98,10 @@ interface LanguageProviderProps {
   ssrLanguage?: Language // For SSR compatibility
 }
 
-export function SSRSafeLanguageProvider({ 
-  children, 
+export function SSRSafeLanguageProvider({
+  children,
   defaultLanguage = 'vi',
-  ssrLanguage 
+  ssrLanguage,
 }: LanguageProviderProps) {
   // Initialize with SSR-safe defaults
   const [languageState, setLanguageState] = useState<LanguageState>(() => {
@@ -104,7 +112,7 @@ export function SSRSafeLanguageProvider({
       isLoading: false,
       translations: {},
       isRTL: LANGUAGE_CONFIGS[initialLang].rtl,
-      direction: LANGUAGE_CONFIGS[initialLang].rtl ? 'rtl' : 'ltr'
+      direction: LANGUAGE_CONFIGS[initialLang].rtl ? 'rtl' : 'ltr',
     }
   })
 
@@ -118,7 +126,7 @@ export function SSRSafeLanguageProvider({
 
         // Detect user's preferred language
         const detectedLanguage = detectUserLanguage()
-        
+
         // Try to get saved language preference
         const savedLanguage = getSavedLanguage()
         const preferredLanguage = savedLanguage || detectedLanguage
@@ -127,26 +135,35 @@ export function SSRSafeLanguageProvider({
         const translations = await loadTranslations(preferredLanguage)
 
         if (mounted) {
-          const config = LANGUAGE_CONFIGS[preferredLanguage]
+          const config =
+            LANGUAGE_CONFIGS[preferredLanguage] || LANGUAGE_CONFIGS['en']
+          if (!config) {
+            throw new Error(
+              `No language configuration found for ${preferredLanguage}`
+            )
+          }
+
           setLanguageState({
             language: preferredLanguage,
             config,
             isLoading: false,
             translations,
             isRTL: config.rtl,
-            direction: config.rtl ? 'rtl' : 'ltr'
+            direction: config.rtl ? 'rtl' : 'ltr',
           })
 
           // Apply language-specific CSS and document attributes
           applyLanguageStyles(config)
-          
-          logger.info({ 
-            language: preferredLanguage, 
-            detected: detectedLanguage, 
-            saved: savedLanguage 
-          }, 'Language initialized')
-        }
 
+          logger.info(
+            {
+              language: preferredLanguage,
+              detected: detectedLanguage,
+              saved: savedLanguage,
+            },
+            'Language initialized'
+          )
+        }
       } catch (error) {
         logger.error({ error }, 'Language initialization failed')
         if (mounted) {
@@ -180,22 +197,23 @@ export function SSRSafeLanguageProvider({
         isLoading: false,
         translations,
         isRTL: config.rtl,
-        direction: config.rtl ? 'rtl' : 'ltr'
+        direction: config.rtl ? 'rtl' : 'ltr',
       })
 
       // Save preference
       saveLanguagePreference(newLanguage)
-      
+
       // Apply styles
       applyLanguageStyles(config)
 
       // Dispatch custom event for other components
-      window.dispatchEvent(new CustomEvent('languageChanged', {
-        detail: { language: newLanguage, config }
-      }))
+      window.dispatchEvent(
+        new CustomEvent('languageChanged', {
+          detail: { language: newLanguage, config },
+        })
+      )
 
       logger.info({ language: newLanguage }, 'Language changed successfully')
-
     } catch (error) {
       logger.error({ error, language: newLanguage }, 'Language change failed')
       setLanguageState(prev => ({ ...prev, isLoading: false }))
@@ -204,24 +222,39 @@ export function SSRSafeLanguageProvider({
 
   // Translation function with interpolation
   const t = (key: string, params?: Record<string, string | number>): string => {
+    // Defensive check for key parameter
+    if (!key || typeof key !== 'string') {
+      logger.warn(
+        { key, language: languageState.language },
+        'Invalid translation key'
+      )
+      return 'Translation error'
+    }
+
     const keys = key.split('.')
     let value: any = languageState.translations
-    
+
     for (const k of keys) {
       value = value?.[k]
       if (value === undefined) break
     }
 
     if (typeof value !== 'string') {
-      logger.warn({ key, language: languageState.language }, 'Translation key not found')
+      logger.warn(
+        { key, language: languageState.language },
+        'Translation key not found'
+      )
       return key // Return key as fallback
     }
 
     // Simple parameter interpolation
     if (params) {
-      return value.replace(/\{\{(\w+)\}\}/g, (match: string, paramKey: string) => {
-        return params[paramKey]?.toString() || match
-      })
+      return value.replace(
+        /\{\{(\w+)\}\}/g,
+        (match: string, paramKey: string) => {
+          return params[paramKey]?.toString() || match
+        }
+      )
     }
 
     return value
@@ -230,7 +263,9 @@ export function SSRSafeLanguageProvider({
   // Utility functions
   const formatDate = (date: Date | string): string => {
     const dateObj = typeof date === 'string' ? new Date(date) : date
-    return new Intl.DateTimeFormat(languageState.config.numberFormat).format(dateObj)
+    return new Intl.DateTimeFormat(languageState.config.numberFormat).format(
+      dateObj
+    )
   }
 
   const formatNumber = (num: number): string => {
@@ -240,7 +275,7 @@ export function SSRSafeLanguageProvider({
   const formatCurrency = (amount: number): string => {
     return new Intl.NumberFormat(languageState.config.numberFormat, {
       style: 'currency',
-      currency: languageState.language === 'vi' ? 'VND' : 'USD'
+      currency: languageState.language === 'vi' ? 'VND' : 'USD',
     }).format(amount)
   }
 
@@ -256,7 +291,7 @@ export function SSRSafeLanguageProvider({
     formatNumber,
     formatCurrency,
     getAvailableLanguages,
-    detectUserLanguage
+    detectUserLanguage,
   }
 
   return (
@@ -270,7 +305,9 @@ export function SSRSafeLanguageProvider({
 export function useSSRSafeLanguage() {
   const context = useContext(LanguageContext)
   if (context === undefined) {
-    throw new Error('useSSRSafeLanguage must be used within an SSRSafeLanguageProvider')
+    throw new Error(
+      'useSSRSafeLanguage must be used within an SSRSafeLanguageProvider'
+    )
   }
   return context
 }
@@ -278,27 +315,28 @@ export function useSSRSafeLanguage() {
 // Utility functions
 function detectUserLanguage(): Language {
   if (typeof window === 'undefined') return 'vi'
-  
+
   // Check navigator language
   const browserLang = navigator.language.toLowerCase()
   if (browserLang.startsWith('vi')) return 'vi'
   if (browserLang.startsWith('en')) return 'en'
-  
+
   // Check navigator languages array
-  const supportedLangs = navigator.languages?.find(lang => 
-    lang.toLowerCase().startsWith('vi') || lang.toLowerCase().startsWith('en')
+  const supportedLangs = navigator.languages?.find(
+    lang =>
+      lang.toLowerCase().startsWith('vi') || lang.toLowerCase().startsWith('en')
   )
-  
+
   if (supportedLangs?.toLowerCase().startsWith('vi')) return 'vi'
   if (supportedLangs?.toLowerCase().startsWith('en')) return 'en'
-  
+
   // Default to Vietnamese for Vietnamese market
   return 'vi'
 }
 
 function getSavedLanguage(): Language | null {
   if (typeof window === 'undefined') return null
-  
+
   try {
     const saved = localStorage.getItem('prismy-language')
     if (saved && (saved === 'vi' || saved === 'en')) {
@@ -307,13 +345,13 @@ function getSavedLanguage(): Language | null {
   } catch (error) {
     logger.warn({ error }, 'Failed to get saved language')
   }
-  
+
   return null
 }
 
 function saveLanguagePreference(language: Language) {
   if (typeof window === 'undefined') return
-  
+
   try {
     localStorage.setItem('prismy-language', language)
   } catch (error) {
@@ -323,17 +361,22 @@ function saveLanguagePreference(language: Language) {
 
 function applyLanguageStyles(config: LanguageConfig) {
   if (typeof document === 'undefined') return
-  
+
   // Set document language and direction
   document.documentElement.lang = config.code
   document.documentElement.dir = config.direction
-  
+
   // Set CSS custom properties for language-specific styling
-  document.documentElement.style.setProperty('--text-direction', config.direction)
+  document.documentElement.style.setProperty(
+    '--text-direction',
+    config.direction
+  )
   document.documentElement.style.setProperty('--lang-code', config.code)
 }
 
-async function loadTranslations(language: Language): Promise<Record<string, any>> {
+async function loadTranslations(
+  language: Language
+): Promise<Record<string, any>> {
   try {
     // In a real implementation, you'd fetch from API or import JSON files
     // For now, return basic translations
@@ -347,7 +390,7 @@ async function loadTranslations(language: Language): Promise<Record<string, any>
           cancel: 'Hủy',
           confirm: 'Xác nhận',
           delete: 'Xóa',
-          edit: 'Chỉnh sửa'
+          edit: 'Chỉnh sửa',
         },
         pricing: {
           title: 'Bảng Giá Dịch Thuật Prismy',
@@ -387,8 +430,8 @@ async function loadTranslations(language: Language): Promise<Record<string, any>
             dedicatedSupport: 'Hỗ trợ chuyên biệt',
             slaGuarantee: 'Đảm bảo SLA',
             customIntegration: 'Tích hợp tùy chỉnh',
-            onPremise: 'Triển khai riêng'
-          }
+            onPremise: 'Triển khai riêng',
+          },
         },
         auth: {
           signIn: 'Đăng nhập',
@@ -398,8 +441,8 @@ async function loadTranslations(language: Language): Promise<Record<string, any>
           password: 'Mật khẩu',
           confirmPassword: 'Xác nhận mật khẩu',
           forgotPassword: 'Quên mật khẩu?',
-          rememberMe: 'Ghi nhớ đăng nhập'
-        }
+          rememberMe: 'Ghi nhớ đăng nhập',
+        },
       },
       en: {
         common: {
@@ -410,7 +453,7 @@ async function loadTranslations(language: Language): Promise<Record<string, any>
           cancel: 'Cancel',
           confirm: 'Confirm',
           delete: 'Delete',
-          edit: 'Edit'
+          edit: 'Edit',
         },
         pricing: {
           title: 'Prismy Translation Pricing',
@@ -450,8 +493,8 @@ async function loadTranslations(language: Language): Promise<Record<string, any>
             dedicatedSupport: 'Dedicated support',
             slaGuarantee: 'SLA guarantee',
             customIntegration: 'Custom integration',
-            onPremise: 'On-premise deployment'
-          }
+            onPremise: 'On-premise deployment',
+          },
         },
         auth: {
           signIn: 'Sign In',
@@ -461,9 +504,9 @@ async function loadTranslations(language: Language): Promise<Record<string, any>
           password: 'Password',
           confirmPassword: 'Confirm Password',
           forgotPassword: 'Forgot Password?',
-          rememberMe: 'Remember Me'
-        }
-      }
+          rememberMe: 'Remember Me',
+        },
+      },
     }
 
     return translations[language] || translations.vi
@@ -475,31 +518,35 @@ async function loadTranslations(language: Language): Promise<Record<string, any>
 
 // Premium language-aware formatting hooks
 export function useLanguageFormatters() {
-  const { formatDate, formatNumber, formatCurrency, config } = useSSRSafeLanguage()
-  
+  const { formatDate, formatNumber, formatCurrency, config } =
+    useSSRSafeLanguage()
+
   return {
     formatDate,
     formatNumber,
     formatCurrency,
     formatFileSize: (bytes: number) => {
-      const sizes = config.code === 'vi' 
-        ? ['bytes', 'KB', 'MB', 'GB'] 
-        : ['bytes', 'KB', 'MB', 'GB']
+      const sizes =
+        config.code === 'vi'
+          ? ['bytes', 'KB', 'MB', 'GB']
+          : ['bytes', 'KB', 'MB', 'GB']
       const i = Math.floor(Math.log(bytes) / Math.log(1024))
       return `${formatNumber(bytes / Math.pow(1024, i))} ${sizes[i]}`
     },
     formatDuration: (seconds: number) => {
-      const units = config.code === 'vi'
-        ? { hour: 'giờ', minute: 'phút', second: 'giây' }
-        : { hour: 'hour', minute: 'minute', second: 'second' }
-      
+      const units =
+        config.code === 'vi'
+          ? { hour: 'giờ', minute: 'phút', second: 'giây' }
+          : { hour: 'hour', minute: 'minute', second: 'second' }
+
       const hours = Math.floor(seconds / 3600)
       const minutes = Math.floor((seconds % 3600) / 60)
       const secs = seconds % 60
-      
+
       if (hours > 0) return `${hours} ${units.hour} ${minutes} ${units.minute}`
-      if (minutes > 0) return `${minutes} ${units.minute} ${secs} ${units.second}`
+      if (minutes > 0)
+        return `${minutes} ${units.minute} ${secs} ${units.second}`
       return `${secs} ${units.second}`
-    }
+    },
   }
 }

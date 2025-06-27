@@ -1,24 +1,14 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useLanguage } from '@/contexts/LanguageContext'
+import { useState } from 'react'
+import { useSSRSafeLanguage } from '@/contexts/SSRSafeLanguageContext'
 import { Star, Users, Globe, Zap, ArrowRight } from 'lucide-react'
 import UnifiedGetStartedButton from '@/components/ui/UnifiedGetStartedButton'
-import { useIsHydrated } from '@/hooks/useHydrationSafeAnimation'
-import './GradientKeyframes.css'
 
 export default function ModernHero() {
-  const { language } = useLanguage()
-  const [userCount, setUserCount] = useState(47832)
-  const isHydrated = useIsHydrated()
-
-  // Animate user count
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setUserCount(prev => prev + Math.floor(Math.random() * 3))
-    }, 5000)
-    return () => clearInterval(interval)
-  }, [])
+  const { language } = useSSRSafeLanguage()
+  // Static user count to prevent flicker - no dynamic updates
+  const [userCount] = useState(47832)
 
   const content = {
     vi: {
@@ -112,11 +102,10 @@ export default function ModernHero() {
       >
         {/* Main Headlines - Spacing Optimized - Final Clean Version */}
         <div
-          className={`mb-6 ${isHydrated ? 'animate-hero-slide-up' : ''}`}
+          className="mb-6 hero-animate-1"
           style={{
             overflow: 'visible',
             marginBottom: '1.5rem',
-            animationDelay: '200ms'
           }}
         >
           <h1
@@ -156,22 +145,18 @@ export default function ModernHero() {
 
         {/* Description - NotebookLM Style */}
         <p
-          className={`mb-8 max-w-xl sm:max-w-2xl lg:max-w-3xl mx-auto leading-relaxed text-lg sm:text-xl lg:text-2xl ${isHydrated ? 'animate-hero-slide-up' : ''}`}
+          className="mb-8 max-w-xl sm:max-w-2xl lg:max-w-3xl mx-auto leading-relaxed text-lg sm:text-xl lg:text-2xl hero-animate-2"
           style={{
             fontFamily: 'var(--sys-title-large-font)',
             fontWeight: 'var(--sys-title-large-weight)',
             color: 'var(--text-secondary)',
-            animationDelay: '400ms'
           }}
         >
           {currentContent.description}
         </p>
 
         {/* CTA - Material Design 3 Style */}
-        <div
-          className={`flex justify-center items-center mb-12 ${isHydrated ? 'animate-hero-slide-up' : ''}`}
-          style={{ animationDelay: '600ms' }}
-        >
+        <div className="flex justify-center items-center mb-12 hero-animate-3">
           <UnifiedGetStartedButton
             className="w-full sm:w-auto"
             style={{
@@ -214,10 +199,7 @@ export default function ModernHero() {
         </div>
 
         {/* Social Proof - NotebookLM Style */}
-        <div
-          className={`flex items-center justify-center mb-16 ${isHydrated ? 'animate-hero-slide-up' : ''}`}
-          style={{ animationDelay: '800ms' }}
-        >
+        <div className="flex items-center justify-center mb-16 hero-animate-4">
           <div
             className="flex items-center px-4 py-2"
             style={{
@@ -259,11 +241,7 @@ export default function ModernHero() {
         </div>
 
         {/* Live Stats - Material Design 3 Style */}
-        <div
-          className={isHydrated ? 'animate-hero-slide-up' : ''}
-          style={{ animationDelay: '1000ms' }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto"
-        >
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto hero-animate-5">
           <div
             className="text-center p-4 sm:p-6"
             style={{
@@ -274,8 +252,7 @@ export default function ModernHero() {
             }}
           >
             <div
-              key={userCount}
-              className="mb-2 animate-user-count-update"
+              className="mb-2"
               style={{
                 fontSize: 'var(--sys-headline-large-size)',
                 lineHeight: 'var(--sys-headline-large-line-height)',
@@ -403,10 +380,7 @@ export default function ModernHero() {
         </div>
 
         {/* Feature Pills - Material Design 3 Style */}
-        <div
-          className={`flex flex-wrap justify-center gap-2 sm:gap-3 mt-8 sm:mt-12 ${isHydrated ? 'animate-hero-slide-up' : ''}`}
-          style={{ animationDelay: '1200ms' }}
-        >
+        <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mt-8 sm:mt-12 hero-animate-6">
           {currentContent.features.map((feature, index) => (
             <div
               key={feature}

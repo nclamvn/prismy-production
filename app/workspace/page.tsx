@@ -4,7 +4,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '@/contexts/AuthContext'
-import { useLanguage } from '@/contexts/LanguageContext'
+import { useSSRSafeLanguage } from '@/contexts/SSRSafeLanguageContext'
 import { motionSafe, slideUp, staggerContainer } from '@/lib/motion'
 import AuthenticatedLayout from '@/components/layouts/AuthenticatedLayout'
 import AuthGuard from '@/components/auth/AuthGuard'
@@ -15,7 +15,7 @@ export type WorkspaceMode = 'translation' | 'billing' | 'settings'
 
 export default function Workspace() {
   const { user } = useAuth()
-  const { language } = useLanguage()
+  const { language } = useSSRSafeLanguage()
   const [activeMode, setActiveMode] = useState<WorkspaceMode>('translation')
 
   const content = {
@@ -25,18 +25,18 @@ export default function Workspace() {
       modes: {
         translation: 'Dịch thuật',
         billing: 'Thanh toán',
-        settings: 'Cài đặt'
-      }
+        settings: 'Cài đặt',
+      },
     },
     en: {
       title: 'Workspace',
       subtitle: 'Manage your translation projects',
       modes: {
         translation: 'Translation',
-        billing: 'Billing', 
-        settings: 'Settings'
-      }
-    }
+        billing: 'Billing',
+        settings: 'Settings',
+      },
+    },
   }
 
   const renderActiveMode = () => {
@@ -45,7 +45,13 @@ export default function Workspace() {
         return <SimpleTranslationInterface />
       case 'billing':
         return (
-          <div className="rounded-xl p-8" style={{ backgroundColor: 'rgba(251, 250, 249, 1)', border: '1px solid var(--surface-outline)' }}>
+          <div
+            className="rounded-xl p-8"
+            style={{
+              backgroundColor: 'rgba(251, 250, 249, 1)',
+              border: '1px solid var(--surface-outline)',
+            }}
+          >
             <h3 className="text-xl font-semibold text-gray-900 mb-4">
               Billing Management
             </h3>
@@ -54,7 +60,13 @@ export default function Workspace() {
         )
       case 'settings':
         return (
-          <div className="rounded-xl p-8" style={{ backgroundColor: 'rgba(251, 250, 249, 1)', border: '1px solid var(--surface-outline)' }}>
+          <div
+            className="rounded-xl p-8"
+            style={{
+              backgroundColor: 'rgba(251, 250, 249, 1)',
+              border: '1px solid var(--surface-outline)',
+            }}
+          >
             <h3 className="text-xl font-semibold text-gray-900 mb-4">
               Settings
             </h3>

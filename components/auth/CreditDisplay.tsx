@@ -1,17 +1,17 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { 
-  CreditCard, 
-  AlertTriangle, 
-  Plus, 
-  Loader2, 
+import {
+  CreditCard,
+  AlertTriangle,
+  Plus,
+  Loader2,
   Clock,
   TrendingDown,
   Gift,
-  Info
+  Info,
 } from 'lucide-react'
-import { useLanguage } from '@/contexts/LanguageContext'
+import { useSSRSafeLanguage } from '@/contexts/SSRSafeLanguageContext'
 
 interface CreditDisplayProps {
   userId?: string
@@ -52,9 +52,9 @@ export default function CreditDisplay({
   variant = 'badge',
   onInviteClick,
   onTopUpClick,
-  className = ''
+  className = '',
 }: CreditDisplayProps) {
-  const { language } = useLanguage()
+  const { language } = useSSRSafeLanguage()
   const [creditData, setCreditData] = useState<CreditData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -83,14 +83,14 @@ export default function CreditDisplay({
         none: 'Chưa kích hoạt',
         trial: 'Dùng thử',
         trial_expired: 'Hết hạn dùng thử',
-        paid: 'Tài khoản trả phí'
+        paid: 'Tài khoản trả phí',
       },
       tooltips: {
         badge: 'Số credits hiện có của bạn',
         needsInvite: 'Bạn cần mã mời để bắt đầu sử dụng',
         lowCredits: 'Credits sắp hết, hãy nạp thêm',
-        trialExpired: 'Thời gian dùng thử đã hết, hãy mua credits'
-      }
+        trialExpired: 'Thời gian dùng thử đã hết, hãy mua credits',
+      },
     },
     en: {
       credits: 'Credits',
@@ -114,15 +114,15 @@ export default function CreditDisplay({
         none: 'Not activated',
         trial: 'Trial',
         trial_expired: 'Trial expired',
-        paid: 'Paid account'
+        paid: 'Paid account',
       },
       tooltips: {
         badge: 'Your current credit balance',
         needsInvite: 'You need an invite code to get started',
         lowCredits: 'Running low on credits, consider topping up',
-        trialExpired: 'Your trial has expired, please purchase credits'
-      }
-    }
+        trialExpired: 'Your trial has expired, please purchase credits',
+      },
+    },
   }
 
   const t = content[language]
@@ -138,7 +138,7 @@ export default function CreditDisplay({
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-          }
+          },
         })
 
         if (!response.ok) {
@@ -146,7 +146,7 @@ export default function CreditDisplay({
         }
 
         const data = await response.json()
-        
+
         if (!data.success) {
           throw new Error(data.error || 'Failed to fetch credits')
         }
@@ -170,12 +170,12 @@ export default function CreditDisplay({
   // Get display color based on credit status
   const getStatusColor = (): string => {
     if (loading || error) return 'gray'
-    if (!creditData) return 'gray'
-    
+    if (!creditData || !creditData.status || !creditData.credits) return 'gray'
+
     if (creditData.status.needsInvite) return 'yellow'
     if (creditData.status.trialExpired) return 'red'
-    
-    const credits = creditData.credits.current
+
+    const credits = creditData.credits.current || 0
     if (credits === 0) return 'red'
     if (credits < 10) return 'yellow'
     if (credits < 50) return 'orange'
@@ -190,20 +190,20 @@ export default function CreditDisplay({
       text: 'text-xs',
       padding: 'px-2 py-1',
       icon: 'w-3 h-3',
-      badge: 'h-6'
+      badge: 'h-6',
     },
     md: {
       text: 'text-sm',
       padding: 'px-3 py-1.5',
       icon: 'w-4 h-4',
-      badge: 'h-8'
+      badge: 'h-8',
     },
     lg: {
       text: 'text-base',
       padding: 'px-4 py-2',
       icon: 'w-5 h-5',
-      badge: 'h-10'
-    }
+      badge: 'h-10',
+    },
   }
 
   const config = sizeConfig[size]
@@ -214,13 +214,15 @@ export default function CreditDisplay({
     yellow: 'bg-yellow-100 text-yellow-800 border-yellow-200',
     orange: 'bg-orange-100 text-orange-800 border-orange-200',
     red: 'bg-red-100 text-red-800 border-red-200',
-    green: 'bg-green-100 text-green-800 border-green-200'
+    green: 'bg-green-100 text-green-800 border-green-200',
   }
 
   // Render loading state
   if (loading) {
     return (
-      <div className={`inline-flex items-center ${config.padding} ${config.badge} bg-gray-100 rounded-full border ${className}`}>
+      <div
+        className={`inline-flex items-center ${config.padding} ${config.badge} bg-gray-100 rounded-full border ${className}`}
+      >
         <Loader2 className={`${config.icon} animate-spin text-gray-500 mr-2`} />
         <span className={`${config.text} text-gray-600`}>{t.loading}</span>
       </div>
@@ -230,7 +232,9 @@ export default function CreditDisplay({
   // Render error state
   if (error) {
     return (
-      <div className={`inline-flex items-center ${config.padding} ${config.badge} bg-red-100 rounded-full border border-red-200 ${className}`}>
+      <div
+        className={`inline-flex items-center ${config.padding} ${config.badge} bg-red-100 rounded-full border border-red-200 ${className}`}
+      >
         <AlertTriangle className={`${config.icon} text-red-500 mr-2`} />
         <span className={`${config.text} text-red-700`}>{t.error}</span>
       </div>
@@ -244,28 +248,49 @@ export default function CreditDisplay({
 
   // Get display text
   const getDisplayText = (): string => {
+    if (!creditData || !creditData.status || !creditData.credits) {
+      return t.error || 'Error'
+    }
+
     if (creditData.status.needsInvite) {
       return t.needsInvite
     }
     if (creditData.status.trialExpired) {
       return t.trialExpired
     }
-    if (creditData.credits.current === 0) {
+
+    const currentCredits = creditData.credits.current || 0
+    if (currentCredits === 0) {
       return t.noCredits
     }
-    return creditData.credits.current.toLocaleString()
+    return currentCredits.toLocaleString()
   }
 
   // Get tooltip text
   const getTooltipText = (): string => {
-    if (creditData.status.needsInvite) return t.tooltips.needsInvite
-    if (creditData.status.trialExpired) return t.tooltips.trialExpired
-    if (creditData.credits.current < 10) return t.tooltips.lowCredits
-    return t.tooltips.badge
+    if (
+      !creditData ||
+      !creditData.status ||
+      !creditData.credits ||
+      !t.tooltips
+    ) {
+      return 'Credit information'
+    }
+
+    if (creditData.status.needsInvite)
+      return t.tooltips.needsInvite || 'Needs invite'
+    if (creditData.status.trialExpired)
+      return t.tooltips.trialExpired || 'Trial expired'
+
+    const currentCredits = creditData.credits.current || 0
+    if (currentCredits < 10) return t.tooltips.lowCredits || 'Low credits'
+    return t.tooltips.badge || 'Current credit balance'
   }
 
   // Handle click actions
   const handleClick = () => {
+    if (!creditData || !creditData.status) return
+
     if (creditData.status.needsInvite && onInviteClick) {
       onInviteClick()
     } else if (onTopUpClick) {
@@ -287,12 +312,13 @@ export default function CreditDisplay({
           <span className={`${config.text} font-medium`}>
             {getDisplayText()}
           </span>
-          {creditData.status.needsInvite && (
+          {creditData?.status?.needsInvite && (
             <Gift className={`${config.icon} ml-1`} />
           )}
-          {creditData.credits.current < 10 && creditData.credits.current > 0 && (
-            <AlertTriangle className={`${config.icon} ml-1`} />
-          )}
+          {(creditData?.credits?.current || 0) < 10 &&
+            (creditData?.credits?.current || 0) > 0 && (
+              <AlertTriangle className={`${config.icon} ml-1`} />
+            )}
         </div>
 
         {/* Tooltip */}
@@ -315,54 +341,64 @@ export default function CreditDisplay({
             <CreditCard className="w-5 h-5 text-gray-600 mr-2" />
             <span className="font-medium text-gray-900">{t.credits}</span>
           </div>
-          <div className={`px-2 py-1 rounded-full text-xs ${colorClasses[statusColor]}`}>
-            {t.accountTypes[creditData.status.accountType]}
+          <div
+            className={`px-2 py-1 rounded-full text-xs ${colorClasses[statusColor]}`}
+          >
+            {(t.accountTypes &&
+              creditData?.status?.accountType &&
+              t.accountTypes[creditData.status.accountType]) ||
+              'Unknown'}
           </div>
         </div>
 
         {/* Current Balance */}
         <div className="text-2xl font-bold text-gray-900 mb-2">
-          {creditData.credits.current.toLocaleString()}
+          {(creditData?.credits?.current || 0).toLocaleString()}
           <span className="text-sm font-normal text-gray-500 ml-2">
-            {t.credits.toLowerCase()}
+            {t.credits?.toLowerCase() || 'credits'}
           </span>
         </div>
 
         {/* Estimated Days */}
-        {creditData.credits.estimated_days_remaining && (
+        {creditData?.credits?.estimated_days_remaining && (
           <div className="flex items-center text-sm text-gray-600 mb-3">
             <Clock className="w-4 h-4 mr-1" />
-            {creditData.credits.estimated_days_remaining} {t.estimatedDays}
+            {creditData.credits.estimated_days_remaining}{' '}
+            {t.estimatedDays || 'days remaining'}
           </div>
         )}
 
         {/* Usage Stats */}
-        {showDetails && (
+        {showDetails && creditData?.usage && (
           <div className="space-y-2 border-t pt-3">
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">{t.today}:</span>
-              <span className="font-medium">{creditData.usage.today}</span>
+              <span className="text-gray-600">{t.today || 'Today'}:</span>
+              <span className="font-medium">{creditData.usage.today || 0}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">{t.thisWeek}:</span>
-              <span className="font-medium">{creditData.usage.week}</span>
+              <span className="text-gray-600">
+                {t.thisWeek || 'This week'}:
+              </span>
+              <span className="font-medium">{creditData.usage.week || 0}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">{t.thisMonth}:</span>
-              <span className="font-medium">{creditData.usage.month}</span>
+              <span className="text-gray-600">
+                {t.thisMonth || 'This month'}:
+              </span>
+              <span className="font-medium">{creditData.usage.month || 0}</span>
             </div>
           </div>
         )}
 
         {/* Action Buttons */}
         <div className="flex space-x-2 mt-4">
-          {creditData.status.needsInvite ? (
+          {creditData?.status?.needsInvite ? (
             <button
               onClick={onInviteClick}
               className="flex-1 flex items-center justify-center px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
             >
               <Gift className="w-4 h-4 mr-2" />
-              {t.getInvite}
+              {t.getInvite || 'Get invite'}
             </button>
           ) : (
             <button
@@ -370,7 +406,7 @@ export default function CreditDisplay({
               className="flex-1 flex items-center justify-center px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
             >
               <Plus className="w-4 h-4 mr-2" />
-              {t.buyCredits}
+              {t.buyCredits || 'Buy credits'}
             </button>
           )}
         </div>
@@ -380,7 +416,9 @@ export default function CreditDisplay({
 
   // Inline variant (minimal)
   return (
-    <span className={`inline-flex items-center ${config.text} text-gray-700 ${className}`}>
+    <span
+      className={`inline-flex items-center ${config.text} text-gray-700 ${className}`}
+    >
       <CreditCard className={`${config.icon} mr-1`} />
       {getDisplayText()}
     </span>

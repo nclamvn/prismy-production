@@ -87,14 +87,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    // Session restoration timeout (5 seconds for better responsiveness)
+    // Session restoration timeout (500ms for ultra-fast UX)
     sessionRestoreTimeout = setTimeout(() => {
       if (!sessionRestored && isMounted) {
-        // Removed console log for cleaner production experience
         setSessionRestored(true)
         setLoading(false)
       }
-    }, 5000)
+    }, 500)
 
     getInitialSession()
 
@@ -142,13 +141,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .single()
 
       if (error) {
-        console.error('Error fetching profile:', error)
         return
       }
 
       setProfile(data)
     } catch (error) {
-      console.error('Error fetching profile:', error)
+      // Silent error handling for production
     }
   }
 
@@ -183,12 +181,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     callbackUrl.searchParams.set('redirectTo', intendedRedirect)
 
     try {
-      console.log('🔄 AuthContext: Starting Google OAuth', {
-        redirectTo: intendedRedirect,
-        callbackUrl: callbackUrl.toString(),
-        origin: window.location.origin,
-      })
-
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -197,14 +189,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
 
       if (error) {
-        console.error('❌ AuthContext: Google OAuth error:', error)
         return { error }
       }
 
-      console.log('✅ AuthContext: Google OAuth initiated successfully')
       return { error: null }
     } catch (err) {
-      console.error('❌ AuthContext: Google OAuth catch block:', err)
       return { error: err }
     }
   }
@@ -217,12 +206,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     callbackUrl.searchParams.set('redirectTo', intendedRedirect)
 
     try {
-      console.log('🔄 AuthContext: Starting Apple OAuth', {
-        redirectTo: intendedRedirect,
-        callbackUrl: callbackUrl.toString(),
-        origin: window.location.origin,
-      })
-
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'apple',
         options: {
@@ -231,33 +214,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
 
       if (error) {
-        console.error('❌ AuthContext: Apple OAuth error:', error)
         return { error }
       }
 
-      console.log('✅ AuthContext: Apple OAuth initiated successfully')
       return { error: null }
     } catch (err) {
-      console.error('❌ AuthContext: Apple OAuth catch block:', err)
       return { error: err }
     }
   }
 
   const signOut = async () => {
     try {
-      console.log('🚪 AuthContext: Signing out user')
       const { error } = await supabase.auth.signOut()
-      if (error) {
-        console.error('❌ AuthContext: Error signing out:', error)
-      } else {
-        console.log('✅ AuthContext: Sign out successful')
+      if (!error) {
         // Clear all state
         setUser(null)
         setSession(null)
         setProfile(null)
       }
     } catch (error) {
-      console.error('❌ AuthContext: Unexpected error during sign out:', error)
+      // Silent error handling for production
     }
   }
 

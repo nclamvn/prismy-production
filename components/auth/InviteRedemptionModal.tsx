@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Gift, CreditCard, Check, AlertCircle, Loader2 } from 'lucide-react'
-import { useLanguage } from '@/contexts/LanguageContext'
+import { useSSRSafeLanguage } from '@/contexts/SSRSafeLanguageContext'
 
 interface InviteRedemptionModalProps {
   isOpen: boolean
@@ -29,9 +29,9 @@ export default function InviteRedemptionModal({
   isOpen,
   onClose,
   onSuccess,
-  userEmail
+  userEmail,
 }: InviteRedemptionModalProps) {
-  const { language } = useLanguage()
+  const { language } = useSSRSafeLanguage()
   const [inviteCode, setInviteCode] = useState('')
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<RedemptionResult | null>(null)
@@ -53,7 +53,7 @@ export default function InviteRedemptionModal({
         creditsAdded: 'Credits nhận được',
         totalCredits: 'Tổng credits',
         trialInfo: 'Thời gian dùng thử kết thúc',
-        continueButton: 'Tiếp tục sử dụng'
+        continueButton: 'Tiếp tục sử dụng',
       },
       errors: {
         required: 'Vui lòng nhập mã mời',
@@ -62,17 +62,18 @@ export default function InviteRedemptionModal({
         alreadyUsed: 'Mã mời này đã được sử dụng',
         alreadyRedeemed: 'Bạn đã đổi mã mời rồi',
         expired: 'Mã mời đã hết hạn',
-        serverError: 'Lỗi hệ thống, vui lòng thử lại'
+        serverError: 'Lỗi hệ thống, vui lòng thử lại',
       },
       formatInfo: {
         title: 'Định dạng mã mời',
         format: 'PRISMY-XXXX-XXXX',
-        example: 'Ví dụ: PRISMY-A1B2-C3D4'
-      }
+        example: 'Ví dụ: PRISMY-A1B2-C3D4',
+      },
     },
     en: {
       title: 'Enter Invite Code',
-      subtitle: 'Use your invite code to get free credits and experience Prismy',
+      subtitle:
+        'Use your invite code to get free credits and experience Prismy',
       inputLabel: 'Invite Code',
       inputPlaceholder: 'PRISMY-XXXX-XXXX',
       inputHelp: 'Enter the 13-character invite code you received',
@@ -85,7 +86,7 @@ export default function InviteRedemptionModal({
         creditsAdded: 'Credits received',
         totalCredits: 'Total credits',
         trialInfo: 'Trial expires on',
-        continueButton: 'Continue using Prismy'
+        continueButton: 'Continue using Prismy',
       },
       errors: {
         required: 'Please enter an invite code',
@@ -94,14 +95,14 @@ export default function InviteRedemptionModal({
         alreadyUsed: 'This invite code has already been used',
         alreadyRedeemed: 'You have already redeemed an invite code',
         expired: 'This invite code has expired',
-        serverError: 'System error, please try again'
+        serverError: 'System error, please try again',
       },
       formatInfo: {
         title: 'Invite code format',
         format: 'PRISMY-XXXX-XXXX',
-        example: 'Example: PRISMY-A1B2-C3D4'
-      }
-    }
+        example: 'Example: PRISMY-A1B2-C3D4',
+      },
+    },
   }
 
   const t = content[language]
@@ -120,16 +121,21 @@ export default function InviteRedemptionModal({
   const handleCodeChange = (value: string) => {
     // Remove all non-alphanumeric characters and convert to uppercase
     const cleaned = value.replace(/[^A-Z0-9]/gi, '').toUpperCase()
-    
+
     // Format as PRISMY-XXXX-XXXX
     let formatted = cleaned
     if (cleaned.length > 6) {
       formatted = cleaned.slice(0, 6) + '-' + cleaned.slice(6, 10)
       if (cleaned.length > 10) {
-        formatted = cleaned.slice(0, 6) + '-' + cleaned.slice(6, 10) + '-' + cleaned.slice(10, 14)
+        formatted =
+          cleaned.slice(0, 6) +
+          '-' +
+          cleaned.slice(6, 10) +
+          '-' +
+          cleaned.slice(10, 14)
       }
     }
-    
+
     setInviteCode(formatted)
     setError(null)
   }
@@ -143,7 +149,7 @@ export default function InviteRedemptionModal({
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!inviteCode.trim()) {
       setError(t.errors.required)
       return
@@ -164,15 +170,15 @@ export default function InviteRedemptionModal({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          inviteCode: inviteCode
-        })
+          inviteCode: inviteCode,
+        }),
       })
 
       const data = await response.json()
 
       if (!response.ok) {
         let errorMessage = t.errors.serverError
-        
+
         switch (data.error) {
           case 'Invalid invite code':
             errorMessage = t.errors.notFound
@@ -189,22 +195,21 @@ export default function InviteRedemptionModal({
           default:
             errorMessage = data.message || t.errors.serverError
         }
-        
+
         setError(errorMessage)
         return
       }
 
       // Success
       setResult(data)
-      
+
       // Call success callback
       if (onSuccess && data.credits) {
         onSuccess({
           credits: data.credits.added,
-          total: data.credits.total
+          total: data.credits.total,
         })
       }
-
     } catch (error) {
       console.error('Invite redemption error:', error)
       setError(t.errors.serverError)
@@ -220,11 +225,14 @@ export default function InviteRedemptionModal({
   }
 
   const formatDate = (dateString: string): string => {
-    return new Date(dateString).toLocaleDateString(language === 'vi' ? 'vi-VN' : 'en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
+    return new Date(dateString).toLocaleDateString(
+      language === 'vi' ? 'vi-VN' : 'en-US',
+      {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      }
+    )
   }
 
   if (!isOpen) return null
@@ -243,7 +251,7 @@ export default function InviteRedemptionModal({
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
           className="bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto"
-          onClick={(e) => e.stopPropagation()}
+          onClick={e => e.stopPropagation()}
         >
           {/* Header */}
           <div className="p-6 border-b border-gray-200">
@@ -253,7 +261,9 @@ export default function InviteRedemptionModal({
                   <Gift className="w-5 h-5 text-gray-600" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-900">{t.title}</h2>
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    {t.title}
+                  </h2>
                   <p className="text-sm text-gray-500">{t.subtitle}</p>
                 </div>
               </div>
@@ -281,11 +291,11 @@ export default function InviteRedemptionModal({
                     <input
                       type="text"
                       value={inviteCode}
-                      onChange={(e) => handleCodeChange(e.target.value)}
+                      onChange={e => handleCodeChange(e.target.value)}
                       placeholder={t.inputPlaceholder}
                       className={`w-full px-4 py-3 border rounded-lg text-center text-lg font-mono tracking-wider focus:outline-none focus:ring-2 transition-colors ${
-                        error 
-                          ? 'border-gray-400 focus:ring-gray-500' 
+                        error
+                          ? 'border-gray-400 focus:ring-gray-500'
                           : 'border-gray-300 focus:ring-gray-500'
                       }`}
                       disabled={loading}
@@ -312,7 +322,9 @@ export default function InviteRedemptionModal({
                     <div className="text-sm text-gray-800">
                       <div className="font-medium">{t.formatInfo.title}:</div>
                       <div className="font-mono">{t.formatInfo.format}</div>
-                      <div className="text-gray-600 mt-1">{t.formatInfo.example}</div>
+                      <div className="text-gray-600 mt-1">
+                        {t.formatInfo.example}
+                      </div>
                     </div>
                   </div>
 
@@ -328,7 +340,11 @@ export default function InviteRedemptionModal({
                     </button>
                     <button
                       type="submit"
-                      disabled={loading || !inviteCode.trim() || !isValidFormat(inviteCode)}
+                      disabled={
+                        loading ||
+                        !inviteCode.trim() ||
+                        !isValidFormat(inviteCode)
+                      }
                       className="flex-1 flex items-center justify-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {loading ? (
@@ -350,9 +366,11 @@ export default function InviteRedemptionModal({
                   <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
                     <Check className="w-8 h-8 text-gray-600" />
                   </div>
-                  
+
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900">{t.success.title}</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {t.success.title}
+                    </h3>
                     <p className="text-gray-600">{t.success.message}</p>
                   </div>
 
@@ -360,13 +378,17 @@ export default function InviteRedemptionModal({
                   {result.credits && (
                     <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-700">{t.success.creditsAdded}:</span>
+                        <span className="text-sm text-gray-700">
+                          {t.success.creditsAdded}:
+                        </span>
                         <span className="text-lg font-semibold text-gray-800">
                           +{result.credits.added.toLocaleString()}
                         </span>
                       </div>
                       <div className="flex items-center justify-between border-t border-gray-200 pt-3">
-                        <span className="text-sm text-gray-700">{t.success.totalCredits}:</span>
+                        <span className="text-sm text-gray-700">
+                          {t.success.totalCredits}:
+                        </span>
                         <span className="text-lg font-semibold text-gray-800">
                           {result.credits.total.toLocaleString()}
                         </span>

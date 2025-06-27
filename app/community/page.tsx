@@ -1,337 +1,345 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useLanguage } from '@/contexts/LanguageContext'
+import { useSSRSafeLanguage } from '@/contexts/SSRSafeLanguageContext'
 import MainLayout from '@/components/layouts/MainLayout'
-import { 
-  Users, 
-  MessageSquare, 
-  BookOpen, 
-  Star, 
-  GitBranch, 
+import {
+  Users,
+  MessageSquare,
+  BookOpen,
+  Star,
+  GitBranch,
   Coffee,
   Heart,
   Award,
   Sparkles,
   ExternalLink,
-  ArrowRight
+  ArrowRight,
 } from 'lucide-react'
 import Image from 'next/image'
 
 export default function CommunityPage() {
-  const { language } = useLanguage()
+  const { language } = useSSRSafeLanguage()
 
   const content = {
     vi: {
       hero: {
-        title: "Tham gia cộng đồng Prismy",
-        subtitle: "Kết nối với hàng nghìn người dùng, chia sẻ kinh nghiệm và học hỏi cùng nhau",
+        title: 'Tham gia cộng đồng Prismy',
+        subtitle:
+          'Kết nối với hàng nghìn người dùng, chia sẻ kinh nghiệm và học hỏi cùng nhau',
         stats: [
-          { label: "Thành viên", value: "50,000+" },
-          { label: "Bài đăng", value: "125,000+" },
-          { label: "Câu trả lời", value: "89%" },
-          { label: "Quốc gia", value: "120+" }
-        ]
+          { label: 'Thành viên', value: '50,000+' },
+          { label: 'Bài đăng', value: '125,000+' },
+          { label: 'Câu trả lời', value: '89%' },
+          { label: 'Quốc gia', value: '120+' },
+        ],
       },
       platforms: {
-        title: "Tham gia trên các nền tảng",
-        subtitle: "Chọn nền tảng phù hợp với bạn để kết nối với cộng đồng",
+        title: 'Tham gia trên các nền tảng',
+        subtitle: 'Chọn nền tảng phù hợp với bạn để kết nối với cộng đồng',
         items: [
           {
-            name: "Discord",
-            description: "Chat real-time, hỏi đáp nhanh và chia sẻ tips",
-            members: "25,000+",
+            name: 'Discord',
+            description: 'Chat real-time, hỏi đáp nhanh và chia sẻ tips',
+            members: '25,000+',
             icon: MessageSquare,
-            color: "bg-indigo-500",
-            link: "#"
+            color: 'bg-indigo-500',
+            link: '#',
           },
           {
-            name: "GitHub",
-            description: "Đóng góp mã nguồn, báo lỗi và feature requests",
-            members: "8,500+",
+            name: 'GitHub',
+            description: 'Đóng góp mã nguồn, báo lỗi và feature requests',
+            members: '8,500+',
             icon: GitBranch,
-            color: "bg-gray-800",
-            link: "#"
+            color: 'bg-gray-800',
+            link: '#',
           },
           {
-            name: "LinkedIn",
-            description: "Kết nối chuyên nghiệp và cập nhật tin tức",
-            members: "12,000+",
+            name: 'LinkedIn',
+            description: 'Kết nối chuyên nghiệp và cập nhật tin tức',
+            members: '12,000+',
             icon: Users,
-            color: "bg-blue-600",
-            link: "#"
+            color: 'bg-blue-600',
+            link: '#',
           },
           {
-            name: "Blog",
-            description: "Hướng dẫn chi tiết, case studies và best practices",
-            members: "45,000+",
+            name: 'Blog',
+            description: 'Hướng dẫn chi tiết, case studies và best practices',
+            members: '45,000+',
             icon: BookOpen,
-            color: "bg-green-600",
-            link: "/blog"
-          }
-        ]
+            color: 'bg-green-600',
+            link: '/blog',
+          },
+        ],
       },
       featured: {
-        title: "Thành viên nổi bật",
-        subtitle: "Những người đóng góp tích cực cho cộng đồng",
+        title: 'Thành viên nổi bật',
+        subtitle: 'Những người đóng góp tích cực cho cộng đồng',
         members: [
           {
-            name: "Nguyễn Văn An",
-            role: "Lead Developer tại FPT",
-            avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-            contribution: "Đóng góp 50+ templates",
-            badge: "Top Contributor"
+            name: 'Nguyễn Văn An',
+            role: 'Lead Developer tại FPT',
+            avatar:
+              'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
+            contribution: 'Đóng góp 50+ templates',
+            badge: 'Top Contributor',
           },
           {
-            name: "Trần Thị Lan",
-            role: "Product Manager tại VNG",
-            avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b647?w=150&h=150&fit=crop&crop=face",
-            contribution: "Hỗ trợ 1000+ câu hỏi",
-            badge: "Community Helper"
+            name: 'Trần Thị Lan',
+            role: 'Product Manager tại VNG',
+            avatar:
+              'https://images.unsplash.com/photo-1494790108755-2616b612b647?w=150&h=150&fit=crop&crop=face',
+            contribution: 'Hỗ trợ 1000+ câu hỏi',
+            badge: 'Community Helper',
           },
           {
-            name: "Lê Minh Tuấn",
-            role: "CTO tại Tiki",
-            avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
-            contribution: "API documentation",
-            badge: "Tech Expert"
-          }
-        ]
+            name: 'Lê Minh Tuấn',
+            role: 'CTO tại Tiki',
+            avatar:
+              'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+            contribution: 'API documentation',
+            badge: 'Tech Expert',
+          },
+        ],
       },
       resources: {
-        title: "Tài nguyên cộng đồng",
-        subtitle: "Tất cả những gì bạn cần để thành công với Prismy",
+        title: 'Tài nguyên cộng đồng',
+        subtitle: 'Tất cả những gì bạn cần để thành công với Prismy',
         categories: [
           {
-            title: "Hướng dẫn cho người mới",
-            description: "Bắt đầu với Prismy từ A-Z",
+            title: 'Hướng dẫn cho người mới',
+            description: 'Bắt đầu với Prismy từ A-Z',
             icon: BookOpen,
-            color: "bg-blue-500",
+            color: 'bg-blue-500',
             items: [
-              "Cài đặt và cấu hình",
-              "Tính năng cơ bản",
-              "Best practices",
-              "Troubleshooting"
-            ]
+              'Cài đặt và cấu hình',
+              'Tính năng cơ bản',
+              'Best practices',
+              'Troubleshooting',
+            ],
           },
           {
-            title: "Templates & Examples",
-            description: "Mẫu và ví dụ thực tế",
+            title: 'Templates & Examples',
+            description: 'Mẫu và ví dụ thực tế',
             icon: Sparkles,
-            color: "bg-purple-500",
+            color: 'bg-purple-500',
             items: [
-              "Translation templates",
-              "API integration examples",
-              "Workflow automation",
-              "Custom solutions"
-            ]
+              'Translation templates',
+              'API integration examples',
+              'Workflow automation',
+              'Custom solutions',
+            ],
           },
           {
-            title: "Developer Resources",
-            description: "Tài nguyên cho lập trình viên",
+            title: 'Developer Resources',
+            description: 'Tài nguyên cho lập trình viên',
             icon: GitBranch,
-            color: "bg-green-500",
+            color: 'bg-green-500',
             items: [
-              "API documentation",
-              "SDK và libraries",
-              "Code samples",
-              "Integration guides"
-            ]
-          }
-        ]
+              'API documentation',
+              'SDK và libraries',
+              'Code samples',
+              'Integration guides',
+            ],
+          },
+        ],
       },
       events: {
-        title: "Sự kiện sắp tới",
-        subtitle: "Tham gia các sự kiện và workshop của cộng đồng",
+        title: 'Sự kiện sắp tới',
+        subtitle: 'Tham gia các sự kiện và workshop của cộng đồng',
         upcoming: [
           {
-            title: "Prismy Workshop: AI Translation Best Practices",
-            date: "15 Tháng 7, 2024",
-            time: "19:00 - 21:00",
-            type: "Online",
+            title: 'Prismy Workshop: AI Translation Best Practices',
+            date: '15 Tháng 7, 2024',
+            time: '19:00 - 21:00',
+            type: 'Online',
             attendees: 450,
-            description: "Học cách tối ưu hóa quy trình dịch thuật với AI"
+            description: 'Học cách tối ưu hóa quy trình dịch thuật với AI',
           },
           {
-            title: "Community Meetup - Ho Chi Minh City",
-            date: "22 Tháng 7, 2024",
-            time: "18:30 - 21:00",
-            type: "Offline",
+            title: 'Community Meetup - Ho Chi Minh City',
+            date: '22 Tháng 7, 2024',
+            time: '18:30 - 21:00',
+            type: 'Offline',
             attendees: 120,
-            description: "Gặp gỡ trực tiếp với cộng đồng tại TP.HCM"
+            description: 'Gặp gỡ trực tiếp với cộng đồng tại TP.HCM',
           },
           {
-            title: "Prismy API Masterclass",
-            date: "5 Tháng 8, 2024", 
-            time: "20:00 - 22:00",
-            type: "Online",
+            title: 'Prismy API Masterclass',
+            date: '5 Tháng 8, 2024',
+            time: '20:00 - 22:00',
+            type: 'Online',
             attendees: 300,
-            description: "Deep dive vào Prismy API và advanced features"
-          }
-        ]
+            description: 'Deep dive vào Prismy API và advanced features',
+          },
+        ],
       },
       cta: {
-        title: "Sẵn sàng tham gia cộng đồng?",
-        subtitle: "Bắt đầu hành trình của bạn với hàng nghìn thành viên khác",
-        primary: "Tham gia Discord",
-        secondary: "Xem tài nguyên"
-      }
+        title: 'Sẵn sàng tham gia cộng đồng?',
+        subtitle: 'Bắt đầu hành trình của bạn với hàng nghìn thành viên khác',
+        primary: 'Tham gia Discord',
+        secondary: 'Xem tài nguyên',
+      },
     },
     en: {
       hero: {
-        title: "Join the Prismy Community",
-        subtitle: "Connect with thousands of users, share experiences and learn together",
+        title: 'Join the Prismy Community',
+        subtitle:
+          'Connect with thousands of users, share experiences and learn together',
         stats: [
-          { label: "Members", value: "50,000+" },
-          { label: "Posts", value: "125,000+" },
-          { label: "Response Rate", value: "89%" },
-          { label: "Countries", value: "120+" }
-        ]
+          { label: 'Members', value: '50,000+' },
+          { label: 'Posts', value: '125,000+' },
+          { label: 'Response Rate', value: '89%' },
+          { label: 'Countries', value: '120+' },
+        ],
       },
       platforms: {
-        title: "Join on platforms",
-        subtitle: "Choose the right platform to connect with the community",
+        title: 'Join on platforms',
+        subtitle: 'Choose the right platform to connect with the community',
         items: [
           {
-            name: "Discord",
-            description: "Real-time chat, quick Q&A and tips sharing",
-            members: "25,000+",
+            name: 'Discord',
+            description: 'Real-time chat, quick Q&A and tips sharing',
+            members: '25,000+',
             icon: MessageSquare,
-            color: "bg-indigo-500",
-            link: "#"
+            color: 'bg-indigo-500',
+            link: '#',
           },
           {
-            name: "GitHub",
-            description: "Contribute code, report bugs and feature requests",
-            members: "8,500+",
+            name: 'GitHub',
+            description: 'Contribute code, report bugs and feature requests',
+            members: '8,500+',
             icon: GitBranch,
-            color: "bg-gray-800",
-            link: "#"
+            color: 'bg-gray-800',
+            link: '#',
           },
           {
-            name: "LinkedIn",
-            description: "Professional networking and news updates",
-            members: "12,000+",
+            name: 'LinkedIn',
+            description: 'Professional networking and news updates',
+            members: '12,000+',
             icon: Users,
-            color: "bg-blue-600",
-            link: "#"
+            color: 'bg-blue-600',
+            link: '#',
           },
           {
-            name: "Blog",
-            description: "Detailed guides, case studies and best practices",
-            members: "45,000+",
+            name: 'Blog',
+            description: 'Detailed guides, case studies and best practices',
+            members: '45,000+',
             icon: BookOpen,
-            color: "bg-green-600",
-            link: "/blog"
-          }
-        ]
+            color: 'bg-green-600',
+            link: '/blog',
+          },
+        ],
       },
       featured: {
-        title: "Featured Members",
-        subtitle: "Active contributors to the community",
+        title: 'Featured Members',
+        subtitle: 'Active contributors to the community',
         members: [
           {
-            name: "John Smith",
-            role: "Lead Developer at Microsoft",
-            avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-            contribution: "Contributed 50+ templates",
-            badge: "Top Contributor"
+            name: 'John Smith',
+            role: 'Lead Developer at Microsoft',
+            avatar:
+              'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
+            contribution: 'Contributed 50+ templates',
+            badge: 'Top Contributor',
           },
           {
-            name: "Sarah Johnson",
-            role: "Product Manager at Google",
-            avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b647?w=150&h=150&fit=crop&crop=face",
-            contribution: "Helped 1000+ questions",
-            badge: "Community Helper"
+            name: 'Sarah Johnson',
+            role: 'Product Manager at Google',
+            avatar:
+              'https://images.unsplash.com/photo-1494790108755-2616b612b647?w=150&h=150&fit=crop&crop=face',
+            contribution: 'Helped 1000+ questions',
+            badge: 'Community Helper',
           },
           {
-            name: "David Chen",
-            role: "CTO at Amazon",
-            avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
-            contribution: "API documentation",
-            badge: "Tech Expert"
-          }
-        ]
+            name: 'David Chen',
+            role: 'CTO at Amazon',
+            avatar:
+              'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+            contribution: 'API documentation',
+            badge: 'Tech Expert',
+          },
+        ],
       },
       resources: {
-        title: "Community Resources",
-        subtitle: "Everything you need to succeed with Prismy",
+        title: 'Community Resources',
+        subtitle: 'Everything you need to succeed with Prismy',
         categories: [
           {
-            title: "Getting Started",
-            description: "Begin your Prismy journey from A-Z",
+            title: 'Getting Started',
+            description: 'Begin your Prismy journey from A-Z',
             icon: BookOpen,
-            color: "bg-blue-500",
+            color: 'bg-blue-500',
             items: [
-              "Setup and configuration",
-              "Basic features",
-              "Best practices",
-              "Troubleshooting"
-            ]
+              'Setup and configuration',
+              'Basic features',
+              'Best practices',
+              'Troubleshooting',
+            ],
           },
           {
-            title: "Templates & Examples",
-            description: "Real-world templates and examples",
+            title: 'Templates & Examples',
+            description: 'Real-world templates and examples',
             icon: Sparkles,
-            color: "bg-purple-500",
+            color: 'bg-purple-500',
             items: [
-              "Translation templates",
-              "API integration examples",
-              "Workflow automation",
-              "Custom solutions"
-            ]
+              'Translation templates',
+              'API integration examples',
+              'Workflow automation',
+              'Custom solutions',
+            ],
           },
           {
-            title: "Developer Resources",
-            description: "Resources for developers",
+            title: 'Developer Resources',
+            description: 'Resources for developers',
             icon: GitBranch,
-            color: "bg-green-500",
+            color: 'bg-green-500',
             items: [
-              "API documentation",
-              "SDKs and libraries",
-              "Code samples",
-              "Integration guides"
-            ]
-          }
-        ]
+              'API documentation',
+              'SDKs and libraries',
+              'Code samples',
+              'Integration guides',
+            ],
+          },
+        ],
       },
       events: {
-        title: "Upcoming Events",
-        subtitle: "Join community events and workshops",
+        title: 'Upcoming Events',
+        subtitle: 'Join community events and workshops',
         upcoming: [
           {
-            title: "Prismy Workshop: AI Translation Best Practices",
-            date: "July 15, 2024",
-            time: "7:00 PM - 9:00 PM",
-            type: "Online",
+            title: 'Prismy Workshop: AI Translation Best Practices',
+            date: 'July 15, 2024',
+            time: '7:00 PM - 9:00 PM',
+            type: 'Online',
             attendees: 450,
-            description: "Learn how to optimize translation workflows with AI"
+            description: 'Learn how to optimize translation workflows with AI',
           },
           {
-            title: "Community Meetup - San Francisco",
-            date: "July 22, 2024",
-            time: "6:30 PM - 9:00 PM",
-            type: "Offline",
+            title: 'Community Meetup - San Francisco',
+            date: 'July 22, 2024',
+            time: '6:30 PM - 9:00 PM',
+            type: 'Offline',
             attendees: 120,
-            description: "Meet the community in person in San Francisco"
+            description: 'Meet the community in person in San Francisco',
           },
           {
-            title: "Prismy API Masterclass",
-            date: "August 5, 2024",
-            time: "8:00 PM - 10:00 PM",
-            type: "Online",
+            title: 'Prismy API Masterclass',
+            date: 'August 5, 2024',
+            time: '8:00 PM - 10:00 PM',
+            type: 'Online',
             attendees: 300,
-            description: "Deep dive into Prismy API and advanced features"
-          }
-        ]
+            description: 'Deep dive into Prismy API and advanced features',
+          },
+        ],
       },
       cta: {
-        title: "Ready to join the community?",
-        subtitle: "Start your journey with thousands of other members",
-        primary: "Join Discord",
-        secondary: "View Resources"
-      }
-    }
+        title: 'Ready to join the community?',
+        subtitle: 'Start your journey with thousands of other members',
+        primary: 'Join Discord',
+        secondary: 'View Resources',
+      },
+    },
   }
 
   const currentContent = content[language]
@@ -353,7 +361,7 @@ export default function CommunityPage() {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-12">
               {currentContent.hero.subtitle}
             </p>
-            
+
             {/* Community Stats */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 max-w-4xl mx-auto">
               {currentContent.hero.stats.map((stat, index) => (
@@ -403,10 +411,14 @@ export default function CommunityPage() {
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 className="bg-white border-2 border-gray-200 rounded-2xl p-6 text-center hover:border-blue-300 hover:shadow-lg transition-all duration-300 group cursor-pointer"
               >
-                <div className={`w-16 h-16 ${platform.color} rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                <div
+                  className={`w-16 h-16 ${platform.color} rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}
+                >
                   <platform.icon className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">{platform.name}</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  {platform.name}
+                </h3>
                 <p className="text-gray-600 mb-4">{platform.description}</p>
                 <div className="text-sm font-semibold text-blue-600 mb-4">
                   {platform.members} members
@@ -464,11 +476,15 @@ export default function CommunityPage() {
                     {member.badge}
                   </div>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">{member.name}</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  {member.name}
+                </h3>
                 <p className="text-gray-600 mb-4">{member.role}</p>
                 <div className="flex items-center justify-center text-green-600">
                   <Heart className="w-4 h-4 mr-2" />
-                  <span className="text-sm font-medium">{member.contribution}</span>
+                  <span className="text-sm font-medium">
+                    {member.contribution}
+                  </span>
                 </div>
               </motion.div>
             ))}
@@ -504,10 +520,14 @@ export default function CommunityPage() {
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 className="bg-gray-50 rounded-2xl p-8"
               >
-                <div className={`w-16 h-16 ${category.color} rounded-full flex items-center justify-center mb-6`}>
+                <div
+                  className={`w-16 h-16 ${category.color} rounded-full flex items-center justify-center mb-6`}
+                >
                   <category.icon className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">{category.title}</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                  {category.title}
+                </h3>
                 <p className="text-gray-600 mb-6">{category.description}</p>
                 <ul className="space-y-3">
                   {category.items.map((item, i) => (
@@ -554,12 +574,16 @@ export default function CommunityPage() {
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between">
                   <div className="flex-1 mb-4 lg:mb-0">
                     <div className="flex items-center mb-2">
-                      <h3 className="text-xl font-bold text-gray-900 mr-4">{event.title}</h3>
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        event.type === 'Online' 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-blue-100 text-blue-800'
-                      }`}>
+                      <h3 className="text-xl font-bold text-gray-900 mr-4">
+                        {event.title}
+                      </h3>
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          event.type === 'Online'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-blue-100 text-blue-800'
+                        }`}
+                      >
                         {event.type}
                       </span>
                     </div>

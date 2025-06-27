@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { useLanguage } from '@/contexts/LanguageContext'
+import { useSSRSafeLanguage } from '@/contexts/SSRSafeLanguageContext'
 import { ChevronDown } from 'lucide-react'
 
 interface FooterProps {
@@ -10,7 +10,7 @@ interface FooterProps {
 }
 
 export default function Footer({}: FooterProps) {
-  const { language } = useLanguage()
+  const { language } = useSSRSafeLanguage()
   const [openSection, setOpenSection] = useState<number | null>(null)
 
   const toggleSection = (index: number) => {
@@ -28,7 +28,7 @@ export default function Footer({}: FooterProps) {
     const isOpen = openSection === index
 
     return (
-      <div 
+      <div
         className="last:border-b-0"
         style={{ borderBottom: '1px solid var(--surface-outline)' }}
       >
@@ -38,13 +38,13 @@ export default function Footer({}: FooterProps) {
           aria-expanded={isOpen}
           aria-controls={`mobile-section-${index}`}
         >
-          <h3 
+          <h3
             style={{
               fontSize: 'var(--sys-title-medium-size)',
               lineHeight: 'var(--sys-title-medium-line-height)',
               fontFamily: 'var(--sys-title-medium-font)',
               fontWeight: 'var(--sys-title-medium-weight)',
-              color: 'var(--text-primary)'
+              color: 'var(--text-primary)',
             }}
           >
             {section.title}
@@ -74,12 +74,12 @@ export default function Footer({}: FooterProps) {
                       lineHeight: 'var(--sys-body-medium-line-height)',
                       fontFamily: 'var(--sys-body-medium-font)',
                       fontWeight: 'var(--sys-body-medium-weight)',
-                      color: 'var(--text-secondary)'
+                      color: 'var(--text-secondary)',
                     }}
-                    onMouseEnter={(e) => {
+                    onMouseEnter={e => {
                       e.currentTarget.style.color = 'var(--text-primary)'
                     }}
-                    onMouseLeave={(e) => {
+                    onMouseLeave={e => {
                       e.currentTarget.style.color = 'var(--text-secondary)'
                     }}
                   >
@@ -189,7 +189,7 @@ export default function Footer({}: FooterProps) {
       style={{
         backgroundColor: 'rgba(251, 250, 249, 1)',
         color: 'var(--text-primary)',
-        borderTop: 'none !important'
+        borderTop: 'none !important',
       }}
     >
       <div
@@ -213,27 +213,27 @@ export default function Footer({}: FooterProps) {
                       alt="Prismy"
                       className="h-7 w-auto mr-2"
                     />
-                    <span 
+                    <span
                       className="transition-colors"
                       style={{
                         fontSize: 'var(--sys-title-large-size)',
                         lineHeight: 'var(--sys-title-large-line-height)',
                         fontFamily: 'var(--sys-title-large-font)',
                         fontWeight: 'var(--sys-title-large-weight)',
-                        color: 'var(--text-primary)'
+                        color: 'var(--text-primary)',
                       }}
                     >
                       Prismy
                     </span>
                   </Link>
-                  <p 
+                  <p
                     className="italic mt-1 mb-3 max-w-sm"
                     style={{
                       fontSize: 'var(--sys-body-medium-size)',
                       lineHeight: 'var(--sys-body-medium-line-height)',
                       fontFamily: 'var(--sys-body-medium-font)',
                       fontWeight: 'var(--sys-body-medium-weight)',
-                      color: 'var(--text-secondary)'
+                      color: 'var(--text-secondary)',
                     }}
                   >
                     {content[language].description}
@@ -245,10 +245,10 @@ export default function Footer({}: FooterProps) {
                         href={social.href}
                         className="hover:scale-110 transition-all duration-150 focus-visible-ring rounded-md p-1"
                         style={{ color: 'var(--text-secondary)' }}
-                        onMouseEnter={(e) => {
+                        onMouseEnter={e => {
                           e.currentTarget.style.color = 'var(--text-primary)'
                         }}
-                        onMouseLeave={(e) => {
+                        onMouseLeave={e => {
                           e.currentTarget.style.color = 'var(--text-secondary)'
                         }}
                         aria-label={social.name}
@@ -263,13 +263,13 @@ export default function Footer({}: FooterProps) {
 
             {/* Copyright - Right aligned on same level */}
             <div className="self-end animate-slide-up">
-              <p 
+              <p
                 style={{
                   fontSize: 'var(--sys-body-medium-size)',
                   lineHeight: 'var(--sys-body-medium-line-height)',
                   fontFamily: 'var(--sys-body-medium-font)',
                   fontWeight: 'var(--sys-body-medium-weight)',
-                  color: 'var(--text-secondary)'
+                  color: 'var(--text-secondary)',
                 }}
               >
                 {language === 'vi' ? '© 2025 Prismy' : '© 2025 Prismy'}

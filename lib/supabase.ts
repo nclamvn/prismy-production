@@ -24,8 +24,9 @@ const supabaseClientConfig = {
     },
   },
   realtime: {
+    enabled: false, // Disabled for production stability - prevents WebSocket loops
     params: {
-      eventsPerSecond: 10,
+      eventsPerSecond: 0,
     },
   },
 }
@@ -33,7 +34,7 @@ const supabaseClientConfig = {
 // Connection pool for optimized performance
 const connectionPool = new Map<string, any>()
 const MAX_POOL_SIZE = 10
-const CONNECTION_TIMEOUT = 30000 // 30 seconds
+const CONNECTION_TIMEOUT = 15000 // 15 seconds for faster auth UX
 
 // Singleton client-side Supabase client with enhanced performance
 let browserClient: ReturnType<typeof createBrowserClient> | null = null
@@ -55,8 +56,12 @@ export const createClientComponentClient = () => {
   // Recreate client if it's been idle for too long (connection freshness)
   if (!browserClient || now - lastUsed > CONNECTION_TIMEOUT) {
     if (browserClient) {
-      // Clean up old client
-      browserClient.removeAllChannels()
+      // Clean up old client safely
+      try {
+        browserClient.removeAllChannels()
+      } catch (error) {
+        // Silent cleanup failure
+      }
     }
     browserClient = createBrowserClient(
       supabaseUrl,
@@ -97,7 +102,6 @@ export const createRouteHandlerClient = ({
           cookieStore().set({ name, value, ...options })
         } catch (error) {
           // Silent fail for cookie setting in some contexts
-          console.warn('Cookie setting failed:', error)
         }
       },
       remove(name: string, options: Record<string, any>) {
@@ -105,7 +109,6 @@ export const createRouteHandlerClient = ({
           cookieStore().set({ name, value: '', ...options })
         } catch (error) {
           // Silent fail for cookie removal in some contexts
-          console.warn('Cookie removal failed:', error)
         }
       },
     },
@@ -145,7 +148,6 @@ export const createServerComponentClient = ({
           return cookieStore().get(name)?.value
         } catch (error) {
           // Silent fail for cookie reading in some contexts
-          console.warn('Cookie reading failed:', error)
           return undefined
         }
       },
@@ -218,7 +220,11 @@ export const cleanupConnections = () => {
 
   // Reset browser client if needed
   if (browserClient && now - lastUsed > CONNECTION_TIMEOUT) {
-    browserClient.removeAllChannels()
+    try {
+      browserClient.removeAllChannels()
+    } catch (error) {
+      // Silent cleanup failure
+    }
     browserClient = null
   }
 }

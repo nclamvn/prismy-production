@@ -16,7 +16,7 @@ export default function CreditHUD() {
   const toast = useToast()
   const [credits, setCredits] = useState<CreditBalance>({
     balance: 0,
-    isLoading: true
+    isLoading: true,
   })
   const [showWarning, setShowWarning] = useState(false)
 
@@ -29,40 +29,27 @@ export default function CreditHUD() {
     // Initial fetch
     fetchCreditBalance()
 
-    // Setup realtime subscription
-    const supabase = createClientComponentClient()
-    const subscription = supabase
-      .channel('credit-updates')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'credits',
-          filter: `user_id=eq.${user.id}`
-        },
-        () => {
-          fetchCreditBalance()
-        }
-      )
-      .subscribe()
+    // Setup polling instead of realtime (disabled for performance)
+    const interval = setInterval(() => {
+      fetchCreditBalance()
+    }, 30000) // Poll every 30 seconds
 
     return () => {
-      subscription.unsubscribe()
+      clearInterval(interval)
     }
   }, [user])
 
   const fetchCreditBalance = async () => {
     try {
       const response = await fetch('/api/credits/balance', {
-        credentials: 'include'
+        credentials: 'include',
       })
-      
+
       if (!response.ok) throw new Error('Failed to fetch credits')
-      
+
       const data = await response.json()
       setCredits({ balance: data.balance, isLoading: false })
-      
+
       // Show warning if credits are low
       if (data.balance > 0 && data.balance < 1000) {
         setShowWarning(true)
@@ -83,13 +70,14 @@ export default function CreditHUD() {
 
   return (
     <div className="relative">
-      <div 
+      <div
         className={`
           flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium
           transition-all duration-200 cursor-pointer
-          ${showWarning 
-            ? 'bg-orange-100 text-orange-800 border border-orange-200' 
-            : 'bg-gray-100 text-gray-700 border border-gray-200'
+          ${
+            showWarning
+              ? 'bg-orange-100 text-orange-800 border border-orange-200'
+              : 'bg-gray-100 text-gray-700 border border-gray-200'
           }
           hover:scale-105
         `}
@@ -98,24 +86,27 @@ export default function CreditHUD() {
             toast.info('Upgrade to continue using premium features!', {
               action: {
                 label: 'Upgrade',
-                onClick: () => window.location.href = '/pricing'
-              }
+                onClick: () => (window.location.href = '/pricing'),
+              },
             })
           }
         }}
       >
-        <Zap className={`w-4 h-4 ${showWarning ? 'text-orange-600' : 'text-blue-600'}`} />
+        <Zap
+          className={`w-4 h-4 ${showWarning ? 'text-orange-600' : 'text-blue-600'}`}
+        />
         <span>{formatCredits(credits.balance)}</span>
         {showWarning && <AlertCircle className="w-4 h-4 text-orange-600" />}
       </div>
-      
+
       {showWarning && (
         <div className="absolute top-full mt-2 right-0 p-3 bg-white rounded-lg shadow-lg border border-gray-200 w-64 z-50">
           <p className="text-sm text-gray-700">
-            Credit của bạn sắp hết! Nâng cấp để tiếp tục sử dụng đầy đủ tính năng.
+            Credit của bạn sắp hết! Nâng cấp để tiếp tục sử dụng đầy đủ tính
+            năng.
           </p>
           <button
-            onClick={() => window.location.href = '/pricing'}
+            onClick={() => (window.location.href = '/pricing')}
             className="mt-2 w-full px-3 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
           >
             Nâng cấp ngay

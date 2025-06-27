@@ -2,7 +2,7 @@
 
 // import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { useLanguage } from '@/contexts/LanguageContext'
+import { useSSRSafeLanguage } from '@/contexts/SSRSafeLanguageContext'
 import MainLayout from '@/components/layouts/MainLayout'
 import FeatureCard from '@/components/ui/FeatureCard'
 import { slideUp, staggerContainer, motionSafe } from '@/lib/motion'
@@ -22,7 +22,7 @@ import {
 } from 'lucide-react'
 
 export default function Features() {
-  const { language } = useLanguage()
+  const { language } = useSSRSafeLanguage()
 
   const content = {
     vi: {
@@ -245,7 +245,10 @@ export default function Features() {
     <MainLayout>
       <div className="overflow-x-hidden">
         {/* Hero Section - Full Width */}
-        <section className="relative overflow-hidden w-full" style={{ backgroundColor: 'rgba(251, 250, 249, 1)' }}>
+        <section
+          className="relative overflow-hidden w-full"
+          style={{ backgroundColor: 'rgba(251, 250, 249, 1)' }}
+        >
           <div className="w-full py-20">
             <div className="w-full">
               <motion.div
@@ -305,7 +308,11 @@ export default function Features() {
 
         {/* Feature Sections */}
         {content[language].sections.map((section, sectionIndex) => (
-          <section key={sectionIndex} className="py-20 w-full" style={{ backgroundColor: 'rgba(251, 250, 249, 1)' }}>
+          <section
+            key={sectionIndex}
+            className="py-20 w-full"
+            style={{ backgroundColor: 'rgba(251, 250, 249, 1)' }}
+          >
             <div className="w-full">
               <div className="w-full">
                 <motion.div

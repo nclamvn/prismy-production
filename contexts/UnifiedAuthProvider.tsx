@@ -1,7 +1,7 @@
 'use client'
 
 import React, { createContext, useContext, useEffect } from 'react'
-import { useLanguage } from '@/contexts/LanguageContext'
+import { useSSRSafeLanguage } from '@/contexts/SSRSafeLanguageContext'
 import { useUnifiedAuth, type UnifiedAuthOptions } from '@/hooks/useUnifiedAuth'
 import { AuthErrorBoundary } from '@/components/ErrorBoundary'
 import AuthModal from '@/components/auth/AuthModal'
@@ -27,7 +27,7 @@ export function UnifiedAuthProvider({
 }: {
   children: React.ReactNode
 }) {
-  const { language } = useLanguage()
+  const { language } = useSSRSafeLanguage()
   const unifiedAuth = useUnifiedAuth()
 
   // Listen for openAuthModal events from AuthErrorHandler

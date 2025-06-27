@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '@/contexts/AuthContext'
-import { useLanguage } from '@/contexts/LanguageContext'
+import { useSSRSafeLanguage } from '@/contexts/SSRSafeLanguageContext'
 import MainLayout from '@/components/layouts/MainLayout'
 import EnhancedDocumentUpload from '@/components/documents/EnhancedDocumentUpload'
 import DocumentTranslator from '@/components/documents/DocumentTranslator'
@@ -12,7 +12,7 @@ import { DocumentProcessor, ProcessedDocument } from '@/lib/document-processor'
 import { motionSafe, slideUp, staggerContainer } from '@/lib/motion'
 
 function DocumentsPageContent() {
-  const { language } = useLanguage()
+  const { language } = useSSRSafeLanguage()
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [processedDocument, setProcessedDocument] =
     useState<ProcessedDocument | null>(null)
@@ -214,9 +214,9 @@ function DocumentsPageContent() {
           {/* Language Selection - Redesigned */}
           <motion.div
             className="rounded-2xl shadow-sm p-6 mb-8"
-            style={{ 
-              backgroundColor: 'rgba(251, 250, 249, 1)', 
-              border: '1px solid var(--surface-outline)' 
+            style={{
+              backgroundColor: 'rgba(251, 250, 249, 1)',
+              border: '1px solid var(--surface-outline)',
             }}
             variants={motionSafe(slideUp)}
           >
@@ -286,7 +286,9 @@ function DocumentsPageContent() {
                     isProcessing={isProcessing}
                     showAgentVisualization={true}
                     onAgentAssign={(file, agentType) => {
-                      console.log(`Assigned ${agentType} agent to process ${file.name}`)
+                      console.log(
+                        `Assigned ${agentType} agent to process ${file.name}`
+                      )
                     }}
                   />
                 </motion.div>

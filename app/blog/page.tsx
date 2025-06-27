@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { useLanguage } from '@/contexts/LanguageContext'
+import { useSSRSafeLanguage } from '@/contexts/SSRSafeLanguageContext'
 import MainLayout from '@/components/layouts/MainLayout'
 import { slideUp, staggerContainer, motionSafe } from '@/lib/motion'
 import { Calendar, Clock, User, ArrowRight, Tag } from 'lucide-react'
@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/ArtlineIcons'
 
 export default function Blog() {
-  const { language } = useLanguage()
+  const { language } = useSSRSafeLanguage()
   const [selectedCategory, setSelectedCategory] = useState('all')
 
   const content = {

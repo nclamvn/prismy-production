@@ -26,17 +26,17 @@ export const DURATION = {
   smooth: 0.25, // 15 frames - optimal for smooth perception
   // NotebookLM Material Design 3 durations
   short1: 0.05, // 50ms - Very quick actions
-  short2: 0.1,  // 100ms - Quick actions
+  short2: 0.1, // 100ms - Quick actions
   short3: 0.15, // 150ms - Quick actions
-  short4: 0.2,  // 200ms - Quick actions
+  short4: 0.2, // 200ms - Quick actions
   medium1: 0.25, // 250ms - Standard actions
-  medium2: 0.3,  // 300ms - Standard actions
+  medium2: 0.3, // 300ms - Standard actions
   medium3: 0.35, // 350ms - Standard actions
-  medium4: 0.4,  // 400ms - Standard actions
-  long1: 0.45,   // 450ms - Complex actions
-  long2: 0.5,    // 500ms - Complex actions
-  long3: 0.55,   // 550ms - Complex actions
-  long4: 0.6,    // 600ms - Complex actions
+  medium4: 0.4, // 400ms - Standard actions
+  long1: 0.45, // 450ms - Complex actions
+  long2: 0.5, // 500ms - Complex actions
+  long3: 0.55, // 550ms - Complex actions
+  long4: 0.6, // 600ms - Complex actions
   extraLong1: 0.7, // 700ms - Page transitions
   extraLong2: 0.8, // 800ms - Page transitions
   extraLong3: 0.9, // 900ms - Page transitions
@@ -290,26 +290,36 @@ export const getMotionPreference = () => {
   return !window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
-// Hardware capability detection
+// Hardware capability detection - optimized to prevent WebGL context leaks
 export const getHardwareCapability = () => {
-  if (typeof window === 'undefined') return {
-    hasWebGL: false,
-    hasWillChange: false,
-    hasTransform3d: false,
-    devicePixelRatio: 1,
+  if (typeof window === 'undefined')
+    return {
+      hasWebGL: false,
+      hasWillChange: false,
+      hasTransform3d: false,
+      devicePixelRatio: 1,
+    }
+
+  // Cached result to prevent multiple WebGL context creation
+  if (window.__hardware_capability_cache) {
+    return window.__hardware_capability_cache
   }
 
-  // Check for hardware acceleration support
-  const canvas = document.createElement('canvas')
-  const gl =
-    canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
+  // Check for hardware acceleration support without creating WebGL context
+  // to prevent "Too many active WebGL contexts" warning
+  const hasWebGL = 'WebGLRenderingContext' in window
 
-  return {
-    hasWebGL: !!gl,
+  const result = {
+    hasWebGL,
     hasWillChange: 'willChange' in document.documentElement.style,
     hasTransform3d: 'transform' in document.documentElement.style,
     devicePixelRatio: window.devicePixelRatio || 1,
   }
+
+  // Cache the result to prevent re-detection
+  ;(window as any).__hardware_capability_cache = result
+
+  return result
 }
 
 // Motion-safe wrapper with hardware optimization - SSR safe

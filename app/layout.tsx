@@ -1,14 +1,13 @@
 import React from 'react'
 import type { Metadata, Viewport } from 'next'
-// NotebookLM Typography System Migration  
+// NotebookLM Typography System Migration
 import { Inter } from 'next/font/google'
 
 // Keep Inter for now but prepare for NotebookLM-style font system
 // Google Sans is proprietary, so we'll use Inter as base and modify with CSS
 import '@/styles/globals.css'
-import '@/styles/scroll-animations.css'
 import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration'
-import { LanguageProvider } from '@/contexts/LanguageContext'
+import { SSRSafeLanguageProvider } from '@/contexts/SSRSafeLanguageContext'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { UnifiedAuthProvider } from '@/contexts/UnifiedAuthProvider'
 import {
@@ -21,7 +20,7 @@ import AuthErrorHandler from '@/components/auth/AuthErrorHandler'
 import { CriticalCSS } from '@/components/CriticalCSS'
 import { SkeletonProvider } from '@/components/ui/Skeleton'
 import PageTransition from '@/components/transitions/PageTransition'
-import ModernNavbar from '@/components/navigation/ModernNavbar'
+import ConditionalNavbar from '@/components/navigation/ConditionalNavbar'
 
 // Phase 6.3 & 6.4: Accessibility and Theme Providers
 import { AccessibilityProvider } from '@/components/accessibility/AccessibilityProvider'
@@ -43,16 +42,16 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://prismy.in'),
   title: {
     default: 'Prismy - AI-Powered Translation Platform',
-    template: '%s | Prismy'
+    template: '%s | Prismy',
   },
   other: {
-    charset: 'utf-8'
+    charset: 'utf-8',
   },
   description:
     "The world's most advanced AI translation platform. Translate text and documents instantly with 99.9% accuracy across 150+ languages. NotebookLM-inspired design for enterprise teams.",
   keywords: [
     'translation',
-    'AI translation', 
+    'AI translation',
     'document translation',
     'language translation',
     'multilingual',
@@ -63,7 +62,7 @@ export const metadata: Metadata = {
     'real-time translation',
     'API translation',
     'document OCR',
-    'AI-powered platform'
+    'AI-powered platform',
   ],
   authors: [{ name: 'Prismy', url: 'https://prismy.in' }],
   creator: 'Prismy Team',
@@ -155,7 +154,8 @@ export const metadata: Metadata = {
     site: '@PrismyAI',
     creator: '@PrismyAI',
     title: 'Prismy - AI-Powered Translation Platform',
-    description: 'Enterprise-grade AI translation with 99.9% accuracy across 150+ languages.',
+    description:
+      'Enterprise-grade AI translation with 99.9% accuracy across 150+ languages.',
     images: ['/images/twitter-card.png'],
   },
   verification: {
@@ -220,8 +220,11 @@ export default function RootLayout({
         />
         <meta httpEquiv="Pragma" content="no-cache" />
         <meta httpEquiv="Expires" content="0" />
-        <meta name="version" content="1.0.5-FINAL-CLEAN-TIGHTER-SPACING-20250626" />
-        
+        <meta
+          name="version"
+          content="1.0.5-FINAL-CLEAN-TIGHTER-SPACING-20250626"
+        />
+
         {/* Enhanced SEO Meta Tags */}
         <meta name="application-name" content="Prismy" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -230,57 +233,61 @@ export default function RootLayout({
         <meta name="format-detection" content="telephone=no" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="theme-color" content="#000000" />
-        
+
         {/* Preconnect for Performance */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin=""
+        />
         <link rel="preconnect" href="https://api.prismy.in" />
-        
+
         {/* DNS Prefetch */}
         <link rel="dns-prefetch" href="//prismy.in" />
         <link rel="dns-prefetch" href="//cdn.prismy.in" />
-        <link rel="dns-prefetch" href="//analytics.prismy.in" />
-        
+
         {/* Structured Data */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "SoftwareApplication",
-              "name": "Prismy",
-              "applicationCategory": "BusinessApplication",
-              "description": "AI-powered translation platform for enterprise teams with 99.9% accuracy across 150+ languages",
-              "url": "https://prismy.in",
-              "screenshot": "https://prismy.in/images/og-image.png",
-              "operatingSystem": "Web Browser",
-              "offers": {
-                "@type": "Offer",
-                "price": "0",
-                "priceCurrency": "USD",
-                "priceValidUntil": "2025-12-31"
+              '@context': 'https://schema.org',
+              '@type': 'SoftwareApplication',
+              name: 'Prismy',
+              applicationCategory: 'BusinessApplication',
+              description:
+                'AI-powered translation platform for enterprise teams with 99.9% accuracy across 150+ languages',
+              url: 'https://prismy.in',
+              screenshot: 'https://prismy.in/images/og-image.png',
+              operatingSystem: 'Web Browser',
+              offers: {
+                '@type': 'Offer',
+                price: '0',
+                priceCurrency: 'USD',
+                priceValidUntil: '2025-12-31',
               },
-              "aggregateRating": {
-                "@type": "AggregateRating",
-                "ratingValue": "4.9",
-                "reviewCount": "1250"
+              aggregateRating: {
+                '@type': 'AggregateRating',
+                ratingValue: '4.9',
+                reviewCount: '1250',
               },
-              "author": {
-                "@type": "Organization",
-                "name": "Prismy",
-                "url": "https://prismy.in"
-              }
-            })
+              author: {
+                '@type': 'Organization',
+                name: 'Prismy',
+                url: 'https://prismy.in',
+              },
+            }),
           }}
         />
       </head>
       <body
         className="font-inter antialiased overflow-x-hidden"
-        style={{ 
-          fontSize: '18px', 
+        style={{
+          fontSize: '18px',
           lineHeight: '1.6',
           backgroundColor: 'var(--surface-panel)',
-          color: 'var(--text-primary)'
+          color: 'var(--text-primary)',
         }}
       >
         <CriticalCSS>
@@ -289,24 +296,29 @@ export default function RootLayout({
               <AccessibilityProvider>
                 <ToastProvider>
                   <LoadingProvider>
-                    <SkeletonProvider 
-                      loading={false} 
-                      skeleton={<div className="min-h-screen bg-gray-50 animate-pulse" />}
+                    <SkeletonProvider
+                      loading={false}
+                      skeleton={
+                        <div className="min-h-screen bg-gray-50 animate-pulse" />
+                      }
                     >
-                      <LanguageProvider>
+                      <SSRSafeLanguageProvider
+                        defaultLanguage="en"
+                        ssrLanguage="en"
+                      >
                         <AuthProvider>
                           <UnifiedAuthProvider>
                             <GlobalLoadingIndicator />
                             <AuthErrorHandler />
-                            <WebVitalsMonitor debug={process.env.NODE_ENV === 'development'} />
-                            {/* Navbar at highest level - outside PageTransition */}
-                            <ModernNavbar />
-                            <PageTransition>
-                              {children}
-                            </PageTransition>
+                            <WebVitalsMonitor
+                              debug={process.env.NODE_ENV === 'development'}
+                            />
+                            {/* Conditional Navbar - only on public pages */}
+                            <ConditionalNavbar />
+                            <PageTransition>{children}</PageTransition>
                           </UnifiedAuthProvider>
                         </AuthProvider>
-                      </LanguageProvider>
+                      </SSRSafeLanguageProvider>
                     </SkeletonProvider>
                   </LoadingProvider>
                 </ToastProvider>

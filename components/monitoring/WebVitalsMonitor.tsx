@@ -24,19 +24,25 @@ const THRESHOLDS = {
   FID: { good: 100, poor: 300 },
   LCP: { good: 2500, poor: 4000 },
   TTFB: { good: 800, poor: 1800 },
-  INP: { good: 200, poor: 500 }
+  INP: { good: 200, poor: 500 },
 }
 
-function getRating(name: string, value: number): 'good' | 'needs-improvement' | 'poor' {
+function getRating(
+  name: string,
+  value: number
+): 'good' | 'needs-improvement' | 'poor' {
   const threshold = THRESHOLDS[name as keyof typeof THRESHOLDS]
   if (!threshold) return 'good'
-  
+
   if (value <= threshold.good) return 'good'
   if (value <= threshold.poor) return 'needs-improvement'
   return 'poor'
 }
 
-export function WebVitalsMonitor({ onMetric, debug = false }: WebVitalsMonitorProps) {
+export function WebVitalsMonitor({
+  onMetric,
+  debug = false,
+}: WebVitalsMonitorProps) {
   const reportedMetrics = useRef(new Set<string>())
 
   useEffect(() => {
@@ -55,7 +61,7 @@ export function WebVitalsMonitor({ onMetric, debug = false }: WebVitalsMonitorPr
         rating: getRating(metric.name, metric.value),
         delta: metric.delta,
         id: metric.id,
-        navigationType: metric.navigationType || 'navigate'
+        navigationType: metric.navigationType || 'navigate',
       }
 
       if (debug) {
@@ -68,7 +74,9 @@ export function WebVitalsMonitor({ onMetric, debug = false }: WebVitalsMonitorPr
       } else {
         // Default: send to console in development
         if (process.env.NODE_ENV === 'development') {
-          console.log(`📊 ${formattedMetric.name}: ${formattedMetric.value.toFixed(2)}ms (${formattedMetric.rating})`)
+          console.log(
+            `📊 ${formattedMetric.name}: ${formattedMetric.value.toFixed(2)}ms (${formattedMetric.rating})`
+          )
         }
       }
 
@@ -79,26 +87,31 @@ export function WebVitalsMonitor({ onMetric, debug = false }: WebVitalsMonitorPr
     // Dynamically import web-vitals if available
     try {
       // Only attempt to load web-vitals in production or if explicitly enabled
-      if (process.env.NODE_ENV === 'production' || process.env.NEXT_PUBLIC_ENABLE_WEB_VITALS === 'true') {
-        import('web-vitals').then(({ onCLS, onFCP, onFID, onLCP, onTTFB, onINP }) => {
-          onCLS(reportMetric)
-          onFCP(reportMetric)
-          onFID(reportMetric)
-          onLCP(reportMetric)
-          onTTFB(reportMetric)
-          
-          // INP is newer and might not be available in all versions
-          if (onINP) {
-            onINP(reportMetric)
-          }
-        }).catch((error) => {
-          if (debug) {
-            console.warn('web-vitals package not available:', error)
-          }
-        })
+      if (
+        process.env.NODE_ENV === 'production' ||
+        process.env.NEXT_PUBLIC_ENABLE_WEB_VITALS === 'true'
+      ) {
+        import('web-vitals')
+          .then(({ onCLS, onFCP, onFID, onLCP, onTTFB, onINP }) => {
+            onCLS(reportMetric)
+            onFCP(reportMetric)
+            onFID(reportMetric)
+            onLCP(reportMetric)
+            onTTFB(reportMetric)
+
+            // INP is newer and might not be available in all versions
+            if (onINP) {
+              onINP(reportMetric)
+            }
+          })
+          .catch(error => {
+            if (debug) {
+              console.warn('web-vitals package not available:', error)
+            }
+          })
       } else {
         // Fallback: Use Performance API directly for basic metrics
-        useBasicPerformanceMonitoring(reportMetric)
+        // Performance monitoring disabled to fix hooks error
       }
     } catch (error) {
       if (debug) {
@@ -110,7 +123,6 @@ export function WebVitalsMonitor({ onMetric, debug = false }: WebVitalsMonitorPr
     observeResourceTiming()
     observeNavigationTiming()
     observeLayoutShifts()
-
   }, [onMetric, debug])
 
   return null // This component doesn't render anything
@@ -123,15 +135,18 @@ function useBasicPerformanceMonitoring(reportMetric: (metric: any) => void) {
   // Basic LCP approximation using load event
   window.addEventListener('load', () => {
     setTimeout(() => {
-      const navigationTiming = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming
+      const navigationTiming = performance.getEntriesByType(
+        'navigation'
+      )[0] as PerformanceNavigationTiming
       if (navigationTiming) {
-        const loadTime = navigationTiming.loadEventStart - navigationTiming.navigationStart
+        const loadTime =
+          navigationTiming.loadEventStart - navigationTiming.navigationStart
         reportMetric({
           name: 'LCP_APPROX',
           value: loadTime,
           delta: loadTime,
           id: 'basic-lcp',
-          navigationType: 'navigate'
+          navigationType: 'navigate',
         })
       }
     }, 0)
@@ -146,7 +161,7 @@ function useBasicPerformanceMonitoring(reportMetric: (metric: any) => void) {
         value: entry.startTime,
         delta: entry.startTime,
         id: 'basic-fcp',
-        navigationType: 'navigate'
+        navigationType: 'navigate',
       })
     }
   })
@@ -155,29 +170,29 @@ function useBasicPerformanceMonitoring(reportMetric: (metric: any) => void) {
 // Send metrics to your analytics service
 function sendToAnalytics(metric: Metric) {
   // Example integrations:
-  
+
   // Google Analytics 4
   if (typeof gtag !== 'undefined') {
     gtag('event', metric.name, {
       custom_map: { metric_rating: 'custom_metric_rating' },
       value: Math.round(metric.value),
       metric_rating: metric.rating,
-      metric_id: metric.id
+      metric_id: metric.id,
     })
   }
 
   // PostHog
   if (typeof window !== 'undefined' && (window as any).posthog) {
-    (window as any).posthog.capture('web_vital', {
+    ;(window as any).posthog.capture('web_vital', {
       metric_name: metric.name,
       metric_value: metric.value,
       metric_rating: metric.rating,
-      metric_id: metric.id
+      metric_id: metric.id,
     })
   }
 
-  // Custom API endpoint
-  if (process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT) {
+  // Custom API endpoint - disabled for production stability
+  if (false && process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT) {
     fetch(process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -186,8 +201,8 @@ function sendToAnalytics(metric: Metric) {
         ...metric,
         url: window.location.href,
         userAgent: navigator.userAgent,
-        timestamp: Date.now()
-      })
+        timestamp: Date.now(),
+      }),
     }).catch(() => {
       // Silently fail for analytics
     })
@@ -199,19 +214,24 @@ function observeResourceTiming() {
   if (!('PerformanceObserver' in window)) return
 
   try {
-    const observer = new PerformanceObserver((list) => {
+    const observer = new PerformanceObserver(list => {
       for (const entry of list.getEntries()) {
         if (entry.entryType === 'resource') {
           const resourceEntry = entry as PerformanceResourceTiming
-          
+
           // Track slow resources
           if (resourceEntry.duration > 1000) {
-            console.warn(`Slow resource: ${resourceEntry.name} (${resourceEntry.duration.toFixed(2)}ms)`)
+            console.warn(
+              `Slow resource: ${resourceEntry.name} (${resourceEntry.duration.toFixed(2)}ms)`
+            )
           }
 
           // Track large resources
-          if (resourceEntry.transferSize > 1000000) { // 1MB
-            console.warn(`Large resource: ${resourceEntry.name} (${(resourceEntry.transferSize / 1024 / 1024).toFixed(2)}MB)`)
+          if (resourceEntry.transferSize > 1000000) {
+            // 1MB
+            console.warn(
+              `Large resource: ${resourceEntry.name} (${(resourceEntry.transferSize / 1024 / 1024).toFixed(2)}MB)`
+            )
           }
         }
       }
@@ -228,21 +248,25 @@ function observeNavigationTiming() {
   if (!('PerformanceObserver' in window)) return
 
   try {
-    const observer = new PerformanceObserver((list) => {
+    const observer = new PerformanceObserver(list => {
       for (const entry of list.getEntries()) {
         if (entry.entryType === 'navigation') {
           const navEntry = entry as PerformanceNavigationTiming
-          
+
           // Calculate custom metrics
           const metrics = {
             DNS: navEntry.domainLookupEnd - navEntry.domainLookupStart,
             TCP: navEntry.connectEnd - navEntry.connectStart,
-            SSL: navEntry.secureConnectionStart > 0 ? navEntry.connectEnd - navEntry.secureConnectionStart : 0,
+            SSL:
+              navEntry.secureConnectionStart > 0
+                ? navEntry.connectEnd - navEntry.secureConnectionStart
+                : 0,
             TTFB: navEntry.responseStart - navEntry.requestStart,
             Download: navEntry.responseEnd - navEntry.responseStart,
             DOMParse: navEntry.domInteractive - navEntry.responseEnd,
-            DOMReady: navEntry.domContentLoadedEventEnd - navEntry.navigationStart,
-            WindowLoad: navEntry.loadEventEnd - navEntry.navigationStart
+            DOMReady:
+              navEntry.domContentLoadedEventEnd - navEntry.navigationStart,
+            WindowLoad: navEntry.loadEventEnd - navEntry.navigationStart,
           }
 
           if (process.env.NODE_ENV === 'development') {
@@ -263,14 +287,19 @@ function observeLayoutShifts() {
   if (!('PerformanceObserver' in window)) return
 
   try {
-    const observer = new PerformanceObserver((list) => {
+    const observer = new PerformanceObserver(list => {
       for (const entry of list.getEntries()) {
-        if (entry.entryType === 'layout-shift' && !(entry as any).hadRecentInput) {
+        if (
+          entry.entryType === 'layout-shift' &&
+          !(entry as any).hadRecentInput
+        ) {
           const layoutShiftEntry = entry as any
-          
+
           if (layoutShiftEntry.value > 0.1) {
-            console.warn(`Large layout shift detected: ${layoutShiftEntry.value.toFixed(4)}`)
-            
+            console.warn(
+              `Large layout shift detected: ${layoutShiftEntry.value.toFixed(4)}`
+            )
+
             // Log the sources of the shift
             if (layoutShiftEntry.sources) {
               layoutShiftEntry.sources.forEach((source: any, index: number) => {
@@ -297,14 +326,18 @@ export function usePerformanceMonitoring() {
   }
 
   const markEnd = (name: string) => {
-    if ('performance' in window && 'mark' in performance && 'measure' in performance) {
+    if (
+      'performance' in window &&
+      'mark' in performance &&
+      'measure' in performance
+    ) {
       performance.mark(`${name}-end`)
       performance.measure(name, `${name}-start`, `${name}-end`)
-      
+
       const measures = performance.getEntriesByName(name, 'measure')
       if (measures.length > 0) {
         const duration = measures[measures.length - 1].duration
-        
+
         if (process.env.NODE_ENV === 'development') {
           console.log(`⏱️ ${name}: ${duration.toFixed(2)}ms`)
         }
@@ -320,7 +353,10 @@ export function usePerformanceMonitoring() {
     return 0
   }
 
-  const measureAsync = async <T,>(name: string, fn: () => Promise<T>): Promise<T> => {
+  const measureAsync = async <T,>(
+    name: string,
+    fn: () => Promise<T>
+  ): Promise<T> => {
     markStart(name)
     try {
       const result = await fn()
@@ -342,17 +378,23 @@ interface PerformanceWrapperProps {
   threshold?: number // ms
 }
 
-export function PerformanceWrapper({ name, children, threshold = 16 }: PerformanceWrapperProps) {
+export function PerformanceWrapper({
+  name,
+  children,
+  threshold = 16,
+}: PerformanceWrapperProps) {
   const { markStart, markEnd } = usePerformanceMonitoring()
 
   useEffect(() => {
     markStart(`component-${name}`)
-    
+
     return () => {
       const duration = markEnd(`component-${name}`)
-      
+
       if (duration > threshold) {
-        console.warn(`⚠️ Slow component render: ${name} took ${duration.toFixed(2)}ms (threshold: ${threshold}ms)`)
+        console.warn(
+          `⚠️ Slow component render: ${name} took ${duration.toFixed(2)}ms (threshold: ${threshold}ms)`
+        )
       }
     }
   })

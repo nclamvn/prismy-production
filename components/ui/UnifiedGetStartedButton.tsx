@@ -3,7 +3,7 @@
 import React from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useUnifiedAuthContext } from '@/contexts/UnifiedAuthProvider'
-import { useLanguage } from '@/contexts/LanguageContext'
+import { useSSRSafeLanguage } from '@/contexts/SSRSafeLanguageContext'
 import { useRouter } from 'next/navigation'
 
 interface UnifiedGetStartedButtonProps {
@@ -27,7 +27,7 @@ export default function UnifiedGetStartedButton({
 }: UnifiedGetStartedButtonProps) {
   const { user, loading } = useAuth()
   const { handleGetStarted } = useUnifiedAuthContext()
-  const { language } = useLanguage()
+  const { language } = useSSRSafeLanguage()
   const router = useRouter()
 
   const content = {
@@ -42,23 +42,11 @@ export default function UnifiedGetStartedButton({
   }
 
   const handleClick = () => {
-    console.log('🎯 UnifiedGetStartedButton: Click detected', {
-      user: user ? 'authenticated' : 'guest',
-      redirectTo,
-    })
-
     if (user) {
       // User is authenticated - navigate directly to workspace
-      console.log(
-        '✅ UnifiedGetStartedButton: User authenticated, navigating to',
-        redirectTo
-      )
       router.push(redirectTo)
     } else {
       // User needs to authenticate
-      console.log(
-        '🔐 UnifiedGetStartedButton: User not authenticated, opening auth modal'
-      )
       handleGetStarted({
         initialMode: 'signup',
         redirectTo,
@@ -115,7 +103,12 @@ export default function UnifiedGetStartedButton({
   }
 
   return (
-    <button onClick={handleClick} className={getButtonClasses()} style={style} type="button">
+    <button
+      onClick={handleClick}
+      className={getButtonClasses()}
+      style={style}
+      type="button"
+    >
       {getButtonText()}
     </button>
   )

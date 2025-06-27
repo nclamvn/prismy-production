@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { useLanguage } from '@/contexts/LanguageContext'
+import { useSSRSafeLanguage } from '@/contexts/SSRSafeLanguageContext'
 import MainLayout from '@/components/layouts/MainLayout'
 import UniversalDropdown from '@/components/ui/UniversalDropdown'
 import { slideUp, staggerContainer, motionSafe } from '@/lib/motion'
@@ -23,7 +23,7 @@ import {
 } from 'lucide-react'
 
 function EnterpriseContent() {
-  const { language } = useLanguage()
+  const { language } = useSSRSafeLanguage()
   const [employeeCount, setEmployeeCount] = useState('1-50')
 
   const content = {
@@ -312,7 +312,10 @@ function EnterpriseContent() {
     <MainLayout>
       <div className="overflow-x-hidden">
         {/* Hero Section */}
-        <section className="relative overflow-hidden w-full" style={{ backgroundColor: 'rgba(251, 250, 249, 1)' }}>
+        <section
+          className="relative overflow-hidden w-full"
+          style={{ backgroundColor: 'rgba(251, 250, 249, 1)' }}
+        >
           <div className="w-full py-20 px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
               <motion.div
@@ -383,7 +386,10 @@ function EnterpriseContent() {
         </section>
 
         {/* Stats Section */}
-        <section className="py-20 w-full" style={{ backgroundColor: 'rgba(251, 250, 249, 1)' }}>
+        <section
+          className="py-20 w-full"
+          style={{ backgroundColor: 'rgba(251, 250, 249, 1)' }}
+        >
           <div className="w-full px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -410,7 +416,10 @@ function EnterpriseContent() {
         </section>
 
         {/* Why Enterprise Section */}
-        <section className="py-20 w-full" style={{ backgroundColor: 'rgba(251, 250, 249, 1)' }}>
+        <section
+          className="py-20 w-full"
+          style={{ backgroundColor: 'rgba(251, 250, 249, 1)' }}
+        >
           <div className="w-full px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
               <motion.div
@@ -465,7 +474,10 @@ function EnterpriseContent() {
         </section>
 
         {/* Case Studies Section */}
-        <section className="py-20 w-full" style={{ backgroundColor: 'rgba(251, 250, 249, 1)' }}>
+        <section
+          className="py-20 w-full"
+          style={{ backgroundColor: 'rgba(251, 250, 249, 1)' }}
+        >
           <div className="w-full px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
               <motion.div
@@ -552,7 +564,10 @@ function EnterpriseContent() {
         </section>
 
         {/* Vietnamese Market Focus */}
-        <section className="py-20 w-full" style={{ backgroundColor: 'rgba(251, 250, 249, 1)' }}>
+        <section
+          className="py-20 w-full"
+          style={{ backgroundColor: 'rgba(251, 250, 249, 1)' }}
+        >
           <div className="w-full px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
               <motion.div
@@ -650,9 +665,9 @@ function EnterpriseContent() {
                       key={index}
                       variants={motionSafe(slideUp)}
                       className="rounded-2xl p-6 transition-all duration-300 shadow-sm hover:shadow-md"
-                      style={{ 
-                        backgroundColor: 'rgba(251, 250, 249, 1)', 
-                        border: '1px solid var(--surface-outline)' 
+                      style={{
+                        backgroundColor: 'rgba(251, 250, 249, 1)',
+                        border: '1px solid var(--surface-outline)',
                       }}
                     >
                       <div className="mb-4">
@@ -678,7 +693,10 @@ function EnterpriseContent() {
         </section>
 
         {/* Testimonials Section */}
-        <section className="py-20 w-full" style={{ backgroundColor: 'rgba(251, 250, 249, 1)' }}>
+        <section
+          className="py-20 w-full"
+          style={{ backgroundColor: 'rgba(251, 250, 249, 1)' }}
+        >
           <div className="w-full px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
               <motion.div
@@ -758,16 +776,21 @@ function EnterpriseContent() {
                       key={index}
                       variants={motionSafe(slideUp)}
                       className="rounded-2xl p-8 shadow-lg"
-                      style={{ 
-                        backgroundColor: 'rgba(251, 250, 249, 1)', 
-                        border: '1px solid var(--surface-outline)' 
+                      style={{
+                        backgroundColor: 'rgba(251, 250, 249, 1)',
+                        border: '1px solid var(--surface-outline)',
                       }}
                     >
                       <p className="body-base text-text-secondary mb-6 italic leading-relaxed">
                         {testimonial.quote}
                       </p>
                       <div className="flex items-center">
-                        <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold mr-4" style={{ backgroundColor: 'var(--notebooklm-primary)' }}>
+                        <div
+                          className="w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold mr-4"
+                          style={{
+                            backgroundColor: 'var(--notebooklm-primary)',
+                          }}
+                        >
                           {testimonial.author
                             .split(' ')
                             .map(n => n[0])
@@ -791,7 +814,10 @@ function EnterpriseContent() {
         </section>
 
         {/* Enterprise Pricing */}
-        <section className="py-20 w-full" style={{ backgroundColor: 'rgba(251, 250, 249, 1)' }}>
+        <section
+          className="py-20 w-full"
+          style={{ backgroundColor: 'rgba(251, 250, 249, 1)' }}
+        >
           <div className="w-full px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto">
               <motion.div
@@ -851,7 +877,10 @@ function EnterpriseContent() {
         </section>
 
         {/* Contact Section */}
-        <section className="py-20 w-full" style={{ backgroundColor: 'var(--notebooklm-primary)' }}>
+        <section
+          className="py-20 w-full"
+          style={{ backgroundColor: 'var(--notebooklm-primary)' }}
+        >
           <div className="w-full px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto">
               <motion.div
@@ -867,7 +896,10 @@ function EnterpriseContent() {
                   <h2 className="heading-2 text-white mb-4">
                     {content[language].contact.title}
                   </h2>
-                  <p className="body-lg" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                  <p
+                    className="body-lg"
+                    style={{ color: 'rgba(255, 255, 255, 0.8)' }}
+                  >
                     {content[language].contact.subtitle}
                   </p>
                 </motion.div>

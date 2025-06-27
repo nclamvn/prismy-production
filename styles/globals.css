@@ -1243,7 +1243,8 @@ nav.prismy-navbar.prismy-navbar.prismy-navbar {
 }
 
 @keyframes wave {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.5;
   }
   50% {
@@ -1499,7 +1500,8 @@ nav.prismy-navbar.prismy-navbar.prismy-navbar {
 
 /* Floating elements animations */
 @keyframes float-slow {
-  0%, 100% {
+  0%,
+  100% {
     transform: translate(0, 0) rotate(0deg);
   }
   33% {
@@ -1511,7 +1513,8 @@ nav.prismy-navbar.prismy-navbar.prismy-navbar {
 }
 
 @keyframes float-medium {
-  0%, 100% {
+  0%,
+  100% {
     transform: translate(0, 0) rotate(0deg);
   }
   50% {
@@ -1520,7 +1523,8 @@ nav.prismy-navbar.prismy-navbar.prismy-navbar {
 }
 
 @keyframes float-fast {
-  0%, 100% {
+  0%,
+  100% {
     transform: translate(0, 0) rotate(0deg);
   }
   25% {
@@ -1534,31 +1538,7 @@ nav.prismy-navbar.prismy-navbar.prismy-navbar {
   }
 }
 
-@keyframes hero-slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes user-count-update {
-  0% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.2);
-    opacity: 0.8;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
+/* Old animation classes removed - replaced with optimized CSS-only animations in GradientKeyframes.css */
 
 .animate-float-slow {
   animation: float-slow 20s ease-in-out infinite;
@@ -1572,10 +1552,389 @@ nav.prismy-navbar.prismy-navbar.prismy-navbar {
   animation: float-fast 12s ease-in-out infinite;
 }
 
-.animate-hero-slide-up {
-  animation: hero-slide-up 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+/* ============================================================================ */
+/* CENTRALIZED CSS - MERGED FROM SCROLL-ANIMATIONS.CSS */
+/* ============================================================================ */
+
+/* NotebookLM Scroll-Triggered Animations */
+
+/* Fade in animation utility */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.animate-user-count-update {
-  animation: user-count-update 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Animation classes */
+.animate-on-scroll {
+  opacity: 0;
+  transition:
+    opacity 0.6s ease-out,
+    transform 0.6s ease-out;
+}
+
+.animate-on-scroll.in-view {
+  opacity: 1;
+}
+
+.fade-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.fade-left {
+  animation: fadeInLeft 0.8s ease-out forwards;
+}
+
+.fade-right {
+  animation: fadeInRight 0.8s ease-out forwards;
+}
+
+.fade-scale {
+  animation: fadeInScale 0.8s ease-out forwards;
+}
+
+/* Stagger animation delays */
+.stagger-1 {
+  animation-delay: 0.1s;
+}
+.stagger-2 {
+  animation-delay: 0.2s;
+}
+.stagger-3 {
+  animation-delay: 0.3s;
+}
+.stagger-4 {
+  animation-delay: 0.4s;
+}
+.stagger-5 {
+  animation-delay: 0.5s;
+}
+
+/* NotebookLM-style gradient reveal */
+@keyframes gradientReveal {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.gradient-reveal {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--notebooklm-primary-light) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: gradientReveal 2s ease-in-out infinite;
+}
+
+/* Floating animation for cards */
+@keyframes float-gentle {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.float-on-hover:hover {
+  animation: float-gentle 2s ease-in-out infinite;
+}
+
+/* Modern glass card effect */
+.glass-card {
+  background: rgba(251, 250, 249, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Interactive glow effect */
+.glow-on-hover {
+  transition: all 0.3s ease;
+}
+
+.glow-on-hover:hover {
+  box-shadow:
+    0 0 20px rgba(0, 0, 0, 0.3),
+    0 0 40px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+/* NotebookLM Button glow */
+.notebooklm-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.notebooklm-glow::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.notebooklm-glow:hover::before {
+  left: 100%;
+}
+
+/* Pulse animation for important elements */
+@keyframes notebookPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
+  }
+}
+
+.pulse-notebooklm {
+  animation: notebookPulse 2s infinite;
+}
+
+/* Smooth transitions for all interactive elements */
+.smooth-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================================================ */
+/* CENTRALIZED CSS - MERGED FROM GRADIENTKEYFRAMES.CSS */
+/* ============================================================================ */
+
+/* GRADIENT ANIMATIONS - OPTIMIZED FOR PERFORMANCE */
+
+@keyframes gradientFlow {
+  0% {
+    background-position: -100% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* HERO ANIMATIONS - SYNCHRONIZED & HYDRATION-SAFE */
+
+@keyframes heroFadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroFadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* GRADIENT TEXT STYLES */
+
+.gradient-text {
+  background: linear-gradient(
+    90deg,
+    #6366f1 0%,
+    #3b82f6 20%,
+    #06b6d4 40%,
+    #10b981 60%,
+    #22c55e 80%,
+    #6366f1 100%
+  );
+  background-size: 200% 100%;
+  animation: gradientFlow 4s linear infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.animate-gradient {
+  background-size: 400% 400%;
+  animation: gradientMove 8s ease infinite;
+}
+
+.animate-gradient-text {
+  background-size: 200% 100%;
+  animation: gradientFlow 4s linear infinite;
+}
+
+/* HERO COMPONENT ANIMATIONS - NO JAVASCRIPT REQUIRED */
+
+.hero-animate-1 {
+  animation: heroFadeInUp 0.6s cubic-bezier(0.2, 0, 0, 1) 0.1s both;
+}
+
+.hero-animate-2 {
+  animation: heroFadeInUp 0.6s cubic-bezier(0.2, 0, 0, 1) 0.2s both;
+}
+
+.hero-animate-3 {
+  animation: heroFadeInUp 0.6s cubic-bezier(0.2, 0, 0, 1) 0.3s both;
+}
+
+.hero-animate-4 {
+  animation: heroFadeInUp 0.6s cubic-bezier(0.2, 0, 0, 1) 0.4s both;
+}
+
+.hero-animate-5 {
+  animation: heroFadeInUp 0.6s cubic-bezier(0.2, 0, 0, 1) 0.5s both;
+}
+
+.hero-animate-6 {
+  animation: heroFadeInUp 0.6s cubic-bezier(0.2, 0, 0, 1) 0.6s both;
+}
+
+/* PERFORMANCE OPTIMIZATIONS */
+
+.hero-animate-1,
+.hero-animate-2,
+.hero-animate-3,
+.hero-animate-4,
+.hero-animate-5,
+.hero-animate-6 {
+  /* Optimize animations for performance */
+  will-change: transform, opacity;
+  transform: translateZ(0); /* Force hardware acceleration */
+}
+
+/* FLOATING ANIMATIONS FOR BACKGROUND ELEMENTS - OPTIMIZED */
+
+@keyframes float-slow-optimized {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes float-medium-optimized {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+@keyframes float-fast-optimized {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-float-slow-optimized {
+  animation: float-slow-optimized 6s ease-in-out infinite;
+}
+
+.animate-float-medium-optimized {
+  animation: float-medium-optimized 4s ease-in-out infinite;
+}
+
+.animate-float-fast-optimized {
+  animation: float-fast-optimized 3s ease-in-out infinite;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .animate-on-scroll,
+  .fade-up,
+  .fade-left,
+  .fade-right,
+  .fade-scale,
+  .float-on-hover,
+  .glow-on-hover,
+  .notebooklm-glow,
+  .pulse-notebooklm,
+  .hero-animate-1,
+  .hero-animate-2,
+  .hero-animate-3,
+  .hero-animate-4,
+  .hero-animate-5,
+  .hero-animate-6,
+  .animate-float-slow-optimized,
+  .animate-float-medium-optimized,
+  .animate-float-fast-optimized {
+    animation: none !important;
+    transition: none !important;
+  }
 }
