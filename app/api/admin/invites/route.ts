@@ -114,7 +114,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      invites: invites.map(invite => ({
+      invites: invites.map((invite: any) => ({
         id: invite.id,
         code: invite.code_preview + '...',
         credits: invite.credits_initial,

@@ -125,10 +125,8 @@ export async function POST(request: NextRequest) {
 
     // A/B testing for cache performance
     const testId = 'cache_performance_2024_06'
-    const isTestActive = abTestingFramework.isTestActive(testId)
-    const variant = isTestActive ? 
-      abTestingFramework.getTestVariant(testId, session.user.id) : 
-      'cache_enabled'
+    const isTestActive = false // abTestingFramework.isTestActive(testId)
+    const variant = 'cache_enabled' // isTestActive ? abTestingFramework.getTestVariant(testId, session.user.id) : 'cache_enabled'
 
     const startTime = Date.now()
     let cacheHit = false
@@ -150,7 +148,7 @@ export async function POST(request: NextRequest) {
 
       // Record A/B test result if test is active
       if (isTestActive) {
-        await abTestingFramework.recordTestResult({
+        // await abTestingFramework.recordTestResult({
           testId,
           variant,
           startTime,
@@ -165,7 +163,7 @@ export async function POST(request: NextRequest) {
             qualityTier: qualityTier as string,
             userId: session.user.id
           }
-        })
+        // })
       }
 
       // Track usage in database
@@ -188,7 +186,8 @@ export async function POST(request: NextRequest) {
       // Send real-time notification via WebSocket
       const translationId = `trans_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
       
-      // Notify user via WebSocket about translation completion
+      // WebSocket notification disabled for production stability
+      /*
       websocketManager.sendToUser(session.user.id, {
         id: `notif_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         type: 'translation_completed',
@@ -206,6 +205,7 @@ export async function POST(request: NextRequest) {
           cached: result.cached || false
         }
       })
+      */
 
       // Return successful response with credit information
         return NextResponse.json({
@@ -233,7 +233,7 @@ export async function POST(request: NextRequest) {
               limit: rateLimitResult.limit
             }
           }
-        })
+        // })
 
     } catch (error) {
       console.error('Translation API error:', error)
@@ -242,7 +242,7 @@ export async function POST(request: NextRequest) {
       // Record A/B test result for error case
       if (isTestActive) {
         const endTime = Date.now()
-        await abTestingFramework.recordTestResult({
+        /* await abTestingFramework.recordTestResult({
           testId,
           variant,
           startTime,
@@ -258,7 +258,9 @@ export async function POST(request: NextRequest) {
             qualityTier: qualityTier as string,
             userId: session.user.id
           }
-        })
+        // }) */
+          }
+        // })
       }
 
       throw error
