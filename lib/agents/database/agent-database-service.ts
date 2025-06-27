@@ -4,7 +4,7 @@
  * Provides high-level abstraction over the agent database schema
  */
 
-import { createClient } from '@supabase/supabase-js'
+import { createServiceRoleClient } from '@/lib/supabase'
 import { Agent, Document, Task, TaskResult, AgentCapability } from '@/components/workspace/types'
 import { AgentMemory, AgentEvent, AgentPattern, AgentGoal, AutonomousContext } from '../document-agent'
 import { AgentCollaboration, SwarmMetrics, SwarmQuery, SwarmQueryResponse } from '../agent-manager'
@@ -80,16 +80,7 @@ export interface KnowledgeRecord {
 }
 
 export class AgentDatabaseService {
-  private supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
-    }
-  )
+  private supabase = createServiceRoleClient()
 
   /**
    * Create a new persistent agent

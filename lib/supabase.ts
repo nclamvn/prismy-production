@@ -36,8 +36,6 @@ const supabaseClientConfig = {
 // Connection pool for optimized performance
 const connectionPool = new Map<string, any>()
 const MAX_POOL_SIZE = 10
-const CONNECTION_TIMEOUT = 15000 // 15 seconds for faster auth UX
-
 // Global singleton registry to prevent multiple GoTrueClient instances
 const globalClientRegistry = (() => {
   if (typeof window !== 'undefined') {
@@ -45,13 +43,13 @@ const globalClientRegistry = (() => {
     if (!(window as any).__supabase_client_registry__) {
       (window as any).__supabase_client_registry__ = {
         browserClient: null,
-        lastUsed: Date.now(),
-        initialized: false
+        initialized: false,
+        createdAt: Date.now()
       }
     }
     return (window as any).__supabase_client_registry__
   }
-  return { browserClient: null, lastUsed: Date.now(), initialized: false }
+  return { browserClient: null, initialized: false, createdAt: Date.now() }
 })()
 
 export const createClientComponentClient = () => {
@@ -65,11 +63,17 @@ export const createClientComponentClient = () => {
   }
 
   // Client-side: use truly global singleton pattern
-  const now = Date.now()
-
-  // Only create a new client if we don't have one or it's been idle too long
-  if (!globalClientRegistry.browserClient || !globalClientRegistry.initialized || 
-      now - globalClientRegistry.lastUsed > CONNECTION_TIMEOUT) {
+  // Only create a new client if we don't have one yet
+  if (!globalClientRegistry.browserClient || !globalClientRegistry.initialized) {
+    
+    // Development debugging
+    if (process.env.NODE_ENV === 'development') {
+      if (globalClientRegistry.browserClient) {
+        console.warn('🔄 [Supabase Singleton] Recreating client (should only happen once)')
+      } else {
+        console.log('🚀 [Supabase Singleton] Creating initial client instance')
+      }
+    }
     
     if (globalClientRegistry.browserClient) {
       // Clean up old client safely
@@ -85,18 +89,23 @@ export const createClientComponentClient = () => {
       supabaseAnonKey,
       {
         ...supabaseClientConfig,
-        // Ensure single GoTrueClient instance
+        // Use default Supabase auth configuration for consistency
         auth: {
           ...supabaseClientConfig.auth,
           storage: typeof window !== 'undefined' ? window.localStorage : undefined,
-          storageKey: 'sb-auth-token', // Consistent storage key
+          // Use default Supabase storage key for better compatibility
         }
       }
     )
     globalClientRegistry.initialized = true
+    globalClientRegistry.createdAt = Date.now()
+    
+    // Development debugging
+    if (process.env.NODE_ENV === 'development') {
+      console.log('✅ [Supabase Singleton] Client created successfully')
+    }
   }
 
-  globalClientRegistry.lastUsed = now
   return globalClientRegistry.browserClient
 }
 
@@ -237,22 +246,48 @@ export const batchQueries = async <T>(
 // Connection cleanup utility
 export const cleanupConnections = () => {
   const now = Date.now()
+  const CONNECTION_TIMEOUT = 300000 // 5 minutes for connection pool cleanup
 
+  // Clean up connection pool entries
   for (const [key, value] of connectionPool.entries()) {
     if (now - value.created > CONNECTION_TIMEOUT) {
       connectionPool.delete(key)
     }
   }
 
-  // Reset browser client if needed
-  if (browserClient && now - lastUsed > CONNECTION_TIMEOUT) {
-    try {
-      browserClient.removeAllChannels()
-    } catch (error) {
-      // Silent cleanup failure
-    }
-    browserClient = null
+  // Development debugging
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`🧹 [Supabase Cleanup] Pool size: ${connectionPool.size}`)
   }
+}
+
+// Development utility to check for multiple client instances
+export const debugClientInstances = () => {
+  if (process.env.NODE_ENV !== 'development') return
+
+  const registry = globalClientRegistry
+  console.group('📊 [Supabase Debug] Client Instance Status')
+  console.log('Initialized:', registry.initialized)
+  console.log('Has Client:', !!registry.browserClient)
+  console.log('Created At:', new Date(registry.createdAt).toISOString())
+  console.log('Pool Size:', connectionPool.size)
+  
+  // Check if there are multiple instances by looking at window properties
+  if (typeof window !== 'undefined') {
+    const windowProps = Object.keys(window).filter(key => 
+      key.includes('supabase') || key.includes('gotrue')
+    )
+    if (windowProps.length > 1) {
+      console.warn('⚠️ Multiple Supabase-related properties detected:', windowProps)
+    }
+  }
+  
+  console.groupEnd()
+}
+
+// Make debug function available globally in development
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+  (window as any).debugSupabaseClients = debugClientInstances
 }
 
 // Auto cleanup every 5 minutes
