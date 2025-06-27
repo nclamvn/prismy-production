@@ -271,11 +271,18 @@ export default function Features() {
                       alt=""
                       aria-hidden="true"
                       loading="lazy"
+                      decoding="async"
                       className="hero-gif w-full"
                       style={{
                         width: '100%',
                         height: 'auto',
                         display: 'block',
+                        minHeight: '300px', // Prevent layout shift
+                        backgroundColor: 'var(--surface-panel)', // Placeholder color
+                      }}
+                      onLoad={(e) => {
+                        // Remove placeholder background once loaded
+                        e.currentTarget.style.backgroundColor = 'transparent'
                       }}
                     />
                   </div>

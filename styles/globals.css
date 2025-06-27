@@ -883,14 +883,17 @@ nav.prismy-navbar.prismy-navbar.prismy-navbar {
   /* Typography - Chuyển toàn bộ sang Inter font */
   .heading-hero {
     @apply font-inter text-[1.9rem] sm:text-[2.15rem] lg:text-[2.45rem] font-bold tracking-tight leading-[1.1] text-gray-900 content-overflow-safe;
+    min-height: 2.3rem; /* Prevent layout shift */
   }
 
   .heading-1 {
     @apply font-inter text-[2rem] sm:text-[2.5rem] lg:text-[3rem] font-bold tracking-tight leading-[1.2] text-gray-900 content-overflow-safe;
+    min-height: 2.4rem; /* Prevent layout shift */
   }
 
   .heading-2 {
     @apply font-inter text-[1.5rem] sm:text-[1.75rem] lg:text-[2rem] font-semibold tracking-tight leading-[1.3] text-gray-900 content-overflow-safe;
+    min-height: 1.95rem; /* Prevent layout shift */
   }
 
   .heading-3 {
@@ -907,6 +910,32 @@ nav.prismy-navbar.prismy-navbar.prismy-navbar {
 
   .subheadline {
     @apply font-inter text-[0.76rem] sm:text-[0.92rem] lg:text-[1.08rem] font-medium leading-[1.4] text-gray-600 content-overflow-safe;
+    min-height: 1.1rem; /* Prevent layout shift */
+  }
+
+  /* Layout shift prevention for pricing components */
+  .pricing-section {
+    min-height: 600px; /* Reserve space during loading */
+  }
+
+  .pricing-card {
+    min-height: 400px; /* Reserve space for pricing cards */
+  }
+
+  .hero-section {
+    min-height: 500px; /* Reserve space for hero content */
+  }
+
+  /* Animated elements should have stable dimensions */
+  .hero-animate-1,
+  .hero-animate-2,
+  .hero-animate-3,
+  .hero-animate-4,
+  .hero-animate-5,
+  .hero-animate-6 {
+    /* Ensure stable layout during animations */
+    contain: layout;
+    will-change: transform, opacity;
   }
 
   .body-xl {
@@ -969,6 +998,7 @@ nav.prismy-navbar.prismy-navbar.prismy-navbar {
     overflow: hidden;
     background-color: var(--bg-main);
     border-radius: 1.5rem; /* 24px - Enhanced rounded corners for smoother feel */
+    min-height: 300px; /* Prevent layout shift during loading */
   }
 
   /* Documents page specific - smaller size */
