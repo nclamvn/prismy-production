@@ -26,8 +26,8 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-// Create Supabase client outside component to ensure singleton
-const supabase = createClientComponentClient()
+// Use centralized singleton client
+const getSupabaseClient = () => createClientComponentClient()
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
@@ -65,7 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const {
           data: { session },
-        } = await supabase.auth.getSession()
+        } = await getSupabaseClient().auth.getSession()
 
         if (!isMounted) return
 
@@ -100,7 +100,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
+    } = getSupabaseClient().auth.onAuthStateChange(async (event, session) => {
       if (!isMounted) return
 
       setSession(session)
@@ -134,7 +134,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchUserProfile = async (userId: string) => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await getSupabaseClient()
         .from('user_profiles')
         .select('*')
         .eq('user_id', userId)
@@ -151,7 +151,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { error } = await getSupabaseClient().auth.signInWithPassword({
       email,
       password,
     })
@@ -160,7 +160,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signUp = async (email: string, password: string, fullName: string) => {
-    const { error } = await supabase.auth.signUp({
+    const { error } = await getSupabaseClient().auth.signUp({
       email,
       password,
       options: {
@@ -181,7 +181,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     callbackUrl.searchParams.set('redirectTo', intendedRedirect)
 
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { error } = await getSupabaseClient().auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: callbackUrl.toString(),
@@ -206,7 +206,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     callbackUrl.searchParams.set('redirectTo', intendedRedirect)
 
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { error } = await getSupabaseClient().auth.signInWithOAuth({
         provider: 'apple',
         options: {
           redirectTo: callbackUrl.toString(),
@@ -225,7 +225,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut()
+      const { error } = await getSupabaseClient().auth.signOut()
       if (!error) {
         // Clear all state
         setUser(null)
@@ -240,7 +240,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const updateProfile = async (updates: Partial<UserProfile>) => {
     if (!user) return { error: 'No user logged in' }
 
-    const { error } = await supabase
+    const { error } = await getSupabaseClient()
       .from('user_profiles')
       .update(updates)
       .eq('user_id', user.id)

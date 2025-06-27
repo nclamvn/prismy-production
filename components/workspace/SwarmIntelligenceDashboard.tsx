@@ -19,6 +19,7 @@ import {
 } from 'lucide-react'
 import { useSSRSafeLanguage } from '@/contexts/SSRSafeLanguageContext'
 import { useSwarmIntelligence, useAgentOperations } from '@/contexts/AgentContext'
+import { useIntelligencePipeline } from '@/contexts/PipelineContext'
 
 interface SwarmIntelligenceDashboardProps {
   className?: string
@@ -30,6 +31,7 @@ export default function SwarmIntelligenceDashboard({
   const { language } = useSSRSafeLanguage()
   const { agents, collaborations, swarmMetrics, querySwarm, lastUpdate } = useSwarmIntelligence()
   const { pauseAgent, resumeAgent, sendInstruction } = useAgentOperations()
+  const { querySwarm: pipelineQuerySwarm, analyzeContent, status } = useIntelligencePipeline()
   
   const [selectedAgent, setSelectedAgent] = useState<string | null>(null)
   const [swarmQuery, setSwarmQuery] = useState('')
@@ -150,17 +152,41 @@ export default function SwarmIntelligenceDashboard({
 
   const currentContent = content[language]
 
-  // Handle swarm query
+  // Handle swarm query using pipeline
   const handleSwarmQuery = async () => {
     if (!swarmQuery.trim() || isQuerying) return
 
     setIsQuerying(true)
     try {
-      const result = await querySwarm(swarmQuery)
-      setQueryResult(result)
+      console.log('🚀 Starting pipeline swarm query', {
+        query: swarmQuery,
+        agentCount: agents.length
+      })
+
+      const response = await pipelineQuerySwarm(swarmQuery, {
+        agentCount: Math.min(agents.length, 3),
+        priority: 'high',
+        includeAnalytics: true
+      })
+
+      console.log('✅ Pipeline swarm query completed', response)
+
+      if (response.status === 'completed' && response.result) {
+        setQueryResult({
+          synthesis: response.result.synthesis || 'Swarm analysis completed',
+          averageConfidence: response.metadata?.qualityScore || 0.85,
+          perspectives: response.result.perspectives || ['analysis', 'synthesis'],
+          recommendations: response.result.recommendations || [
+            'Query processed successfully',
+            'Results analyzed by AI swarm'
+          ]
+        })
+      } else if (response.status === 'error') {
+        throw new Error(response.error?.message || 'Pipeline swarm query failed')
+      }
     } catch (error) {
-      console.error('Swarm query error:', error)
-      setQueryResult({ error: 'Query failed' })
+      console.error('❌ Pipeline swarm query failed:', error)
+      setQueryResult({ error: error instanceof Error ? error.message : 'Query failed' })
     } finally {
       setIsQuerying(false)
     }

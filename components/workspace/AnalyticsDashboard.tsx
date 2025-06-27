@@ -24,6 +24,7 @@ import {
 } from 'lucide-react'
 import { useSSRSafeLanguage } from '@/contexts/SSRSafeLanguageContext'
 import { useAuth } from '@/contexts/AuthContext'
+import { useAnalyticsPipeline } from '@/contexts/PipelineContext'
 import { analyticsService, UserMetrics, SystemMetrics, PerformanceMetrics } from '@/lib/analytics-service'
 
 interface AnalyticsDashboardProps {
@@ -35,6 +36,7 @@ export default function AnalyticsDashboard({
 }: AnalyticsDashboardProps) {
   const { language } = useSSRSafeLanguage()
   const { user } = useAuth()
+  const { getUserMetrics, getSystemMetrics, status } = useAnalyticsPipeline()
   
   const [activeTab, setActiveTab] = useState<'overview' | 'user' | 'system' | 'performance'>('overview')
   const [timeRange, setTimeRange] = useState<'24h' | '7d' | '30d' | '90d'>('30d')
@@ -165,17 +167,24 @@ export default function AnalyticsDashboard({
     setError(null)
 
     try {
+      console.log('🚀 Starting pipeline analytics data loading', {
+        activeTab,
+        timeRange,
+        userId: user.id
+      })
+
       const promises = []
 
       if (activeTab === 'user' || activeTab === 'overview') {
-        promises.push(analyticsService.getUserMetrics(user.id, timeRange))
+        promises.push(getUserMetrics(timeRange))
       }
       
       if (activeTab === 'system' || activeTab === 'overview') {
-        promises.push(analyticsService.getSystemMetrics(timeRange))
+        promises.push(getSystemMetrics(timeRange))
       }
       
       if (activeTab === 'performance' || activeTab === 'overview') {
+        // Fallback to analytics service for performance metrics (not implemented in pipeline yet)
         promises.push(analyticsService.getPerformanceMetrics(timeRange))
       }
 
@@ -183,17 +192,25 @@ export default function AnalyticsDashboard({
       
       let resultIndex = 0
       if (activeTab === 'user' || activeTab === 'overview') {
-        setUserMetrics(results[resultIndex++] as UserMetrics)
+        const userResponse = results[resultIndex++]
+        if (userResponse.status === 'completed' && userResponse.result) {
+          setUserMetrics(userResponse.result as UserMetrics)
+        }
       }
       if (activeTab === 'system' || activeTab === 'overview') {
-        setSystemMetrics(results[resultIndex++] as SystemMetrics)
+        const systemResponse = results[resultIndex++]
+        if (systemResponse.status === 'completed' && systemResponse.result) {
+          setSystemMetrics(systemResponse.result as SystemMetrics)
+        }
       }
       if (activeTab === 'performance' || activeTab === 'overview') {
         setPerformanceMetrics(results[resultIndex++] as PerformanceMetrics)
       }
 
+      console.log('✅ Pipeline analytics data loading completed')
+
     } catch (err) {
-      console.error('Failed to load analytics data:', err)
+      console.error('❌ Pipeline analytics data loading failed:', err)
       setError(err instanceof Error ? err.message : 'Failed to load analytics')
     } finally {
       setIsLoading(false)

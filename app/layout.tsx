@@ -35,6 +35,9 @@ import { WebVitalsMonitor } from '@/components/monitoring/WebVitalsMonitor'
 import { AgentProvider } from '@/contexts/AgentContext'
 import AnalyticsInitializer from '@/components/analytics/AnalyticsInitializer'
 
+// Complete Pipeline System
+import { PipelineProvider } from '@/contexts/PipelineContext'
+
 const inter = Inter({
   subsets: ['latin', 'vietnamese'],
   display: 'swap',
@@ -315,15 +318,17 @@ export default function RootLayout({
                         <AuthProvider>
                           <UnifiedAuthProvider>
                             <AgentProvider>
-                              <GlobalLoadingIndicator />
-                              <AuthErrorHandler />
-                              <AnalyticsInitializer />
-                              <WebVitalsMonitor
-                                debug={process.env.NODE_ENV === 'development'}
-                              />
-                              {/* Conditional Navbar - only on public pages */}
-                              <ConditionalNavbar />
-                              <PageTransition>{children}</PageTransition>
+                              <PipelineProvider>
+                                <GlobalLoadingIndicator />
+                                <AuthErrorHandler />
+                                <AnalyticsInitializer />
+                                <WebVitalsMonitor
+                                  debug={process.env.NODE_ENV === 'development'}
+                                />
+                                {/* Conditional Navbar - only on public pages */}
+                                <ConditionalNavbar />
+                                <PageTransition>{children}</PageTransition>
+                              </PipelineProvider>
                             </AgentProvider>
                           </UnifiedAuthProvider>
                         </AuthProvider>

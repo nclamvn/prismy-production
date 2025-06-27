@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createRouteHandlerClient } from '@/lib/supabase'
+import { createRouteHandlerClient, validateAndRefreshSession, withAuthRetry } from '@/lib/supabase'
 import { getUserCreditStatus } from '@/lib/credit-manager'
 import { cookies } from 'next/headers'
 
@@ -13,43 +13,43 @@ export async function GET(request: NextRequest) {
     // Create Supabase client
     const supabase = createRouteHandlerClient({ cookies })
 
-    // Get current user
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser()
-
-    if (authError || !user) {
+    // Validate and refresh session if needed
+    const session = await validateAndRefreshSession(supabase)
+    
+    if (!session?.user) {
       return NextResponse.json(
-        { error: 'Authentication required' },
+        { error: 'Authentication required', message: 'Please sign in to check your credit balance' },
         { status: 401 }
       )
     }
 
-    // Get comprehensive credit status using credit manager (optimized)
-    const creditStatus = await getUserCreditStatus(supabase, user.id)
+    const user = session.user
 
-    // Defensive check for creditStatus
-    if (!creditStatus) {
-      console.error('Failed to get credit status for user:', user.id)
-      return NextResponse.json(
-        { error: 'Failed to fetch credit status' },
-        { status: 500 }
-      )
-    }
+    // Get comprehensive credit status using credit manager with retry
+    const creditStatus = await withAuthRetry(async () => {
+      const status = await getUserCreditStatus(supabase, user.id)
+      if (!status) {
+        throw { status: 500, message: 'Failed to get credit status' }
+      }
+      return status
+    }, supabase)
 
-    // Also get raw balance for backwards compatibility
-    const { data: balanceData, error: balanceError } = await supabase
-      .rpc('get_user_credit_balance', { p_user_id: user.id })
-      .single()
+    // Also get raw balance for backwards compatibility with retry
+    const balanceData = await withAuthRetry(async () => {
+      const { data, error } = await supabase
+        .rpc('get_user_credit_balance', { p_user_id: user.id })
+        .single()
 
-    if (balanceError) {
-      console.error('Error fetching credit balance:', balanceError)
-      return NextResponse.json(
-        { error: 'Failed to fetch credit balance' },
-        { status: 500 }
-      )
-    }
+      if (error) {
+        console.error('Error fetching credit balance:', error)
+        if (error.code === 'PGRST301') {
+          throw { status: 401, message: 'Unauthorized access to credit balance' }
+        }
+        throw { status: 500, message: 'Failed to fetch credit balance' }
+      }
+      
+      return data
+    }, supabase)
 
     const balance = balanceData?.balance || 0
 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createRouteHandlerClient } from '@/lib/supabase'
+import { createRouteHandlerClient, validateAndRefreshSession, withAuthRetry } from '@/lib/supabase'
 import { cookies } from 'next/headers'
 
 /**
@@ -8,13 +8,15 @@ import { cookies } from 'next/headers'
  */
 export async function GET(request: NextRequest) {
   try {
-    // Get user session
+    // Get user session with validation and retry
     const supabase = createRouteHandlerClient({ cookies })
-    const { data: { session } } = await supabase.auth.getSession()
+    
+    // Validate and refresh session if needed
+    const session = await validateAndRefreshSession(supabase)
     
     if (!session?.user) {
       return NextResponse.json(
-        { error: 'Authentication required' },
+        { error: 'Authentication required', message: 'Please sign in to access analytics data' },
         { status: 401 }
       )
     }
@@ -31,26 +33,42 @@ export async function GET(request: NextRequest) {
     const endOfMonth = new Date(currentYear, currentMonth, 0, 23, 59, 59).toISOString()
 
     try {
-      // Query translation history from database
-      const { data: translationHistory, error: historyError } = await supabase
-        .from('translation_history')
-        .select('*')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false })
+      // Query translation history with auth retry
+      const translationHistory = await withAuthRetry(async () => {
+        const { data, error } = await supabase
+          .from('translation_history')
+          .select('*')
+          .eq('user_id', userId)
+          .order('created_at', { ascending: false })
 
-      if (historyError) {
-        console.error('Translation history query error:', historyError)
-      }
+        if (error) {
+          console.error('Translation history query error:', error)
+          if (error.code === 'PGRST301') {
+            throw { status: 401, message: 'Unauthorized access to translation history' }
+          }
+          // Return null for other errors to continue with fallback data
+          return null
+        }
+        return data
+      }, supabase)
 
-      // Query agents data
-      const { data: agentsData, error: agentsError } = await supabase
-        .from('document_agents')
-        .select('*')
-        .eq('user_id', userId)
+      // Query agents data with auth retry
+      const agentsData = await withAuthRetry(async () => {
+        const { data, error } = await supabase
+          .from('document_agents')
+          .select('*')
+          .eq('user_id', userId)
 
-      if (agentsError) {
-        console.error('Agents query error:', agentsError)
-      }
+        if (error) {
+          console.error('Agents query error:', error)
+          if (error.code === 'PGRST301') {
+            throw { status: 401, message: 'Unauthorized access to agents data' }
+          }
+          // Return null for other errors to continue with fallback data
+          return null
+        }
+        return data
+      }, supabase)
 
       // Calculate analytics from available data
       const totalTranslations = translationHistory?.length || 0
@@ -177,11 +195,13 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const supabase = createRouteHandlerClient({ cookies })
-    const { data: { session } } = await supabase.auth.getSession()
+    
+    // Validate and refresh session if needed
+    const session = await validateAndRefreshSession(supabase)
     
     if (!session?.user) {
       return NextResponse.json(
-        { error: 'Authentication required' },
+        { error: 'Authentication required', message: 'Please sign in to refresh analytics data' },
         { status: 401 }
       )
     }

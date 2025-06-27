@@ -14,6 +14,8 @@ const supabaseClientConfig = {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
+    flowType: 'pkce' as const, // Enhanced security
+    debug: process.env.NODE_ENV === 'development',
   },
   db: {
     schema: 'public',
@@ -36,9 +38,21 @@ const connectionPool = new Map<string, any>()
 const MAX_POOL_SIZE = 10
 const CONNECTION_TIMEOUT = 15000 // 15 seconds for faster auth UX
 
-// Singleton client-side Supabase client with enhanced performance
-let browserClient: ReturnType<typeof createBrowserClient> | null = null
-let lastUsed = Date.now()
+// Global singleton registry to prevent multiple GoTrueClient instances
+const globalClientRegistry = (() => {
+  if (typeof window !== 'undefined') {
+    // Use window object to ensure truly global singleton
+    if (!(window as any).__supabase_client_registry__) {
+      (window as any).__supabase_client_registry__ = {
+        browserClient: null,
+        lastUsed: Date.now(),
+        initialized: false
+      }
+    }
+    return (window as any).__supabase_client_registry__
+  }
+  return { browserClient: null, lastUsed: Date.now(), initialized: false }
+})()
 
 export const createClientComponentClient = () => {
   if (typeof window === 'undefined') {
@@ -50,28 +64,40 @@ export const createClientComponentClient = () => {
     )
   }
 
-  // Client-side: use optimized singleton pattern with connection reuse
+  // Client-side: use truly global singleton pattern
   const now = Date.now()
 
-  // Recreate client if it's been idle for too long (connection freshness)
-  if (!browserClient || now - lastUsed > CONNECTION_TIMEOUT) {
-    if (browserClient) {
+  // Only create a new client if we don't have one or it's been idle too long
+  if (!globalClientRegistry.browserClient || !globalClientRegistry.initialized || 
+      now - globalClientRegistry.lastUsed > CONNECTION_TIMEOUT) {
+    
+    if (globalClientRegistry.browserClient) {
       // Clean up old client safely
       try {
-        browserClient.removeAllChannels()
+        globalClientRegistry.browserClient.removeAllChannels()
       } catch (error) {
         // Silent cleanup failure
       }
     }
-    browserClient = createBrowserClient(
+    
+    globalClientRegistry.browserClient = createBrowserClient(
       supabaseUrl,
       supabaseAnonKey,
-      supabaseClientConfig
+      {
+        ...supabaseClientConfig,
+        // Ensure single GoTrueClient instance
+        auth: {
+          ...supabaseClientConfig.auth,
+          storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+          storageKey: 'sb-auth-token', // Consistent storage key
+        }
+      }
     )
+    globalClientRegistry.initialized = true
   }
 
-  lastUsed = now
-  return browserClient
+  globalClientRegistry.lastUsed = now
+  return globalClientRegistry.browserClient
 }
 
 // Server-side Supabase client for API routes with connection pooling
@@ -232,6 +258,78 @@ export const cleanupConnections = () => {
 // Auto cleanup every 5 minutes
 if (typeof window !== 'undefined') {
   setInterval(cleanupConnections, 300000)
+}
+
+// Session validation and retry helpers for 401 error handling
+export const validateAndRefreshSession = async (client: any) => {
+  try {
+    const { data: { session }, error } = await client.auth.getSession()
+    
+    if (error) {
+      console.warn('Session validation error:', error.message)
+      return null
+    }
+    
+    if (!session) {
+      console.warn('No active session found')
+      return null
+    }
+    
+    // Check if session is close to expiry (within 5 minutes)
+    const expiresAt = session.expires_at
+    const now = Math.floor(Date.now() / 1000)
+    const timeUntilExpiry = expiresAt ? expiresAt - now : 0
+    
+    if (timeUntilExpiry < 300) { // Less than 5 minutes
+      console.log('Session close to expiry, refreshing...')
+      const { data: refreshData, error: refreshError } = await client.auth.refreshSession()
+      
+      if (refreshError) {
+        console.error('Session refresh failed:', refreshError.message)
+        return null
+      }
+      
+      return refreshData.session
+    }
+    
+    return session
+  } catch (error) {
+    console.error('Session validation failed:', error)
+    return null
+  }
+}
+
+export const withAuthRetry = async <T>(
+  operation: () => Promise<T>,
+  client: any,
+  maxRetries: number = 2
+): Promise<T> => {
+  let lastError: any
+  
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      // Validate session before operation
+      if (attempt > 0) {
+        await validateAndRefreshSession(client)
+      }
+      
+      return await operation()
+    } catch (error: any) {
+      lastError = error
+      
+      // Check if it's a 401 error and we can retry
+      if (error?.status === 401 && attempt < maxRetries) {
+        console.warn(`Auth error on attempt ${attempt + 1}, retrying...`)
+        await new Promise(resolve => setTimeout(resolve, 500 * (attempt + 1))) // Exponential backoff
+        continue
+      }
+      
+      // If not a 401 or max retries reached, throw the error
+      throw error
+    }
+  }
+  
+  throw lastError
 }
 
 // Note: Legacy client removed to prevent multiple GoTrueClient instances

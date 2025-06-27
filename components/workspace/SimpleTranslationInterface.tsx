@@ -9,9 +9,13 @@ import {
   Loader2,
   AlertCircle,
   CheckCircle,
+  Zap,
+  Clock,
+  Target,
 } from 'lucide-react'
 import { useSSRSafeLanguage } from '@/contexts/SSRSafeLanguageContext'
 import { useAuth } from '@/contexts/AuthContext'
+import { useTranslationPipeline, usePipelineMetrics } from '@/contexts/PipelineContext'
 
 interface SimpleTranslationInterfaceProps {
   className?: string
@@ -24,6 +28,9 @@ export default function SimpleTranslationInterface({
 }: SimpleTranslationInterfaceProps) {
   const { language } = useSSRSafeLanguage()
   const { user } = useAuth()
+  const { translateText, detectLanguage, status } = useTranslationPipeline()
+  const metrics = usePipelineMetrics()
+  
   const [sourceText, setSourceText] = useState('')
   const [translatedText, setTranslatedText] = useState('')
   const [sourceLang, setSourceLang] = useState('auto')
@@ -31,6 +38,7 @@ export default function SimpleTranslationInterface({
   const [isTranslating, setIsTranslating] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [pipelineResponse, setPipelineResponse] = useState<any>(null)
 
   // Language options for translation
   const languageOptions = [
@@ -59,62 +67,62 @@ export default function SimpleTranslationInterface({
     setIsTranslating(true)
     setError(null)
     setSuccess(false)
+    setPipelineResponse(null)
 
-    console.log('🚀 Starting simple translation', {
+    console.log('🚀 Starting pipeline translation', {
       textLength: sourceText.length,
       sourceLang,
       targetLang,
+      userTier: user ? 'authenticated' : 'free'
     })
 
     try {
-      // Use authenticated endpoint for logged-in users
-      const endpoint = user
-        ? '/api/translate/authenticated'
-        : '/api/translate/public'
+      // Use the new pipeline system
       const qualityTier = user ? 'standard' : 'free'
-
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          text: sourceText,
-          sourceLang: sourceLang === 'auto' ? undefined : sourceLang,
-          targetLang: targetLang,
-          qualityTier: qualityTier,
-          serviceType: 'google_translate',
-        }),
+      
+      const response = await translateText(sourceText, {
+        sourceLang: sourceLang === 'auto' ? undefined : sourceLang,
+        targetLang: targetLang,
+        qualityTier: qualityTier,
+        cacheEnabled: true
       })
 
-      const data = await response.json()
+      console.log('✅ Pipeline translation completed', response)
+      setPipelineResponse(response)
 
-      if (!response.ok) {
-        throw new Error(data.message || data.error || 'Translation failed')
-      }
-
-      console.log('✅ Simple translation completed', data)
-
-      if (data.success && data.result) {
-        setTranslatedText(data.result.translatedText)
+      if (response.status === 'completed' && response.result) {
+        const translationData = response.result.result || response.result
+        setTranslatedText(translationData.translatedText || translationData.text || '')
         setSuccess(true)
 
-        // Show credit usage for authenticated users
-        if (data.credits) {
+        // Show pipeline metadata for authenticated users
+        if (response.metadata) {
           console.log(
-            `💰 Credits used: ${data.credits.charged}, Remaining: ${data.credits.remaining}`
+            `💰 Credits used: ${response.metadata.creditsUsed}, Quality: ${response.metadata.qualityScore}, Cache hit: ${response.metadata.cacheHit}`
           )
         }
 
         if (onTranslationComplete) {
-          onTranslationComplete(data.result)
+          onTranslationComplete({
+            ...translationData,
+            pipelineMetadata: response.metadata,
+            analytics: response.analytics
+          })
         }
+      } else if (response.status === 'error') {
+        throw new Error(response.error?.message || 'Pipeline translation failed')
       } else {
-        throw new Error('Invalid response format')
+        throw new Error('Translation completed but no result returned')
       }
     } catch (error) {
-      console.error('❌ Simple translation error:', error)
-      setError(error instanceof Error ? error.message : 'Translation failed')
+      console.error('❌ Pipeline translation failed:', error)
+      setError(
+        error instanceof Error
+          ? error.message
+          : language === 'vi'
+          ? 'Dịch thuật thất bại'
+          : 'Translation failed'
+      )
     } finally {
       setIsTranslating(false)
     }

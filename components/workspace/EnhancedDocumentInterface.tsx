@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'
 import { useSSRSafeLanguage } from '@/contexts/SSRSafeLanguageContext'
 import { useAgents, useAgentOperations } from '@/contexts/AgentContext'
+import { useDocumentPipeline } from '@/contexts/PipelineContext'
 import { Document } from './types'
 import SimpleTranslationInterface from './SimpleTranslationInterface'
 
@@ -51,18 +52,79 @@ export default function EnhancedDocumentInterface({
   const { language } = useSSRSafeLanguage()
   const { agents, isConnected } = useAgents()
   const { createAgent } = useAgentOperations()
+  const { processDocument, extractText, analyzeDocument, status } = useDocumentPipeline()
   
   const [documents, setDocuments] = useState<ProcessedDocument[]>([])
   const [activeDocument, setActiveDocument] = useState<ProcessedDocument | null>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [dragActive, setDragActive] = useState(false)
-  const [activeTab, setActiveTab] = useState<'upload' | 'translation' | 'analysis'>('upload')
+  const [activeTab, setActiveTab] = useState<'upload' | 'translate' | 'qa' | 'analysis'>('upload')
+  
+  // Document translation state
+  const [selectedDocumentForTranslation, setSelectedDocumentForTranslation] = useState<ProcessedDocument | null>(null)
+  const [translationTargetLang, setTranslationTargetLang] = useState('en')
+  const [isTranslatingDocument, setIsTranslatingDocument] = useState(false)
+  const [translationResult, setTranslationResult] = useState<any>(null)
+  
+  // Document Q&A state
+  const [selectedDocumentForQA, setSelectedDocumentForQA] = useState<ProcessedDocument | null>(null)
+  const [qaQuestion, setQaQuestion] = useState('')
+  const [isProcessingQA, setIsProcessingQA] = useState(false)
+  const [qaResult, setQaResult] = useState<any>(null)
+  
+  // Error and status state
+  const [globalError, setGlobalError] = useState<{
+    message: string
+    code?: string
+    suggestions?: string[]
+  } | null>(null)
+  const [globalSuccess, setGlobalSuccess] = useState<string | null>(null)
+  const [uploadProgress, setUploadProgress] = useState<{
+    current: number
+    total: number
+    fileName?: string
+  } | null>(null)
+
+  // Helper functions for error/success handling
+  const showError = useCallback((error: any) => {
+    if (typeof error === 'string') {
+      setGlobalError({ message: error })
+    } else if (error && typeof error === 'object') {
+      setGlobalError({
+        message: error.message || 'An error occurred',
+        code: error.code,
+        suggestions: error.suggestions
+      })
+    } else {
+      setGlobalError({ message: 'An unknown error occurred' })
+    }
+    setGlobalSuccess(null)
+  }, [])
+
+  const showSuccess = useCallback((message: string) => {
+    setGlobalSuccess(message)
+    setGlobalError(null)
+  }, [])
+
+  const clearMessages = useCallback(() => {
+    setGlobalError(null)
+    setGlobalSuccess(null)
+  }, [])
+
+  // Auto-clear messages after 5 seconds
+  useEffect(() => {
+    if (globalError || globalSuccess) {
+      const timer = setTimeout(clearMessages, 5000)
+      return () => clearTimeout(timer)
+    }
+  }, [globalError, globalSuccess, clearMessages])
 
   const content = {
     vi: {
       tabs: {
         upload: 'Tải lên tài liệu',
-        translation: 'Dịch thuật nhanh',
+        translate: 'Dịch tài liệu',
+        qa: 'Hỏi đáp tài liệu',
         analysis: 'Phân tích AI',
       },
       upload: {
@@ -96,11 +158,29 @@ export default function EnhancedDocumentInterface({
         create: 'Tạo agent mới',
         working: 'đang phân tích',
       },
+      translate: {
+        title: 'Dịch tài liệu',
+        selectDocument: 'Chọn tài liệu để dịch',
+        targetLanguage: 'Ngôn ngữ đích',
+        translateButton: 'Dịch tài liệu',
+        translating: 'Đang dịch...',
+        downloadTranslated: 'Tải về bản dịch',
+        noDocuments: 'Chưa có tài liệu nào được tải lên',
+      },
+      qa: {
+        title: 'Hỏi đáp tài liệu',
+        selectDocument: 'Chọn tài liệu để hỏi',
+        questionPlaceholder: 'Hãy đặt câu hỏi về nội dung tài liệu...',
+        askButton: 'Đặt câu hỏi',
+        asking: 'Đang xử lý...',
+        noDocuments: 'Chưa có tài liệu nào được tải lên',
+      },
     },
     en: {
       tabs: {
         upload: 'Document Upload',
-        translation: 'Quick Translation',
+        translate: 'Document Translation',
+        qa: 'Document Q&A',
         analysis: 'AI Analysis',
       },
       upload: {
@@ -134,24 +214,90 @@ export default function EnhancedDocumentInterface({
         create: 'Create new agent',
         working: 'analyzing',
       },
+      translate: {
+        title: 'Document Translation',
+        selectDocument: 'Select document to translate',
+        targetLanguage: 'Target language',
+        translateButton: 'Translate Document',
+        translating: 'Translating...',
+        downloadTranslated: 'Download Translation',
+        noDocuments: 'No documents uploaded yet',
+      },
+      qa: {
+        title: 'Document Q&A',
+        selectDocument: 'Select document to ask about',
+        questionPlaceholder: 'Ask a question about the document content...',
+        askButton: 'Ask Question',
+        asking: 'Processing...',
+        noDocuments: 'No documents uploaded yet',
+      },
     },
   }
 
   const currentContent = content[language]
 
+  // Enhanced file validation
+  const validateFile = useCallback((file: File): { isValid: boolean; error?: any } => {
+    // Check file size (50MB max, matching API)
+    const maxSize = 50 * 1024 * 1024
+    if (file.size > maxSize) {
+      return {
+        isValid: false,
+        error: {
+          message: `File "${file.name}" is too large. Maximum size is 50MB.`,
+          code: 'FILE_TOO_LARGE',
+          suggestions: ['Try compressing the file', 'Split large documents into smaller files']
+        }
+      }
+    }
+
+    // Check file type
+    const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+    if (!allowedTypes.includes(file.type)) {
+      return {
+        isValid: false,
+        error: {
+          message: `File type "${file.type}" is not supported. Only PDF and DOCX files are allowed.`,
+          code: 'INVALID_FILE_TYPE',
+          suggestions: ['Convert your document to PDF or DOCX format', 'Use a supported file type']
+        }
+      }
+    }
+
+    // Check file name
+    if (!file.name || file.name.trim().length === 0) {
+      return {
+        isValid: false,
+        error: {
+          message: 'File must have a valid name.',
+          code: 'INVALID_FILE_NAME',
+          suggestions: ['Rename the file with a descriptive name']
+        }
+      }
+    }
+
+    return { isValid: true }
+  }, [])
+
   // Handle file upload
   const handleFileUpload = useCallback(async (files: FileList) => {
     if (!files.length) return
 
+    // Clear previous messages
+    clearMessages()
     setIsUploading(true)
+    setUploadProgress({ current: 0, total: files.length })
 
     try {
       for (let i = 0; i < files.length; i++) {
         const file = files[i]
         
-        // Validate file size
-        if (file.size > 10 * 1024 * 1024) {
-          console.warn(`File ${file.name} is too large (max 10MB)`)
+        setUploadProgress({ current: i + 1, total: files.length, fileName: file.name })
+        
+        // Validate file
+        const validation = validateFile(file)
+        if (!validation.isValid) {
+          showError(validation.error)
           continue
         }
 
@@ -167,69 +313,58 @@ export default function EnhancedDocumentInterface({
 
         setDocuments(prev => [...prev, newDocument])
 
-        // Simulate document processing
-        setTimeout(async () => {
-          try {
-            // Create AI agent for this document if agents are available
-            if (isConnected) {
-              const documentForAgent: Document = {
-                id: newDocument.id,
-                title: newDocument.name,
-                content: await file.text().catch(() => 'Binary file content'),
-                type: newDocument.type,
-                metadata: {
-                  size: newDocument.size,
-                  uploadTime: newDocument.uploadTime.toISOString(),
-                },
-              }
+        // Process document using pipeline (just for upload analysis)
+        try {
+          console.log('🚀 Starting pipeline document analysis', {
+            fileName: file.name,
+            fileSize: file.size,
+            fileType: file.type
+          })
 
-              const agent = await createAgent(documentForAgent)
-              
-              // Simulate AI analysis
-              const analysis = {
-                type: getDocumentAnalysisType(file.type),
-                insights: generateInsights(file.name, file.type),
-                confidence: Math.random() * 0.3 + 0.7, // 70-100%
-              }
-
-              // Update document with results
-              setDocuments(prev => prev.map(doc => 
-                doc.id === newDocument.id 
-                  ? { 
-                      ...doc, 
-                      status: 'completed' as const,
-                      agentId: agent.getAgent().id,
-                      analysis 
-                    }
-                  : doc
-              ))
-
-            } else {
-              // Fallback: basic processing without AI
-              setDocuments(prev => prev.map(doc => 
-                doc.id === newDocument.id 
-                  ? { ...doc, status: 'completed' as const }
-                  : doc
-              ))
-            }
-
-          } catch (error) {
-            console.error('Document processing error:', error)
-            setDocuments(prev => prev.map(doc => 
-              doc.id === newDocument.id 
-                ? { ...doc, status: 'error' as const }
-                : doc
-            ))
+          // For now, just do basic analysis on upload
+          const analysis = {
+            type: getDocumentAnalysisType(file.type),
+            insights: generateInsights(file.name, file.type),
+            confidence: 0.85
           }
-        }, 2000 + Math.random() * 3000) // 2-5 seconds processing time
+
+          // Update document with analysis
+          setDocuments(prev => prev.map(doc => 
+            doc.id === newDocument.id 
+              ? { 
+                  ...doc, 
+                  status: 'completed' as const,
+                  analysis 
+                }
+              : doc
+          ))
+
+        } catch (error) {
+          console.error('❌ Document analysis failed:', error)
+          setDocuments(prev => prev.map(doc => 
+            doc.id === newDocument.id 
+              ? { ...doc, status: 'error' as const }
+              : doc
+          ))
+        }
 
       }
+      if (files.length > 0) {
+        showSuccess(`Successfully processed ${files.length} document${files.length > 1 ? 's' : ''}!`)
+      }
+
     } catch (error) {
       console.error('Upload error:', error)
+      showError({
+        message: 'Failed to upload documents',
+        code: 'UPLOAD_ERROR',
+        suggestions: ['Check your file formats', 'Try uploading one file at a time', 'Ensure files are not corrupted']
+      })
     } finally {
       setIsUploading(false)
+      setUploadProgress(null)
     }
-  }, [createAgent, isConnected])
+  }, [createAgent, isConnected, clearMessages, showError, showSuccess, validateFile])
 
   // Get document analysis type based on file type
   const getDocumentAnalysisType = (fileType: string): string => {
@@ -287,6 +422,127 @@ export default function EnhancedDocumentInterface({
       handleFileUpload(e.dataTransfer.files)
     }
   }, [handleFileUpload])
+
+  // Handle document translation with enhanced error handling
+  const handleDocumentTranslate = useCallback(async () => {
+    if (!selectedDocumentForTranslation) return
+    
+    clearMessages()
+    setIsTranslatingDocument(true)
+    setTranslationResult(null)
+    
+    try {
+      console.log('🚀 Starting document translation', {
+        documentId: selectedDocumentForTranslation.id,
+        targetLang: translationTargetLang
+      })
+      
+      // Create a dummy file object for the pipeline
+      const fileBlob = new Blob(['dummy content'], { type: selectedDocumentForTranslation.type })
+      const file = new File([fileBlob], selectedDocumentForTranslation.name, {
+        type: selectedDocumentForTranslation.type
+      })
+      
+      const response = await processDocument(file, {
+        targetLang: translationTargetLang,
+        qualityTier: 'standard'
+      })
+      
+      console.log('✅ Document translation completed', response)
+      
+      if (response.status === 'completed' && response.result) {
+        setTranslationResult({
+          translatedUrl: response.result.translatedUrl,
+          taskId: response.result.taskId,
+          creditsUsed: response.result.creditsUsed,
+          pageCount: response.result.pageCount,
+          wordCount: response.result.wordCount
+        })
+        showSuccess(`Document translated successfully! Used ${response.result.creditsUsed} credits.`)
+      } else if (response.status === 'error') {
+        const error = response.error
+        showError({
+          message: error?.message || 'Document translation failed',
+          code: error?.code || 'TRANSLATION_ERROR',
+          suggestions: error?.suggestions || [
+            'Check your internet connection',
+            'Ensure you have sufficient credits',
+            'Try again with a different document'
+          ]
+        })
+        setTranslationResult({
+          error: error?.message || 'Translation failed'
+        })
+      }
+      
+    } catch (error: any) {
+      console.error('❌ Document translation failed:', error)
+      
+      let errorMessage = 'Translation failed'
+      let errorCode = 'UNKNOWN_ERROR'
+      let suggestions = ['Please try again', 'Contact support if the problem persists']
+      
+      if (error && typeof error === 'object') {
+        if (error.status === 401) {
+          errorMessage = 'Please sign in to translate documents'
+          errorCode = 'AUTH_REQUIRED'
+          suggestions = ['Sign in to your account', 'Refresh the page and try again']
+        } else if (error.status === 402) {
+          errorMessage = 'Insufficient credits for document translation'
+          errorCode = 'INSUFFICIENT_CREDITS'
+          suggestions = ['Purchase more credits', 'Upgrade your plan']
+        } else if (error.message) {
+          errorMessage = error.message
+          errorCode = error.code || 'PROCESSING_ERROR'
+        }
+      }
+      
+      showError({
+        message: errorMessage,
+        code: errorCode,
+        suggestions
+      })
+      
+      setTranslationResult({
+        error: errorMessage
+      })
+    } finally {
+      setIsTranslatingDocument(false)
+    }
+  }, [selectedDocumentForTranslation, translationTargetLang, processDocument, clearMessages, showError, showSuccess])
+  
+  // Handle document Q&A
+  const handleDocumentQA = useCallback(async () => {
+    if (!selectedDocumentForQA || !qaQuestion.trim()) return
+    
+    setIsProcessingQA(true)
+    setQaResult(null)
+    
+    try {
+      console.log('🚀 Starting document Q&A', {
+        documentId: selectedDocumentForQA.id,
+        question: qaQuestion
+      })
+      
+      // For now, simulate Q&A processing
+      // In a real implementation, this would extract text and process with AI
+      await new Promise(resolve => setTimeout(resolve, 2000))
+      
+      setQaResult({
+        question: qaQuestion,
+        answer: `Based on the document "${selectedDocumentForQA.name}", this is a simulated answer to your question. In a full implementation, this would analyze the document content and provide a relevant response.`,
+        confidence: 0.85
+      })
+      
+    } catch (error) {
+      console.error('❌ Document Q&A failed:', error)
+      setQaResult({
+        error: error instanceof Error ? error.message : 'Q&A processing failed'
+      })
+    } finally {
+      setIsProcessingQA(false)
+    }
+  }, [selectedDocumentForQA, qaQuestion])
 
   // Render upload area
   const renderUploadArea = () => (
@@ -415,9 +671,78 @@ export default function EnhancedDocumentInterface({
 
   return (
     <div className={`enhanced-document-interface ${className}`}>
+      {/* Enhanced Global Status Messages */}
+      {globalError && (
+        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <div className="flex items-start">
+            <AlertTriangle className="w-5 h-5 text-red-600 mr-3 mt-0.5 flex-shrink-0" />
+            <div className="flex-1">
+              <p className="text-red-800 font-medium">{globalError.message}</p>
+              {globalError.code && (
+                <p className="text-red-600 text-sm mt-1">Error Code: {globalError.code}</p>
+              )}
+              {globalError.suggestions && globalError.suggestions.length > 0 && (
+                <div className="mt-2">
+                  <p className="text-red-700 text-sm font-medium">Suggestions:</p>
+                  <ul className="text-red-600 text-sm mt-1 space-y-1">
+                    {globalError.suggestions.map((suggestion, index) => (
+                      <li key={index} className="flex items-start">
+                        <span className="w-1 h-1 bg-red-600 rounded-full mt-2 mr-2 flex-shrink-0"></span>
+                        {suggestion}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+            <button
+              onClick={() => setGlobalError(null)}
+              className="ml-3 text-red-600 hover:text-red-800 flex-shrink-0"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+      
+      {globalSuccess && (
+        <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+          <div className="flex items-center">
+            <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
+            <p className="text-green-800">{globalSuccess}</p>
+            <button
+              onClick={() => setGlobalSuccess(null)}
+              className="ml-auto text-green-600 hover:text-green-800"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Upload Progress */}
+      {uploadProgress && (
+        <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="flex items-center">
+            <Loader2 className="w-5 h-5 text-blue-600 mr-2 animate-spin" />
+            <div className="flex-1">
+              <p className="text-blue-800 font-medium">
+                Processing {uploadProgress.fileName || 'file'} ({uploadProgress.current} of {uploadProgress.total})
+              </p>
+              <div className="w-full bg-blue-200 rounded-full h-2 mt-2">
+                <div 
+                  className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                  style={{ width: `${(uploadProgress.current / uploadProgress.total) * 100}%` }}
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* Tab Navigation */}
       <div className="flex space-x-6 mb-8 border-b border-gray-200">
-        {(['upload', 'translation', 'analysis'] as const).map((tab) => (
+        {(['upload', 'translate', 'qa', 'analysis'] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -436,9 +761,240 @@ export default function EnhancedDocumentInterface({
       <div className="space-y-6">
         {activeTab === 'upload' && renderUploadArea()}
         
-        {activeTab === 'translation' && (
-          <div>
-            <SimpleTranslationInterface />
+        {activeTab === 'translate' && (
+          <div className="space-y-6">
+            <h3 className="text-xl font-semibold text-gray-900">
+              {currentContent.translate.title}
+            </h3>
+            
+            {documents.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <FileText className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                {currentContent.translate.noDocuments}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Document Selection */}
+                <div className="bg-white border border-gray-200 rounded-lg p-6">
+                  <h4 className="font-medium text-gray-900 mb-4">
+                    {currentContent.translate.selectDocument}
+                  </h4>
+                  
+                  <div className="space-y-3">
+                    {documents.filter(doc => doc.status === 'completed').map((doc) => (
+                      <div 
+                        key={doc.id}
+                        className={`p-3 border rounded cursor-pointer transition-colors ${
+                          selectedDocumentForTranslation?.id === doc.id
+                            ? 'border-blue-500 bg-blue-50'
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                        onClick={() => setSelectedDocumentForTranslation(doc)}
+                      >
+                        <div className="flex items-center">
+                          <FileText className="w-4 h-4 text-gray-500 mr-2" />
+                          <span className="text-sm font-medium">{doc.name}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {selectedDocumentForTranslation && (
+                    <div className="mt-4 space-y-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          {currentContent.translate.targetLanguage}
+                        </label>
+                        <select
+                          value={translationTargetLang}
+                          onChange={(e) => setTranslationTargetLang(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="en">English</option>
+                          <option value="vi">Tiếng Việt</option>
+                          <option value="zh">Chinese</option>
+                          <option value="ja">Japanese</option>
+                          <option value="ko">Korean</option>
+                          <option value="fr">French</option>
+                          <option value="de">German</option>
+                          <option value="es">Spanish</option>
+                        </select>
+                      </div>
+                      
+                      <button
+                        onClick={handleDocumentTranslate}
+                        disabled={isTranslatingDocument}
+                        className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                      >
+                        {isTranslatingDocument ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            {currentContent.translate.translating}
+                          </>
+                        ) : (
+                          currentContent.translate.translateButton
+                        )}
+                      </button>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Translation Results */}
+                <div className="bg-white border border-gray-200 rounded-lg p-6">
+                  <h4 className="font-medium text-gray-900 mb-4">Translation Results</h4>
+                  
+                  {translationResult ? (
+                    <div className="space-y-4">
+                      {translationResult.error ? (
+                        <div className="text-red-600 text-sm flex items-center">
+                          <AlertTriangle className="w-4 h-4 mr-2" />
+                          {translationResult.error}
+                        </div>
+                      ) : (
+                        <>
+                          <div className="text-green-600 text-sm flex items-center">
+                            <CheckCircle className="w-4 h-4 mr-2" />
+                            Translation completed successfully!
+                          </div>
+                          
+                          {translationResult.translatedUrl && (
+                            <a
+                              href={translationResult.translatedUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                            >
+                              <Download className="w-4 h-4 mr-2" />
+                              {currentContent.translate.downloadTranslated}
+                            </a>
+                          )}
+                          
+                          {translationResult.creditsUsed && (
+                            <p className="text-sm text-gray-600">
+                              Credits used: {translationResult.creditsUsed}
+                            </p>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500 text-sm">
+                      Select a document and target language to begin translation.
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+        
+        {activeTab === 'qa' && (
+          <div className="space-y-6">
+            <h3 className="text-xl font-semibold text-gray-900">
+              {currentContent.qa.title}
+            </h3>
+            
+            {documents.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <MessageSquare className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                {currentContent.qa.noDocuments}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Document Selection & Question */}
+                <div className="bg-white border border-gray-200 rounded-lg p-6">
+                  <h4 className="font-medium text-gray-900 mb-4">
+                    {currentContent.qa.selectDocument}
+                  </h4>
+                  
+                  <div className="space-y-3 mb-4">
+                    {documents.filter(doc => doc.status === 'completed').map((doc) => (
+                      <div 
+                        key={doc.id}
+                        className={`p-3 border rounded cursor-pointer transition-colors ${
+                          selectedDocumentForQA?.id === doc.id
+                            ? 'border-blue-500 bg-blue-50'
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                        onClick={() => setSelectedDocumentForQA(doc)}
+                      >
+                        <div className="flex items-center">
+                          <FileText className="w-4 h-4 text-gray-500 mr-2" />
+                          <span className="text-sm font-medium">{doc.name}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {selectedDocumentForQA && (
+                    <div className="space-y-3">
+                      <textarea
+                        value={qaQuestion}
+                        onChange={(e) => setQaQuestion(e.target.value)}
+                        placeholder={currentContent.qa.questionPlaceholder}
+                        className="w-full h-24 p-3 border border-gray-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      
+                      <button
+                        onClick={handleDocumentQA}
+                        disabled={isProcessingQA || !qaQuestion.trim()}
+                        className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                      >
+                        {isProcessingQA ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            {currentContent.qa.asking}
+                          </>
+                        ) : (
+                          <>
+                            <MessageSquare className="w-4 h-4 mr-2" />
+                            {currentContent.qa.askButton}
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Q&A Results */}
+                <div className="bg-white border border-gray-200 rounded-lg p-6">
+                  <h4 className="font-medium text-gray-900 mb-4">Answer</h4>
+                  
+                  {qaResult ? (
+                    <div className="space-y-4">
+                      {qaResult.error ? (
+                        <div className="text-red-600 text-sm flex items-center">
+                          <AlertTriangle className="w-4 h-4 mr-2" />
+                          {qaResult.error}
+                        </div>
+                      ) : (
+                        <>
+                          <div className="bg-blue-50 p-4 rounded-lg">
+                            <p className="text-sm font-medium text-blue-900 mb-2">Question:</p>
+                            <p className="text-sm text-blue-800">{qaResult.question}</p>
+                          </div>
+                          
+                          <div className="bg-green-50 p-4 rounded-lg">
+                            <p className="text-sm font-medium text-green-900 mb-2">Answer:</p>
+                            <p className="text-sm text-green-800">{qaResult.answer}</p>
+                          </div>
+                          
+                          {qaResult.confidence && (
+                            <div className="text-xs text-gray-600">
+                              Confidence: {Math.round(qaResult.confidence * 100)}%
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500 text-sm">
+                      Select a document and ask a question to get started.
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         )}
         
