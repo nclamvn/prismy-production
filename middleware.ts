@@ -2,6 +2,23 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
+
+  // Skip middleware for manifest.json and other static files
+  if (
+    pathname === '/manifest.json' ||
+    pathname.startsWith('/api/') ||
+    pathname.startsWith('/_next/') ||
+    pathname === '/favicon.ico' ||
+    pathname === '/robots.txt' ||
+    pathname === '/sitemap.xml' ||
+    pathname === '/sw.js' ||
+    pathname.startsWith('/icons/') ||
+    pathname.startsWith('/assets/')
+  ) {
+    return NextResponse.next()
+  }
+
   const response = NextResponse.next()
 
   // Security Headers
@@ -42,10 +59,8 @@ export function middleware(request: NextRequest) {
     )
   }
 
-  // Additional security headers
-  response.headers.set('Cross-Origin-Embedder-Policy', 'credentialless')
-  response.headers.set('Cross-Origin-Opener-Policy', 'same-origin')
-  response.headers.set('Cross-Origin-Resource-Policy', 'same-origin')
+  // Additional security headers (removed problematic CORS headers)
+  // Removed Cross-Origin-Resource-Policy to prevent manifest.json 401 issues
 
   return response
 }
@@ -53,9 +68,9 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Simplified matcher for maximum compatibility
-     * Exclude all static assets and API routes
+     * Apply middleware to all pages but exclude static files
+     * The early return in middleware() handles specific exclusions
      */
-    '/((?!_next|api|favicon.ico|robots.txt|manifest.json).*)',
+    '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 }

@@ -31,6 +31,10 @@ import { ToastProvider } from '@/components/ui/Toast'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { WebVitalsMonitor } from '@/components/monitoring/WebVitalsMonitor'
 
+// AI Agent System Integration
+import { AgentProvider } from '@/contexts/AgentContext'
+import AnalyticsInitializer from '@/components/analytics/AnalyticsInitializer'
+
 const inter = Inter({
   subsets: ['latin', 'vietnamese'],
   display: 'swap',
@@ -242,6 +246,8 @@ export default function RootLayout({
           crossOrigin=""
         />
         <link rel="preconnect" href="https://api.prismy.in" />
+        
+        {/* Font optimization - let Next.js handle font preloading automatically */}
 
         {/* DNS Prefetch */}
         <link rel="dns-prefetch" href="//prismy.in" />
@@ -308,14 +314,17 @@ export default function RootLayout({
                       >
                         <AuthProvider>
                           <UnifiedAuthProvider>
-                            <GlobalLoadingIndicator />
-                            <AuthErrorHandler />
-                            <WebVitalsMonitor
-                              debug={process.env.NODE_ENV === 'development'}
-                            />
-                            {/* Conditional Navbar - only on public pages */}
-                            <ConditionalNavbar />
-                            <PageTransition>{children}</PageTransition>
+                            <AgentProvider>
+                              <GlobalLoadingIndicator />
+                              <AuthErrorHandler />
+                              <AnalyticsInitializer />
+                              <WebVitalsMonitor
+                                debug={process.env.NODE_ENV === 'development'}
+                              />
+                              {/* Conditional Navbar - only on public pages */}
+                              <ConditionalNavbar />
+                              <PageTransition>{children}</PageTransition>
+                            </AgentProvider>
                           </UnifiedAuthProvider>
                         </AuthProvider>
                       </SSRSafeLanguageProvider>

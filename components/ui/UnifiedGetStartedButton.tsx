@@ -14,6 +14,8 @@ interface UnifiedGetStartedButtonProps {
   children?: React.ReactNode
   onClick?: () => void
   style?: React.CSSProperties
+  onMouseEnter?: (e: React.MouseEvent<HTMLButtonElement>) => void
+  onMouseLeave?: (e: React.MouseEvent<HTMLButtonElement>) => void
 }
 
 export default function UnifiedGetStartedButton({
@@ -24,6 +26,8 @@ export default function UnifiedGetStartedButton({
   children,
   onClick,
   style,
+  onMouseEnter,
+  onMouseLeave,
 }: UnifiedGetStartedButtonProps) {
   const { user, loading } = useAuth()
   const { handleGetStarted } = useUnifiedAuthContext()
@@ -96,6 +100,8 @@ export default function UnifiedGetStartedButton({
         disabled
         className={`${getButtonClasses()} opacity-50 cursor-not-allowed`}
         style={style}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
       >
         <span className="animate-pulse">{content[language].getStarted}</span>
       </button>
@@ -108,6 +114,8 @@ export default function UnifiedGetStartedButton({
       className={getButtonClasses()}
       style={style}
       type="button"
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
     >
       {getButtonText()}
     </button>

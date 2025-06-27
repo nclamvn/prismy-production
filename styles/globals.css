@@ -13,7 +13,6 @@
 /* ============================================================================ */
 
 .backdrop-blur {
-  background: rgba(255, 255, 255, 0.65) !important;
   backdrop-filter: blur(16px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
 }
@@ -37,6 +36,7 @@ nav.prismy-navbar.prismy-navbar.prismy-navbar {
   margin: 0 !important;
   padding: 0 !important;
   background-attachment: scroll !important;
+  background: var(--surface-panel) !important;
 }
 
 /* Dropdown menus - ensure visibility above hero content */
@@ -58,6 +58,21 @@ nav.prismy-navbar.prismy-navbar.prismy-navbar {
 /* Force overflow visible for dropdown containers */
 .prismy-navbar .relative {
   overflow: visible !important;
+}
+
+/* Navbar CTA Button - Outline Style */
+.navbar-cta-outline {
+  background-color: transparent !important;
+  border: 2px solid var(--notebooklm-primary) !important;
+  color: var(--notebooklm-primary) !important;
+  border-radius: var(--shape-corner-full) !important;
+}
+
+.navbar-cta-outline:hover,
+.navbar-cta-outline.btn-primary:hover,
+nav .navbar-cta-outline.btn-primary:hover {
+  background-color: transparent !important;
+  /* All hover backgrounds disabled - controlled via JavaScript */
 }
 
 /* ============================================================================ */

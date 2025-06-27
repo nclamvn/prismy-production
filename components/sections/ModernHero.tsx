@@ -109,13 +109,13 @@ export default function ModernHero() {
           }}
         >
           <h1
-            className="font-extrabold tracking-tight hero-title-reduced"
+            className="font-medium tracking-tight hero-title-reduced"
             style={{
-              lineHeight: '1.3',
+              lineHeight: '1.15',
               fontFamily: 'var(--sys-display-large-font)',
-              fontWeight: '600',
+              fontWeight: '500',
               color: 'var(--text-primary)',
-              marginBottom: '0.05rem !important',
+              marginBottom: '0rem',
               overflow: 'visible',
               paddingTop: '0.25rem',
             }}
@@ -123,11 +123,11 @@ export default function ModernHero() {
             {currentContent.headline}
           </h1>
           <h2
-            className="font-extrabold tracking-tight gradient-text animate-gradient-text hero-title-reduced"
+            className="font-medium tracking-tight gradient-text animate-gradient-text hero-title-reduced -mt-3"
             style={{
-              lineHeight: '1.1',
+              lineHeight: '1.15',
               fontFamily: 'var(--sys-display-large-font)',
-              fontWeight: '600',
+              fontWeight: '500',
               background: `linear-gradient(90deg, #6366f1 0%, #3b82f6 20%, #06b6d4 40%, #10b981 60%, #22c55e 80%, #6366f1 100%)`,
               backgroundSize: '200% 100%',
               animation: 'gradientFlow 4s linear infinite',
@@ -136,7 +136,6 @@ export default function ModernHero() {
               backgroundClip: 'text',
               overflow: 'visible',
               paddingTop: '0.25rem',
-              marginTop: '0rem !important',
             }}
           >
             {currentContent.subHeadline}

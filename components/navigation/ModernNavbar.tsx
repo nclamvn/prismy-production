@@ -240,7 +240,7 @@ export default function ModernNavbar() {
     <nav
       className="prismy-navbar backdrop-blur transition-all duration-500 ease-out"
       style={{
-        background: 'rgba(255, 255, 255, 0.65)',
+        background: 'var(--surface-panel)',
         backdropFilter: 'blur(16px) saturate(180%)',
         WebkitBackdropFilter: 'blur(16px) saturate(180%)',
         borderBottom: isScrolled ? '1px solid rgba(0, 0, 0, 0.12)' : 'none',
@@ -330,12 +330,12 @@ export default function ModernNavbar() {
                       transition={
                         isHydrated ? { duration: 0.2 } : { duration: 0 }
                       }
-                      className="absolute top-full left-0 mt-2 w-80 p-6 backdrop-blur-lg"
+                      className="absolute top-full left-0 mt-2 w-80 p-6"
                       style={{
-                        background: 'rgba(255, 255, 255, 0.65)',
-                        backdropFilter: 'blur(16px) saturate(180%) !important',
+                        background: 'rgba(251, 250, 249, 0.98)',
+                        backdropFilter: 'blur(32px) saturate(240%) !important',
                         WebkitBackdropFilter:
-                          'blur(16px) saturate(180%) !important',
+                          'blur(32px) saturate(240%) !important',
                         borderRadius:
                           'var(--mat-card-elevated-container-shape)',
                         boxShadow: 'var(--elevation-level-2)',
@@ -438,12 +438,12 @@ export default function ModernNavbar() {
                       transition={
                         isHydrated ? { duration: 0.2 } : { duration: 0 }
                       }
-                      className="absolute top-full left-0 mt-2 w-80 p-6 backdrop-blur-lg"
+                      className="absolute top-full left-0 mt-2 w-80 p-6"
                       style={{
-                        background: 'rgba(255, 255, 255, 0.65)',
-                        backdropFilter: 'blur(16px) saturate(180%) !important',
+                        background: 'rgba(251, 250, 249, 0.98)',
+                        backdropFilter: 'blur(32px) saturate(240%) !important',
                         WebkitBackdropFilter:
-                          'blur(16px) saturate(180%) !important',
+                          'blur(32px) saturate(240%) !important',
                         borderRadius:
                           'var(--mat-card-elevated-container-shape)',
                         boxShadow: 'var(--elevation-level-2)',
@@ -546,12 +546,12 @@ export default function ModernNavbar() {
                       transition={
                         isHydrated ? { duration: 0.2 } : { duration: 0 }
                       }
-                      className="absolute top-full left-0 mt-2 w-80 p-6 backdrop-blur-lg"
+                      className="absolute top-full left-0 mt-2 w-80 p-6"
                       style={{
-                        background: 'rgba(255, 255, 255, 0.65)',
-                        backdropFilter: 'blur(16px) saturate(180%) !important',
+                        background: 'rgba(251, 250, 249, 0.98)',
+                        backdropFilter: 'blur(32px) saturate(240%) !important',
                         WebkitBackdropFilter:
-                          'blur(16px) saturate(180%) !important',
+                          'blur(32px) saturate(240%) !important',
                         borderRadius:
                           'var(--mat-card-elevated-container-shape)',
                         boxShadow: 'var(--elevation-level-2)',
@@ -682,15 +682,25 @@ export default function ModernNavbar() {
                       {currentContent.signin}
                     </button>
                     <UnifiedGetStartedButton
-                      className="px-6 py-2 rounded-full border-2 border-black font-semibold hover:bg-gray-100 transition-all duration-200"
+                      className="navbar-cta-outline transition-all duration-200"
                       style={{
                         fontSize: 'var(--sys-label-large-size)',
                         lineHeight: 'var(--sys-label-large-line-height)',
                         fontFamily: 'var(--sys-label-large-font)',
                         fontWeight: 'var(--sys-label-large-weight)',
-                        color: 'black !important',
-                        backgroundColor: 'transparent !important',
-                        border: '2px solid black !important',
+                        color: 'var(--notebooklm-primary)',
+                        backgroundColor: 'transparent',
+                        border: '2px solid var(--notebooklm-primary)',
+                        borderRadius: 'var(--shape-corner-full)',
+                        padding: '0.5rem 1.5rem',
+                      }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.fontWeight = '700'
+                        e.currentTarget.style.color = '#000000'
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.fontWeight = 'var(--sys-label-large-weight)'
+                        e.currentTarget.style.color = 'var(--notebooklm-primary)'
                       }}
                     >
                       {currentContent.getStarted}
@@ -737,9 +747,9 @@ export default function ModernNavbar() {
             transition={isHydrated ? { duration: 0.3 } : { duration: 0 }}
             className="lg:hidden shadow-lg backdrop-blur backdrop-blur-lg"
             style={{
-              background: 'rgba(255, 255, 255, 0.65)',
-              backdropFilter: 'blur(16px) saturate(180%)',
-              WebkitBackdropFilter: 'blur(16px) saturate(180%)',
+              background: 'rgba(251, 250, 249, 0.9)',
+              backdropFilter: 'blur(20px) saturate(200%)',
+              WebkitBackdropFilter: 'blur(20px) saturate(200%)',
               boxShadow: 'var(--elevation-level-2)',
             }}
           >
@@ -806,15 +816,18 @@ export default function ModernNavbar() {
                     {currentContent.signin}
                   </button>
                   <UnifiedGetStartedButton
-                    className="w-full px-4 py-3 text-center rounded-full border-2 border-black font-semibold hover:bg-gray-100 transition-colors duration-200"
+                    className="w-full navbar-cta-outline transition-colors duration-200"
                     style={{
                       fontSize: 'var(--sys-label-large-size)',
                       lineHeight: 'var(--sys-label-large-line-height)',
                       fontFamily: 'var(--sys-label-large-font)',
                       fontWeight: 'var(--sys-label-large-weight)',
-                      color: 'black !important',
-                      backgroundColor: 'transparent !important',
-                      border: '2px solid black !important',
+                      color: 'var(--notebooklm-primary)',
+                      backgroundColor: 'transparent',
+                      border: '2px solid var(--notebooklm-primary)',
+                      borderRadius: 'var(--shape-corner-full)',
+                      padding: '0.75rem 1rem',
+                      textAlign: 'center',
                     }}
                   >
                     {currentContent.getStarted}
