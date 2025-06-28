@@ -5,7 +5,7 @@
  */
 
 import { logger } from '@/lib/logger'
-import { errorTracker } from './sentry-config'
+import { errorTracker } from './mock-sentry'
 
 export type AlertSeverity = 'low' | 'medium' | 'high' | 'critical'
 export type AlertChannel = 'slack' | 'email' | 'sms' | 'webhook' | 'pagerduty'

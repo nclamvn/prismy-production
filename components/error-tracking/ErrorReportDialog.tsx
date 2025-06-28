@@ -8,7 +8,7 @@
 
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { errorTracker } from '@/lib/error-tracking/sentry-config'
+import { errorTracker } from '@/lib/error-tracking/mock-sentry'
 import { logger } from '@/lib/logger'
 
 interface ErrorReportDialogProps {

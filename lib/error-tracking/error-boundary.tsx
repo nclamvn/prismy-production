@@ -7,7 +7,8 @@
  */
 
 import React, { Component, ReactNode, ErrorInfo } from 'react'
-import { errorTracker } from './sentry-config'
+import Link from 'next/link'
+import { errorTracker } from './mock-sentry'
 import { logger } from '@/lib/logger'
 
 interface ErrorBoundaryState {
@@ -236,12 +237,12 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                 </button>
               )}
               
-              <a
+              <Link
                 href="/"
                 className="block w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors"
               >
                 Go to Homepage
-              </a>
+              </Link>
             </div>
           </div>
         </div>

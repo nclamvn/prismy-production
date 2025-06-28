@@ -5,7 +5,7 @@
  */
 
 import { logger } from '@/lib/logger'
-import { errorTracker } from '@/lib/error-tracking/sentry-config'
+import { errorTracker } from '@/lib/error-tracking/mock-sentry'
 import { alertManager } from '@/lib/error-tracking/alert-manager'
 
 export interface PerformanceMetric {
