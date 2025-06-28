@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import {
   Languages,
   ArrowRight,
@@ -12,6 +12,9 @@ import {
   Zap,
   Clock,
   Target,
+  Upload,
+  FileText,
+  X,
 } from 'lucide-react'
 import { useSSRSafeLanguage } from '@/contexts/SSRSafeLanguageContext'
 import { useAuth } from '@/contexts/AuthContext'
@@ -24,12 +27,14 @@ import StudioActions from '@/components/ui/StudioActions'
 interface SimpleTranslationInterfaceProps {
   className?: string
   onTranslationComplete?: (result: any) => void
+  onDocumentUpload?: (document: any) => void
   variant?: 'default' | 'clean' // Clean variant for NotebookLM layout
 }
 
 export default function SimpleTranslationInterface({
   className = '',
   onTranslationComplete,
+  onDocumentUpload,
   variant = 'default',
 }: SimpleTranslationInterfaceProps) {
   const { language } = useSSRSafeLanguage()
@@ -45,6 +50,12 @@ export default function SimpleTranslationInterface({
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [pipelineResponse, setPipelineResponse] = useState<any>(null)
+
+  // Document upload state
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null)
+  const [isProcessingFile, setIsProcessingFile] = useState(false)
+  const [inputMode, setInputMode] = useState<'text' | 'document'>('text')
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Language options for translation
   const languageOptions = [
@@ -183,9 +194,219 @@ export default function SimpleTranslationInterface({
     }
   }
 
+  // Handle file upload
+  const handleFileUpload = async (file: File) => {
+    setIsProcessingFile(true)
+    setError(null)
+
+    try {
+      // Create document object for processing
+      const document = {
+        id: Date.now().toString(),
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        content: '', // Will be extracted
+        file: file,
+      }
+
+      // Extract text from document
+      let extractedText = ''
+      if (file.type === 'text/plain') {
+        extractedText = await file.text()
+      } else {
+        // For other file types, we'll need to call the document processing API
+        const formData = new FormData()
+        formData.append('file', file)
+
+        const response = await fetch('/api/documents/process-simple', {
+          method: 'POST',
+          body: formData,
+          credentials: 'include', // Include cookies for authentication
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => null)
+          if (response.status === 401) {
+            throw new Error(
+              language === 'vi'
+                ? 'Vui lòng đăng nhập để xử lý tài liệu'
+                : 'Please sign in to process documents'
+            )
+          }
+          throw new Error(errorData?.error || 'Document processing failed')
+        }
+
+        const result = await response.json()
+        extractedText = result.extractedText || ''
+        document.content = extractedText
+        document.id = result.documentId || document.id
+      }
+
+      // Set the extracted text as source text
+      setSourceText(extractedText)
+      setUploadedFile(file)
+      setInputMode('document')
+
+      // Notify parent component about document upload
+      if (onDocumentUpload) {
+        onDocumentUpload({
+          ...document,
+          content: extractedText,
+        })
+      }
+    } catch (error) {
+      console.error('File upload error:', error)
+      setError(
+        language === 'vi'
+          ? 'Lỗi xử lý tệp. Vui lòng thử lại.'
+          : 'File processing error. Please try again.'
+      )
+    } finally {
+      setIsProcessingFile(false)
+    }
+  }
+
+  // Handle file input change
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      handleFileUpload(file)
+    }
+  }
+
+  // Handle drag and drop
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    const file = e.dataTransfer.files[0]
+    if (file) {
+      handleFileUpload(file)
+    }
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+  }
+
+  // Switch back to text mode
+  const switchToTextMode = () => {
+    setInputMode('text')
+    setUploadedFile(null)
+    setSourceText('')
+    setTranslatedText('')
+  }
+
   // Render the core translation content (used by both variants)
   const renderTranslationContent = () => (
     <>
+      {/* Input Mode Selector */}
+      <div className="mb-6">
+        <div className="flex items-center gap-2 mb-4">
+          <button
+            onClick={() => setInputMode('text')}
+            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+              inputMode === 'text'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            {language === 'vi' ? 'Văn bản' : 'Text'}
+          </button>
+          <button
+            onClick={() => setInputMode('document')}
+            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+              inputMode === 'document'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            {language === 'vi' ? 'Tài liệu' : 'Document'}
+          </button>
+        </div>
+      </div>
+
+      {/* Document Upload Area (shown when document mode is selected) */}
+      {inputMode === 'document' && (
+        <div className="mb-6">
+          {!uploadedFile ? (
+            <div
+              className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors"
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+            >
+              {isProcessingFile ? (
+                <div className="space-y-4">
+                  <Loader2 className="w-8 h-8 text-blue-600 animate-spin mx-auto" />
+                  <div className="text-gray-600">
+                    {language === 'vi'
+                      ? 'Đang xử lý tài liệu...'
+                      : 'Processing document...'}
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <Upload className="w-12 h-12 text-gray-400 mx-auto" />
+                  <div>
+                    <p className="text-lg font-medium text-gray-900 mb-2">
+                      {language === 'vi'
+                        ? 'Tải lên tài liệu'
+                        : 'Upload Document'}
+                    </p>
+                    <p className="text-gray-600 mb-4">
+                      {language === 'vi'
+                        ? 'Kéo thả tệp vào đây hoặc nhấp để chọn'
+                        : 'Drag and drop files here or click to select'}
+                    </p>
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                    >
+                      {language === 'vi' ? 'Chọn tệp' : 'Choose File'}
+                    </button>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept=".txt,.pdf,.docx,.doc"
+                      onChange={handleFileInputChange}
+                      className="hidden"
+                    />
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    {language === 'vi'
+                      ? 'Hỗ trợ: TXT, PDF, DOCX (tối đa 50MB)'
+                      : 'Supported: TXT, PDF, DOCX (max 50MB)'}
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <FileText className="w-5 h-5 text-blue-600" />
+                  <div>
+                    <div className="font-medium text-blue-900">
+                      {uploadedFile.name}
+                    </div>
+                    <div className="text-sm text-blue-600">
+                      {Math.round(uploadedFile.size / 1024)}KB •{' '}
+                      {sourceText.length}{' '}
+                      {language === 'vi' ? 'ký tự' : 'characters'}
+                    </div>
+                  </div>
+                </div>
+                <button
+                  onClick={switchToTextMode}
+                  className="p-1 text-blue-600 hover:text-blue-800 transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Language Selector */}
       <div className="mb-6">
         <div className="flex items-center gap-4">
@@ -242,11 +463,11 @@ export default function SimpleTranslationInterface({
                 : 'Enter text to translate...'
             }
             className="w-full h-40 p-3 border border-gray-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-            maxLength={10240}
+            maxLength={500000}
           />
           <div className="flex justify-between items-center mt-2">
             <span className="text-xs text-gray-500">
-              {sourceText.length}/10,240{' '}
+              {sourceText.length}/500,000{' '}
               {language === 'vi' ? 'ký tự' : 'characters'}
             </span>
             {sourceText && (

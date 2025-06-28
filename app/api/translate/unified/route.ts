@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { translationService } from '@/lib/translation-service'
+import { chunkedTranslationService } from '@/lib/chunked-translation-service'
 import { getRateLimitForTier } from '@/lib/rate-limiter'
 import { validateRequest, translationSchema } from '@/lib/validation'
 import { validateCSRFMiddleware } from '@/lib/csrf'
@@ -174,14 +175,52 @@ export async function POST(request: NextRequest) {
     const startTime = Date.now()
 
     try {
-      // Perform translation using correct method name and parameters
-      const result = await translationService.translateText({
-        text,
-        sourceLang: sourceLang || 'auto',
-        targetLang,
-        qualityTier,
-        abTestVariant: 'cache_enabled',
-      })
+      // Determine if we need chunked translation for large texts
+      const shouldUseChunking = text.length > 4000
+
+      let result
+
+      if (shouldUseChunking) {
+        console.log('🧩 Using chunked translation for large text', {
+          textLength: text.length,
+          estimatedChunks: Math.ceil(text.length / 3000),
+        })
+
+        // Use chunked translation service for large texts
+        result = await chunkedTranslationService.translateLargeText({
+          text,
+          sourceLang: sourceLang || 'auto',
+          targetLang,
+          qualityTier,
+          chunkingOptions: chunkedTranslationService.getOptimalChunkingSettings(
+            text,
+            targetLang
+          ),
+          onProgress: progress => {
+            console.log('📊 Translation progress:', {
+              completed: progress.completedChunks,
+              total: progress.totalChunks,
+              percentage: Math.round(
+                (progress.completedChunks / progress.totalChunks) * 100
+              ),
+              eta: progress.estimatedTimeRemaining,
+            })
+          },
+        })
+      } else {
+        console.log('📝 Using direct translation for standard text', {
+          textLength: text.length,
+        })
+
+        // Use standard translation service for smaller texts
+        result = await translationService.translateText({
+          text,
+          sourceLang: sourceLang || 'auto',
+          targetLang,
+          qualityTier,
+          abTestVariant: 'cache_enabled',
+        })
+      }
 
       if (!result.translatedText) {
         throw new Error('Translation failed - no result returned')

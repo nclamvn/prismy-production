@@ -7,9 +7,9 @@
 // ===================================
 
 // Import Sentry webpack plugin conditionally
-const { withSentryConfig } = process.env.SENTRY_DSN ? 
-  require('@sentry/nextjs') : 
-  { withSentryConfig: (config) => config }
+const { withSentryConfig } = process.env.SENTRY_DSN
+  ? require('@sentry/nextjs')
+  : { withSentryConfig: config => config }
 
 const nextConfig = {
   // ===== PRODUCTION OPTIMIZATIONS =====
@@ -17,6 +17,9 @@ const nextConfig = {
   compress: true,
   poweredByHeader: false,
   generateEtags: false,
+
+  // ===== SERVERLESS CONFIGURATION =====
+  serverExternalPackages: ['unpdf', 'pdf-parse', 'pdf2json', 'canvas'],
 
   // ===== EXPERIMENTAL FEATURES =====
   experimental: {
@@ -32,7 +35,7 @@ const nextConfig = {
       'mammoth',
       'exceljs',
     ],
-    
+
     // CSS optimization (disabled due to missing 'critters' dependency)
     optimizeCss: false,
   },
@@ -50,7 +53,7 @@ const nextConfig = {
   // ===== COMPILER OPTIMIZATIONS =====
   compiler: {
     removeConsole: {
-      exclude: ['error', 'warn', 'info'] // Keep important logs
+      exclude: ['error', 'warn', 'info'], // Keep important logs
     },
     styledComponents: false, // We use Tailwind
   },
@@ -119,7 +122,8 @@ const nextConfig = {
       },
       // Security headers for pages (excluding static files)
       {
-        source: '/((?!api|_next/static|_next/image|favicon.ico|robots.txt|manifest.json|sitemap.xml|sw.js|icons/|assets/).*)' ,
+        source:
+          '/((?!api|_next/static|_next/image|favicon.ico|robots.txt|manifest.json|sitemap.xml|sw.js|icons/|assets/).*)',
         headers: [
           {
             key: 'X-Frame-Options',
@@ -160,7 +164,32 @@ const nextConfig = {
         },
       }
     }
-    
+
+    // Enhanced configuration for document processing libraries
+    if (isServer) {
+      // Externalize packages that work better as external dependencies in serverless
+      config.externals = config.externals || []
+      config.externals.push({
+        canvas: 'canvas',
+        sharp: 'sharp',
+      })
+
+      // Configure unpdf for serverless environment
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        'pdfjs-dist/build/pdf.worker.js': false,
+      }
+    }
+
+    // Handle file extensions for document processing
+    config.resolve.extensions = ['.wasm', '.mjs', ...config.resolve.extensions]
+
+    // Configure module rules for binary files
+    config.module.rules.push({
+      test: /\.wasm$/,
+      type: 'webassembly/async',
+    })
+
     return config
   },
 
@@ -176,32 +205,33 @@ const nextConfig = {
 const sentryWebpackPluginOptions = {
   // Suppresses source map uploading logs during build
   silent: true,
-  
+
   // Upload source maps to Sentry
   hideSourceMaps: true,
-  
+
   // Disable source map generation in development
   disableLogger: true,
-  
+
   // Upload source maps only in production
   dryRun: process.env.NODE_ENV !== 'production',
-  
+
   // Sentry organization and project
   org: process.env.SENTRY_ORG,
   project: process.env.SENTRY_PROJECT,
-  
+
   // Auth token for uploading
   authToken: process.env.SENTRY_AUTH_TOKEN,
-  
+
   // Release configuration
   release: {
-    name: process.env.VERCEL_GIT_COMMIT_SHA || process.env.NEXT_PUBLIC_APP_VERSION,
+    name:
+      process.env.VERCEL_GIT_COMMIT_SHA || process.env.NEXT_PUBLIC_APP_VERSION,
     setCommits: {
       auto: true,
       ignoreMissing: true,
     },
   },
-  
+
   // Webpack plugin options
   widenClientFileUpload: true,
   transpileClientSDK: true,

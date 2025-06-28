@@ -17,6 +17,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSSRSafeLanguage } from '@/contexts/SSRSafeLanguageContext'
 import { useAuth } from '@/contexts/AuthContext'
+import DocumentInteractionHub from '@/components/workspace/DocumentInteractionHub'
 
 interface NotebookLMLayoutProps {
   children: React.ReactNode
@@ -25,6 +26,15 @@ interface NotebookLMLayoutProps {
   sourcesPanel?: React.ReactNode
   exportPanel?: React.ReactNode
   exportData?: any
+  uploadedDocument?: {
+    id: string
+    name: string
+    type: string
+    content: string
+    metadata?: any
+  }
+  onDocumentTranslate?: (options: any) => void
+  onDocumentDownload?: (format: string) => void
 }
 
 /**
@@ -39,6 +49,9 @@ export default function NotebookLMLayout({
   sourcesPanel,
   exportPanel,
   exportData,
+  uploadedDocument,
+  onDocumentTranslate,
+  onDocumentDownload,
 }: NotebookLMLayoutProps) {
   const { language } = useSSRSafeLanguage()
   const { user } = useAuth()
@@ -280,7 +293,16 @@ export default function NotebookLMLayout({
                   >
                     {/* Dynamic content based on panel */}
                     {panel.id === 'translate' ? (
-                      children
+                      uploadedDocument ? (
+                        <DocumentInteractionHub
+                          document={uploadedDocument}
+                          onTranslate={onDocumentTranslate}
+                          onDownload={onDocumentDownload}
+                          className="h-full"
+                        />
+                      ) : (
+                        children
+                      )
                     ) : panel.id === 'sources' ? (
                       sourcesPanel
                     ) : panel.id === 'export' ? (
