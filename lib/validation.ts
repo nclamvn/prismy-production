@@ -69,7 +69,7 @@ export const translationSchema = z.object({
       text => text.length > 0 && text.trim().length > 0,
       'Text cannot be only whitespace'
     ),
-  sourceLanguage: z
+  sourceLang: z
     .string()
     .length(2, 'Language code must be exactly 2 characters')
     .regex(/^[a-z]{2}$/, 'Language code must be lowercase letters only')
@@ -89,8 +89,9 @@ export const translationSchema = z.object({
           'zh',
         ].includes(lang),
       'Unsupported language code'
-    ),
-  targetLanguage: z
+    )
+    .optional(),
+  targetLang: z
     .string()
     .length(2, 'Language code must be exactly 2 characters')
     .regex(/^[a-z]{2}$/, 'Language code must be lowercase letters only')
@@ -117,6 +118,13 @@ export const translationSchema = z.object({
     })
     .optional()
     .default('standard'),
+  serviceType: z
+    .enum(['google_translate', 'llm'], {
+      errorMap: () => ({ message: 'Invalid service type' }),
+    })
+    .optional(),
+  trackHistory: z.boolean().optional(),
+  createTask: z.boolean().optional(),
 })
 
 // User authentication validation
