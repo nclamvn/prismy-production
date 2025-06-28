@@ -22,7 +22,7 @@ export function isArray(value: unknown): value is unknown[] {
   return Array.isArray(value)
 }
 
-export function isFunction(value: unknown): value is Function {
+export function isFunction(value: unknown): value is (...args: any[]) => any {
   return typeof value === 'function'
 }
 
@@ -31,7 +31,7 @@ export function isDefined<T>(value: T | undefined | null): value is T {
 }
 
 // Schema Validation
-export interface ValidationSchema<T> {
+export type ValidationSchema<T> = {
   [K in keyof T]: (value: unknown) => value is T[K]
 }
 
@@ -42,7 +42,7 @@ export function validateSchema<T>(
   if (!isObject(value)) {
     return false
   }
-  
+
   return Object.entries(schema).every(([key, guard]) => {
     return guard((value as any)[key])
   })
