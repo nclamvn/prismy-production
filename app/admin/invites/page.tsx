@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
+import UnifiedLayoutSimple from '@/components/layouts/UnifiedLayoutSimple'
 import { Copy, Download, Plus, Check } from 'lucide-react'
 
 interface InviteCode {
@@ -106,9 +107,16 @@ export default function AdminInvitesPage() {
   }
 
   return (
-    <div className="min-h-screen py-12" style={{ backgroundColor: 'var(--bg-main)' }}>
-      <div className="max-w-6xl mx-auto px-4">
-        <h1 className="heading-1 mb-8">Invite Code Management</h1>
+    <UnifiedLayoutSimple
+      config={{
+        variant: 'admin',
+        showUserMenu: true,
+        title: 'Invite Code Management',
+        subtitle: 'Generate and manage invitation codes'
+      }}
+    >
+      <div className="py-12">
+        <div className="max-w-6xl mx-auto px-4">
 
         {/* Generation Form */}
         <div className="card-base p-8 mb-8">
@@ -253,7 +261,8 @@ export default function AdminInvitesPage() {
             </table>
           </div>
         </div>
+        </div>
       </div>
-    </div>
+    </UnifiedLayoutSimple>
   )
 }

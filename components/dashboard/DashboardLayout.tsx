@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { useAuth } from '@/contexts/AuthContext'
-import UserMenu from '@/components/auth/UserMenu'
+import UnifiedUserMenu from '@/components/auth/UnifiedUserMenu'
 import { FeatureDiscoveryProvider, useFeatureDiscovery } from '@/contexts/FeatureDiscoveryContext'
 import FeatureDiscovery from '@/components/ui/FeatureDiscovery'
 import FeatureHint, { FeatureBadge } from '@/components/ui/FeatureHint'
@@ -380,7 +380,7 @@ function DashboardLayoutInner({ children, language = 'en' }: DashboardLayoutProp
             className="p-4"
             style={{ borderTop: `1px solid var(--surface-outline)` }}
           >
-            <UserMenu />
+            <UnifiedUserMenu variant="workspace" />
           </div>
         </div>
       </motion.aside>

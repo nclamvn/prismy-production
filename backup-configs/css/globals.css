@@ -1,0 +1,1985 @@
+@import './tokens.css';
+@import './pill-design-system.css';
+@import './mobile-optimizations.css';
+@import './accessibility.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* NUCLEAR OVERRIDES - Must be last to ensure maximum specificity */
+
+/* ============================================================================ */
+/* FROSTED GLASS EFFECT - NAVBAR & DROPDOWNS */
+/* ============================================================================ */
+
+.backdrop-blur {
+  backdrop-filter: blur(16px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+}
+
+/* ============================================================================ */
+/* EMERGENCY NAVBAR FIX - BULLETPROOF POSITIONING */
+/* ============================================================================ */
+
+/* Complete navbar rewrite - maximum compatibility across all browsers */
+nav.prismy-navbar,
+.prismy-navbar,
+nav.prismy-navbar.prismy-navbar.prismy-navbar {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  z-index: 9999 !important;
+  transform: none !important;
+  -webkit-transform: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background-attachment: scroll !important;
+  background: var(--surface-panel) !important;
+}
+
+/* Dropdown menus - ensure visibility above hero content */
+.prismy-navbar .dropdown-menu,
+.prismy-navbar [role='menu'],
+.prismy-navbar .absolute {
+  position: absolute !important;
+  z-index: 10000 !important;
+  top: 100% !important;
+  transform: none !important;
+}
+
+/* Ensure no interference from parent containers */
+.prismy-navbar,
+.prismy-navbar * {
+  box-sizing: border-box !important;
+}
+
+/* Force overflow visible for dropdown containers */
+.prismy-navbar .relative {
+  overflow: visible !important;
+}
+
+/* Navbar CTA Button - Outline Style */
+.navbar-cta-outline {
+  background-color: transparent !important;
+  border: 2px solid var(--notebooklm-primary) !important;
+  color: var(--notebooklm-primary) !important;
+  border-radius: var(--shape-corner-full) !important;
+}
+
+.navbar-cta-outline:hover,
+.navbar-cta-outline.btn-primary:hover,
+nav .navbar-cta-outline.btn-primary:hover {
+  background-color: transparent !important;
+  /* All hover backgrounds disabled - controlled via JavaScript */
+}
+
+/* ============================================================================ */
+/* ENHANCED HERO TYPOGRAPHY - 1.1x SCALING */
+/* ============================================================================ */
+
+/* Enhanced hero titles with 1.1x scaling across all breakpoints */
+.hero-title-enhanced {
+  font-size: calc(1.1 * 3rem); /* 1.1x of text-3xl (48px base) */
+}
+
+@media (min-width: 640px) {
+  .hero-title-enhanced {
+    font-size: calc(1.1 * 4rem); /* 1.1x of text-4xl (64px) */
+  }
+}
+
+@media (min-width: 768px) {
+  .hero-title-enhanced {
+    font-size: calc(1.1 * 5rem); /* 1.1x of text-5xl (80px) */
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-title-enhanced {
+    font-size: calc(1.1 * 6rem); /* 1.1x of text-6xl (96px) */
+  }
+}
+
+@media (min-width: 1280px) {
+  .hero-title-enhanced {
+    font-size: calc(1.1 * 6rem); /* 1.1x of text-6xl (96px) */
+  }
+}
+
+/* Hero titles reduced to 80% of current size (0.88x total) */
+.hero-title-reduced {
+  font-size: calc(0.88 * 3rem); /* 80% of 1.1x = 0.88x of text-3xl */
+}
+
+@media (min-width: 640px) {
+  .hero-title-reduced {
+    font-size: calc(0.88 * 4rem); /* 80% of 1.1x of text-4xl */
+  }
+}
+
+@media (min-width: 768px) {
+  .hero-title-reduced {
+    font-size: calc(0.88 * 5rem); /* 80% of 1.1x of text-5xl */
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-title-reduced {
+    font-size: calc(0.88 * 6rem); /* 80% of 1.1x of text-6xl */
+  }
+}
+
+@media (min-width: 1280px) {
+  .hero-title-reduced {
+    font-size: calc(0.88 * 6rem); /* 80% of 1.1x of text-6xl */
+  }
+}
+
+/* Base styles */
+@layer base {
+  :root {
+    --font-times: 'Times New Roman', Times, serif;
+  }
+
+  html {
+    @apply antialiased scroll-smooth;
+  }
+
+  body {
+    @apply bg-white text-gray-900;
+    min-height: 100vh;
+  }
+
+  ::selection {
+    @apply bg-gray-900 text-white;
+  }
+}
+
+/* Component classes */
+@layer components {
+  /* Glass effect - FIXED POSITIONING FOR NAVBAR */
+  .glass-header {
+    @apply fixed top-0 z-50 border-b border-gray-100;
+    background-color: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(25px);
+    left: 0;
+    right: 0;
+    width: 100%;
+  }
+
+  /* Smart header pill capsule transitions - FIXED POSITIONING */
+  .header-pill-capsule {
+    @apply fixed top-2 z-50 mx-auto max-w-5xl;
+    background-color: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow:
+      0 12px 40px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, background-color, border-radius;
+  }
+
+  .header-static {
+    @apply fixed top-0 z-50;
+    background-color: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(20px);
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, background-color, border-radius;
+  }
+
+  /* Prevent header flash during pricing interactions */
+  .pricing-page .header-pill-capsule,
+  .pricing-page .header-static {
+    transition: all 0.3s ease-in-out;
+  }
+
+  /* Mobile header improvements - prevent pill overflow when menu open */
+  @media (max-width: 767px) {
+    .header-pill-capsule {
+      /* Override pill behavior on mobile when menu might be open */
+      max-width: 100% !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+      border-radius: 0 !important;
+      top: 0 !important;
+      /* Smooth transition for mobile responsiveness */
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+    }
+
+    /* Ensure mobile menu container doesn't inherit pill constraints */
+    .header-pill-capsule + nav,
+    .header-pill-capsule nav {
+      max-width: 100% !important;
+      border-radius: 0 !important;
+    }
+
+    /* Smooth transitions for mobile header state changes */
+    .header-static {
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+    }
+  }
+
+  /* Container - Full width with internal padding */
+  .container-base {
+    @apply w-full px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Content container - constrains content width while maintaining full-width sections */
+  .content-container {
+    @apply max-w-[var(--max-content-width)] mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Footer content container - full width */
+  .footer-content-container {
+    @apply max-w-full mx-auto px-4 sm:px-6 lg:px-8;
+    border-top: none !important;
+  }
+
+  /* Ensure no unwanted borders on main content sections */
+  footer,
+  footer *,
+  main > section:last-child,
+  .footer-content-container,
+  .footer-content-container * {
+    border-top: none !important;
+  }
+
+  /* Buttons - Viên thuốc style */
+  .btn-base {
+    @apply inline-flex items-center justify-center font-inter font-semibold
+           rounded-full transition-all duration-200 focus:outline-none focus:ring-2 
+           focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed
+           hover:transform hover:-translate-y-px hover:shadow-lg
+           whitespace-nowrap min-w-fit;
+  }
+
+  .btn-pill-lg {
+    @apply btn-base h-12 px-6 text-base;
+  }
+
+  .btn-pill-md {
+    @apply btn-base h-10 px-5 text-sm;
+  }
+
+  .btn-pill-sm {
+    @apply btn-base h-8 px-4 text-xs;
+  }
+
+  .btn-pill-compact {
+    @apply btn-base h-9 px-3 text-sm font-semibold;
+  }
+
+  /* Legacy button classes updated with NotebookLM colors - OVERRIDE CONFLICTS */
+  .btn-primary {
+    @apply btn-base text-white active:scale-[0.98] shadow-md;
+    background-color: var(--notebooklm-primary) !important;
+    color: var(--mat-button-filled-label-text-color) !important;
+    border: none !important;
+    border-radius: 8px !important;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    transition: background-color 0.2s ease;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background-color: var(--notebooklm-primary-dark) !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  .btn-primary:focus {
+    box-shadow: 0 0 0 2px var(--notebooklm-primary);
+  }
+
+  .btn-primary::before {
+    display: none;
+  }
+
+  .btn-secondary {
+    @apply btn-base active:scale-[0.98] border;
+    background-color: var(--surface-elevated);
+    color: var(--text-primary);
+    border-color: var(--surface-outline);
+  }
+
+  .btn-secondary:hover:not(:disabled) {
+    background-color: var(--surface-panel);
+    border-color: var(--notebooklm-primary);
+  }
+
+  .btn-secondary:focus {
+    box-shadow: 0 0 0 2px var(--surface-outline);
+  }
+
+  .btn-accent {
+    @apply btn-base text-white active:scale-[0.98] shadow-md;
+    background-color: var(--notebooklm-primary);
+    color: var(--mat-button-filled-label-text-color);
+  }
+
+  .btn-accent:hover:not(:disabled) {
+    background-color: var(--notebooklm-primary-dark);
+  }
+
+  .btn-accent:focus {
+    box-shadow: 0 0 0 2px var(--notebooklm-primary);
+  }
+
+  .btn-ghost {
+    @apply btn-base bg-transparent active:scale-[0.98];
+    color: var(--text-secondary);
+  }
+
+  .btn-ghost:hover:not(:disabled) {
+    background-color: var(--surface-filled);
+    color: var(--text-primary);
+  }
+
+  .btn-ghost:focus {
+    box-shadow: 0 0 0 2px var(--surface-outline);
+  }
+
+  /* Header specific button sizing */
+  .btn-header-compact {
+    @apply btn-base h-8 px-3 text-sm font-semibold transition-all duration-200;
+  }
+
+  /* Compact button classes - 1.5x size reduction */
+  .btn-pill-compact-sm {
+    @apply btn-base h-12 px-4 text-sm font-semibold;
+  }
+
+  .btn-pill-compact-xs {
+    @apply btn-base h-11 px-3 text-xs font-semibold;
+  }
+
+  /* Compact button classes for 1.3x reduction */
+  .btn-pill-compact-lg {
+    @apply btn-base h-10 px-5 text-sm font-semibold; /* 1.3x smaller than btn-pill-lg */
+  }
+
+  .btn-pill-compact-md {
+    @apply btn-base h-8 px-4 text-sm font-semibold; /* 1.3x smaller than btn-pill-md */
+  }
+
+  /* Sign In button - removed custom width rules to prevent conflicts */
+
+  /* Enhanced Sign In button with larger font */
+  .btn-signin-enhanced {
+    font-size: 0.9rem; /* Slightly larger than default */
+    font-weight: 500;
+  }
+
+  /* Auth Modal Sign In button - enhanced height */
+  .btn-auth-modal {
+    min-height: 48px;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  /* Text overflow protection for Vietnamese */
+  .btn-text-safe {
+    @apply truncate max-w-full whitespace-nowrap overflow-hidden;
+  }
+
+  /* ========================================================================== */
+  /* MATERIAL DESIGN 3 BUTTON SYSTEM - NotebookLM Style */
+  /* ========================================================================== */
+
+  /* Material Design 3 Button Base */
+  .btn-md3-base {
+    @apply inline-flex items-center justify-center 
+           transition-all duration-200 focus:outline-none 
+           disabled:opacity-60 disabled:cursor-not-allowed
+           whitespace-nowrap min-w-fit;
+    font-family: var(--sys-label-large-font);
+    font-size: var(--sys-label-large-size);
+    line-height: var(--sys-label-large-line-height);
+    font-weight: var(--sys-label-large-weight);
+    border-radius: var(--mat-button-filled-container-shape);
+    height: var(--mat-button-filled-container-height);
+    padding-left: var(--mat-button-filled-horizontal-padding);
+    padding-right: var(--mat-button-filled-horizontal-padding);
+  }
+
+  /* Material Design 3 Button Variants */
+  .btn-md3-filled {
+    @apply btn-md3-base;
+    background-color: var(--notebooklm-primary);
+    color: var(--mat-button-filled-label-text-color);
+    border: none;
+  }
+
+  .btn-md3-filled:hover:not(:disabled) {
+    background-color: var(--notebooklm-primary-dark);
+    box-shadow: var(--elevation-level-1);
+    transform: translateY(-1px);
+  }
+
+  .btn-md3-outlined {
+    @apply btn-md3-base;
+    background-color: transparent;
+    color: var(--notebooklm-primary);
+    border: 1px solid var(--surface-outline);
+  }
+
+  .btn-md3-outlined:hover:not(:disabled) {
+    background-color: rgba(11, 40, 255, 0.04);
+    border-color: var(--notebooklm-primary);
+    transform: translateY(-1px);
+  }
+
+  .btn-md3-text {
+    @apply btn-md3-base;
+    background-color: transparent;
+    color: var(--notebooklm-primary);
+    border: none;
+    padding-left: var(--mat-button-text-horizontal-padding);
+    padding-right: var(--mat-button-text-horizontal-padding);
+  }
+
+  .btn-md3-text:hover:not(:disabled) {
+    background-color: rgba(11, 40, 255, 0.04);
+    transform: translateY(-1px);
+  }
+
+  .btn-md3-elevated {
+    @apply btn-md3-base;
+    background-color: var(--surface-elevated);
+    color: var(--notebooklm-primary);
+    border: none;
+    box-shadow: var(--elevation-level-1);
+  }
+
+  .btn-md3-elevated:hover:not(:disabled) {
+    background-color: var(--surface-panel);
+    box-shadow: var(--elevation-level-2);
+    transform: translateY(-1px);
+  }
+
+  /* Material Design 3 Button Sizes */
+  .btn-md3-sm {
+    height: 36px;
+    padding-left: 16px;
+    padding-right: 16px;
+    font-size: var(--sys-label-medium-size);
+    line-height: var(--sys-label-medium-line-height);
+  }
+
+  .btn-md3-lg {
+    height: 48px;
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+
+  /* Combined classes for convenience */
+  .btn-md3-filled-sm {
+    @apply btn-md3-filled btn-md3-sm;
+  }
+
+  .btn-md3-filled-lg {
+    @apply btn-md3-filled btn-md3-lg;
+  }
+
+  .btn-md3-outlined-sm {
+    @apply btn-md3-outlined btn-md3-sm;
+  }
+
+  .btn-md3-outlined-lg {
+    @apply btn-md3-outlined btn-md3-lg;
+  }
+
+  .btn-md3-text-sm {
+    @apply btn-md3-text btn-md3-sm;
+  }
+
+  .btn-md3-text-lg {
+    @apply btn-md3-text btn-md3-lg;
+  }
+
+  .btn-md3-elevated-sm {
+    @apply btn-md3-elevated btn-md3-sm;
+  }
+
+  .btn-md3-elevated-lg {
+    @apply btn-md3-elevated btn-md3-lg;
+  }
+
+  /* Template chips - Viên thuốc design */
+  .template-chip {
+    @apply inline-flex items-center px-4 py-2 font-inter
+           rounded-full border border-gray-200 
+           text-sm font-medium text-gray-700 bg-white
+           hover:border-gray-400 hover:bg-gray-50 hover:text-gray-900
+           transition-all duration-200 cursor-pointer
+           active:scale-[0.98];
+  }
+
+  .template-chip-active {
+    @apply border-blue-500 bg-blue-500 text-white 
+           hover:bg-blue-600 hover:border-blue-600;
+  }
+
+  /* Tags & Badges - Viên thuốc */
+  .tag-base {
+    @apply inline-flex items-center px-3 py-1 font-inter
+           rounded-full text-sm font-medium
+           transition-all duration-200;
+  }
+
+  .tag-primary {
+    @apply tag-base bg-gray-100 text-gray-800;
+  }
+
+  .tag-accent {
+    @apply tag-base bg-blue-100 text-blue-800;
+  }
+
+  .tag-success {
+    @apply tag-base bg-green-100 text-green-800;
+  }
+
+  .badge-base {
+    @apply inline-flex items-center px-2 py-1 font-inter
+           rounded-full text-xs font-semibold uppercase
+           transition-all duration-200 tracking-wide;
+  }
+
+  .badge-primary {
+    @apply badge-base bg-gray-900 text-white;
+  }
+
+  .badge-accent {
+    @apply badge-base bg-blue-600 text-white;
+  }
+
+  /* Card styles - Viên thuốc design */
+  .card-base {
+    @apply bg-white rounded-3xl 
+           border border-gray-100 
+           shadow-md
+           transition-all duration-200;
+  }
+
+  .card-hover {
+    @apply hover:shadow-xl hover:-translate-y-2 hover:scale-[1.02];
+  }
+
+  .mini-card {
+    @apply bg-white rounded-2xl 
+           border border-gray-100 
+           shadow-sm p-4
+           transition-all duration-200
+           hover:shadow-md hover:-translate-y-1 hover:scale-[1.01];
+  }
+
+  /* Input styles - Material Design 3 with NotebookLM tokens */
+  .input-base {
+    @apply w-full px-4 transition-all duration-200 focus:outline-none;
+    height: var(--mat-form-field-container-height);
+    border-radius: var(--mat-form-field-outlined-container-shape);
+    border: var(--mat-form-field-outlined-outline-width) solid
+      var(--mat-form-field-outlined-outline-color);
+    background-color: var(--surface-elevated);
+    color: var(--text-primary);
+    font-family: var(--sys-body-large-font);
+    font-size: var(--sys-body-large-size);
+    line-height: var(--sys-body-large-line-height);
+    font-weight: var(--sys-body-large-weight);
+  }
+
+  .input-base::placeholder {
+    color: var(--text-muted);
+  }
+
+  .input-base:focus {
+    border-color: var(--mat-form-field-outlined-focus-outline-color);
+    border-width: var(--mat-form-field-outlined-focus-outline-width);
+    background-color: white;
+    box-shadow: none;
+  }
+
+  .input-base:hover:not(:focus) {
+    background-color: var(--surface-panel);
+    border-color: var(--text-muted);
+  }
+
+  .input-lg {
+    @apply input-base;
+    height: 64px;
+    padding-left: 20px;
+    padding-right: 20px;
+    font-size: var(--sys-title-medium-size);
+    line-height: var(--sys-title-medium-line-height);
+  }
+
+  .input-sm {
+    @apply input-base;
+    height: 44px;
+    padding-left: 12px;
+    padding-right: 12px;
+    font-size: var(--sys-body-medium-size);
+    line-height: var(--sys-body-medium-line-height);
+  }
+
+  .textarea-base {
+    @apply w-full px-4 py-3 transition-all duration-200 focus:outline-none resize-none;
+    border-radius: var(--mat-form-field-outlined-container-shape);
+    border: var(--mat-form-field-outlined-outline-width) solid
+      var(--mat-form-field-outlined-outline-color);
+    background-color: var(--surface-elevated);
+    color: var(--text-primary);
+    font-family: var(--sys-body-large-font);
+    font-size: var(--sys-body-large-size);
+    line-height: var(--sys-body-large-line-height);
+    font-weight: var(--sys-body-large-weight);
+    min-height: 96px;
+  }
+
+  .textarea-base::placeholder {
+    color: var(--text-muted);
+  }
+
+  .textarea-base:focus {
+    border-color: var(--mat-form-field-outlined-focus-outline-color);
+    border-width: var(--mat-form-field-outlined-focus-outline-width);
+    background-color: white;
+    box-shadow: none;
+  }
+
+  .textarea-base:hover:not(:focus) {
+    background-color: var(--surface-panel);
+    border-color: var(--text-muted);
+  }
+
+  /* Select styles - Material Design 3 with NotebookLM tokens */
+  .select-base {
+    @apply input-base appearance-none cursor-pointer pr-12;
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTQgNkw4IDEwTDEyIDYiIHN0cm9rZT0iIzgxODFhNSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+');
+    background-size: 16px;
+    background-position: right 1rem center;
+    background-repeat: no-repeat;
+  }
+
+  .select-base:hover:not(:focus) {
+    background-color: var(--surface-panel);
+    border-color: var(--text-muted);
+  }
+
+  .select-base:focus {
+    background-color: white;
+    border-color: var(--mat-form-field-outlined-focus-outline-color);
+    border-width: var(--mat-form-field-outlined-focus-outline-width);
+  }
+
+  /* Material Design 3 Dropdown Components */
+  .dropdown-md3 {
+    background-color: var(--surface-elevated);
+    border: 1px solid var(--surface-outline);
+    border-radius: var(--mat-form-field-outlined-container-shape);
+    box-shadow: var(--elevation-level-1);
+  }
+
+  .dropdown-md3:hover {
+    background-color: var(--surface-panel);
+    border-color: var(--notebooklm-primary);
+  }
+
+  .dropdown-md3:focus {
+    border-color: var(--mat-form-field-outlined-focus-outline-color);
+    border-width: var(--mat-form-field-outlined-focus-outline-width);
+    box-shadow: var(--elevation-level-2);
+  }
+
+  /* Legacy Vietnamese Dropdown - Updated with NotebookLM tokens */
+  .dropdown-vietnamese {
+    background-color: var(--surface-elevated);
+    border: 1px solid var(--surface-outline);
+    border-radius: var(--mat-form-field-outlined-container-shape);
+    box-shadow: none !important;
+  }
+
+  .dropdown-vietnamese:hover {
+    background-color: var(--surface-panel);
+    border-color: var(--text-muted);
+    box-shadow: none !important;
+  }
+
+  .dropdown-vietnamese:focus {
+    border-color: var(--notebooklm-primary);
+    border-width: 2px;
+    box-shadow: none !important;
+  }
+
+  /* ========================================================================== */
+  /* MATERIAL DESIGN 3 FORM LABELS - NotebookLM Style */
+  /* ========================================================================== */
+
+  /* Form Label Styles */
+  .label-md3 {
+    display: block;
+    margin-bottom: 8px;
+    font-family: var(--sys-body-medium-font);
+    font-size: var(--sys-body-medium-size);
+    line-height: var(--sys-body-medium-line-height);
+    font-weight: var(--sys-body-medium-weight);
+    color: var(--text-primary);
+  }
+
+  .label-md3-small {
+    display: block;
+    margin-bottom: 6px;
+    font-family: var(--sys-body-small-font);
+    font-size: var(--sys-body-small-size);
+    line-height: var(--sys-body-small-line-height);
+    font-weight: var(--sys-body-small-weight);
+    color: var(--text-secondary);
+  }
+
+  .label-md3-large {
+    display: block;
+    margin-bottom: 10px;
+    font-family: var(--sys-label-large-font);
+    font-size: var(--sys-label-large-size);
+    line-height: var(--sys-label-large-line-height);
+    font-weight: var(--sys-label-large-weight);
+    color: var(--text-primary);
+  }
+
+  /* Legacy form label compatibility */
+  .form-label {
+    @apply label-md3;
+  }
+
+  .form-label-required::after {
+    content: ' *';
+    color: var(--error-500);
+  }
+
+  /* Form field containers */
+  .field-md3 {
+    margin-bottom: 24px;
+  }
+
+  .field-md3-compact {
+    margin-bottom: 16px;
+  }
+
+  /* Error message styling */
+  .field-error {
+    display: block;
+    margin-top: 6px;
+    font-family: var(--sys-body-small-font);
+    font-size: var(--sys-body-small-size);
+    line-height: var(--sys-body-small-line-height);
+    color: var(--error-500);
+  }
+
+  /* Helper text styling */
+  .field-helper {
+    display: block;
+    margin-top: 6px;
+    font-family: var(--sys-body-small-font);
+    font-size: var(--sys-body-small-size);
+    line-height: var(--sys-body-small-line-height);
+    color: var(--text-muted);
+  }
+
+  /* Email Pill Form - Material Design 3 Style */
+  .email-pill-form {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    transition: all 0.2s ease;
+    height: var(--mat-form-field-container-height);
+    border-radius: var(--mat-button-filled-container-shape);
+    border: 1px solid var(--surface-outline);
+    background-color: var(--surface-filled);
+    max-width: 275px;
+  }
+
+  .email-pill-form:hover {
+    background-color: var(--surface-panel);
+    border-color: var(--text-muted);
+    box-shadow: var(--elevation-level-1);
+  }
+
+  .email-pill-form:focus-within {
+    border-color: var(--notebooklm-primary);
+    border-width: 2px;
+    background-color: white;
+  }
+
+  .email-pill-input {
+    flex: 1;
+    padding: 0 16px;
+    background: transparent;
+    outline: none;
+    border: none;
+    font-family: var(--sys-body-large-font);
+    font-size: var(--sys-body-large-size);
+    color: var(--text-primary);
+  }
+
+  .email-pill-input::placeholder {
+    color: var(--text-muted);
+  }
+
+  .email-pill-button {
+    height: 100%;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    background-color: var(--notebooklm-primary);
+    color: white;
+    border: none;
+    border-radius: var(--mat-button-filled-container-shape);
+    font-family: var(--sys-label-medium-font);
+    font-size: var(--sys-label-medium-size);
+    font-weight: var(--sys-label-medium-weight);
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .email-pill-button:hover {
+    background-color: var(--notebooklm-primary-dark);
+    transform: translateX(2px);
+  }
+
+  .email-pill-button:active {
+    transform: scale(0.98);
+  }
+
+  /* Mobile responsive for email pill */
+  @media (max-width: 640px) {
+    .email-pill-form {
+      @apply h-10 max-w-full w-full;
+    }
+
+    .email-pill-input {
+      @apply text-sm px-3;
+    }
+
+    .email-pill-button {
+      @apply px-4 text-sm gap-1;
+    }
+  }
+
+  /* Payment Method Selection - Prismy Design System Compliance */
+  .payment-method-selector {
+    @apply inline-flex items-center justify-center gap-2 
+           px-4 py-3 text-sm font-medium
+           bg-white border border-gray-200 rounded-lg
+           text-gray-700 hover:text-white hover:bg-gray-900
+           hover:border-gray-900 hover:font-semibold hover:-translate-y-px
+           transition-all duration-300;
+    transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    min-height: 44px;
+    min-width: 180px;
+  }
+
+  .payment-method-selector-active {
+    @apply border-gray-900 bg-gray-900 text-white
+           hover:bg-gray-700 hover:border-gray-700;
+  }
+
+  /* Typography - Chuyển toàn bộ sang Inter font */
+  .heading-hero {
+    @apply font-inter text-[1.9rem] sm:text-[2.15rem] lg:text-[2.45rem] font-bold tracking-tight leading-[1.1] text-gray-900 content-overflow-safe;
+    min-height: 2.3rem; /* Prevent layout shift */
+  }
+
+  .heading-1 {
+    @apply font-inter text-[2rem] sm:text-[2.5rem] lg:text-[3rem] font-bold tracking-tight leading-[1.2] text-gray-900 content-overflow-safe;
+    min-height: 2.4rem; /* Prevent layout shift */
+  }
+
+  .heading-2 {
+    @apply font-inter text-[1.5rem] sm:text-[1.75rem] lg:text-[2rem] font-semibold tracking-tight leading-[1.3] text-gray-900 content-overflow-safe;
+    min-height: 1.95rem; /* Prevent layout shift */
+  }
+
+  .heading-3 {
+    @apply font-inter text-[1.5rem] font-semibold tracking-tight leading-[1.4] text-gray-900;
+  }
+
+  .heading-4 {
+    @apply font-inter text-[1.25rem] font-medium leading-[1.5] text-gray-900;
+  }
+
+  .heading-5 {
+    @apply font-inter text-[1rem] font-medium leading-[1.5] text-gray-900;
+  }
+
+  .subheadline {
+    @apply font-inter text-[0.76rem] sm:text-[0.92rem] lg:text-[1.08rem] font-medium leading-[1.4] text-gray-600 content-overflow-safe;
+    min-height: 1.1rem; /* Prevent layout shift */
+  }
+
+  /* Layout shift prevention for pricing components */
+  .pricing-section {
+    min-height: 600px; /* Reserve space during loading */
+  }
+
+  .pricing-card {
+    min-height: 400px; /* Reserve space for pricing cards */
+  }
+
+  .hero-section {
+    min-height: 500px; /* Reserve space for hero content */
+  }
+
+  /* Animated elements should have stable dimensions */
+  .hero-animate-1,
+  .hero-animate-2,
+  .hero-animate-3,
+  .hero-animate-4,
+  .hero-animate-5,
+  .hero-animate-6 {
+    /* Ensure stable layout during animations */
+    contain: layout;
+    will-change: transform, opacity;
+  }
+
+  .body-xl {
+    @apply font-inter text-[1.25rem] leading-[1.6] text-gray-700;
+  }
+
+  .body-lg {
+    @apply font-inter text-[1.125rem] leading-[1.6] text-gray-700;
+  }
+
+  .body-base {
+    @apply font-inter text-[1rem] leading-[1.5] text-gray-700;
+  }
+
+  .body-sm {
+    @apply font-inter text-[0.875rem] leading-[1.4] text-gray-600;
+  }
+
+  .body-xs {
+    @apply font-inter text-[0.75rem] leading-[1.4] text-gray-500;
+  }
+
+  /* Workbench grid */
+  .workbench-grid {
+    @apply grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl mx-auto;
+  }
+
+  .workbench-panel {
+    @apply card-base p-6;
+  }
+
+  /* Stat card */
+  .stat-card {
+    @apply text-center space-y-2 rounded-2xl;
+  }
+
+  .stat-number {
+    @apply text-4xl font-bold text-gray-900;
+  }
+
+  .stat-label {
+    @apply text-sm text-gray-500;
+  }
+
+  /* Vietnamese Pricing Card Hover Effects */
+  .zen-card-hover-pricing {
+    @apply transition-all duration-200 ease-in-out;
+  }
+
+  .zen-card-hover-pricing:hover {
+    transform: translateY(-2px);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+    background-color: #ffffff;
+  }
+
+  /* Hero GIF Container & Responsive */
+  .hero-gif-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background-color: var(--bg-main);
+    border-radius: 1.5rem; /* 24px - Enhanced rounded corners for smoother feel */
+    min-height: 300px; /* Prevent layout shift during loading */
+  }
+
+  /* Documents page specific - smaller size */
+  .documents-hero-gif-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background-color: var(--bg-main);
+    border-radius: 1.5rem; /* 24px - Enhanced rounded corners for smoother feel */
+  }
+
+  .hero-gif {
+    display: block;
+    object-fit: contain;
+    object-position: center;
+    max-width: 100%;
+    height: auto;
+    border-radius: 1.5rem; /* Enhanced border-radius for smoother feel */
+    /* Optional: Blend với background nếu cần */
+    /* mix-blend-mode: multiply; */
+  }
+
+  @media (max-width: 1279px) {
+    .hero-gif-container {
+      max-width: 70vw !important;
+      border-radius: 1.25rem; /* 20px on tablet - enhanced */
+    }
+    .documents-hero-gif-container {
+      max-width: 43.75vw !important; /* 70vw ÷ 1.6 for Documents */
+      border-radius: 1.25rem; /* 20px on tablet - enhanced */
+    }
+    .heading-1 {
+      font-size: calc(3rem * 0.9); /* 90% of original size */
+    }
+  }
+
+  @media (max-width: 767px) {
+    .hero-gif-container {
+      max-width: 90vw !important;
+      border-radius: 1rem; /* 16px on mobile - enhanced */
+    }
+    .documents-hero-gif-container {
+      max-width: 56.25vw !important; /* 90vw ÷ 1.6 for Documents */
+      border-radius: 1rem; /* 16px on mobile - enhanced */
+    }
+    .hero-gif {
+      filter: drop-shadow(none);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-gif-container,
+    .documents-hero-gif-container {
+      display: none;
+    }
+  }
+
+  /* LLM Logo Styles */
+  .llm-logo-container {
+    opacity: 0.8;
+    transition: all 200ms ease-in-out;
+  }
+
+  .llm-logo-container:hover {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+
+  .llm-logo {
+    filter: brightness(0) saturate(100%) invert(60%) sepia(0%) saturate(0%)
+      hue-rotate(0deg) brightness(60%) contrast(100%);
+    width: auto;
+    transition: all 300ms ease-in-out;
+    opacity: 0.7;
+  }
+
+  .llm-logo:hover {
+    filter: none;
+    opacity: 1;
+  }
+
+  /* Mobile: giảm thêm 10% và điều chỉnh gap */
+  @media (max-width: 767px) {
+    .llm-logo {
+      transform: scale(0.9);
+    }
+
+    .llm-logos-container {
+      column-gap: 3rem !important; /* 48px thay vì 64px cho column spacing */
+      row-gap: 0.5rem !important; /* 8px cho row spacing - compact mobile */
+    }
+  }
+}
+
+/* Utilities */
+@layer utilities {
+  /* Text balance */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Focus visible */
+  .focus-visible-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 
+           focus-visible:ring-gray-900 focus-visible:ring-offset-2
+           transition-all duration-200;
+  }
+
+  /* Premium hover effects */
+  .premium-hover {
+    @apply transition-all duration-200 hover:scale-[1.02] hover:-translate-y-0.5 
+           hover:shadow-lg;
+  }
+
+  /* Responsive safety and text overflow protection */
+  .text-overflow-safe {
+    @apply overflow-hidden text-ellipsis whitespace-nowrap;
+  }
+
+  .content-overflow-safe {
+    @apply overflow-hidden break-words hyphens-auto;
+  }
+
+  .responsive-grid-safe {
+    @apply grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
+  }
+
+  .mobile-stack {
+    @apply flex flex-col sm:flex-row;
+  }
+
+  .safe-margin {
+    @apply mx-auto max-w-full px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Mobile dropdown improvements */
+  .dropdown-mobile-safe {
+    @apply min-w-[100px] sm:min-w-[120px];
+  }
+
+  @media (max-width: 640px) {
+    .dropdown-mobile-safe .dropdown-menu {
+      @apply left-0 right-0 mx-auto max-w-[200px];
+    }
+
+    /* Ensure dropdown doesn't overlap content below */
+    .dropdown-mobile-safe [role='menu'] {
+      @apply shadow-lg border-2 border-gray-200 z-[70];
+      max-height: 200px;
+      border-radius: 8px !important;
+    }
+
+    /* Mobile menu spacing improvements */
+    #mobile-menu {
+      margin-bottom: 2rem;
+    }
+
+    /* Mobile menu in header context - ensure proper spacing */
+    .header-pill-capsule #mobile-menu,
+    .header-static #mobile-menu {
+      width: 100% !important;
+      max-width: 100% !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+      border-radius: 0 !important;
+      /* Ensure menu animations are independent of header transitions */
+      transform: none !important;
+    }
+
+    /* Mobile Zen Design Compliance */
+    #mobile-menu button {
+      border-radius: var(--radius-md);
+      transition: var(--transition-base);
+    }
+
+    #mobile-menu button:hover {
+      transform: translateY(-1px);
+      font-weight: 600;
+    }
+  }
+}
+
+/* ========================================================================== */
+/* PRISMY ZEN DROPDOWN PHILOSOPHY - DESIGN SYSTEM COMPLIANCE */
+/* ========================================================================== */
+
+/* Mobile Dropdown - Zen Philosophy Application */
+@media (max-width: 768px) {
+  .mobile-dropdown-zen button,
+  .mobile-dropdown-zen [role='button'] {
+    border-radius: var(--radius-md);
+    transition: var(--transition-base);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .mobile-dropdown-zen button:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .mobile-dropdown-zen [class*='absolute'] {
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border-subtle);
+  }
+}
+
+/* End Zen Dropdown Philosophy */
+
+/* ============================================================================ */
+/* PERFORMANCE ANIMATIONS - CSS ONLY (REPLACES FRAMER MOTION) */
+/* ============================================================================ */
+
+/* Slide up animation for error boundaries and similar components */
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Fade in animation for loading states */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out forwards;
+}
+
+/* Toast slide-in animation (replaces Framer Motion toast animations) */
+@keyframes toast-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(100px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.animate-toast-slide-in {
+  animation: toast-slide-in 0.3s cubic-bezier(0.2, 0, 0, 1) forwards;
+}
+
+/* Skeleton animations - replacing Framer Motion */
+@keyframes shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 1.5s infinite linear;
+}
+
+@keyframes wave {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.animate-wave {
+  animation: wave 1.5s infinite ease-in-out;
+}
+
+/* Dropdown open animation */
+@keyframes dropdown-open {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-dropdown-open {
+  animation: dropdown-open 0.2s cubic-bezier(0.2, 0, 0, 1) forwards;
+}
+
+/* Scale in animation for theme indicators */
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-scale-in {
+  animation: scale-in 0.2s cubic-bezier(0.2, 0, 0, 1) forwards;
+}
+
+/* Theme switch animation */
+@keyframes theme-switch {
+  from {
+    opacity: 0;
+    transform: scale(0.8) rotate(-90deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.animate-theme-switch {
+  animation: theme-switch 0.2s cubic-bezier(0.2, 0, 0, 1) forwards;
+}
+
+/* Feature hint animation */
+@keyframes feature-hint {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-feature-hint {
+  animation: feature-hint 0.3s cubic-bezier(0.2, 0, 0, 1) forwards;
+}
+
+/* Feature discovery modal animation */
+@keyframes feature-discovery {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1) translateY(0);
+  }
+}
+
+.animate-feature-discovery {
+  animation: feature-discovery 0.3s cubic-bezier(0.2, 0, 0, 1) forwards;
+}
+
+/* Consent banner slide up animation */
+@keyframes consent-banner {
+  from {
+    opacity: 0;
+    transform: translateY(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-consent-banner {
+  animation: consent-banner 0.4s cubic-bezier(0.2, 0, 0, 1) forwards;
+}
+
+/* Consent details expand animation */
+@keyframes consent-details {
+  from {
+    opacity: 0;
+    height: 0;
+  }
+  to {
+    opacity: 1;
+    height: auto;
+  }
+}
+
+.animate-consent-details {
+  animation: consent-details 0.3s ease-out forwards;
+}
+
+/* Service Worker update notification */
+@keyframes sw-update {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-sw-update {
+  animation: sw-update 0.3s cubic-bezier(0.2, 0, 0, 1) forwards;
+}
+
+/* Accordion open animation for mobile sections */
+@keyframes accordion-open {
+  from {
+    opacity: 0;
+    max-height: 0;
+    transform: scaleY(0.95);
+  }
+  to {
+    opacity: 1;
+    max-height: 200px;
+    transform: scaleY(1);
+  }
+}
+
+.animate-accordion-open {
+  animation: accordion-open 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Tooltip fade in animation */
+@keyframes tooltip-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) translateX(-50%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) translateX(-50%);
+  }
+}
+
+.animate-tooltip-fade-in {
+  animation: tooltip-fade-in 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Modal spring animation */
+@keyframes modal-spring {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-modal-spring {
+  animation: modal-spring 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Slide down animation for error notifications */
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.animate-slide-down {
+  animation: slide-down 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Zen breathe animation for workbench */
+@keyframes zen-breathe {
+  from {
+    opacity: 0;
+    transform: scale(0.98) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-zen-breathe {
+  animation: zen-breathe 0.8s cubic-bezier(0.2, 0, 0.1, 1) forwards;
+}
+
+/* Scale in animation for tooltips */
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-scale-in {
+  animation: scale-in 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Slide in from left animation */
+@keyframes slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Floating elements animations */
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate(30px, -30px) rotate(120deg);
+  }
+  66% {
+    transform: translate(-20px, 20px) rotate(240deg);
+  }
+}
+
+@keyframes float-medium {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate(-25px, -25px) rotate(180deg);
+  }
+}
+
+@keyframes float-fast {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(15px, -15px) rotate(90deg);
+  }
+  50% {
+    transform: translate(-15px, -15px) rotate(180deg);
+  }
+  75% {
+    transform: translate(-15px, 15px) rotate(270deg);
+  }
+}
+
+/* Old animation classes removed - replaced with optimized CSS-only animations in GradientKeyframes.css */
+
+.animate-float-slow {
+  animation: float-slow 20s ease-in-out infinite;
+}
+
+.animate-float-medium {
+  animation: float-medium 15s ease-in-out infinite;
+}
+
+.animate-float-fast {
+  animation: float-fast 12s ease-in-out infinite;
+}
+
+/* ============================================================================ */
+/* CENTRALIZED CSS - MERGED FROM SCROLL-ANIMATIONS.CSS */
+/* ============================================================================ */
+
+/* NotebookLM Scroll-Triggered Animations */
+
+/* Fade in animation utility */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Animation classes */
+.animate-on-scroll {
+  opacity: 0;
+  transition:
+    opacity 0.6s ease-out,
+    transform 0.6s ease-out;
+}
+
+.animate-on-scroll.in-view {
+  opacity: 1;
+}
+
+.fade-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.fade-left {
+  animation: fadeInLeft 0.8s ease-out forwards;
+}
+
+.fade-right {
+  animation: fadeInRight 0.8s ease-out forwards;
+}
+
+.fade-scale {
+  animation: fadeInScale 0.8s ease-out forwards;
+}
+
+/* Stagger animation delays */
+.stagger-1 {
+  animation-delay: 0.1s;
+}
+.stagger-2 {
+  animation-delay: 0.2s;
+}
+.stagger-3 {
+  animation-delay: 0.3s;
+}
+.stagger-4 {
+  animation-delay: 0.4s;
+}
+.stagger-5 {
+  animation-delay: 0.5s;
+}
+
+/* NotebookLM-style gradient reveal */
+@keyframes gradientReveal {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.gradient-reveal {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--notebooklm-primary-light) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: gradientReveal 2s ease-in-out infinite;
+}
+
+/* Floating animation for cards */
+@keyframes float-gentle {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.float-on-hover:hover {
+  animation: float-gentle 2s ease-in-out infinite;
+}
+
+/* Modern glass card effect */
+.glass-card {
+  background: rgba(251, 250, 249, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Interactive glow effect */
+.glow-on-hover {
+  transition: all 0.3s ease;
+}
+
+.glow-on-hover:hover {
+  box-shadow:
+    0 0 20px rgba(0, 0, 0, 0.3),
+    0 0 40px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+/* NotebookLM Button glow */
+.notebooklm-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.notebooklm-glow::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.notebooklm-glow:hover::before {
+  left: 100%;
+}
+
+/* Pulse animation for important elements */
+@keyframes notebookPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
+  }
+}
+
+.pulse-notebooklm {
+  animation: notebookPulse 2s infinite;
+}
+
+/* Smooth transitions for all interactive elements */
+.smooth-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================================================ */
+/* CENTRALIZED CSS - MERGED FROM GRADIENTKEYFRAMES.CSS */
+/* ============================================================================ */
+
+/* GRADIENT ANIMATIONS - OPTIMIZED FOR PERFORMANCE */
+
+@keyframes gradientFlow {
+  0% {
+    background-position: -100% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* HERO ANIMATIONS - SYNCHRONIZED & HYDRATION-SAFE */
+
+@keyframes heroFadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroFadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* GRADIENT TEXT STYLES */
+
+.gradient-text {
+  background: linear-gradient(
+    90deg,
+    #6366f1 0%,
+    #3b82f6 20%,
+    #06b6d4 40%,
+    #10b981 60%,
+    #22c55e 80%,
+    #6366f1 100%
+  );
+  background-size: 200% 100%;
+  animation: gradientFlow 4s linear infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.animate-gradient {
+  background-size: 400% 400%;
+  animation: gradientMove 8s ease infinite;
+}
+
+.animate-gradient-text {
+  background-size: 200% 100%;
+  animation: gradientFlow 4s linear infinite;
+}
+
+/* HERO COMPONENT ANIMATIONS - NO JAVASCRIPT REQUIRED */
+
+.hero-animate-1 {
+  animation: heroFadeInUp 0.6s cubic-bezier(0.2, 0, 0, 1) 0.1s both;
+}
+
+.hero-animate-2 {
+  animation: heroFadeInUp 0.6s cubic-bezier(0.2, 0, 0, 1) 0.2s both;
+}
+
+.hero-animate-3 {
+  animation: heroFadeInUp 0.6s cubic-bezier(0.2, 0, 0, 1) 0.3s both;
+}
+
+.hero-animate-4 {
+  animation: heroFadeInUp 0.6s cubic-bezier(0.2, 0, 0, 1) 0.4s both;
+}
+
+.hero-animate-5 {
+  animation: heroFadeInUp 0.6s cubic-bezier(0.2, 0, 0, 1) 0.5s both;
+}
+
+.hero-animate-6 {
+  animation: heroFadeInUp 0.6s cubic-bezier(0.2, 0, 0, 1) 0.6s both;
+}
+
+/* PERFORMANCE OPTIMIZATIONS */
+
+.hero-animate-1,
+.hero-animate-2,
+.hero-animate-3,
+.hero-animate-4,
+.hero-animate-5,
+.hero-animate-6 {
+  /* Optimize animations for performance */
+  will-change: transform, opacity;
+  transform: translateZ(0); /* Force hardware acceleration */
+}
+
+/* FLOATING ANIMATIONS FOR BACKGROUND ELEMENTS - OPTIMIZED */
+
+@keyframes float-slow-optimized {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes float-medium-optimized {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+@keyframes float-fast-optimized {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-float-slow-optimized {
+  animation: float-slow-optimized 6s ease-in-out infinite;
+}
+
+.animate-float-medium-optimized {
+  animation: float-medium-optimized 4s ease-in-out infinite;
+}
+
+.animate-float-fast-optimized {
+  animation: float-fast-optimized 3s ease-in-out infinite;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .animate-on-scroll,
+  .fade-up,
+  .fade-left,
+  .fade-right,
+  .fade-scale,
+  .float-on-hover,
+  .glow-on-hover,
+  .notebooklm-glow,
+  .pulse-notebooklm,
+  .hero-animate-1,
+  .hero-animate-2,
+  .hero-animate-3,
+  .hero-animate-4,
+  .hero-animate-5,
+  .hero-animate-6,
+  .animate-float-slow-optimized,
+  .animate-float-medium-optimized,
+  .animate-float-fast-optimized {
+    animation: none !important;
+    transition: none !important;
+  }
+}

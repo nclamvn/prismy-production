@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { createServerComponentClient } from '@/lib/supabase'
 import { cookies } from 'next/headers'
 import AdminDashboard from '@/components/admin/AdminDashboard'
+import UnifiedLayoutSimple from '@/components/layouts/UnifiedLayoutSimple'
 
 export default async function AdminPage() {
   const supabase = createServerComponentClient({ cookies })
@@ -67,5 +68,16 @@ export default async function AdminPage() {
     redirect('/')
   }
   
-  return <AdminDashboard />
+  return (
+    <UnifiedLayoutSimple
+      config={{
+        variant: 'admin',
+        showUserMenu: true,
+        title: 'Admin Dashboard',
+        subtitle: 'System management & analytics'
+      }}
+    >
+      <AdminDashboard />
+    </UnifiedLayoutSimple>
+  )
 }

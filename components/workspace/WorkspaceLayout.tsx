@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { motionSafe, slideUp, fadeIn } from '@/lib/motion'
 import { WorkspaceMode } from '@/app/workspace/page'
-import UserMenu from '@/components/auth/UserMenu'
+import UnifiedUserMenu from '@/components/auth/UnifiedUserMenu'
 import CreditDisplay from '@/components/auth/CreditDisplay'
 import InviteRedemptionModal from '@/components/auth/InviteRedemptionModal'
 import {
@@ -621,7 +621,7 @@ export default function WorkspaceLayout({
               </a>
 
               {/* User Menu */}
-              <UserMenu />
+              <UnifiedUserMenu variant="workspace" />
             </div>
           </div>
         </header>

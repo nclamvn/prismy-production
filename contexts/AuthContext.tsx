@@ -5,26 +5,61 @@ import { User, Session } from '@supabase/supabase-js'
 import { createClientComponentClient } from '@/lib/supabase'
 import type { UserProfile } from '@/lib/supabase'
 
-interface AuthContextType {
+// Import comprehensive auth types
+import type {
+  AuthContextValue,
+  AuthState,
+  AuthError,
+  LoginRequest,
+  RegisterRequest,
+  User as PrismyUser
+} from '../types/auth'
+import type { SupportedLanguage } from '../types'
+import { isUser, isAuthTokens, validateEmail, validatePassword } from '../lib/type-guards'
+
+// Enhanced AuthContext with strict typing
+interface AuthContextType extends Omit<AuthContextValue, 'state' | 'actions'> {
+  // Legacy compatibility
   user: User | null
   session: Session | null
   profile: UserProfile | null
   loading: boolean
   sessionRestored: boolean
-  signIn: (email: string, password: string) => Promise<{ error: any }>
+  
+  // Enhanced typed methods
+  signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>
   signUp: (
     email: string,
     password: string,
-    fullName: string
-  ) => Promise<{ error: any }>
-  signInWithGoogle: (redirectTo?: string) => Promise<{ error: any }>
-  signInWithApple: (redirectTo?: string) => Promise<{ error: any }>
+    fullName: string,
+    language?: SupportedLanguage
+  ) => Promise<{ error: AuthError | null }>
+  signInWithGoogle: (redirectTo?: string) => Promise<{ error: AuthError | null }>
+  signInWithApple: (redirectTo?: string) => Promise<{ error: AuthError | null }>
   signOut: () => Promise<void>
-  updateProfile: (updates: Partial<UserProfile>) => Promise<{ error: any }>
+  updateProfile: (updates: Partial<UserProfile>) => Promise<{ error: AuthError | null }>
   refreshProfile: () => Promise<void>
+  
+  // New typed methods
+  login: (credentials: LoginRequest) => Promise<{ error: AuthError | null }>
+  register: (data: RegisterRequest) => Promise<{ error: AuthError | null }>
+  
+  // State management
+  state: AuthState
+  isAuthenticated: boolean
+  error: AuthError | null
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
+
+// Type-safe hook with proper error handling
+export function useAuth(): AuthContextType {
+  const context = useContext(AuthContext)
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider')
+  }
+  return context
+}
 
 // Use centralized singleton client
 const getSupabaseClient = () => createClientComponentClient()
@@ -278,12 +313,4 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       {children}
     </AuthContext.Provider>
   )
-}
-
-export const useAuth = () => {
-  const context = useContext(AuthContext)
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider')
-  }
-  return context
 }

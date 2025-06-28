@@ -19,6 +19,8 @@ import {
 import { useSSRSafeLanguage } from '@/contexts/SSRSafeLanguageContext'
 import { useAuth } from '@/contexts/AuthContext'
 import { useTheme } from '@/components/theme/ThemeProvider'
+import { useWorkspaceIntelligence } from '@/contexts/WorkspaceIntelligenceContext'
+import PersonalizedRecommendations from './PersonalizedRecommendations'
 
 interface UserPreferences {
   language: 'en' | 'vi'
@@ -64,8 +66,16 @@ export default function SettingsDashboard({
   const { language, setLanguage } = useSSRSafeLanguage()
   const { user } = useAuth()
   // const { theme, setTheme } = useTheme() // TODO: Implement theme switching
+  const { 
+    state, 
+    getRecentActivities, 
+    getUserPatterns, 
+    getWorkflowEfficiency,
+    trackActivity,
+    addSuggestion 
+  } = useWorkspaceIntelligence()
   
-  const [activeTab, setActiveTab] = useState<'profile' | 'preferences' | 'notifications' | 'security' | 'data'>('profile')
+  const [activeTab, setActiveTab] = useState<'profile' | 'preferences' | 'notifications' | 'security' | 'data' | 'analytics'>('profile')
   const [userProfile, setUserProfile] = useState({
     name: user?.user_metadata?.full_name || user?.email?.split('@')[0] || '',
     email: user?.email || '',
@@ -118,6 +128,7 @@ export default function SettingsDashboard({
         notifications: 'Thông báo',
         security: 'Bảo mật',
         data: 'Dữ liệu',
+        analytics: 'Phân tích sử dụng',
       },
       profile: {
         personalInfo: 'Thông tin cá nhân',
@@ -200,6 +211,7 @@ export default function SettingsDashboard({
         notifications: 'Notifications',
         security: 'Security',
         data: 'Data',
+        analytics: 'Usage Analytics',
       },
       profile: {
         personalInfo: 'Personal Information',
@@ -272,6 +284,121 @@ export default function SettingsDashboard({
         download: 'Download',
         upload: 'Upload',
       },
+      analytics: {
+        title: 'Phân tích sử dụng',
+        subtitle: 'Thống kê hoạt động và hiệu suất làm việc',
+        workflowEfficiency: 'Hiệu suất làm việc',
+        recentActivity: 'Hoạt động gần đây',
+        usagePatterns: 'Thói quen sử dụng',
+        recommendations: 'Gợi ý cải thiện',
+        totalActivities: 'Tổng hoạt động',
+        successRate: 'Tỷ lệ thành công',
+        avgSessionTime: 'Thời gian phiên trung bình',
+        mostUsedFeature: 'Tính năng hay dùng nhất',
+        timeSpent: 'Thời gian sử dụng',
+        featureUsage: 'Sử dụng tính năng',
+        noData: 'Chưa có dữ liệu phân tích',
+        generateReport: 'Tạo báo cáo'
+      },
+    },
+    en: {
+      title: 'Settings',
+      subtitle: 'Manage your account and personal preferences',
+      tabs: {
+        profile: 'Profile',
+        preferences: 'Preferences',
+        notifications: 'Notifications',
+        security: 'Security',
+        data: 'Data',
+        analytics: 'Usage Analytics',
+      },
+      profile: {
+        personalInfo: 'Personal Information',
+        name: 'Full Name',
+        email: 'Email',
+        bio: 'Bio',
+        company: 'Company',
+        role: 'Role',
+        website: 'Website',
+        avatarUpload: 'Upload Avatar',
+        changePassword: 'Change Password',
+      },
+      preferences: {
+        language: 'Language',
+        theme: 'Theme',
+        timezone: 'Timezone',
+        dateFormat: 'Date Format',
+        numberFormat: 'Number Format',
+        autoSave: 'Auto Save',
+        soundEnabled: 'Sound',
+        animationsEnabled: 'Animations',
+        compactMode: 'Compact Mode',
+      },
+      notifications: {
+        emailNotifications: 'Email Notifications',
+        pushNotifications: 'Push Notifications',
+        frequency: 'Frequency',
+        weeklyReports: 'Weekly Reports',
+        securityAlerts: 'Security Alerts',
+        productUpdates: 'Product Updates',
+        teamActivity: 'Team Activity',
+        translationComplete: 'Translation Complete',
+        collaborationInvites: 'Collaboration Invites',
+        systemAlerts: 'System Alerts',
+      },
+      security: {
+        twoFactor: 'Two-Factor Authentication',
+        sessionTimeout: 'Session Timeout (minutes)',
+        passwordChange: 'Change Password',
+        activeDevices: 'Active Devices',
+        loginHistory: 'Login History',
+        revokeDevice: 'Revoke Device',
+      },
+      data: {
+        exportData: 'Export Data',
+        importData: 'Import Data',
+        clearCache: 'Clear Cache',
+        deleteAccount: 'Delete Account',
+        dataPortability: 'Data Portability',
+        storageUsed: 'Storage Used',
+      },
+      themes: {
+        light: 'Light',
+        dark: 'Dark',
+        system: 'System',
+      },
+      frequencies: {
+        immediate: 'Immediate',
+        daily: 'Daily',
+        weekly: 'Weekly',
+        never: 'Never',
+      },
+      actions: {
+        save: 'Save Changes',
+        saving: 'Saving...',
+        saved: 'Saved',
+        cancel: 'Cancel',
+        enable: 'Enable',
+        disable: 'Disable',
+        download: 'Download',
+        upload: 'Upload',
+      },
+      analytics: {
+        title: 'Usage Analytics',
+        subtitle: 'Activity statistics and workflow performance',
+        workflowEfficiency: 'Workflow Efficiency',
+        recentActivity: 'Recent Activity',
+        usagePatterns: 'Usage Patterns',
+        recommendations: 'Recommendations',
+        totalActivities: 'Total Activities',
+        successRate: 'Success Rate',
+        avgSessionTime: 'Avg Session Time',
+        mostUsedFeature: 'Most Used Feature',
+        timeSpent: 'Time Spent',
+        featureUsage: 'Feature Usage',
+        noData: 'No analytics data yet',
+        generateReport: 'Generate Report'
+      },
     },
   }
 
@@ -287,6 +414,18 @@ export default function SettingsDashboard({
       if (preferences.language !== language) {
         setLanguage(preferences.language)
       }
+      
+      // Track settings change activity
+      trackActivity({
+        type: 'settings_change',
+        mode: 'settings',
+        data: {
+          changedSettings: Object.keys(preferences),
+          language: preferences.language,
+          theme: preferences.theme
+        },
+        success: true
+      })
       
       setSavedSuccessfully(true)
       setTimeout(() => setSavedSuccessfully(false), 3000)
@@ -721,7 +860,7 @@ export default function SettingsDashboard({
 
       {/* Tab Navigation */}
       <div className="flex space-x-6 mb-8 border-b border-gray-200">
-        {(['profile', 'preferences', 'notifications', 'security', 'data'] as const).map((tab) => (
+        {(['profile', 'preferences', 'notifications', 'security', 'data', 'analytics'] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -743,7 +882,263 @@ export default function SettingsDashboard({
         {activeTab === 'notifications' && renderNotifications()}
         {activeTab === 'security' && renderSecurity()}
         {activeTab === 'data' && renderData()}
+        {activeTab === 'analytics' && renderAnalytics()}
       </div>
+    </div>
+  )
+
+  // Render analytics tab
+  const renderAnalytics = () => {
+    const recentActivities = getRecentActivities(10)
+    const userPatterns = getUserPatterns()
+    const workflowEfficiency = getWorkflowEfficiency()
+    
+    return (
+      <div className="space-y-6">
+        {/* Overview Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">{currentContent.analytics.totalActivities}</p>
+                <p className="text-2xl font-bold text-gray-900">{state.activities.length}</p>
+              </div>
+              <BarChart3 className="w-8 h-8 text-blue-600" />
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">{currentContent.analytics.successRate}</p>
+                <p className="text-2xl font-bold text-gray-900">{Math.round(workflowEfficiency)}%</p>
+              </div>
+              <CheckCircle className="w-8 h-8 text-green-600" />
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">{currentContent.analytics.avgSessionTime}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {Math.round(Object.values(userPatterns.usageTime).reduce((a, b) => a + b, 0) / 60)}m
+                </p>
+              </div>
+              <Clock className="w-8 h-8 text-purple-600" />
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">{currentContent.analytics.mostUsedFeature}</p>
+                <p className="text-lg font-bold text-gray-900">
+                  {Object.entries(userPatterns.featureUsage).sort(([,a], [,b]) => b - a)[0]?.[0]?.replace('_', ' ') || 'N/A'}
+                </p>
+              </div>
+              <Target className="w-8 h-8 text-orange-600" />
+            </div>
+          </div>
+        </div>
+
+        {/* Charts and Details */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Recent Activity */}
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">{currentContent.analytics.recentActivity}</h3>
+            
+            {recentActivities.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <Activity className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                <p>{currentContent.analytics.noData}</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {recentActivities.map((activity, index) => (
+                  <div key={activity.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center">
+                      <div className={`w-3 h-3 rounded-full mr-3 ${
+                        activity.success ? 'bg-green-500' : 'bg-red-500'
+                      }`} />
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">
+                          {activity.type.replace('_', ' ')}
+                        </p>
+                        <p className="text-xs text-gray-600">
+                          {activity.mode} • {activity.timestamp.toLocaleTimeString()}
+                        </p>
+                      </div>
+                    </div>
+                    {activity.duration && (
+                      <span className="text-xs text-gray-500">
+                        {Math.round(activity.duration / 1000)}s
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Usage Patterns */}
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">{currentContent.analytics.usagePatterns}</h3>
+            
+            <div className="space-y-4">
+              {/* Feature Usage */}
+              <div>
+                <h4 className="font-medium text-gray-700 mb-3">{currentContent.analytics.featureUsage}</h4>
+                <div className="space-y-2">
+                  {Object.entries(userPatterns.featureUsage).slice(0, 5).map(([feature, count]) => {
+                    const maxCount = Math.max(...Object.values(userPatterns.featureUsage))
+                    const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0
+                    
+                    return (
+                      <div key={feature} className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600 capitalize">
+                          {feature.replace('_', ' ')}
+                        </span>
+                        <div className="flex items-center space-x-2">
+                          <div className="w-20 h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-blue-600 transition-all duration-300"
+                              style={{ width: `${percentage}%` }}
+                            />
+                          </div>
+                          <span className="text-sm font-medium text-gray-900 w-8 text-right">
+                            {count}
+                          </span>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Time Spent */}
+              <div>
+                <h4 className="font-medium text-gray-700 mb-3">{currentContent.analytics.timeSpent}</h4>
+                <div className="space-y-2">
+                  {Object.entries(userPatterns.usageTime).slice(0, 5).map(([mode, time]) => {
+                    const maxTime = Math.max(...Object.values(userPatterns.usageTime))
+                    const percentage = maxTime > 0 ? (time / maxTime) * 100 : 0
+                    
+                    return (
+                      <div key={mode} className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600 capitalize">
+                          {mode}
+                        </span>
+                        <div className="flex items-center space-x-2">
+                          <div className="w-20 h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-green-600 transition-all duration-300"
+                              style={{ width: `${percentage}%` }}
+                            />
+                          </div>
+                          <span className="text-sm font-medium text-gray-900 w-12 text-right">
+                            {Math.round(time / 60)}m
+                          </span>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Workflow Efficiency */}
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">{currentContent.analytics.workflowEfficiency}</h3>
+            <div className="flex items-center space-x-2">
+              <span className="text-2xl font-bold text-blue-600">{Math.round(workflowEfficiency)}%</span>
+              <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+                workflowEfficiency > 80 ? 'bg-green-100 text-green-800' :
+                workflowEfficiency > 60 ? 'bg-yellow-100 text-yellow-800' :
+                'bg-red-100 text-red-800'
+              }`}>
+                {workflowEfficiency > 80 ? 'Excellent' : workflowEfficiency > 60 ? 'Good' : 'Needs Improvement'}
+              </div>
+            </div>
+          </div>
+          
+          <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
+            <div 
+              className="h-3 rounded-full transition-all duration-500"
+              style={{ 
+                width: `${workflowEfficiency}%`,
+                backgroundColor: workflowEfficiency > 80 ? '#10B981' : workflowEfficiency > 60 ? '#F59E0B' : '#EF4444'
+              }}
+            />
+          </div>
+          
+          <p className="text-sm text-gray-600">
+            Based on {state.activities.length} activities with {state.activities.filter(a => a.success).length} successful completions
+          </p>
+        </div>
+
+        {/* Personalized Recommendations */}
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <PersonalizedRecommendations className="max-h-96 overflow-y-auto" />
+        </div>
+
+        {/* Generate Report */}
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">{currentContent.analytics.generateReport}</h3>
+              <p className="text-sm text-gray-600 mt-1">
+                Export detailed analytics and usage patterns
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                // Generate and download analytics report
+                const report = {
+                  user: user?.email,
+                  generatedAt: new Date().toISOString(),
+                  totalActivities: state.activities.length,
+                  workflowEfficiency: workflowEfficiency,
+                  featureUsage: userPatterns.featureUsage,
+                  usageTime: userPatterns.usageTime,
+                  recentActivities: recentActivities.slice(0, 20)
+                }
+                
+                const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' })
+                const url = URL.createObjectURL(blob)
+                const a = document.createElement('a')
+                a.href = url
+                a.download = `prismy-analytics-${new Date().toISOString().split('T')[0]}.json`
+                document.body.appendChild(a)
+                a.click()
+                document.body.removeChild(a)
+                URL.revokeObjectURL(url)
+
+                // Track report generation
+                trackActivity({
+                  type: 'settings_change',
+                  mode: 'settings',
+                  data: { action: 'analytics_report_generated' },
+                  success: true
+                })
+              }}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 flex items-center"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              {currentContent.analytics.generateReport}
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className={`settings-dashboard ${className}`}>
+      {/* Content will be rendered by above conditions */}
     </div>
   )
 }

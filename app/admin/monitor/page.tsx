@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import UnifiedLayoutSimple from '@/components/layouts/UnifiedLayoutSimple'
 import { 
   Users, 
   CreditCard, 
@@ -132,27 +133,35 @@ export default function MonitoringDashboard() {
   }
 
   return (
-    <div className="min-h-screen py-8" style={{ backgroundColor: 'var(--bg-main)' }}>
-      <div className="max-w-7xl mx-auto px-4">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="heading-1">System Monitoring</h1>
-          <div className="flex items-center gap-4">
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={autoRefresh}
-                onChange={(e) => setAutoRefresh(e.target.checked)}
-                className="rounded"
-              />
-              <span className="text-sm">Auto-refresh</span>
-            </label>
-            <div className="flex items-center gap-2">
-              {getHealthIcon()}
-              <span className="text-sm font-medium capitalize">{metrics.systemHealth}</span>
+    <UnifiedLayoutSimple
+      config={{
+        variant: 'admin',
+        showUserMenu: true,
+        title: 'System Monitoring',
+        subtitle: 'Real-time system metrics and health status'
+      }}
+    >
+      <div className="py-8">
+        <div className="max-w-7xl mx-auto px-4">
+          {/* Status Header */}
+          <div className="flex justify-between items-center mb-8">
+            <div />
+            <div className="flex items-center gap-4">
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={autoRefresh}
+                  onChange={(e) => setAutoRefresh(e.target.checked)}
+                  className="rounded"
+                />
+                <span className="text-sm">Auto-refresh</span>
+              </label>
+              <div className="flex items-center gap-2">
+                {getHealthIcon()}
+                <span className="text-sm font-medium capitalize">{metrics.systemHealth}</span>
+              </div>
             </div>
           </div>
-        </div>
 
         {/* Key Metrics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -297,7 +306,8 @@ export default function MonitoringDashboard() {
             </button>
           </div>
         </div>
+        </div>
       </div>
-    </div>
+    </UnifiedLayoutSimple>
   )
 }

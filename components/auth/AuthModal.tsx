@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { useAuth } from '@/contexts/AuthContext'
-import ModalPortal from './ModalPortal'
 
 interface AuthModalProps {
   isOpen: boolean
@@ -35,8 +35,15 @@ export default function AuthModal({
   const [fullName, setFullName] = useState('')
   const [loadingState, setLoadingState] = useState<AuthLoadingState>('idle')
   const [authError, setAuthError] = useState<AuthError | null>(null)
+  const [mounted, setMounted] = useState(false)
 
   const { signIn, signUp, signInWithGoogle, signInWithApple } = useAuth()
+
+  // Handle mounting for portal
+  useEffect(() => {
+    setMounted(true)
+    return () => setMounted(false)
+  }, [])
 
   // Legacy loading state for backward compatibility
   const loading = loadingState !== 'idle'
@@ -317,9 +324,10 @@ export default function AuthModal({
     }
   }
 
-  return (
-    <ModalPortal>
-      {isOpen && (
+  if (!mounted || !isOpen) return null
+
+  return createPortal(
+    (
         <>
           {/* Backdrop */}
           <div
@@ -610,7 +618,7 @@ export default function AuthModal({
             </div>
           </div>
         </>
-      )}
-    </ModalPortal>
+    ),
+    document.body
   )
 }

@@ -9,7 +9,7 @@ import { useSSRSafeLanguage } from '@/contexts/SSRSafeLanguageContext'
 import { useUnifiedAuthContext } from '@/contexts/UnifiedAuthProvider'
 import { useSmartNavigation } from '@/hooks/useSmartNavigation'
 import { useIsHydrated } from '@/hooks/useHydrationSafeAnimation'
-import UserMenu from '../auth/UserMenu'
+import UnifiedUserMenu from '../auth/UnifiedUserMenu'
 import UnifiedGetStartedButton from '../ui/UnifiedGetStartedButton'
 import CreditHUD from '../credits/CreditHUD'
 import {
@@ -663,7 +663,7 @@ export default function ModernNavbar() {
                 {user ? (
                   <div className="flex items-center gap-3">
                     <CreditHUD />
-                    <UserMenu />
+                    <UnifiedUserMenu variant="simple" />
                   </div>
                 ) : (
                   <div className="hidden lg:flex items-center space-x-3">

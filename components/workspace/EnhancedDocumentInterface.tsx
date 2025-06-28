@@ -19,6 +19,7 @@ import {
 import { useSSRSafeLanguage } from '@/contexts/SSRSafeLanguageContext'
 import { useAgents, useAgentOperations } from '@/contexts/AgentContext'
 import { useDocumentPipeline } from '@/contexts/PipelineContext'
+import { useWorkspaceIntelligence } from '@/contexts/WorkspaceIntelligenceContext'
 import { Document } from './types'
 import SimpleTranslationInterface from './SimpleTranslationInterface'
 
@@ -34,6 +35,8 @@ interface ProcessedDocument {
   uploadTime: Date
   status: 'processing' | 'completed' | 'error'
   agentId?: string
+  file?: File
+  extractedText?: string
   analysis?: {
     type: string
     insights: string[]
@@ -53,6 +56,13 @@ export default function EnhancedDocumentInterface({
   const { agents, isConnected } = useAgents()
   const { createAgent } = useAgentOperations()
   const { processDocument, extractText, analyzeDocument, status } = useDocumentPipeline()
+  const { 
+    trackActivity, 
+    startAIOperation, 
+    updateAIOperation, 
+    addSuggestion,
+    updateContext 
+  } = useWorkspaceIntelligence()
   
   const [documents, setDocuments] = useState<ProcessedDocument[]>([])
   const [activeDocument, setActiveDocument] = useState<ProcessedDocument | null>(null)
@@ -287,6 +297,8 @@ export default function EnhancedDocumentInterface({
     clearMessages()
     setIsUploading(true)
     setUploadProgress({ current: 0, total: files.length })
+    
+    const uploadStartTime = Date.now()
 
     try {
       for (let i = 0; i < files.length; i++) {
@@ -301,7 +313,10 @@ export default function EnhancedDocumentInterface({
           continue
         }
 
-        // Create document record
+        // Extract text from file
+        const extractedText = await extractTextFromFile(file)
+        
+        // Create document record with extracted text and original file
         const newDocument: ProcessedDocument = {
           id: `doc_${Date.now()}_${i}`,
           name: file.name,
@@ -309,9 +324,35 @@ export default function EnhancedDocumentInterface({
           size: file.size,
           uploadTime: new Date(),
           status: 'processing',
+          file: file,
+          extractedText: extractedText,
         }
 
         setDocuments(prev => [...prev, newDocument])
+
+        // Track document upload activity
+        trackActivity({
+          type: 'document_upload',
+          mode: 'documents',
+          data: { 
+            fileName: file.name, 
+            fileSize: file.size, 
+            fileType: file.type,
+            documentId: newDocument.id 
+          },
+          duration: Date.now() - uploadStartTime,
+          success: true
+        })
+
+        // Start AI operation for document analysis
+        const operationId = startAIOperation({
+          type: 'document_processing',
+          input: { 
+            documentId: newDocument.id, 
+            fileName: file.name, 
+            extractedText: extractedText 
+          }
+        })
 
         // Process document using pipeline (just for upload analysis)
         try {
@@ -339,6 +380,48 @@ export default function EnhancedDocumentInterface({
               : doc
           ))
 
+          // Update AI operation as completed
+          updateAIOperation(operationId, {
+            status: 'completed',
+            progress: 100,
+            output: analysis,
+            endTime: new Date()
+          })
+
+          // Add contextual suggestions based on document type
+          if (file.name.toLowerCase().includes('contract')) {
+            addSuggestion({
+              type: 'next_action',
+              title: 'Legal Review Assistant',
+              description: 'Run contract analysis to identify key terms and obligations',
+              action: () => setActiveTab('analysis'),
+              priority: 'high',
+              context: { documentId: newDocument.id, documentType: 'contract' }
+            })
+          } else if (file.name.toLowerCase().includes('report')) {
+            addSuggestion({
+              type: 'workflow',
+              title: 'Document Translation',
+              description: 'Translate this report to multiple languages for global distribution',
+              action: () => {
+                setSelectedDocumentForTranslation(newDocument)
+                setActiveTab('translate')
+              },
+              priority: 'medium',
+              context: { documentId: newDocument.id, documentType: 'report' }
+            })
+          }
+
+          // Update workspace context with new document
+          updateContext({
+            activeDocuments: [...(prev => prev), newDocument.id],
+            lastActivity: {
+              type: 'document_analysis',
+              timestamp: new Date(),
+              data: { documentId: newDocument.id, fileName: file.name }
+            }
+          })
+
         } catch (error) {
           console.error('❌ Document analysis failed:', error)
           setDocuments(prev => prev.map(doc => 
@@ -346,6 +429,25 @@ export default function EnhancedDocumentInterface({
               ? { ...doc, status: 'error' as const }
               : doc
           ))
+
+          // Update AI operation as failed
+          updateAIOperation(operationId, {
+            status: 'error',
+            error: error instanceof Error ? error.message : 'Analysis failed',
+            endTime: new Date()
+          })
+
+          // Track failed activity
+          trackActivity({
+            type: 'document_analysis',
+            mode: 'documents',
+            data: { 
+              documentId: newDocument.id, 
+              fileName: file.name,
+              error: error instanceof Error ? error.message : 'Unknown error'
+            },
+            success: false
+          })
         }
 
       }
@@ -413,6 +515,70 @@ export default function EnhancedDocumentInterface({
     }
   }, [])
 
+  // Extract text from uploaded file
+  const extractTextFromFile = useCallback(async (file: File): Promise<string> => {
+    try {
+      if (file.type === 'text/plain') {
+        return await file.text()
+      } else if (file.type === 'application/pdf') {
+        // For PDF files, we'll use a simple approach
+        // In production, you'd use a proper PDF parser
+        return `[PDF Content] Document: ${file.name}\nThis is extracted text from the PDF file. In a real implementation, this would contain the actual PDF text content.`
+      } else if (file.type.includes('word') || file.name.endsWith('.docx')) {
+        return `[DOCX Content] Document: ${file.name}\nThis is extracted text from the Word document. In a real implementation, this would contain the actual document text content.`
+      } else {
+        return `[${file.type}] Document: ${file.name}\nUnsupported file type. Please use PDF, DOCX, or TXT files.`
+      }
+    } catch (error) {
+      console.error('Text extraction failed:', error)
+      return `Error extracting text from ${file.name}`
+    }
+  }, [])
+
+  // Generate contextual answer based on document content
+  const generateContextualAnswer = useCallback((question: string, documentText: string, documentName: string) => {
+    // Simple text-based Q&A logic
+    // In production, this would use a proper AI service
+    
+    const lowerQuestion = question.toLowerCase()
+    const lowerText = documentText.toLowerCase()
+    
+    // Basic keyword matching
+    let relevantSection = ''
+    let confidence = 0.3
+    
+    // Find relevant sections by keyword matching
+    const questionWords = lowerQuestion.split(' ').filter(word => word.length > 3)
+    
+    for (const word of questionWords) {
+      const index = lowerText.indexOf(word)
+      if (index !== -1) {
+        // Extract context around the found word
+        const start = Math.max(0, index - 100)
+        const end = Math.min(documentText.length, index + 200)
+        relevantSection = documentText.substring(start, end)
+        confidence += 0.2
+        break
+      }
+    }
+    
+    let answer = ''
+    
+    if (relevantSection) {
+      answer = `Based on the document "${documentName}", I found relevant information: "${relevantSection.trim()}". This appears to be related to your question about ${question.toLowerCase()}.`
+      confidence = Math.min(confidence, 0.8)
+    } else {
+      answer = `I couldn't find specific information related to "${question}" in the document "${documentName}". The document contains ${documentText.length} characters of text. You may want to rephrase your question or check if the information is available in the document.`
+      confidence = 0.2
+    }
+    
+    return {
+      answer,
+      confidence,
+      sourceSection: relevantSection || documentText.substring(0, 200) + '...'
+    }
+  }, [])
+
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
@@ -431,17 +597,27 @@ export default function EnhancedDocumentInterface({
     setIsTranslatingDocument(true)
     setTranslationResult(null)
     
+    // Track translation activity and start AI operation
+    const operationId = startAIOperation({
+      type: 'translation',
+      input: {
+        documentId: selectedDocumentForTranslation.id,
+        sourceText: selectedDocumentForTranslation.extractedText,
+        targetLang: translationTargetLang
+      }
+    })
+    
     try {
       console.log('🚀 Starting document translation', {
         documentId: selectedDocumentForTranslation.id,
         targetLang: translationTargetLang
       })
       
-      // Create a dummy file object for the pipeline
-      const fileBlob = new Blob(['dummy content'], { type: selectedDocumentForTranslation.type })
-      const file = new File([fileBlob], selectedDocumentForTranslation.name, {
-        type: selectedDocumentForTranslation.type
-      })
+      // Use the actual uploaded file instead of dummy content
+      const file = selectedDocumentForTranslation.file
+      if (!file) {
+        throw new Error('Original file not found. Please re-upload the document.')
+      }
       
       const response = await processDocument(file, {
         targetLang: translationTargetLang,
@@ -459,6 +635,37 @@ export default function EnhancedDocumentInterface({
           wordCount: response.result.wordCount
         })
         showSuccess(`Document translated successfully! Used ${response.result.creditsUsed} credits.`)
+
+        // Update AI operation as completed
+        updateAIOperation(operationId, {
+          status: 'completed',
+          progress: 100,
+          output: response.result,
+          endTime: new Date()
+        })
+
+        // Track successful translation
+        trackActivity({
+          type: 'translation',
+          mode: 'documents',
+          data: {
+            documentId: selectedDocumentForTranslation.id,
+            targetLanguage: translationTargetLang,
+            creditsUsed: response.result.creditsUsed,
+            wordCount: response.result.wordCount
+          },
+          success: true
+        })
+
+        // Add suggestion for next steps
+        addSuggestion({
+          type: 'next_action',
+          title: 'Download Translation',
+          description: 'Your translated document is ready for download',
+          action: () => window.open(response.result.translatedUrl, '_blank'),
+          priority: 'high',
+          context: { translationId: response.result.taskId }
+        })
       } else if (response.status === 'error') {
         const error = response.error
         showError({
@@ -472,6 +679,13 @@ export default function EnhancedDocumentInterface({
         })
         setTranslationResult({
           error: error?.message || 'Translation failed'
+        })
+
+        // Update AI operation as failed
+        updateAIOperation(operationId, {
+          status: 'error',
+          error: error?.message || 'Translation failed',
+          endTime: new Date()
         })
       }
       
@@ -506,6 +720,25 @@ export default function EnhancedDocumentInterface({
       setTranslationResult({
         error: errorMessage
       })
+
+      // Update AI operation as failed
+      updateAIOperation(operationId, {
+        status: 'error',
+        error: errorMessage,
+        endTime: new Date()
+      })
+
+      // Track failed translation
+      trackActivity({
+        type: 'translation',
+        mode: 'documents',
+        data: {
+          documentId: selectedDocumentForTranslation?.id,
+          targetLanguage: translationTargetLang,
+          error: errorMessage
+        },
+        success: false
+      })
     } finally {
       setIsTranslatingDocument(false)
     }
@@ -518,26 +751,86 @@ export default function EnhancedDocumentInterface({
     setIsProcessingQA(true)
     setQaResult(null)
     
+    // Track Q&A activity and start AI operation
+    const operationId = startAIOperation({
+      type: 'analysis',
+      input: {
+        documentId: selectedDocumentForQA.id,
+        question: qaQuestion,
+        documentText: selectedDocumentForQA.extractedText
+      }
+    })
+    
     try {
       console.log('🚀 Starting document Q&A', {
         documentId: selectedDocumentForQA.id,
         question: qaQuestion
       })
       
-      // For now, simulate Q&A processing
-      // In a real implementation, this would extract text and process with AI
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      // Use real document content for Q&A
+      const documentText = selectedDocumentForQA.extractedText || 'No text extracted from document'
+      
+      // Simple Q&A processing using document content
+      // In production, this would use an AI service like OpenAI/Anthropic
+      const contextualAnswer = generateContextualAnswer(qaQuestion, documentText, selectedDocumentForQA.name)
+      
+      // Simulate processing time
+      await new Promise(resolve => setTimeout(resolve, 1500))
       
       setQaResult({
         question: qaQuestion,
-        answer: `Based on the document "${selectedDocumentForQA.name}", this is a simulated answer to your question. In a full implementation, this would analyze the document content and provide a relevant response.`,
-        confidence: 0.85
+        answer: contextualAnswer.answer,
+        confidence: contextualAnswer.confidence,
+        sourceText: documentText.substring(0, 300) + '...' // Show source snippet
+      })
+
+      // Update AI operation as completed
+      updateAIOperation(operationId, {
+        status: 'completed',
+        progress: 100,
+        output: {
+          question: qaQuestion,
+          answer: contextualAnswer.answer,
+          confidence: contextualAnswer.confidence
+        },
+        endTime: new Date()
+      })
+
+      // Track successful Q&A
+      trackActivity({
+        type: 'ai_interaction',
+        mode: 'documents',
+        data: {
+          documentId: selectedDocumentForQA.id,
+          question: qaQuestion,
+          confidence: contextualAnswer.confidence
+        },
+        success: true
       })
       
     } catch (error) {
       console.error('❌ Document Q&A failed:', error)
       setQaResult({
         error: error instanceof Error ? error.message : 'Q&A processing failed'
+      })
+
+      // Update AI operation as failed
+      updateAIOperation(operationId, {
+        status: 'error',
+        error: error instanceof Error ? error.message : 'Q&A processing failed',
+        endTime: new Date()
+      })
+
+      // Track failed Q&A
+      trackActivity({
+        type: 'ai_interaction',
+        mode: 'documents',
+        data: {
+          documentId: selectedDocumentForQA?.id,
+          question: qaQuestion,
+          error: error instanceof Error ? error.message : 'Q&A processing failed'
+        },
+        success: false
       })
     } finally {
       setIsProcessingQA(false)
@@ -640,6 +933,11 @@ export default function EnhancedDocumentInterface({
                     <p className="text-sm text-gray-500">
                       {(doc.size / 1024).toFixed(1)} KB • {doc.uploadTime.toLocaleTimeString()}
                     </p>
+                    {doc.extractedText && (
+                      <p className="text-xs text-gray-400 mt-1">
+                        Text extracted: {doc.extractedText.length} characters
+                      </p>
+                    )}
                   </div>
                 </div>
                 
@@ -664,6 +962,31 @@ export default function EnhancedDocumentInterface({
               </div>
             ))}
           </div>
+          
+          {/* Document Content Viewer */}
+          {activeDocument && activeDocument.extractedText && (
+            <div className="mt-6 bg-white border border-gray-200 rounded-lg p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h5 className="font-medium text-gray-900">Document Content: {activeDocument.name}</h5>
+                <button
+                  onClick={() => setActiveDocument(null)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="bg-gray-50 rounded border p-4 max-h-64 overflow-y-auto">
+                <pre className="text-sm text-gray-700 whitespace-pre-wrap">
+                  {activeDocument.extractedText}
+                </pre>
+              </div>
+              <div className="mt-3 flex items-center justify-between text-xs text-gray-500">
+                <span>File size: {(activeDocument.size / 1024).toFixed(1)} KB</span>
+                <span>Characters: {activeDocument.extractedText.length}</span>
+                <span>Words: ~{activeDocument.extractedText.split(/\s+/).length}</span>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -857,6 +1180,27 @@ export default function EnhancedDocumentInterface({
                             Translation completed successfully!
                           </div>
                           
+                          {/* Show translation content inline */}
+                          {selectedDocumentForTranslation?.extractedText && (
+                            <div className="space-y-4">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                  <h5 className="font-medium text-gray-700">Original Content:</h5>
+                                  <div className="p-3 bg-gray-50 rounded border text-sm max-h-40 overflow-y-auto">
+                                    {selectedDocumentForTranslation.extractedText.substring(0, 500)}
+                                    {selectedDocumentForTranslation.extractedText.length > 500 && '...'}
+                                  </div>
+                                </div>
+                                <div className="space-y-2">
+                                  <h5 className="font-medium text-gray-700">Translated Content:</h5>
+                                  <div className="p-3 bg-blue-50 rounded border text-sm max-h-40 overflow-y-auto">
+                                    {translationResult.translatedText || 'Translation processing...'}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          
                           {translationResult.translatedUrl && (
                             <a
                               href={translationResult.translatedUrl}
@@ -873,6 +1217,13 @@ export default function EnhancedDocumentInterface({
                             <p className="text-sm text-gray-600">
                               Credits used: {translationResult.creditsUsed}
                             </p>
+                          )}
+                          
+                          {(translationResult.pageCount || translationResult.wordCount) && (
+                            <div className="text-sm text-gray-600 space-x-4">
+                              {translationResult.pageCount && <span>Pages: {translationResult.pageCount}</span>}
+                              {translationResult.wordCount && <span>Words: {translationResult.wordCount}</span>}
+                            </div>
                           )}
                         </>
                       )}
@@ -979,11 +1330,23 @@ export default function EnhancedDocumentInterface({
                             <p className="text-sm text-green-800">{qaResult.answer}</p>
                           </div>
                           
-                          {qaResult.confidence && (
-                            <div className="text-xs text-gray-600">
-                              Confidence: {Math.round(qaResult.confidence * 100)}%
+                          {/* Source text section */}
+                          {qaResult.sourceText && (
+                            <div className="bg-gray-50 p-4 rounded-lg">
+                              <p className="text-sm font-medium text-gray-900 mb-2">Source Text:</p>
+                              <p className="text-xs text-gray-700 italic">{qaResult.sourceText}</p>
                             </div>
                           )}
+                          
+                          {/* Confidence and metadata */}
+                          <div className="flex items-center justify-between text-xs text-gray-600">
+                            {qaResult.confidence && (
+                              <span>Confidence: {Math.round(qaResult.confidence * 100)}%</span>
+                            )}
+                            {selectedDocumentForQA?.extractedText && (
+                              <span>Document length: {selectedDocumentForQA.extractedText.length} characters</span>
+                            )}
+                          </div>
                         </>
                       )}
                     </div>

@@ -25,6 +25,7 @@ import ConditionalNavbar from '@/components/navigation/ConditionalNavbar'
 // Phase 6.3 & 6.4: Accessibility and Theme Providers
 import { AccessibilityProvider } from '@/components/accessibility/AccessibilityProvider'
 import { ThemeProvider } from '@/components/theme/ThemeProvider'
+import AccessibilityEnhancer from '@/components/accessibility/AccessibilityEnhancer'
 
 // Phase 8: Advanced Features & Monitoring
 import { ToastProvider } from '@/components/ui/Toast'
@@ -37,6 +38,9 @@ import AnalyticsInitializer from '@/components/analytics/AnalyticsInitializer'
 
 // Complete Pipeline System
 import { PipelineProvider } from '@/contexts/PipelineContext'
+
+// Workspace Intelligence System - Phase 2 Integration
+import { WorkspaceIntelligenceProvider } from '@/contexts/WorkspaceIntelligenceContext'
 
 const inter = Inter({
   subsets: ['latin', 'vietnamese'],
@@ -303,7 +307,13 @@ export default function RootLayout({
           <ErrorBoundary>
             <ThemeProvider defaultTheme="system">
               <AccessibilityProvider>
-                <ToastProvider>
+                <AccessibilityEnhancer
+                  enableAnnouncements={true}
+                  enableKeyboardNavigation={true}
+                  enableFocusManagement={true}
+                  enableReducedMotion={true}
+                >
+                  <ToastProvider>
                   <LoadingProvider>
                     <SkeletonProvider
                       loading={false}
@@ -318,17 +328,19 @@ export default function RootLayout({
                         <AuthProvider>
                           <UnifiedAuthProvider>
                             <AgentProvider>
-                              <PipelineProvider>
-                                <GlobalLoadingIndicator />
-                                <AuthErrorHandler />
-                                <AnalyticsInitializer />
-                                <WebVitalsMonitor
-                                  debug={process.env.NODE_ENV === 'development'}
-                                />
-                                {/* Conditional Navbar - only on public pages */}
-                                <ConditionalNavbar />
-                                <PageTransition>{children}</PageTransition>
-                              </PipelineProvider>
+                              <WorkspaceIntelligenceProvider>
+                                <PipelineProvider>
+                                  <GlobalLoadingIndicator />
+                                  <AuthErrorHandler />
+                                  <AnalyticsInitializer />
+                                  <WebVitalsMonitor
+                                    debug={process.env.NODE_ENV === 'development'}
+                                  />
+                                  {/* Conditional Navbar - only on public pages */}
+                                  <ConditionalNavbar />
+                                  <PageTransition>{children}</PageTransition>
+                                </PipelineProvider>
+                              </WorkspaceIntelligenceProvider>
                             </AgentProvider>
                           </UnifiedAuthProvider>
                         </AuthProvider>
@@ -336,6 +348,7 @@ export default function RootLayout({
                     </SkeletonProvider>
                   </LoadingProvider>
                 </ToastProvider>
+                </AccessibilityEnhancer>
               </AccessibilityProvider>
             </ThemeProvider>
           </ErrorBoundary>

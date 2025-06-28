@@ -6,17 +6,39 @@ import { motion } from 'framer-motion'
 import { useAuth } from '@/contexts/AuthContext'
 import { useSSRSafeLanguage } from '@/contexts/SSRSafeLanguageContext'
 import { useAgents, useSwarmIntelligence } from '@/contexts/AgentContext'
+import { useWorkspaceIntelligence } from '@/contexts/WorkspaceIntelligenceContext'
 import { motionSafe, slideUp, staggerContainer } from '@/lib/motion'
-import AuthenticatedLayout from '@/components/layouts/AuthenticatedLayout'
 import AuthGuard from '@/components/auth/AuthGuard'
 import WorkspaceLayout from '@/components/workspace/WorkspaceLayout'
 import SimpleTranslationInterface from '@/components/workspace/SimpleTranslationInterface'
-import EnhancedDocumentInterface from '@/components/workspace/EnhancedDocumentInterface'
-import SwarmIntelligenceDashboard from '@/components/workspace/SwarmIntelligenceDashboard'
-import AnalyticsDashboard from '@/components/workspace/AnalyticsDashboard'
-import ApiDeveloperPortal from '@/components/workspace/ApiDeveloperPortal'
-import EnterpriseDashboard from '@/components/workspace/EnterpriseDashboard'
-import SettingsDashboard from '@/components/workspace/SettingsDashboard'
+import { createLazyComponent } from '@/components/optimization/LazyComponentLoader'
+import PerformanceMonitor from '@/components/optimization/PerformanceMonitor'
+
+// Lazy load heavy components for better performance
+const EnhancedDocumentInterface = createLazyComponent(
+  () => import('@/components/workspace/EnhancedDocumentInterface')
+)
+const BatchProcessingInterface = createLazyComponent(
+  () => import('@/components/workspace/BatchProcessingInterface')
+)
+const IntelligenceHub = createLazyComponent(
+  () => import('@/components/workspace/IntelligenceHub')
+)
+const ContextualAssistant = createLazyComponent(
+  () => import('@/components/workspace/ContextualAssistant')
+)
+const AnalyticsDashboard = createLazyComponent(
+  () => import('@/components/workspace/AnalyticsDashboard')
+)
+const ApiDeveloperPortal = createLazyComponent(
+  () => import('@/components/workspace/ApiDeveloperPortal')
+)
+const EnterpriseDashboard = createLazyComponent(
+  () => import('@/components/workspace/EnterpriseDashboard')
+)
+const SettingsDashboard = createLazyComponent(
+  () => import('@/components/workspace/SettingsDashboard')
+)
 
 export type WorkspaceMode = 'translation' | 'documents' | 'intelligence' | 'analytics' | 'api' | 'enterprise' | 'billing' | 'settings'
 
@@ -24,7 +46,13 @@ export default function Workspace() {
   const { user } = useAuth()
   const { language } = useSSRSafeLanguage()
   const { agents, swarmMetrics, isConnected } = useSwarmIntelligence()
+  const { setMode } = useWorkspaceIntelligence()
   const [activeMode, setActiveMode] = useState<WorkspaceMode>('translation')
+
+  const handleModeChange = (mode: WorkspaceMode) => {
+    setActiveMode(mode)
+    setMode(mode)
+  }
 
   const content = {
     vi: {
@@ -95,7 +123,10 @@ export default function Workspace() {
               </div>
               {renderAgentStatus()}
             </div>
-            <EnhancedDocumentInterface />
+            <div className="space-y-8">
+              <EnhancedDocumentInterface />
+              <BatchProcessingInterface />
+            </div>
           </div>
         )
       
@@ -115,7 +146,7 @@ export default function Workspace() {
               </div>
               {renderAgentStatus()}
             </div>
-            <SwarmIntelligenceDashboard />
+            <IntelligenceHub />
           </div>
         )
       
@@ -289,26 +320,38 @@ export default function Workspace() {
 
   return (
     <AuthGuard>
-      <AuthenticatedLayout>
-        <WorkspaceLayout
-          currentMode={activeMode}
-          onModeChange={setActiveMode}
-          language={language}
-          user={user}
-        >
-          <motion.div
-            className="space-y-6 p-6"
-            variants={motionSafe(staggerContainer)}
-            initial="hidden"
-            animate="visible"
+      <PerformanceMonitor
+        enableLogging={process.env.NODE_ENV === 'development'}
+        threshold={{
+          routeChange: 1000,
+          componentMount: 500,
+          render: 100
+        }}
+      >
+        <div className="min-h-screen bg-bg-main">
+          <WorkspaceLayout
+            currentMode={activeMode}
+            onModeChange={handleModeChange}
+            language={language}
+            user={user}
           >
-            {/* Active Mode Content */}
-            <motion.div variants={motionSafe(slideUp)}>
-              {renderActiveMode()}
+            <motion.div
+              className="space-y-6 p-6"
+              variants={motionSafe(staggerContainer)}
+              initial="hidden"
+              animate="visible"
+            >
+              {/* Active Mode Content */}
+              <motion.div variants={motionSafe(slideUp)}>
+                {renderActiveMode()}
+              </motion.div>
             </motion.div>
-          </motion.div>
-        </WorkspaceLayout>
-      </AuthenticatedLayout>
+          </WorkspaceLayout>
+          
+          {/* Contextual AI Assistant - Floating globally */}
+          <ContextualAssistant position="bottom-right" />
+        </div>
+      </PerformanceMonitor>
     </AuthGuard>
   )
 }

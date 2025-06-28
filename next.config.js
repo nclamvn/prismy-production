@@ -1,32 +1,78 @@
 /** @type {import('next').NextConfig} */
+
+// ===================================
+// PRISMY UNIFIED NEXT.JS CONFIGURATION
+// Consolidated from 7 config files
+// Phase 4.1: Production Deployment with Sentry
+// ===================================
+
+// Import Sentry webpack plugin conditionally
+const { withSentryConfig } = process.env.SENTRY_DSN ? 
+  require('@sentry/nextjs') : 
+  { withSentryConfig: (config) => config }
+
 const nextConfig = {
-  // Ultra-minimal config for maximum compatibility
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
+  // ===== PRODUCTION OPTIMIZATIONS =====
+  productionBrowserSourceMaps: false,
+  compress: true,
+  poweredByHeader: false,
+  generateEtags: false,
+
+  // ===== EXPERIMENTAL FEATURES =====
+  experimental: {
+    // Package import optimizations for bundle size
+    optimizePackageImports: [
+      'lucide-react',
+      'framer-motion',
+      '@radix-ui/react-dropdown-menu',
+      '@radix-ui/react-toast',
+      '@radix-ui/react-dialog',
+      '@stripe/stripe-js',
+      '@supabase/supabase-js',
+      'mammoth',
+      'exceljs',
+    ],
+    
+    // CSS optimization (disabled due to missing 'critters' dependency)
+    optimizeCss: false,
   },
 
-  // Image optimization configuration
+  // ===== TURBOPACK CONFIGURATION =====
+  turbopack: {
+    rules: {
+      '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js',
+      },
+    },
+  },
+
+  // ===== COMPILER OPTIMIZATIONS =====
+  compiler: {
+    removeConsole: {
+      exclude: ['error', 'warn', 'info'] // Keep important logs
+    },
+    styledComponents: false, // We use Tailwind
+  },
+
+  // ===== IMAGES OPTIMIZATION =====
   images: {
     domains: ['images.unsplash.com', 'prismy.in', 'www.prismy.in'],
-    formats: ['image/webp'],
-    minimumCacheTTL: 86400,
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 86400, // 24 hours
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
 
-  // Performance optimizations
-  compress: true,
-  poweredByHeader: false,
-  
-  // CSS optimization (updated for latest Next.js)
-  experimental: {
-    optimizeCss: false, // Disable to avoid missing 'critters' dependency
+  // ===== BUILD OPTIMIZATION =====
+  eslint: {
+    ignoreDuringBuilds: true, // Lint in CI/CD pipeline instead
+  },
+  typescript: {
+    ignoreBuildErrors: true, // Type check in CI/CD pipeline instead
   },
 
-  // Headers configuration to fix manifest.json 401 error
+  // ===== HEADERS CONFIGURATION =====
   async headers() {
     return [
       // Manifest.json - permissive headers to prevent 401
@@ -41,7 +87,6 @@ const nextConfig = {
             key: 'Content-Type',
             value: 'application/manifest+json',
           },
-          // Explicitly allow cross-origin access
           {
             key: 'Access-Control-Allow-Origin',
             value: '*',
@@ -52,7 +97,7 @@ const nextConfig = {
           },
         ],
       },
-      // Static assets - cache optimization
+      // Static assets - aggressive caching
       {
         source: '/_next/static/(.*)',
         headers: [
@@ -62,7 +107,7 @@ const nextConfig = {
           },
         ],
       },
-      // Icons and other static files
+      // Icons and assets
       {
         source: '/icons/(.*)',
         headers: [
@@ -72,7 +117,7 @@ const nextConfig = {
           },
         ],
       },
-      // Security headers for pages only (excluding static files)
+      // Security headers for pages (excluding static files)
       {
         source: '/((?!api|_next/static|_next/image|favicon.ico|robots.txt|manifest.json|sitemap.xml|sw.js|icons/|assets/).*)' ,
         headers: [
@@ -97,11 +142,10 @@ const nextConfig = {
     ]
   },
 
-  // Webpack optimizations to reduce CSS preload warnings
+  // ===== WEBPACK OPTIMIZATIONS =====
   webpack: (config, { dev, isServer }) => {
-    // Optimize CSS extraction in production
+    // CSS optimization for production
     if (!dev && !isServer) {
-      // Minimize CSS chunks to reduce preload warnings
       config.optimization.splitChunks = {
         ...config.optimization.splitChunks,
         cacheGroups: {
@@ -119,6 +163,54 @@ const nextConfig = {
     
     return config
   },
+
+  // ===== REDIRECTS & REWRITES =====
+  async redirects() {
+    return [
+      // Future redirects can be added here
+    ]
+  },
 }
 
-module.exports = nextConfig
+// Sentry configuration for error tracking
+const sentryWebpackPluginOptions = {
+  // Suppresses source map uploading logs during build
+  silent: true,
+  
+  // Upload source maps to Sentry
+  hideSourceMaps: true,
+  
+  // Disable source map generation in development
+  disableLogger: true,
+  
+  // Upload source maps only in production
+  dryRun: process.env.NODE_ENV !== 'production',
+  
+  // Sentry organization and project
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  
+  // Auth token for uploading
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  
+  // Release configuration
+  release: {
+    name: process.env.VERCEL_GIT_COMMIT_SHA || process.env.NEXT_PUBLIC_APP_VERSION,
+    setCommits: {
+      auto: true,
+      ignoreMissing: true,
+    },
+  },
+  
+  // Webpack plugin options
+  widenClientFileUpload: true,
+  transpileClientSDK: true,
+  tunnelRoute: '/monitoring',
+  hideSourceMaps: true,
+  disableLogger: true,
+}
+
+// Export configuration with or without Sentry
+module.exports = process.env.SENTRY_DSN
+  ? withSentryConfig(nextConfig, sentryWebpackPluginOptions)
+  : nextConfig

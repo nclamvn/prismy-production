@@ -1,0 +1,412 @@
+name: 🚀 Deploy Prismy to Production
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - staging
+          - production
+
+env:
+  NODE_VERSION: '18'
+  PNPM_VERSION: '8'
+
+jobs:
+  # Security and dependency checks
+  security-check:
+    name: 🔒 Security & Dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔍 Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: 📊 Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+      - name: 🔐 Check for secrets
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: main
+          head: HEAD
+
+  # Code quality and linting
+  quality-check:
+    name: 🧹 Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: ⚡ Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: 📦 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🔍 Lint code
+        run: pnpm lint
+
+      - name: 📝 Check TypeScript
+        run: pnpm type-check
+
+      - name: 🎨 Check code formatting
+        run: pnpm format:check
+
+      - name: 📋 Run code analysis
+        run: |
+          npx @typescript-eslint/cli src --report-unused-disable-directives
+          npx tsc --noEmit --strict
+
+  # Test suite
+  test:
+    name: 🧪 Test Suite
+    runs-on: ubuntu-latest
+    needs: [security-check, quality-check]
+    env:
+      NODE_ENV: test
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: ⚡ Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: 📦 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🧪 Run unit tests
+        run: pnpm test --coverage --passWithNoTests
+
+      - name: 🔗 Run integration tests
+        run: pnpm test:integration
+
+      - name: 🎭 Run E2E tests (Playwright)
+        run: |
+          npx playwright install
+          pnpm test:e2e
+
+      - name: 📊 Upload test coverage
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
+          flags: unittests
+          name: prismy-coverage
+
+  # Performance and bundle analysis
+  performance-check:
+    name: ⚡ Performance Analysis
+    runs-on: ubuntu-latest
+    needs: [test]
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: ⚡ Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: 📦 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🏗️ Build application
+        run: pnpm build
+        env:
+          ANALYZE_BUNDLE: true
+
+      - name: 📊 Analyze bundle size
+        run: npx @next/bundle-analyzer build
+
+      - name: ⚡ Run performance tests
+        run: |
+          node performance-test.js
+          npx lighthouse-ci --upload.target=temporary-public-storage
+
+      - name: 📈 Bundle size check
+        uses: andresz1/size-limit-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+  # Build and deploy staging
+  staging-deploy:
+    name: 🚀 Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [test, performance-check]
+    if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging')
+    environment:
+      name: staging
+      url: https://staging.prismy.ai
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: ⚡ Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: 📦 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🏗️ Build for staging
+        run: pnpm build
+        env:
+          NODE_ENV: production
+          NEXT_PUBLIC_APP_ENV: staging
+          NEXT_PUBLIC_APP_URL: https://staging.prismy.ai
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
+          OPENAI_API_KEY: ${{ secrets.STAGING_OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.STAGING_ANTHROPIC_API_KEY }}
+
+      - name: 🚀 Deploy to Vercel (Staging)
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--env NEXT_PUBLIC_APP_ENV=staging'
+          alias-domains: staging.prismy.ai
+
+      - name: 🔗 Run staging health checks
+        run: |
+          sleep 30
+          curl -f https://staging.prismy.ai/api/health || exit 1
+          curl -f https://staging.prismy.ai/api/health/database || exit 1
+
+  # Production deployment
+  production-deploy:
+    name: 🌍 Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [test, performance-check]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production')
+    environment:
+      name: production
+      url: https://prismy.ai
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: ⚡ Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: 📦 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🏗️ Build for production
+        run: pnpm build
+        env:
+          NODE_ENV: production
+          NEXT_PUBLIC_APP_ENV: production
+          NEXT_PUBLIC_APP_URL: https://prismy.ai
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.PROD_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PROD_SUPABASE_ANON_KEY }}
+          OPENAI_API_KEY: ${{ secrets.PROD_OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.PROD_ANTHROPIC_API_KEY }}
+          NEXT_PUBLIC_PERFORMANCE_MONITORING: true
+          PERFORMANCE_SAMPLING_RATE: 0.1
+
+      - name: 🔍 Security scan of build
+        run: |
+          npx audit-ci --config ./audit-ci.json
+          find .next -name "*.js" -exec grep -l "eval\|Function\|setTimeout.*string" {} \; | wc -l | test $(cat) -eq 0
+
+      - name: 🚀 Deploy to Vercel (Production)
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod --env NEXT_PUBLIC_APP_ENV=production'
+
+      - name: 🗄️ Run database migrations
+        run: |
+          npx supabase db push --db-url ${{ secrets.PROD_DATABASE_URL }}
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
+      - name: 🔄 Invalidate CDN cache
+        run: |
+          curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE_ID }}/purge_cache" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            --data '{"purge_everything":true}'
+
+      - name: 🔗 Run production health checks
+        run: |
+          sleep 60
+          curl -f https://prismy.ai/api/health || exit 1
+          curl -f https://prismy.ai/api/health/database || exit 1
+          curl -f https://prismy.ai/api/health/ai-services || exit 1
+
+      - name: 📊 Monitor deployment
+        run: |
+          npx @vercel/ncc run scripts/monitor-deployment.js
+
+  # Post-deployment monitoring
+  post-deploy-monitoring:
+    name: 📊 Post-Deploy Monitoring
+    runs-on: ubuntu-latest
+    needs: [production-deploy]
+    if: success()
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔔 Notify Sentry of deployment
+        run: |
+          curl -X POST \
+            https://sentry.io/api/0/organizations/${{ secrets.SENTRY_ORG }}/releases/ \
+            -H "Authorization: Bearer ${{ secrets.SENTRY_AUTH_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "version": "${{ github.sha }}",
+              "projects": ["prismy"],
+              "refs": [{
+                "repository": "${{ github.repository }}",
+                "commit": "${{ github.sha }}"
+              }]
+            }'
+
+      - name: 📈 Update performance baselines
+        run: |
+          echo "Deployment successful at $(date)" >> deployment-log.txt
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add deployment-log.txt
+          git commit -m "Update deployment log [skip ci]" || exit 0
+          git push
+
+      - name: 💬 Notify team on Slack
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          custom_payload: |
+            {
+              "text": "🚀 Prismy production deployment successful!",
+              "attachments": [
+                {
+                  "color": "good",
+                  "fields": [
+                    {
+                      "title": "Environment",
+                      "value": "Production",
+                      "short": true
+                    },
+                    {
+                      "title": "Commit",
+                      "value": "${{ github.sha }}",
+                      "short": true
+                    },
+                    {
+                      "title": "URL",
+                      "value": "https://prismy.ai",
+                      "short": false
+                    }
+                  ]
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  # Rollback on failure
+  rollback:
+    name: 🔄 Rollback on Failure
+    runs-on: ubuntu-latest
+    needs: [production-deploy]
+    if: failure()
+    steps:
+      - name: 🚨 Emergency rollback
+        run: |
+          curl -X POST \
+            "https://api.vercel.com/v9/projects/${{ secrets.VERCEL_PROJECT_ID }}/rollback" \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+            -d '{"target": "previous"}'
+
+      - name: 🔔 Alert team of failure
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          custom_payload: |
+            {
+              "text": "🚨 Prismy production deployment FAILED!",
+              "attachments": [
+                {
+                  "color": "danger",
+                  "fields": [
+                    {
+                      "title": "Action Required",
+                      "value": "Emergency rollback initiated. Please investigate immediately.",
+                      "short": false
+                    },
+                    {
+                      "title": "Commit",
+                      "value": "${{ github.sha }}",
+                      "short": true
+                    }
+                  ]
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

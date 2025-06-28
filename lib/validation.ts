@@ -1,13 +1,50 @@
+// Enhanced Validation System with Strict TypeScript Integration
+// Production-ready validation with comprehensive type safety
+
 import { z } from 'zod'
 import validator from 'validator'
 import DOMPurify from 'isomorphic-dompurify'
 
-// Sanitization helper
+// Import comprehensive type definitions and validators
+import type {
+  ValidationResult,
+  ValidationError,
+  LoginRequest,
+  RegisterRequest,
+  TranslationRequest
+} from '../types'
+// import {
+//   isString,
+//   isNumber,
+//   isSupportedLanguage,
+//   validateEmail,
+//   validatePassword,
+//   validateURL as validateURLUtil,
+//   validatePhoneNumber
+// } from './type-guards'
+
+// Basic type guards for immediate use
+function isString(value: unknown): value is string {
+  return typeof value === 'string'
+}
+
+function isNumber(value: unknown): value is number {
+  return typeof value === 'number' && !isNaN(value)
+}
+
+// Sanitization helper with enhanced security
 export function sanitizeHtml(input: string): string {
+  if (!isString(input)) {
+    throw new TypeError('Input must be a string')
+  }
+  
   return DOMPurify.sanitize(input, {
     ALLOWED_TAGS: [], // No HTML tags allowed
     ALLOWED_ATTR: [], // No attributes allowed
     KEEP_CONTENT: true, // Keep text content
+    FORBID_CONTENTS: ['script', 'style'], // Extra security
+    FORBID_TAGS: ['script', 'style', 'iframe', 'object', 'embed'],
+    FORBID_ATTR: ['onclick', 'onload', 'onerror', 'onmouseover']
   }).trim()
 }
 
@@ -199,13 +236,82 @@ export function validateIPAddress(ip: string): boolean {
   return validator.isIP(ip)
 }
 
-// URL validation
+// URL validation with enhanced security
 export function validateURL(url: string): boolean {
+  if (!isString(url)) {
+    return false
+  }
+  
+  // Use our type-safe validator first
+  if (!validateURLUtil(url)) {
+    return false
+  }
+  
+  // Additional validation with validator library
   return validator.isURL(url, {
     protocols: ['https'],
     require_protocol: true,
     require_valid_protocol: true,
+    host_whitelist: [], // Can be configured for specific allowed hosts
+    host_blacklist: ['localhost', '127.0.0.1', '0.0.0.0'] // Security: block local hosts
   })
+}
+
+// Enhanced type-safe validation functions
+export function createValidationResult<T>(
+  success: boolean,
+  data?: T,
+  errors?: string[]
+): ValidationResult<T> {
+  return {
+    success,
+    data,
+    errors: errors?.map(error => ({
+      path: 'root',
+      message: error,
+      code: 'VALIDATION_ERROR'
+    })) || []
+  }
+}
+
+// Type-safe validation wrappers
+export function validateLoginRequest(data: unknown): ValidationResult<LoginRequest> {
+  try {
+    const result = signInSchema.parse(data)
+    return createValidationResult(true, result as LoginRequest)
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      const errors = error.errors.map(err => `${err.path.join('.')}: ${err.message}`)
+      return createValidationResult(false, undefined, errors)
+    }
+    return createValidationResult(false, undefined, ['Validation failed'])
+  }
+}
+
+export function validateRegisterRequest(data: unknown): ValidationResult<RegisterRequest> {
+  try {
+    const result = signUpSchema.parse(data)
+    return createValidationResult(true, result as RegisterRequest)
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      const errors = error.errors.map(err => `${err.path.join('.')}: ${err.message}`)
+      return createValidationResult(false, undefined, errors)
+    }
+    return createValidationResult(false, undefined, ['Validation failed'])
+  }
+}
+
+export function validateTranslationRequest(data: unknown): ValidationResult<TranslationRequest> {
+  try {
+    const result = translationSchema.parse(data)
+    return createValidationResult(true, result as TranslationRequest)
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      const errors = error.errors.map(err => `${err.path.join('.')}: ${err.message}`)
+      return createValidationResult(false, undefined, errors)
+    }
+    return createValidationResult(false, undefined, ['Validation failed'])
+  }
 }
 
 // Vietnamese phone number validation
