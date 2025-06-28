@@ -50,6 +50,11 @@ export default function SimpleTranslationInterface({
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [pipelineResponse, setPipelineResponse] = useState<any>(null)
+  const [translationProgress, setTranslationProgress] = useState<{
+    isChunking: boolean
+    estimatedTime?: number
+    currentStage?: string
+  }>({ isChunking: false })
 
   // Document upload state
   const [uploadedFile, setUploadedFile] = useState<File | null>(null)
@@ -86,11 +91,35 @@ export default function SimpleTranslationInterface({
     setSuccess(false)
     setPipelineResponse(null)
 
-    console.log('🚀 Starting pipeline translation', {
+    // Set progress indicators for long texts
+    const isLongText = sourceText.length > 30000
+    const estimatedTime = isLongText
+      ? Math.ceil(sourceText.length / 6000) * 3000 // ~3 seconds per chunk
+      : 2000 // 2 seconds for short text
+
+    if (isLongText) {
+      setTranslationProgress({
+        isChunking: true,
+        estimatedTime,
+        currentStage:
+          language === 'vi'
+            ? 'Đang chia nhỏ văn bản dài...'
+            : 'Chunking long text...',
+      })
+    } else {
+      setTranslationProgress({
+        isChunking: false,
+        currentStage: language === 'vi' ? 'Đang dịch...' : 'Translating...',
+      })
+    }
+
+    console.log('🚀 Starting translation', {
       textLength: sourceText.length,
       sourceLang,
       targetLang,
       userTier: user ? 'authenticated' : 'free',
+      requiresChunking: isLongText,
+      estimatedTime,
     })
 
     try {
@@ -172,6 +201,7 @@ export default function SimpleTranslationInterface({
       setError(userMessage)
     } finally {
       setIsTranslating(false)
+      setTranslationProgress({ isChunking: false })
     }
   }
 
@@ -373,8 +403,8 @@ export default function SimpleTranslationInterface({
                   </div>
                   <div className="text-xs text-gray-500">
                     {language === 'vi'
-                      ? 'Hỗ trợ: TXT, PDF, DOCX (tối đa 50MB)'
-                      : 'Supported: TXT, PDF, DOCX (max 50MB)'}
+                      ? 'Hỗ trợ: TXT, PDF, DOCX (tối đa 200MB - ultra-long documents)'
+                      : 'Supported: TXT, PDF, DOCX (max 200MB - ultra-long documents)'}
                   </div>
                 </div>
               )}
@@ -463,11 +493,11 @@ export default function SimpleTranslationInterface({
                 : 'Enter text to translate...'
             }
             className="w-full h-40 p-3 border border-gray-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-            maxLength={500000}
+            maxLength={2000000}
           />
           <div className="flex justify-between items-center mt-2">
             <span className="text-xs text-gray-500">
-              {sourceText.length}/500,000{' '}
+              {sourceText.length}/2,000,000{' '}
               {language === 'vi' ? 'ký tự' : 'characters'}
             </span>
             {sourceText && (
@@ -521,6 +551,36 @@ export default function SimpleTranslationInterface({
           </div>
         </div>
       </div>
+
+      {/* Progress Indicators for Long Texts */}
+      {isTranslating && translationProgress.isChunking && (
+        <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="flex items-center gap-3">
+            <Loader2 className="w-5 h-5 text-blue-600 animate-spin" />
+            <div>
+              <div className="text-sm font-medium text-blue-900">
+                {language === 'vi'
+                  ? 'Xử lý tài liệu siêu dài'
+                  : 'Processing ultra-long document'}
+              </div>
+              <div className="text-xs text-blue-600">
+                {translationProgress.currentStage}
+                {translationProgress.estimatedTime && (
+                  <span className="ml-2">
+                    ({language === 'vi' ? 'Ước tính' : 'Est.'}:{' '}
+                    {Math.ceil(translationProgress.estimatedTime / 1000)}s)
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="mt-2 text-xs text-blue-500">
+            {language === 'vi'
+              ? '✨ Hệ thống chunking thông minh đang xử lý văn bản dài để đảm bảo chất lượng dịch thuật tốt nhất'
+              : '✨ Intelligent chunking system processing long text for optimal translation quality'}
+          </div>
+        </div>
+      )}
 
       {/* Action Buttons */}
       <div className="flex items-center justify-between">

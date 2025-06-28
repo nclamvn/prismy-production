@@ -32,39 +32,89 @@ export async function POST(request: NextRequest) {
       sourceLang,
       targetLang,
       hasUser: !!session?.user,
+      requiresChunking: text.length > 30000,
       preview: text.substring(0, 50) + '...',
     })
 
-    // Import Google Translate dynamically to avoid build issues
-    const { Translate } = await import('@google-cloud/translate/build/src/v2')
-
-    // Initialize Google Translate with API key
-    const translate = new Translate({
-      projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
-      key: process.env.GOOGLE_TRANSLATE_API_KEY,
-    })
-
     const startTime = Date.now()
+    let translatedText: string
+    let detectedSourceLang: string
+    let processingTime: number
 
-    // Perform translation
-    const [translation, metadata] = await translate.translate(text, {
-      from: sourceLang === 'auto' ? undefined : sourceLang,
-      to: targetLang,
-      format: 'text',
-    })
+    // INTELLIGENT ROUTING: Route long texts through chunking system
+    if (text.length > 30000) {
+      console.log('🧩 Routing long text through chunking system', {
+        textLength: text.length,
+        chunksEstimated: Math.ceil(text.length / 6000),
+      })
 
-    const processingTime = Date.now() - startTime
-    const translatedText = Array.isArray(translation)
-      ? translation[0]
-      : translation
-    const detectedSourceLang = metadata?.detectedSourceLanguage || sourceLang
+      // Forward to unified endpoint with chunking
+      const unifiedResponse = await fetch(
+        new URL('/api/translate/unified', request.url).toString(),
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Cookie: request.headers.get('cookie') || '',
+          },
+          body: JSON.stringify({
+            text: text,
+            sourceLang: sourceLang === 'auto' ? undefined : sourceLang,
+            targetLang: targetLang,
+            qualityTier: 'standard',
+            trackHistory: true,
+            createTask: false,
+          }),
+        }
+      )
 
-    console.log('✅ Translation completed:', {
-      originalLength: text.length,
-      translatedLength: translatedText.length,
-      detectedSourceLang,
-      processingTime,
-    })
+      if (!unifiedResponse.ok) {
+        const errorData = await unifiedResponse.json().catch(() => ({}))
+        throw new Error(errorData.error || 'Chunked translation failed')
+      }
+
+      const unifiedResult = await unifiedResponse.json()
+      translatedText = unifiedResult.result.translatedText
+      detectedSourceLang =
+        unifiedResult.result.detectedSourceLanguage || sourceLang
+      processingTime = Date.now() - startTime
+
+      console.log('✅ Chunked translation completed:', {
+        originalLength: text.length,
+        translatedLength: translatedText.length,
+        processingTime,
+        chunksProcessed: unifiedResult.result.chunks?.processed || 'unknown',
+      })
+    } else {
+      // Direct Google Translate for short texts (<30k characters)
+      console.log('📝 Using direct Google Translate for short text')
+
+      // Import Google Translate dynamically to avoid build issues
+      const { Translate } = await import('@google-cloud/translate/build/src/v2')
+
+      // Initialize Google Translate with API key
+      const translate = new Translate({
+        projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
+        key: process.env.GOOGLE_TRANSLATE_API_KEY,
+      })
+
+      // Perform translation
+      const [translation, metadata] = await translate.translate(text, {
+        from: sourceLang === 'auto' ? undefined : sourceLang,
+        to: targetLang,
+        format: 'text',
+      })
+
+      processingTime = Date.now() - startTime
+      translatedText = Array.isArray(translation) ? translation[0] : translation
+      detectedSourceLang = metadata?.detectedSourceLanguage || sourceLang
+
+      console.log('✅ Direct translation completed:', {
+        originalLength: text.length,
+        translatedLength: translatedText.length,
+        processingTime,
+      })
+    }
 
     // Track usage in history if user is authenticated
     if (session?.user) {

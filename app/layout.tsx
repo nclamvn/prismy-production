@@ -47,6 +47,15 @@ const inter = Inter({
   display: 'swap',
   variable: '--font-inter',
   weight: ['400', '500', '600', '700'],
+  fallback: [
+    'system-ui',
+    '-apple-system',
+    'BlinkMacSystemFont',
+    'Segoe UI',
+    'sans-serif',
+  ],
+  adjustFontFallback: false, // Prevent FOUT issues
+  preload: true,
 })
 
 export const metadata: Metadata = {
@@ -253,7 +262,7 @@ export default function RootLayout({
           crossOrigin=""
         />
         <link rel="preconnect" href="https://api.prismy.in" />
-        
+
         {/* Font optimization - let Next.js handle font preloading automatically */}
 
         {/* DNS Prefetch */}
@@ -314,40 +323,42 @@ export default function RootLayout({
                   enableReducedMotion={true}
                 >
                   <ToastProvider>
-                  <LoadingProvider>
-                    <SkeletonProvider
-                      loading={false}
-                      skeleton={
-                        <div className="min-h-screen bg-gray-50 animate-pulse" />
-                      }
-                    >
-                      <SSRSafeLanguageProvider
-                        defaultLanguage="en"
-                        ssrLanguage="en"
+                    <LoadingProvider>
+                      <SkeletonProvider
+                        loading={false}
+                        skeleton={
+                          <div className="min-h-screen bg-gray-50 animate-pulse" />
+                        }
                       >
-                        <AuthProvider>
-                          <UnifiedAuthProvider>
-                            <AgentProvider>
-                              <WorkspaceIntelligenceProvider>
-                                <PipelineProvider>
-                                  <GlobalLoadingIndicator />
-                                  <AuthErrorHandler />
-                                  <AnalyticsInitializer />
-                                  <WebVitalsMonitor
-                                    debug={process.env.NODE_ENV === 'development'}
-                                  />
-                                  {/* Conditional Navbar - only on public pages */}
-                                  <ConditionalNavbar />
-                                  <PageTransition>{children}</PageTransition>
-                                </PipelineProvider>
-                              </WorkspaceIntelligenceProvider>
-                            </AgentProvider>
-                          </UnifiedAuthProvider>
-                        </AuthProvider>
-                      </SSRSafeLanguageProvider>
-                    </SkeletonProvider>
-                  </LoadingProvider>
-                </ToastProvider>
+                        <SSRSafeLanguageProvider
+                          defaultLanguage="en"
+                          ssrLanguage="en"
+                        >
+                          <AuthProvider>
+                            <UnifiedAuthProvider>
+                              <AgentProvider>
+                                <WorkspaceIntelligenceProvider>
+                                  <PipelineProvider>
+                                    <GlobalLoadingIndicator />
+                                    <AuthErrorHandler />
+                                    <AnalyticsInitializer />
+                                    <WebVitalsMonitor
+                                      debug={
+                                        process.env.NODE_ENV === 'development'
+                                      }
+                                    />
+                                    {/* Conditional Navbar - only on public pages */}
+                                    <ConditionalNavbar />
+                                    <PageTransition>{children}</PageTransition>
+                                  </PipelineProvider>
+                                </WorkspaceIntelligenceProvider>
+                              </AgentProvider>
+                            </UnifiedAuthProvider>
+                          </AuthProvider>
+                        </SSRSafeLanguageProvider>
+                      </SkeletonProvider>
+                    </LoadingProvider>
+                  </ToastProvider>
                 </AccessibilityEnhancer>
               </AccessibilityProvider>
             </ThemeProvider>
