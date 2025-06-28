@@ -49,7 +49,18 @@ export interface PerformanceBudgets {
 }
 
 // Language and localization
-export type SupportedLanguage = 'en' | 'vi' | 'zh' | 'ja' | 'ko' | 'es' | 'fr' | 'de' | 'it' | 'pt' | 'ru'
+export type SupportedLanguage =
+  | 'en'
+  | 'vi'
+  | 'zh'
+  | 'ja'
+  | 'ko'
+  | 'es'
+  | 'fr'
+  | 'de'
+  | 'it'
+  | 'pt'
+  | 'ru'
 
 export interface LocalizationContent {
   [key: string]: string | LocalizationContent
@@ -70,9 +81,9 @@ export type DeepRequired<T> = {
 
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 
-export type WithId<T> = T & { id: string }
+export type WithId<T = Record<string, never>> = T & { id: string }
 
-export type WithTimestamps<T> = T & {
+export type WithTimestamps<T = Record<string, never>> = T & {
   createdAt: Date
   updatedAt: Date
 }

@@ -1,7 +1,7 @@
 // Utility TypeScript definitions
 // Helper types and generic utilities for type safety
 
-import type { ComponentType, ReactNode } from 'react'
+import type { ComponentType } from 'react'
 
 // Generic Utility Types
 export type DeepPartial<T> = {
@@ -18,7 +18,7 @@ export type DeepReadonly<T> = {
 
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 
-export type Required<T, K extends keyof T> = T & {
+export type RequiredKeys<T, K extends keyof T> = T & {
   [P in K]-?: T[P]
 }
 
@@ -38,78 +38,119 @@ export type Mutable<T> = {
 
 export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 
-export type RequiredBy<T, K extends keyof T> = T & Required<Pick<T, K>>
+export type RequiredBy<T, K extends keyof T> = T &
+  RequiredKeys<Pick<T, K>, keyof Pick<T, K>>
 
 // Array and Object Utilities
 export type NonEmptyArray<T> = [T, ...T[]]
 
-export type Head<T extends readonly any[]> = T extends readonly [infer H, ...any[]] ? H : never
+export type Head<T extends readonly any[]> = T extends readonly [
+  infer H,
+  ...any[],
+]
+  ? H
+  : never
 
-export type Tail<T extends readonly any[]> = T extends readonly [any, ...infer R] ? R : []
+export type Tail<T extends readonly any[]> = T extends readonly [
+  any,
+  ...infer R,
+]
+  ? R
+  : []
 
-export type Last<T extends readonly any[]> = T extends readonly [...any[], infer L] ? L : never
+export type Last<T extends readonly any[]> = T extends readonly [
+  ...any[],
+  infer L,
+]
+  ? L
+  : never
 
 export type Length<T extends readonly any[]> = T['length']
 
-export type Reverse<T extends readonly any[]> = T extends readonly [...infer Rest, infer Last]
+export type Reverse<T extends readonly any[]> = T extends readonly [
+  ...infer Rest,
+  infer Last,
+]
   ? [Last, ...Reverse<Rest>]
   : []
 
-export type Flatten<T extends readonly any[]> = T extends readonly [infer First, ...infer Rest]
+export type Flatten<T extends readonly any[]> = T extends readonly [
+  infer First,
+  ...infer Rest,
+]
   ? First extends readonly any[]
     ? [...Flatten<First>, ...Flatten<Rest>]
     : [First, ...Flatten<Rest>]
   : []
 
-export type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (k: infer I) => void ? I : never
+export type UnionToIntersection<U> = (
+  U extends any ? (k: U) => void : never
+) extends (k: infer I) => void
+  ? I
+  : never
 
-export type UnionToTuple<T> = UnionToIntersection<T extends any ? (t: T) => T : never> extends (_: any) => infer W
-  ? [...UnionToTuple<Exclude<T, W>>, W]
-  : []
+export type UnionToTuple<T> =
+  UnionToIntersection<T extends any ? (t: T) => T : never> extends (
+    _: any
+  ) => infer W
+    ? [...UnionToTuple<Exclude<T, W>>, W]
+    : []
 
 // String Utilities
-export type Capitalize<S extends string> = S extends `${infer F}${infer R}` ? `${Uppercase<F>}${R}` : S
-
-export type Uncapitalize<S extends string> = S extends `${infer F}${infer R}` ? `${Lowercase<F>}${R}` : S
-
-export type KebabCase<S extends string> = S extends `${infer First}${infer Rest}`
-  ? First extends Uppercase<First>
-    ? First extends Lowercase<First>
-      ? `${First}${KebabCase<Rest>}`
-      : `-${Lowercase<First>}${KebabCase<Rest>}`
-    : `${First}${KebabCase<Rest>}`
+export type Capitalize<S extends string> = S extends `${infer F}${infer R}`
+  ? `${Uppercase<F>}${R}`
   : S
 
-export type CamelCase<S extends string> = S extends `${infer P1}-${infer P2}${infer P3}`
-  ? `${P1}${Uppercase<P2>}${CamelCase<P3>}`
+export type Uncapitalize<S extends string> = S extends `${infer F}${infer R}`
+  ? `${Lowercase<F>}${R}`
   : S
+
+export type KebabCase<S extends string> =
+  S extends `${infer First}${infer Rest}`
+    ? First extends Uppercase<First>
+      ? First extends Lowercase<First>
+        ? `${First}${KebabCase<Rest>}`
+        : `-${Lowercase<First>}${KebabCase<Rest>}`
+      : `${First}${KebabCase<Rest>}`
+    : S
+
+export type CamelCase<S extends string> =
+  S extends `${infer P1}-${infer P2}${infer P3}`
+    ? `${P1}${Uppercase<P2>}${CamelCase<P3>}`
+    : S
 
 export type PascalCase<S extends string> = Capitalize<CamelCase<S>>
 
-export type SnakeCase<S extends string> = S extends `${infer First}${infer Rest}`
-  ? First extends Uppercase<First>
-    ? First extends Lowercase<First>
-      ? `${First}${SnakeCase<Rest>}`
-      : `_${Lowercase<First>}${SnakeCase<Rest>}`
-    : `${First}${SnakeCase<Rest>}`
-  : S
+export type SnakeCase<S extends string> =
+  S extends `${infer First}${infer Rest}`
+    ? First extends Uppercase<First>
+      ? First extends Lowercase<First>
+        ? `${First}${SnakeCase<Rest>}`
+        : `_${Lowercase<First>}${SnakeCase<Rest>}`
+      : `${First}${SnakeCase<Rest>}`
+    : S
 
 // Function Utilities
-export type Parameters<T extends (...args: any) => any> = T extends (...args: infer P) => any ? P : never
-
-export type ReturnType<T extends (...args: any) => any> = T extends (...args: any) => infer R ? R : any
-
-export type AsyncReturnType<T extends (...args: any) => Promise<any>> = T extends (...args: any) => Promise<infer R>
-  ? R
+export type Parameters<T extends (...args: any) => any> = T extends (
+  ...args: infer P
+) => any
+  ? P
   : never
+
+export type ReturnType<T extends (...args: any) => any> = T extends (
+  ...args: any
+) => infer R
+  ? R
+  : any
+
+export type AsyncReturnType<T extends (...args: any) => Promise<any>> =
+  T extends (...args: any) => Promise<infer R> ? R : never
 
 export type Awaited<T> = T extends Promise<infer U> ? U : T
 
 export type Curry<T> = T extends (...args: infer A) => infer R
   ? A extends [infer First, ...infer Rest]
-    ? (arg: First) => Rest extends []
-      ? R
-      : Curry<(...args: Rest) => R>
+    ? (arg: First) => Rest extends [] ? R : Curry<(...args: Rest) => R>
     : R
   : never
 
@@ -167,7 +208,9 @@ export type MiddlewareAPI<S, A> = {
   dispatch(action: A): A
 }
 
-export type Middleware<S, A> = (api: MiddlewareAPI<S, A>) => (next: (action: A) => A) => (action: A) => A
+export type Middleware<S, A> = (
+  api: MiddlewareAPI<S, A>
+) => (next: (action: A) => A) => (action: A) => A
 
 export interface Store<S, A> {
   getState(): S
@@ -176,12 +219,12 @@ export interface Store<S, A> {
 }
 
 // Serialization Types
-export type Serializable = 
-  | string 
-  | number 
-  | boolean 
-  | null 
-  | SerializableObject 
+export type Serializable =
+  | string
+  | number
+  | boolean
+  | null
+  | SerializableObject
   | SerializableArray
 
 export type SerializableObject = { [key: string]: Serializable }
@@ -210,13 +253,13 @@ export interface Repository<T extends Entity> {
 }
 
 // Error Handling Types
-export type Result<T, E = Error> = 
+export type Result<T, E = Error> =
   | { success: true; data: T }
   | { success: false; error: E }
 
 export type Maybe<T> = T | null | undefined
 
-export type Either<L, R> = 
+export type Either<L, R> =
   | { type: 'left'; value: L }
   | { type: 'right'; value: R }
 
@@ -234,17 +277,20 @@ export interface Try<T> {
 // Component and HOC Types
 export type ComponentProps<T> = T extends ComponentType<infer P> ? P : never
 
-export type HOC<InjectProps, OuterProps = {}> = <C extends ComponentType<any>>(
+export type HOC<InjectProps, OuterProps = Record<string, never>> = <
+  C extends ComponentType<any>,
+>(
   component: C
 ) => ComponentType<Omit<ComponentProps<C>, keyof InjectProps> & OuterProps>
 
 export type InferProps<T> = T extends ComponentType<infer P> ? P : never
 
-export type InferRef<T> = T extends ComponentType<any> 
-  ? T extends React.ForwardRefExoticComponent<any> 
-    ? React.ComponentRef<T>
+export type InferRef<T> =
+  T extends ComponentType<any>
+    ? T extends React.ForwardRefExoticComponent<any>
+      ? React.ComponentRef<T>
+      : never
     : never
-  : never
 
 // Conditional Types
 export type If<C extends boolean, T, F> = C extends true ? T : F
@@ -253,15 +299,20 @@ export type IsEqual<T, U> = T extends U ? (U extends T ? true : false) : false
 
 export type IsNever<T> = [T] extends [never] ? true : false
 
-export type IsAny<T> = 0 extends (1 & T) ? true : false
+export type IsAny<T> = 0 extends 1 & T ? true : false
 
-export type IsUnknown<T> = IsAny<T> extends true ? false : unknown extends T ? true : false
+export type IsUnknown<T> =
+  IsAny<T> extends true ? false : unknown extends T ? true : false
 
 export type IsFunction<T> = T extends (...args: any[]) => any ? true : false
 
 export type IsArray<T> = T extends readonly any[] ? true : false
 
-export type IsObject<T> = T extends object ? (IsArray<T> extends true ? false : true) : false
+export type IsObject<T> = T extends object
+  ? IsArray<T> extends true
+    ? false
+    : true
+  : false
 
 // Type Guards
 export type TypeGuard<T> = (value: unknown) => value is T
@@ -286,33 +337,39 @@ export type InferConfig<T extends ConfigSchema> = {
     ? T[K]['type'] extends 'string'
       ? string
       : T[K]['type'] extends 'number'
-      ? number
-      : T[K]['type'] extends 'boolean'
-      ? boolean
-      : T[K]['type'] extends 'object'
-      ? object
-      : T[K]['type'] extends 'array'
-      ? any[]
-      : any
+        ? number
+        : T[K]['type'] extends 'boolean'
+          ? boolean
+          : T[K]['type'] extends 'object'
+            ? object
+            : T[K]['type'] extends 'array'
+              ? any[]
+              : any
     : T[K]['type'] extends 'string'
-    ? string | undefined
-    : T[K]['type'] extends 'number'
-    ? number | undefined
-    : T[K]['type'] extends 'boolean'
-    ? boolean | undefined
-    : T[K]['type'] extends 'object'
-    ? object | undefined
-    : T[K]['type'] extends 'array'
-    ? any[] | undefined
-    : any
+      ? string | undefined
+      : T[K]['type'] extends 'number'
+        ? number | undefined
+        : T[K]['type'] extends 'boolean'
+          ? boolean | undefined
+          : T[K]['type'] extends 'object'
+            ? object | undefined
+            : T[K]['type'] extends 'array'
+              ? any[] | undefined
+              : any
 }
 
 // Mocking and Testing Types
 export type Mock<T> = T & {
   mockImplementation: (fn: T) => Mock<T>
-  mockReturnValue: T extends (...args: any[]) => infer R ? (value: R) => Mock<T> : never
-  mockResolvedValue: T extends (...args: any[]) => Promise<infer R> ? (value: R) => Mock<T> : never
-  mockRejectedValue: T extends (...args: any[]) => Promise<any> ? (value: any) => Mock<T> : never
+  mockReturnValue: T extends (...args: any[]) => infer R
+    ? (value: R) => Mock<T>
+    : never
+  mockResolvedValue: T extends (...args: any[]) => Promise<infer R>
+    ? (value: R) => Mock<T>
+    : never
+  mockRejectedValue: T extends (...args: any[]) => Promise<any>
+    ? (value: any) => Mock<T>
+    : never
   mockClear: () => void
   mockReset: () => void
   mockRestore: () => void
@@ -321,7 +378,9 @@ export type Mock<T> = T & {
 export type MockedFunction<T extends (...args: any[]) => any> = Mock<T> & T
 
 export type MockedObject<T> = {
-  [K in keyof T]: T[K] extends (...args: any[]) => any ? MockedFunction<T[K]> : T[K]
+  [K in keyof T]: T[K] extends (...args: any[]) => any
+    ? MockedFunction<T[K]>
+    : T[K]
 }
 
 // Brand Types (for nominal typing)

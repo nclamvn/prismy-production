@@ -2,14 +2,14 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { 
-  Calendar, 
-  User, 
-  Clock, 
-  ArrowLeft, 
+import {
+  Calendar,
+  User,
+  Clock,
+  ArrowLeft,
   Share2,
   BookOpen,
-  Tag
+  Tag,
 } from 'lucide-react'
 
 interface BlogPost {
@@ -30,7 +30,8 @@ const blogPosts: Record<string, BlogPost> = {
   '1': {
     id: '1',
     title: 'The Future of AI Translation: Breaking Language Barriers',
-    excerpt: 'Explore how artificial intelligence is revolutionizing the translation industry and making cross-cultural communication more accessible than ever.',
+    excerpt:
+      'Explore how artificial intelligence is revolutionizing the translation industry and making cross-cultural communication more accessible than ever.',
     content: `
       <h2>The Evolution of Translation Technology</h2>
       <p>Translation has come a long way from simple dictionary lookups to sophisticated AI-powered systems that understand context, nuance, and cultural implications.</p>
@@ -54,12 +55,13 @@ const blogPosts: Record<string, BlogPost> = {
     readTime: '5 min read',
     image: '/assets/features.gif',
     tags: ['AI', 'Translation', 'Technology'],
-    category: 'Technology'
+    category: 'Technology',
   },
   '2': {
     id: '2',
     title: 'Best Practices for Document Translation',
-    excerpt: 'Learn essential tips and strategies for preparing documents for translation to ensure the best possible results.',
+    excerpt:
+      'Learn essential tips and strategies for preparing documents for translation to ensure the best possible results.',
     content: `
       <h2>Preparing Your Documents</h2>
       <p>Proper document preparation is crucial for achieving high-quality translations. Here are the essential steps:</p>
@@ -79,22 +81,25 @@ const blogPosts: Record<string, BlogPost> = {
     readTime: '7 min read',
     image: '/assets/features.gif',
     tags: ['Best Practices', 'Documents', 'Tips'],
-    category: 'Guide'
-  }
+    category: 'Guide',
+  },
 }
 
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const post = blogPosts[params.id]
-  
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const resolvedParams = await params
+  const post = blogPosts[resolvedParams.id]
+
   if (!post) {
     return {
-      title: 'Post Not Found - Prismy Blog'
+      title: 'Post Not Found - Prismy Blog',
     }
   }
 
@@ -104,13 +109,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       title: post.title,
       description: post.excerpt,
-      images: [post.image]
-    }
+      images: [post.image],
+    },
   }
 }
 
-export default function BlogPostPage({ params }: PageProps) {
-  const post = blogPosts[params.id]
+export default async function BlogPostPage({ params }: PageProps) {
+  const resolvedParams = await params
+  const post = blogPosts[resolvedParams.id]
 
   if (!post) {
     notFound()
@@ -124,8 +130,8 @@ export default function BlogPostPage({ params }: PageProps) {
     <div className="min-h-screen" style={{ backgroundColor: 'var(--bg-main)' }}>
       {/* Back Navigation */}
       <div className="max-w-4xl mx-auto px-4 pt-8">
-        <Link 
-          href="/blog" 
+        <Link
+          href="/blog"
           className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -139,8 +145,13 @@ export default function BlogPostPage({ params }: PageProps) {
           {/* Category */}
           <div className="flex items-center gap-2 mb-4">
             <Tag className="w-4 h-4 text-gray-500" />
-            <span className="text-sm font-medium px-3 py-1 rounded-full" 
-                  style={{ backgroundColor: 'var(--notebooklm-primary-light)', color: 'var(--notebooklm-primary)' }}>
+            <span
+              className="text-sm font-medium px-3 py-1 rounded-full"
+              style={{
+                backgroundColor: 'var(--notebooklm-primary-light)',
+                color: 'var(--notebooklm-primary)',
+              }}
+            >
               {post.category}
             </span>
           </div>
@@ -166,8 +177,8 @@ export default function BlogPostPage({ params }: PageProps) {
 
           {/* Tags */}
           <div className="flex flex-wrap gap-2 mb-8">
-            {post.tags.map((tag) => (
-              <span 
+            {post.tags.map(tag => (
+              <span
                 key={tag}
                 className="px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-700"
               >
@@ -197,7 +208,7 @@ export default function BlogPostPage({ params }: PageProps) {
         </div>
 
         {/* Article Content */}
-        <div 
+        <div
           className="prose prose-lg max-w-none"
           style={{ color: 'var(--text-primary)' }}
           dangerouslySetInnerHTML={{ __html: post.content }}
@@ -225,17 +236,23 @@ export default function BlogPostPage({ params }: PageProps) {
 
       {/* Related Articles */}
       {relatedPosts.length > 0 && (
-        <section className="py-16" style={{ backgroundColor: 'var(--surface-panel)' }}>
+        <section
+          className="py-16"
+          style={{ backgroundColor: 'var(--surface-panel)' }}
+        >
           <div className="max-w-6xl mx-auto px-4">
             <div className="flex items-center gap-2 mb-8">
-              <BookOpen className="w-5 h-5" style={{ color: 'var(--notebooklm-primary)' }} />
+              <BookOpen
+                className="w-5 h-5"
+                style={{ color: 'var(--notebooklm-primary)' }}
+              />
               <h2 className="heading-2">Related Articles</h2>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {relatedPosts.map((relatedPost) => (
-                <Link 
-                  key={relatedPost.id} 
+              {relatedPosts.map(relatedPost => (
+                <Link
+                  key={relatedPost.id}
                   href={`/blog/${relatedPost.id}`}
                   className="card-base p-6 hover:shadow-lg transition-all group"
                 >
@@ -248,8 +265,13 @@ export default function BlogPostPage({ params }: PageProps) {
                     />
                   </div>
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xs px-2 py-1 rounded" 
-                          style={{ backgroundColor: 'var(--notebooklm-primary-light)', color: 'var(--notebooklm-primary)' }}>
+                    <span
+                      className="text-xs px-2 py-1 rounded"
+                      style={{
+                        backgroundColor: 'var(--notebooklm-primary-light)',
+                        color: 'var(--notebooklm-primary)',
+                      }}
+                    >
                       {relatedPost.category}
                     </span>
                   </div>
@@ -260,7 +282,9 @@ export default function BlogPostPage({ params }: PageProps) {
                     {relatedPost.excerpt}
                   </p>
                   <div className="flex items-center gap-4 text-xs text-gray-500">
-                    <span>{new Date(relatedPost.date).toLocaleDateString()}</span>
+                    <span>
+                      {new Date(relatedPost.date).toLocaleDateString()}
+                    </span>
                     <span>{relatedPost.readTime}</span>
                   </div>
                 </Link>
@@ -275,7 +299,7 @@ export default function BlogPostPage({ params }: PageProps) {
 
 // Generate static params for static generation
 export function generateStaticParams() {
-  return Object.keys(blogPosts).map((id) => ({
+  return Object.keys(blogPosts).map(id => ({
     id,
   }))
 }
