@@ -1,40 +1,96 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { translationService } from '@/lib/translation-service'
 
 /**
- * Simple test endpoint to verify translation pipeline is working
- * This bypasses authentication and complex logic for basic testing
+ * EMERGENCY TRANSLATION TESTING ENDPOINT
+ * Bypasses authentication and rate limiting for debugging
+ * REMOVE IN PRODUCTION
  */
 export async function POST(request: NextRequest) {
   try {
+    console.log('🔧 Emergency translation test endpoint called')
+
     const body = await request.json()
-    const { text, sourceLang = 'auto', targetLang = 'vi' } = body
+    const { text, targetLang, sourceLang = 'auto' } = body
 
-    if (!text) {
-      return NextResponse.json({ error: 'Text is required' }, { status: 400 })
+    if (!text || !targetLang) {
+      return NextResponse.json(
+        {
+          error: 'Missing required fields',
+          required: ['text', 'targetLang'],
+          received: { text: !!text, targetLang: !!targetLang },
+        },
+        { status: 400 }
+      )
     }
 
-    // Mock translation for testing (replace with actual service call)
-    const mockTranslation = {
-      translatedText: `[TEST TRANSLATION] ${text} → ${targetLang}`,
-      sourceLang: sourceLang === 'auto' ? 'en' : sourceLang,
+    console.log('📝 Translation request:', {
+      textLength: text.length,
+      sourceLang,
       targetLang,
-      confidence: 0.95,
-      qualityScore: 0.9,
-      cached: false,
-      detectedSourceLanguage: sourceLang === 'auto' ? 'en' : undefined,
-    }
+      textPreview: text.substring(0, 100),
+    })
+
+    // Test Google Translate API directly
+    const startTime = Date.now()
+
+    const result = await translationService.translateText({
+      text,
+      sourceLang: sourceLang === 'auto' ? 'auto' : sourceLang,
+      targetLang,
+      qualityTier: 'standard',
+      abTestVariant: 'cache_enabled',
+    })
+
+    const endTime = Date.now()
+    const processingTime = endTime - startTime
+
+    console.log('✅ Translation successful:', {
+      translatedText: result.translatedText?.substring(0, 100),
+      confidence: result.confidence,
+      processingTime,
+      cached: result.cached,
+    })
 
     return NextResponse.json({
       success: true,
-      result: mockTranslation,
-      message: 'Test translation completed successfully',
+      test: true,
+      result: {
+        originalText: text,
+        translatedText: result.translatedText,
+        sourceLang: result.sourceLang,
+        targetLang: result.targetLang,
+        confidence: result.confidence,
+        qualityScore: result.qualityScore,
+        processingTime,
+        cached: result.cached,
+        timestamp: new Date().toISOString(),
+      },
+      debug: {
+        endpoint: 'test',
+        authBypass: true,
+        environment: process.env.NODE_ENV,
+        hasGoogleApiKey: !!process.env.GOOGLE_TRANSLATE_API_KEY,
+        hasProjectId: !!process.env.GOOGLE_CLOUD_PROJECT_ID,
+      },
     })
   } catch (error) {
-    console.error('Test translation error:', error)
+    console.error('❌ Translation test failed:', error)
+
     return NextResponse.json(
       {
-        error: 'Test translation failed',
-        message: error instanceof Error ? error.message : 'Unknown error',
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        details: {
+          name: error instanceof Error ? error.name : 'Unknown',
+          stack: error instanceof Error ? error.stack : undefined,
+          environment: {
+            nodeEnv: process.env.NODE_ENV,
+            hasGoogleApiKey: !!process.env.GOOGLE_TRANSLATE_API_KEY,
+            hasProjectId: !!process.env.GOOGLE_CLOUD_PROJECT_ID,
+            hasKeyFile: !!process.env.GOOGLE_CLOUD_KEY_FILE,
+          },
+        },
       },
       { status: 500 }
     )

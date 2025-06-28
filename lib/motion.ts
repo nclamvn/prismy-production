@@ -464,11 +464,7 @@ export const listItem = whisperUp
 export const hoverScale = zenScale
 export const hoverLift = whisperHover
 
-// NotebookLM optimized mappings
-export const notebookLMFade = notebookLMCard
-export const notebookLMSlide = notebookLMListItem
-export const notebookLMHover = notebookLMElevated
-export const notebookLMContainer = notebookLMStagger
+// NotebookLM optimized mappings (moved after definitions)
 
 // New hardware-accelerated variants
 export const ultraSmooth = {
@@ -716,3 +712,9 @@ export const notebookLMDrawer: Variants = {
     },
   },
 }
+
+// NotebookLM optimized mappings (defined after the variants)
+export const notebookLMFade = notebookLMCard
+export const notebookLMSlide = notebookLMListItem
+export const notebookLMHover = notebookLMElevated
+export const notebookLMContainer = notebookLMStagger
