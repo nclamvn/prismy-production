@@ -45,8 +45,8 @@ interface ChunkTranslationResult {
 }
 
 export class ChunkedTranslationService {
-  private readonly CHUNK_PROCESSING_DELAY = 100 // ms between chunks to prevent rate limiting
-  private readonly MAX_CONCURRENT_CHUNKS = 3 // Parallel processing limit
+  private readonly CHUNK_PROCESSING_DELAY = 50 // ms between chunks (reduced for faster processing)
+  private readonly MAX_CONCURRENT_CHUNKS = 10 // Increased for ultra-long documents
 
   /**
    * Translate large text using intelligent chunking
@@ -323,9 +323,11 @@ export class ChunkedTranslationService {
       return 2000 // 2 seconds for direct translation
     }
 
-    // Estimate based on chunking
-    const estimatedChunks = Math.ceil(textLength / 3000) // Average chunk size
-    const timePerChunk = 2500 // Include processing overhead
+    // Estimate based on adaptive chunking
+    const averageChunkSize =
+      textLength > 100000 ? 8000 : textLength > 50000 ? 7000 : 6000
+    const estimatedChunks = Math.ceil(textLength / averageChunkSize)
+    const timePerChunk = 2000 // Reduced due to increased concurrency
     const concurrencyFactor = Math.min(
       this.MAX_CONCURRENT_CHUNKS / estimatedChunks,
       1
@@ -349,20 +351,29 @@ export class ChunkedTranslationService {
     const paragraphCount = text.split('\n\n').length
     const averageParagraphLength = text.length / paragraphCount
 
-    if (averageParagraphLength > 2000) {
-      // Long paragraphs - use smaller chunks with sentence breaks
-      settings.maxChunkSize = 3000
+    // Enhanced adaptive chunk sizing for ultra-long documents
+    if (text.length > 100000) {
+      // Ultra-long documents - use largest chunks for efficiency
+      settings.maxChunkSize = 8000
+      settings.preferredBreakpoints = ['\n\n', '. ', '! ', '? ', '\n', '; ']
+    } else if (text.length > 50000) {
+      // Very long documents - optimize for speed and quality
+      settings.maxChunkSize = 7000
+      settings.preferredBreakpoints = ['\n\n', '. ', '! ', '? ', '\n', '; ']
+    } else if (averageParagraphLength > 2000) {
+      // Long paragraphs - use medium chunks with sentence breaks
+      settings.maxChunkSize = 6000
       settings.preferredBreakpoints = ['. ', '! ', '? ', '\n\n', '; ', '\n']
     } else if (paragraphCount > 50) {
       // Many short paragraphs - can use larger chunks
-      settings.maxChunkSize = 5000
+      settings.maxChunkSize = 7000
       settings.preferredBreakpoints = ['\n\n', '. ', '! ', '? ', '\n']
     }
 
     // Language-specific adjustments
     if (['zh', 'ja', 'ko'].includes(targetLang)) {
-      // Asian languages - smaller chunks for better context
-      settings.maxChunkSize = Math.min(settings.maxChunkSize || 4000, 3000)
+      // Asian languages - reduce chunk size slightly for better context
+      settings.maxChunkSize = Math.min(settings.maxChunkSize || 6000, 5000)
     }
 
     return settings

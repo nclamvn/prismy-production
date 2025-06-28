@@ -34,8 +34,8 @@ interface ChunkingOptions {
 
 export class IntelligentTextChunker {
   private readonly defaultOptions: ChunkingOptions = {
-    maxChunkSize: 4000, // Google Translate comfortable limit
-    contextWindowSize: 200, // Characters to preserve for context
+    maxChunkSize: 6000, // Increased for better efficiency with ultra-long documents
+    contextWindowSize: 300, // Increased context for better translation quality
     preferredBreakpoints: ['\n\n', '. ', '! ', '? ', '\n', '; ', ', '],
     preserveFormatting: true,
     targetLanguage: 'en',
@@ -48,7 +48,9 @@ export class IntelligentTextChunker {
     text: string,
     options: Partial<ChunkingOptions> = {}
   ): TextChunk[] {
-    const opts = { ...this.defaultOptions, ...options }
+    // Use adaptive chunk sizing for ultra-long documents
+    const adaptiveOptions = this.getAdaptiveChunkingOptions(text, options)
+    const opts = { ...this.defaultOptions, ...adaptiveOptions }
 
     // If text is small enough, return as single chunk
     if (text.length <= opts.maxChunkSize) {
@@ -64,13 +66,47 @@ export class IntelligentTextChunker {
       ]
     }
 
-    console.log('🔄 Chunking large text', {
+    console.log('🔄 Chunking large text with adaptive sizing', {
       originalLength: text.length,
       maxChunkSize: opts.maxChunkSize,
       estimatedChunks: Math.ceil(text.length / opts.maxChunkSize),
+      isUltraLong: text.length > 100000,
     })
 
     return this.performIntelligentChunking(text, opts)
+  }
+
+  /**
+   * Get adaptive chunking options based on document characteristics
+   */
+  private getAdaptiveChunkingOptions(
+    text: string,
+    userOptions: Partial<ChunkingOptions>
+  ): Partial<ChunkingOptions> {
+    const adaptiveOptions: Partial<ChunkingOptions> = { ...userOptions }
+
+    // For ultra-long documents (>100k chars), use larger chunks
+    if (text.length > 100000) {
+      adaptiveOptions.maxChunkSize = Math.min(
+        userOptions.maxChunkSize || 8000,
+        8000
+      )
+      adaptiveOptions.contextWindowSize = 400
+      console.log('📏 Using ultra-long document settings', {
+        maxChunkSize: adaptiveOptions.maxChunkSize,
+        contextWindowSize: adaptiveOptions.contextWindowSize,
+      })
+    }
+    // For very long documents (>50k chars), optimize chunk size
+    else if (text.length > 50000) {
+      adaptiveOptions.maxChunkSize = Math.min(
+        userOptions.maxChunkSize || 7000,
+        7000
+      )
+      adaptiveOptions.contextWindowSize = 350
+    }
+
+    return adaptiveOptions
   }
 
   /**

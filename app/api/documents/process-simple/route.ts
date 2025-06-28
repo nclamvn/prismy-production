@@ -268,8 +268,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Validate file size (50MB limit)
-    const maxSize = 50 * 1024 * 1024 // 50MB
+    // Validate file size (200MB limit for ultra-long documents)
+    const maxSize = 200 * 1024 * 1024 // 200MB
     if (file.size > maxSize) {
       return NextResponse.json(
         {

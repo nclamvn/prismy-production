@@ -25,8 +25,20 @@
     "app/api/translate/test/route.ts": {
       "maxDuration": 30
     },
+    "app/api/documents/process/route.ts": {
+      "maxDuration": 300
+    },
+    "app/api/documents/process-simple/route.ts": {
+      "maxDuration": 300
+    },
     "app/api/documents/download/route.ts": {
       "maxDuration": 60
+    },
+    "app/api/documents/chat/route.ts": {
+      "maxDuration": 120
+    },
+    "app/api/documents/analyze/route.ts": {
+      "maxDuration": 120
     },
     "app/api/test/pipeline/route.ts": {
       "maxDuration": 30

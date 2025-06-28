@@ -17,9 +17,7 @@ const CREDITS_PER_PAGE = {
   llm: 500,
 }
 
-async function extractTextFromPDF(
-  buffer: Buffer
-): Promise<{
+async function extractTextFromPDF(buffer: Buffer): Promise<{
   text: string
   pageCount: number
   html?: string
@@ -84,9 +82,7 @@ async function extractTextFromPDF(
   }
 }
 
-async function extractTextFromDOCX(
-  buffer: Buffer
-): Promise<{
+async function extractTextFromDOCX(buffer: Buffer): Promise<{
   text: string
   pageCount: number
   html?: string
@@ -303,13 +299,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check file size (max 50MB)
-    const maxFileSize = 50 * 1024 * 1024 // 50MB
+    // Check file size (max 200MB for ultra-long documents)
+    const maxFileSize = 200 * 1024 * 1024 // 200MB
     if (file.size > maxFileSize) {
       return NextResponse.json(
         {
           error: 'File too large',
-          message: `File size must be less than 50MB. Current size: ${Math.round(file.size / 1024 / 1024)}MB`,
+          message: `File size must be less than 200MB. Current size: ${Math.round(file.size / 1024 / 1024)}MB`,
           code: 'FILE_TOO_LARGE',
         },
         { status: 400 }
@@ -462,7 +458,7 @@ export async function POST(request: NextRequest) {
             Cookie: request.headers.get('cookie') || '',
           },
           body: JSON.stringify({
-            text: text.substring(0, 50000), // Limit for MVP
+            text: text, // Full document translation - no character limit
             targetLang,
             serviceType,
             qualityTier: 'standard',
