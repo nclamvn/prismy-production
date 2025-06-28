@@ -5,7 +5,10 @@ import { validateRequest, translationSchema } from '@/lib/validation'
 import { validateCSRFMiddleware } from '@/lib/csrf'
 import { createRouteHandlerClient } from '@/lib/supabase'
 import { redisTranslationCache } from '@/lib/redis-translation-cache'
-import { checkAndDeductCredits, estimateTokensFromText } from '@/lib/credit-manager'
+import {
+  checkAndDeductCredits,
+  estimateTokensFromText,
+} from '@/lib/credit-manager'
 import { cookies } from 'next/headers'
 
 interface UnifiedTranslationRequest {
@@ -25,7 +28,10 @@ const CREDIT_COSTS = {
 }
 
 // Calculate credits based on text length and service
-function calculateCredits(text: string, serviceType: 'google_translate' | 'llm'): number {
+function calculateCredits(
+  text: string,
+  serviceType: 'google_translate' | 'llm'
+): number {
   const wordsPerPage = 500
   const wordCount = text.split(/\s+/).length
   const pages = Math.ceil(wordCount / wordsPerPage)
@@ -36,8 +42,10 @@ export async function POST(request: NextRequest) {
   try {
     // Get user session
     const supabase = createRouteHandlerClient({ cookies })
-    const { data: { session } } = await supabase.auth.getSession()
-    
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
+
     if (!session?.user) {
       return NextResponse.json(
         { error: 'Authentication required' },
@@ -49,36 +57,35 @@ export async function POST(request: NextRequest) {
     const userEmail = session.user.email || session.user.id
     const rateLimitKey = `translate:${userEmail}`
     const userTier = session.user.user_metadata?.subscription_tier || 'free'
-    const limit = getRateLimitForTier(userTier as any)
-    const rateLimitResult = await limit.check(request, { rateLimitKey })
+    const rateLimitResult = await getRateLimitForTier(request, userTier as any)
 
     if (!rateLimitResult.success) {
       return NextResponse.json(
-        { 
+        {
           error: 'Too many requests',
           retryAfter: rateLimitResult.reset,
           limit: rateLimitResult.limit,
-          remaining: rateLimitResult.remaining
+          remaining: rateLimitResult.remaining,
         },
-        { 
+        {
           status: 429,
           headers: {
             'X-RateLimit-Limit': rateLimitResult.limit.toString(),
             'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
             'X-RateLimit-Reset': new Date(rateLimitResult.reset).toISOString(),
-          }
+          },
         }
       )
     }
 
     // CSRF validation for web requests
     const origin = request.headers.get('origin')
-    const isWebRequest = origin && (
-      origin.includes('localhost') || 
-      origin.includes('prismy.io') ||
-      origin.includes('prismy.in')
-    )
-    
+    const isWebRequest =
+      origin &&
+      (origin.includes('localhost') ||
+        origin.includes('prismy.io') ||
+        origin.includes('prismy.in'))
+
     if (isWebRequest) {
       const csrfResult = await validateCSRFMiddleware(request)
       if (!csrfResult.valid) {
@@ -92,7 +99,7 @@ export async function POST(request: NextRequest) {
     // Parse and validate request
     const body: UnifiedTranslationRequest = await request.json()
     const validation = translationSchema.safeParse(body)
-    
+
     if (!validation.success) {
       return NextResponse.json(
         { error: 'Invalid request', details: validation.error.flatten() },
@@ -100,10 +107,20 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { text, sourceLang, targetLang, qualityTier = 'standard', serviceType = 'google_translate', trackHistory = true, createTask = false } = body
+    const {
+      text,
+      sourceLang,
+      targetLang,
+      qualityTier = 'standard',
+      serviceType = 'google_translate',
+      trackHistory = true,
+      createTask = false,
+    } = body
 
     // Calculate required credits
-    const requiredCredits = createTask ? calculateCredits(text, serviceType) : estimateTokensFromText(text)
+    const requiredCredits = createTask
+      ? calculateCredits(text, serviceType)
+      : estimateTokensFromText(text)
 
     // Check and deduct credits
     const creditResult = await checkAndDeductCredits(
@@ -114,18 +131,18 @@ export async function POST(request: NextRequest) {
 
     if (!creditResult.sufficient) {
       return NextResponse.json(
-        { 
+        {
           error: 'Insufficient credits',
           required: requiredCredits,
           available: creditResult.credits_before,
-          suggestion: 'Please purchase more credits to continue'
+          suggestion: 'Please purchase more credits to continue',
         },
         { status: 402 }
       )
     }
 
     let taskId: string | null = null
-    
+
     // Create task record if requested
     if (createTask) {
       const { data: task, error: taskError } = await supabase
@@ -140,8 +157,8 @@ export async function POST(request: NextRequest) {
             sourceLang: sourceLang || 'auto',
             targetLang,
             textLength: text.length,
-            wordCount: text.split(/\s+/).length
-          }
+            wordCount: text.split(/\s+/).length,
+          },
         })
         .select()
         .single()
@@ -157,40 +174,62 @@ export async function POST(request: NextRequest) {
     const startTime = Date.now()
 
     try {
-      // Perform translation
-      const result = await translationService.translate({
+      // Perform translation using correct method name and parameters
+      const result = await translationService.translateText({
         text,
-        sourceLanguage: sourceLang,
-        targetLanguage: targetLang,
+        sourceLang: sourceLang || 'auto',
+        targetLang,
         qualityTier,
-        userId: session.user.id,
-        useCache: true,
-        abTestVariant: 'cache_enabled'
+        abTestVariant: 'cache_enabled',
       })
 
-      if (!result.success || !result.translatedText) {
-        throw new Error(result.error || 'Translation failed')
+      if (!result.translatedText) {
+        throw new Error('Translation failed - no result returned')
       }
 
       const endTime = Date.now()
       const processingTime = endTime - startTime
 
+      // Update task status if it was created
+      if (taskId) {
+        try {
+          const { error: updateError } = await supabase
+            .from('tasks')
+            .update({
+              status: 'completed',
+              result: {
+                translatedText: result.translatedText,
+                sourceLang: result.detectedSourceLanguage || result.sourceLang,
+                targetLang: result.targetLang,
+                confidence: result.confidence,
+                qualityScore: result.qualityScore,
+              },
+              completed_at: new Date().toISOString(),
+            })
+            .eq('id', taskId)
+
+          if (updateError) {
+            console.error('Task update error:', updateError)
+          }
+        } catch (error) {
+          console.error('Task update failed:', error)
+        }
+      }
+
       // Track usage in history if enabled
       if (trackHistory) {
-        await supabase
-          .from('translation_history')
-          .insert({
-            user_id: session.user.id,
-            source_text: text.substring(0, 500),
-            translated_text: result.translatedText.substring(0, 500),
-            source_language: result.detectedSourceLanguage || sourceLang,
-            target_language: targetLang,
-            quality_tier: qualityTier,
-            processing_time: processingTime,
-            cached: result.cached || false,
-            tokens_used: requiredCredits,
-            character_count: text.length
-          })
+        await supabase.from('translation_history').insert({
+          user_id: session.user.id,
+          source_text: text.substring(0, 500),
+          translated_text: result.translatedText.substring(0, 500),
+          source_language: result.detectedSourceLanguage || sourceLang,
+          target_language: targetLang,
+          quality_tier: qualityTier,
+          processing_time: processingTime,
+          cached: result.cached || false,
+          tokens_used: requiredCredits,
+          character_count: text.length,
+        })
 
         // Invalidate user history cache
         await redisTranslationCache.invalidateUserHistory(session.user.id)
@@ -204,8 +243,8 @@ export async function POST(request: NextRequest) {
             status: 'done',
             metadata: {
               processingTime,
-              cached: result.cached || false
-            }
+              cached: result.cached || false,
+            },
           })
           .eq('id', taskId)
       }
@@ -221,12 +260,12 @@ export async function POST(request: NextRequest) {
           qualityTier,
           qualityScore: result.qualityScore || 0.95,
           cached: result.cached || false,
-          processingTime
+          processingTime,
         },
         credits: {
           used: creditResult.credits_used,
           remaining: creditResult.credits_after,
-          previousBalance: creditResult.credits_before
+          previousBalance: creditResult.credits_before,
         },
         billing: {
           charactersTranslated: text.length,
@@ -235,15 +274,14 @@ export async function POST(request: NextRequest) {
           serviceType,
           rateLimit: {
             remaining: rateLimitResult.remaining,
-            limit: rateLimitResult.limit
-          }
+            limit: rateLimitResult.limit,
+          },
         },
-        ...(taskId && { taskId })
+        ...(taskId && { taskId }),
       })
-
     } catch (error) {
       console.error('Translation error:', error)
-      
+
       // Update task status to error if created
       if (taskId) {
         await supabase
@@ -251,35 +289,35 @@ export async function POST(request: NextRequest) {
           .update({
             status: 'error',
             metadata: {
-              error: error instanceof Error ? error.message : 'Unknown error'
-            }
+              error: error instanceof Error ? error.message : 'Unknown error',
+            },
           })
           .eq('id', taskId)
       }
 
       // Refund credits on failure if task was created
       if (createTask) {
-        await supabase
-          .from('credits')
-          .insert({
-            user_id: session.user.id,
-            change: requiredCredits,
-            reason: `Refund for failed translation task ${taskId}`,
-            created_at: new Date().toISOString()
-          })
+        await supabase.from('credits').insert({
+          user_id: session.user.id,
+          change: requiredCredits,
+          reason: `Refund for failed translation task ${taskId}`,
+          created_at: new Date().toISOString(),
+        })
       }
 
       throw error
     }
-
   } catch (error) {
     console.error('Translation API error:', error)
-    
+
     return NextResponse.json(
-      { 
+      {
         error: 'Translation failed',
-        message: error instanceof Error ? error.message : 'An unexpected error occurred',
-        details: process.env.NODE_ENV === 'development' ? error : undefined
+        message:
+          error instanceof Error
+            ? error.message
+            : 'An unexpected error occurred',
+        details: process.env.NODE_ENV === 'development' ? error : undefined,
       },
       { status: 500 }
     )
@@ -293,7 +331,8 @@ export async function OPTIONS(request: NextRequest) {
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-CSRF-Token',
+      'Access-Control-Allow-Headers':
+        'Content-Type, Authorization, X-CSRF-Token',
     },
   })
 }

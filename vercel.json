@@ -16,7 +16,19 @@
     "app/api/translate/route.ts": {
       "maxDuration": 60
     },
+    "app/api/translate/unified/route.ts": {
+      "maxDuration": 60
+    },
     "app/api/translate/public/route.ts": {
+      "maxDuration": 30
+    },
+    "app/api/translate/test/route.ts": {
+      "maxDuration": 30
+    },
+    "app/api/documents/download/route.ts": {
+      "maxDuration": 60
+    },
+    "app/api/test/pipeline/route.ts": {
       "maxDuration": 30
     },
     "app/api/agents/dashboard/route.ts": {
