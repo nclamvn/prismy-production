@@ -80,6 +80,16 @@ export class ChunkedTranslationService {
       )
     }
 
+    // Log processing start for ultra-long documents
+    if (text.length > 100000) {
+      console.log('🚀 Starting ultra-long document translation', {
+        textLength: text.length,
+        estimatedProcessingTime: this.estimateTranslationTime(text.length),
+        targetLang,
+        qualityTier,
+      })
+    }
+
     // Chunk the text intelligently
     const chunks = intelligentChunker.chunkText(text, {
       ...chunkingOptions,
@@ -180,9 +190,10 @@ export class ChunkedTranslationService {
         const chunkIndex = i + batchIndex
 
         try {
-          // Add small delay to prevent rate limiting
+          // Add small delay to prevent rate limiting (reduced for ultra-long documents)
           if (chunkIndex > 0) {
-            await this.delay(this.CHUNK_PROCESSING_DELAY)
+            const delay = chunks.length > 50 ? 25 : this.CHUNK_PROCESSING_DELAY
+            await this.delay(delay)
           }
 
           console.log(

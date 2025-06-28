@@ -60,7 +60,10 @@ export const translationSchema = z.object({
   text: z
     .string()
     .min(1, 'Text cannot be empty')
-    .max(500000, 'Text too long (maximum 500,000 characters)')
+    .max(
+      2000000,
+      'Text too long (maximum 2,000,000 characters - ultra-long documents supported)'
+    )
     .transform(val => sanitizeHtml(val.trim()))
     .refine(
       text => text.length > 0 && text.trim().length > 0,
