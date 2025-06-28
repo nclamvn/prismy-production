@@ -14,7 +14,9 @@ export interface SentryConfig {
   tracesSampleRate: number
   profilesSampleRate: number
   beforeSend?: (event: Sentry.Event) => Sentry.Event | null
-  beforeSendTransaction?: (event: Sentry.Transaction) => Sentry.Transaction | null
+  beforeSendTransaction?: (
+    event: Sentry.Transaction
+  ) => Sentry.Transaction | null
 }
 
 export class ErrorTracker {
@@ -25,12 +27,17 @@ export class ErrorTracker {
   private constructor() {
     this.config = {
       dsn: process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN || '',
-      environment: process.env.SENTRY_ENVIRONMENT || process.env.NODE_ENV || 'development',
+      environment:
+        process.env.SENTRY_ENVIRONMENT || process.env.NODE_ENV || 'development',
       sampleRate: parseFloat(process.env.SENTRY_SAMPLE_RATE || '1.0'),
-      tracesSampleRate: parseFloat(process.env.SENTRY_TRACES_SAMPLE_RATE || '0.1'),
-      profilesSampleRate: parseFloat(process.env.SENTRY_PROFILES_SAMPLE_RATE || '0.1'),
+      tracesSampleRate: parseFloat(
+        process.env.SENTRY_TRACES_SAMPLE_RATE || '0.1'
+      ),
+      profilesSampleRate: parseFloat(
+        process.env.SENTRY_PROFILES_SAMPLE_RATE || '0.1'
+      ),
       beforeSend: this.beforeSend.bind(this),
-      beforeSendTransaction: this.beforeSendTransaction.bind(this)
+      beforeSendTransaction: this.beforeSendTransaction.bind(this),
     }
   }
 
@@ -55,53 +62,46 @@ export class ErrorTracker {
         profilesSampleRate: this.config.profilesSampleRate,
         beforeSend: this.config.beforeSend,
         beforeSendTransaction: this.config.beforeSendTransaction,
-        
+
         // Integration configurations
         integrations: [
-          new Sentry.BrowserTracing({
-            // Track route changes
-            routingInstrumentation: Sentry.nextRouterInstrumentation,
-            
-            // Capture API routes
-            tracePropagationTargets: [
-              'localhost',
-              /^https:\/\/prismy\.ai/,
-              /^https:\/\/.*\.prismy\.ai/
-            ]
+          // Simplified integrations for compatibility
+          ...Sentry.getDefaultIntegrations().filter(defaultIntegration => {
+            return !['BrowserTracing', 'ProfilingIntegration'].includes(
+              defaultIntegration.name
+            )
           }),
-          
-          // Performance profiling
-          new Sentry.ProfilingIntegration()
         ],
-        
+
         // Advanced configurations
         debug: process.env.NODE_ENV === 'development',
         normalizeDepth: 6,
         maxBreadcrumbs: 50,
         attachStacktrace: true,
         sendDefaultPii: false, // Don't send personally identifiable information
-        
-        // Transport options
-        transport: Sentry.makeBrowserOfflineTransport(Sentry.makeFetchTransport),
-        
+
+        // Transport options - using default transport for compatibility
+        // transport: Sentry.makeBrowserOfflineTransport(Sentry.makeFetchTransport),
+
         // Release tracking
-        release: process.env.VERCEL_GIT_COMMIT_SHA || process.env.NEXT_PUBLIC_APP_VERSION,
-        
+        release:
+          process.env.VERCEL_GIT_COMMIT_SHA ||
+          process.env.NEXT_PUBLIC_APP_VERSION,
+
         // Tag all events
         initialScope: {
           tags: {
             component: 'prismy-frontend',
-            version: process.env.NEXT_PUBLIC_APP_VERSION || '1.0.0'
-          }
-        }
+            version: process.env.NEXT_PUBLIC_APP_VERSION || '1.0.0',
+          },
+        },
       })
 
       this.isInitialized = true
       logger.info('Sentry error tracking initialized', {
         environment: this.config.environment,
-        sampleRate: this.config.sampleRate
+        sampleRate: this.config.sampleRate,
       })
-
     } catch (error) {
       logger.error('Failed to initialize Sentry', { error })
     }
@@ -124,7 +124,9 @@ export class ErrorTracker {
     return event
   }
 
-  private beforeSendTransaction(event: Sentry.Transaction): Sentry.Transaction | null {
+  private beforeSendTransaction(
+    event: Sentry.Transaction
+  ): Sentry.Transaction | null {
     // Filter out development transactions
     if (this.config.environment === 'development') {
       return null
@@ -151,7 +153,7 @@ export class ErrorTracker {
       'Script error',
       'NetworkError',
       'AbortError',
-      'ChunkLoadError'
+      'ChunkLoadError',
     ]
 
     // Filter out errors from browser extensions
@@ -159,7 +161,7 @@ export class ErrorTracker {
       'chrome-extension://',
       'moz-extension://',
       'safari-extension://',
-      'ms-browser-extension://'
+      'ms-browser-extension://',
     ]
 
     // Check error message
@@ -194,25 +196,25 @@ export class ErrorTracker {
           version: navigator.appVersion,
           language: navigator.language,
           cookieEnabled: navigator.cookieEnabled,
-          onLine: navigator.onLine
+          onLine: navigator.onLine,
         },
         viewport: {
           width: window.innerWidth,
           height: window.innerHeight,
-          devicePixelRatio: window.devicePixelRatio
+          devicePixelRatio: window.devicePixelRatio,
         },
         screen: {
           width: screen.width,
           height: screen.height,
-          colorDepth: screen.colorDepth
-        }
+          colorDepth: screen.colorDepth,
+        },
       }
 
       // Add current URL
       event.tags = {
         ...event.tags,
         page: window.location.pathname,
-        referrer: document.referrer || 'direct'
+        referrer: document.referrer || 'direct',
       }
     }
 
@@ -222,10 +224,11 @@ export class ErrorTracker {
       event.extra = {
         ...event.extra,
         performance: {
-          domContentLoaded: timing.domContentLoadedEventEnd - timing.navigationStart,
+          domContentLoaded:
+            timing.domContentLoadedEventEnd - timing.navigationStart,
           loadComplete: timing.loadEventEnd - timing.navigationStart,
-          domInteractive: timing.domInteractive - timing.navigationStart
-        }
+          domInteractive: timing.domInteractive - timing.navigationStart,
+        },
       }
     }
   }
@@ -251,7 +254,7 @@ export class ErrorTracker {
       tags: context?.tags,
       extra: context?.extra,
       user: context?.user,
-      fingerprint: context?.fingerprint
+      fingerprint: context?.fingerprint,
     })
   }
 
@@ -265,7 +268,10 @@ export class ErrorTracker {
     }
   ): string {
     if (!this.isInitialized) {
-      logger.info('Sentry not initialized, logging message locally', { message, level })
+      logger.info('Sentry not initialized, logging message locally', {
+        message,
+        level,
+      })
       return ''
     }
 
@@ -284,7 +290,7 @@ export class ErrorTracker {
       id: user.id,
       email: user.email,
       username: user.username,
-      subscription: user.subscription
+      subscription: user.subscription,
     })
   }
 
@@ -316,7 +322,7 @@ export class ErrorTracker {
       category: breadcrumb.category || 'custom',
       level: breadcrumb.level || 'info',
       data: breadcrumb.data,
-      timestamp: Date.now() / 1000
+      timestamp: Date.now() / 1000,
     })
   }
 
@@ -327,10 +333,11 @@ export class ErrorTracker {
   ): Sentry.Transaction | undefined {
     if (!this.isInitialized) return undefined
 
-    return Sentry.startTransaction({
+    // Using compatible transaction method
+    return Sentry.getCurrentHub()?.startTransaction({
       name,
       op,
-      description
+      description,
     })
   }
 
@@ -356,13 +363,13 @@ export class ErrorTracker {
         errorType: 'translation_error',
         sourceLanguage: context.sourceLanguage,
         targetLanguage: context.targetLanguage,
-        provider: context.provider
+        provider: context.provider,
       },
       extra: {
         textLength: context.textLength,
-        translationContext: context
+        translationContext: context,
       },
-      user: context.userId ? { id: context.userId } : undefined
+      user: context.userId ? { id: context.userId } : undefined,
     })
   }
 
@@ -382,13 +389,13 @@ export class ErrorTracker {
         errorType: 'api_error',
         endpoint: context.endpoint,
         method: context.method,
-        statusCode: context.statusCode?.toString()
+        statusCode: context.statusCode?.toString(),
       },
       extra: {
         apiContext: context,
-        duration: context.duration
+        duration: context.duration,
       },
-      user: context.userId ? { id: context.userId } : undefined
+      user: context.userId ? { id: context.userId } : undefined,
     })
   }
 
@@ -406,15 +413,15 @@ export class ErrorTracker {
       tags: {
         errorType: 'payment_error',
         paymentProvider: context.provider,
-        currency: context.currency
+        currency: context.currency,
       },
       extra: {
         paymentContext: {
           ...context,
-          amount: context.amount // This is safe to include as it's transaction amount
-        }
+          amount: context.amount, // This is safe to include as it's transaction amount
+        },
       },
-      user: context.userId ? { id: context.userId } : undefined
+      user: context.userId ? { id: context.userId } : undefined,
     })
   }
 
@@ -434,13 +441,13 @@ export class ErrorTracker {
         tags: {
           issueType: 'performance',
           metric,
-          component: context?.component || 'unknown'
+          component: context?.component || 'unknown',
         },
         extra: {
           value,
           threshold: context?.threshold,
-          performanceContext: context
-        }
+          performanceContext: context,
+        },
       }
     )
   }
@@ -460,7 +467,7 @@ export class ErrorTracker {
       initialized: this.isInitialized,
       environment: this.config.environment,
       sampleRate: this.config.sampleRate,
-      dsn: this.config.dsn ? '***configured***' : 'not configured'
+      dsn: this.config.dsn ? '***configured***' : 'not configured',
     }
   }
 }
