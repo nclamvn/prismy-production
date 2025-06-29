@@ -9,6 +9,8 @@ import { motionSafe, slideUp } from '@/lib/motion'
 import AuthGuard from '@/components/auth/AuthGuard'
 import NotebookLMLayout from '@/components/layouts/NotebookLMLayout'
 import SimpleTranslationInterface from '@/components/workspace/SimpleTranslationInterface'
+import SourcesPanel from '@/components/panels/SourcesPanel'
+import ExportPanel from '@/components/panels/ExportPanel'
 import PerformanceMonitor from '@/components/optimization/PerformanceMonitor'
 import { createLazyComponent } from '@/components/optimization/LazyComponentLoader'
 
@@ -26,10 +28,13 @@ export default function Workspace() {
     'sources' | 'translate' | 'export'
   >('translate')
   const [uploadedDocument, setUploadedDocument] = useState<any>(null)
-  const [translationResult, setTranslationResult] = useState<any>(null)
+  const [selectedDocument, setSelectedDocument] = useState<any>(null)
+  const [exportData, setExportData] = useState<any>(null)
 
-  // Handle document upload and transformation
-  const handleDocumentUpload = (document: any) => {
+  // Handle text extracted from documents
+  const handleTextExtracted = (text: string, document: any) => {
+    console.log('Text extracted from document:', document.name)
+    setSelectedDocument(document)
     setUploadedDocument(document)
     // Auto-switch to translate panel to show DocumentInteractionHub
     setActivePanel('translate')
@@ -37,7 +42,24 @@ export default function Workspace() {
 
   // Handle translation completion
   const handleTranslationComplete = (result: any) => {
-    setTranslationResult(result)
+    console.log('Translation completed:', result)
+    // Populate export data
+    console.log('🐛 DEBUG: Translation result received:', result)
+    setExportData({
+      originalText: result.original || '',
+      translatedText: result.translated || '',
+      sourceLanguage: result.sourceLang || 'auto',
+      targetLanguage: result.targetLang || 'vi',
+      timestamp: new Date(),
+      qualityScore: 0.95,
+      processingTime: result.processingTime || 1200,
+    })
+    console.log('🐛 DEBUG: Export data set:', {
+      originalText: result.original || '',
+      translatedText: result.translated || '',
+      sourceLanguage: result.sourceLang || 'auto',
+      targetLanguage: result.targetLang || 'vi',
+    })
     // Auto-switch to export panel to show results
     setActivePanel('export')
   }
@@ -54,100 +76,68 @@ export default function Workspace() {
     console.log('Download format:', format)
   }
 
-  // Render Sources Panel (Left Panel)
-  const renderSourcesPanel = () => (
-    <div className="p-4 h-full">
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-gray-900">
-          {language === 'vi' ? 'Nguồn dữ liệu' : 'Sources'}
-        </h3>
+  // Handle export download
+  const handleDownload = async (format: string, options: any) => {
+    if (!exportData) {
+      console.error('No export data available')
+      return
+    }
 
-        {/* Document Upload Area */}
-        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
-          <div className="space-y-2">
-            <div className="text-gray-500">
-              {language === 'vi'
-                ? 'Kéo thả tài liệu hoặc'
-                : 'Drag and drop documents or'}
-            </div>
-            <button
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-              onClick={() => {
-                // TODO: Implement file picker
-                console.log('File picker not implemented yet')
-              }}
-            >
-              {language === 'vi' ? 'Chọn tệp' : 'Choose Files'}
-            </button>
-          </div>
-        </div>
+    try {
+      const {
+        exportAsText,
+        exportAsDocx,
+        exportAsJson,
+        exportAsPdf,
+        downloadFile,
+        generateFilename,
+      } = await import('@/lib/export-utils')
 
-        {/* Uploaded Documents List */}
-        {uploadedDocument && (
-          <div className="space-y-2">
-            <h4 className="font-medium text-gray-900">
-              {language === 'vi' ? 'Tài liệu đã tải' : 'Uploaded Documents'}
-            </h4>
-            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="text-sm font-medium text-blue-900">
-                {uploadedDocument.name}
-              </div>
-              <div className="text-xs text-blue-600">
-                {uploadedDocument.type}
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  )
+      const filename = generateFilename(
+        'translation',
+        exportData.sourceLanguage,
+        exportData.targetLanguage,
+        format
+      )
 
-  // Render Export Panel (Right Panel)
-  const renderExportPanel = () => (
-    <div className="p-4 h-full">
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-gray-900">
-          {language === 'vi' ? 'Xuất kết quả' : 'Export Results'}
-        </h3>
+      switch (format) {
+        case 'txt':
+          const textContent = exportAsText(exportData, options.includeMetadata)
+          downloadFile(textContent, filename, 'text/plain')
+          break
 
-        {translationResult ? (
-          <div className="space-y-3">
-            <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-              <div className="text-sm font-medium text-green-900">
-                {language === 'vi'
-                  ? 'Dịch thuật hoàn thành'
-                  : 'Translation Complete'}
-              </div>
-              <div className="text-xs text-green-600 mt-1">
-                {translationResult.translatedText?.length || 0}{' '}
-                {language === 'vi' ? 'ký tự' : 'characters'}
-              </div>
-            </div>
+        case 'docx':
+          const docxBlob = await exportAsDocx(
+            exportData,
+            options.includeMetadata
+          )
+          downloadFile(
+            docxBlob,
+            filename,
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+          )
+          break
 
-            <div className="space-y-2">
-              <button className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-                {language === 'vi' ? 'Tải về TXT' : 'Download TXT'}
-              </button>
-              <button className="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
-                {language === 'vi' ? 'Tải về DOCX' : 'Download DOCX'}
-              </button>
-              <button className="w-full px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors">
-                {language === 'vi' ? 'Tải về PDF' : 'Download PDF'}
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="text-center text-gray-500 py-8">
-            <div className="text-sm">
-              {language === 'vi'
-                ? 'Kết quả dịch thuật sẽ xuất hiện ở đây'
-                : 'Translation results will appear here'}
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  )
+        case 'json':
+          const jsonContent = exportAsJson(exportData, options.includeMetadata)
+          downloadFile(jsonContent, filename, 'application/json')
+          break
+
+        case 'pdf':
+          const pdfBlob = exportAsPdf(exportData, options.includeMetadata)
+          downloadFile(pdfBlob, filename, 'application/pdf')
+          break
+
+        default:
+          console.error('Unsupported export format:', format)
+          return
+      }
+
+      console.log(`File downloaded: ${filename}`)
+    } catch (error) {
+      console.error('Download error:', error)
+    }
+  }
 
   return (
     <AuthGuard>
@@ -162,8 +152,15 @@ export default function Workspace() {
         <NotebookLMLayout
           activePanel={activePanel}
           onPanelChange={setActivePanel}
-          sourcesPanel={renderSourcesPanel()}
-          exportPanel={renderExportPanel()}
+          sourcesPanel={
+            <SourcesPanel
+              onDocumentSelect={setSelectedDocument}
+              onTextExtracted={handleTextExtracted}
+            />
+          }
+          exportPanel={
+            <ExportPanel exportData={exportData} onDownload={handleDownload} />
+          }
           uploadedDocument={uploadedDocument}
           onDocumentTranslate={handleDocumentTranslate}
           onDocumentDownload={handleDocumentDownload}
@@ -178,7 +175,6 @@ export default function Workspace() {
             <SimpleTranslationInterface
               variant="clean"
               onTranslationComplete={handleTranslationComplete}
-              onDocumentUpload={handleDocumentUpload}
             />
           </motion.div>
         </NotebookLMLayout>

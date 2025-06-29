@@ -33,6 +33,7 @@ export default function WorkspaceV2Page() {
 
   const handleTranslationComplete = (result: any) => {
     console.log('Translation completed:', result)
+    console.log('🐛 DEBUG: Translation result received:', result)
     // Populate export data
     setExportData({
       originalText: result.original || '',
@@ -43,6 +44,12 @@ export default function WorkspaceV2Page() {
       qualityScore: 0.95,
       processingTime: result.processingTime || 1200,
     })
+    console.log('🐛 DEBUG: Export data set:', {
+      originalText: result.original || '',
+      translatedText: result.translated || '',
+      sourceLanguage: result.sourceLang || 'auto',
+      targetLanguage: result.targetLang || 'vi',
+    })
   }
 
   const handleTextExtracted = (text: string, document: any) => {
@@ -51,9 +58,66 @@ export default function WorkspaceV2Page() {
     // Auto-populate translation interface with extracted text
   }
 
-  const handleDownload = (format: string, options: any) => {
-    console.log('Download requested:', format, options)
-    // TODO: Implement actual download functionality
+  const handleDownload = async (format: string, options: any) => {
+    if (!exportData) {
+      console.error('No export data available')
+      return
+    }
+
+    try {
+      const {
+        exportAsText,
+        exportAsDocx,
+        exportAsJson,
+        exportAsPdf,
+        downloadFile,
+        generateFilename,
+      } = await import('@/lib/export-utils')
+
+      const filename = generateFilename(
+        'translation',
+        exportData.sourceLanguage,
+        exportData.targetLanguage,
+        format
+      )
+
+      switch (format) {
+        case 'txt':
+          const textContent = exportAsText(exportData, options.includeMetadata)
+          downloadFile(textContent, filename, 'text/plain')
+          break
+
+        case 'docx':
+          const docxBlob = await exportAsDocx(
+            exportData,
+            options.includeMetadata
+          )
+          downloadFile(
+            docxBlob,
+            filename,
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+          )
+          break
+
+        case 'json':
+          const jsonContent = exportAsJson(exportData, options.includeMetadata)
+          downloadFile(jsonContent, filename, 'application/json')
+          break
+
+        case 'pdf':
+          const pdfBlob = exportAsPdf(exportData, options.includeMetadata)
+          downloadFile(pdfBlob, filename, 'application/pdf')
+          break
+
+        default:
+          console.error('Unsupported export format:', format)
+          return
+      }
+
+      console.log(`File downloaded: ${filename}`)
+    } catch (error) {
+      console.error('Download error:', error)
+    }
   }
 
   // Mobile layout for screens < 1024px

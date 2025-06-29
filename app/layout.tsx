@@ -43,7 +43,7 @@ import { PipelineProvider } from '@/contexts/PipelineContext'
 import { WorkspaceIntelligenceProvider } from '@/contexts/WorkspaceIntelligenceContext'
 
 const inter = Inter({
-  subsets: ['latin', 'vietnamese'],
+  subsets: ['latin'],
   display: 'swap',
   variable: '--font-inter',
   weight: ['400', '500', '600', '700'],
@@ -52,9 +52,10 @@ const inter = Inter({
     '-apple-system',
     'BlinkMacSystemFont',
     'Segoe UI',
+    'Roboto',
     'sans-serif',
   ],
-  adjustFontFallback: false, // Prevent FOUT issues
+  adjustFontFallback: true, // Better fallback handling
   preload: true,
 })
 

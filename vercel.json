@@ -19,6 +19,9 @@
     "app/api/translate/unified/route.ts": {
       "maxDuration": 60
     },
+    "app/api/translate/simple/route.ts": {
+      "maxDuration": 60
+    },
     "app/api/translate/public/route.ts": {
       "maxDuration": 30
     },
@@ -48,6 +51,9 @@
     },
     "app/api/ocr/google-vision/route.ts": {
       "maxDuration": 30
+    },
+    "app/api/documents/process-chunked/route.ts": {
+      "maxDuration": 600
     }
   }
 }

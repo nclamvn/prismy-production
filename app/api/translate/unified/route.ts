@@ -125,12 +125,17 @@ export async function POST(request: NextRequest) {
 
     // Check and deduct credits
     const creditResult = await checkAndDeductCredits(
+      supabase,
       session.user.id,
-      requiredCredits,
+      {
+        tokens: requiredCredits,
+        operation_type: 'translate',
+        quality_tier: qualityTier,
+      },
       'translation'
     )
 
-    if (!creditResult.sufficient) {
+    if (!creditResult.success) {
       return NextResponse.json(
         {
           error: 'Insufficient credits',

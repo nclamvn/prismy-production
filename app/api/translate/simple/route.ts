@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createRouteHandlerClient } from '@/lib/supabase'
 import { cookies } from 'next/headers'
+import { chunkedTranslationService } from '@/lib/chunked-translation-service'
 
 /**
  * SIMPLIFIED TRANSLATION ENDPOINT
@@ -43,47 +44,42 @@ export async function POST(request: NextRequest) {
 
     // INTELLIGENT ROUTING: Route long texts through chunking system
     if (text.length > 30000) {
-      console.log('🧩 Routing long text through chunking system', {
+      console.log('🧩 Using chunked translation for long text', {
         textLength: text.length,
         chunksEstimated: Math.ceil(text.length / 6000),
       })
 
-      // Forward to unified endpoint with chunking
-      const unifiedResponse = await fetch(
-        new URL('/api/translate/unified', request.url).toString(),
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Cookie: request.headers.get('cookie') || '',
-          },
-          body: JSON.stringify({
-            text: text,
-            sourceLang: sourceLang === 'auto' ? undefined : sourceLang,
-            targetLang: targetLang,
-            qualityTier: 'standard',
-            trackHistory: true,
-            createTask: false,
-          }),
-        }
-      )
+      // Use chunked translation service directly
+      const result = await chunkedTranslationService.translateLargeText({
+        text,
+        sourceLang: sourceLang === 'auto' ? 'auto' : sourceLang,
+        targetLang,
+        qualityTier: 'standard',
+        chunkingOptions: chunkedTranslationService.getOptimalChunkingSettings(
+          text,
+          targetLang
+        ),
+        onProgress: progress => {
+          console.log('📊 Translation progress:', {
+            completed: progress.completedChunks,
+            total: progress.totalChunks,
+            percentage: Math.round(
+              (progress.completedChunks / progress.totalChunks) * 100
+            ),
+            eta: progress.estimatedTimeRemaining,
+          })
+        },
+      })
 
-      if (!unifiedResponse.ok) {
-        const errorData = await unifiedResponse.json().catch(() => ({}))
-        throw new Error(errorData.error || 'Chunked translation failed')
-      }
-
-      const unifiedResult = await unifiedResponse.json()
-      translatedText = unifiedResult.result.translatedText
-      detectedSourceLang =
-        unifiedResult.result.detectedSourceLanguage || sourceLang
+      translatedText = result.translatedText
+      detectedSourceLang = result.sourceLang
       processingTime = Date.now() - startTime
 
       console.log('✅ Chunked translation completed:', {
         originalLength: text.length,
         translatedLength: translatedText.length,
         processingTime,
-        chunksProcessed: unifiedResult.result.chunks?.processed || 'unknown',
+        chunksProcessed: result.chunks?.processed || 'unknown',
       })
     } else {
       // Direct Google Translate for short texts (<30k characters)
