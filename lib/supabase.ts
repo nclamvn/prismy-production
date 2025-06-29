@@ -37,36 +37,52 @@ const supabaseClientConfig = {
 const connectionPool = new Map<string, any>()
 const MAX_POOL_SIZE = 10
 const CONNECTION_TIMEOUT = 300000 // 5 minutes for connection pool cleanup
-// Enhanced global singleton registry to prevent multiple GoTrueClient instances
-const globalClientRegistry = (() => {
-  if (typeof window !== 'undefined') {
-    // Use window object to ensure truly global singleton
-    if (!(window as any).__supabase_client_registry__) {
-      ;(window as any).__supabase_client_registry__ = {
-        browserClient: null,
-        initialized: false,
-        createdAt: Date.now(),
-        instanceCount: 0,
-        lastAccess: Date.now(),
-      }
+// 💣 PHASE 1.4 NUCLEAR: Absolute module-level singleton - ONE CLIENT FOREVER
+// This prevents ANY possibility of multiple GoTrueClient instances
+let NUCLEAR_SUPABASE_CLIENT: any = null
+let CLIENT_CREATION_BLOCKED = false
 
-      // Debug monitoring for multiple instances
-      if (process.env.NODE_ENV === 'development') {
-        console.log(
-          '🔐 [Supabase Registry] Global singleton registry initialized'
-        )
-      }
-    }
-    return (window as any).__supabase_client_registry__
+const createNuclearSingleton = () => {
+  if (CLIENT_CREATION_BLOCKED && NUCLEAR_SUPABASE_CLIENT) {
+    console.log(
+      '💣 [NUCLEAR SUPABASE] Reusing absolute singleton - creation blocked'
+    )
+    return NUCLEAR_SUPABASE_CLIENT
   }
-  return {
-    browserClient: null,
-    initialized: false,
-    createdAt: Date.now(),
-    instanceCount: 0,
-    lastAccess: Date.now(),
+
+  if (NUCLEAR_SUPABASE_CLIENT) {
+    console.log('💣 [NUCLEAR SUPABASE] Absolute singleton already exists')
+    return NUCLEAR_SUPABASE_CLIENT
   }
-})()
+
+  console.log(
+    '💣 [NUCLEAR SUPABASE] Creating ABSOLUTE SINGLETON - only time this will happen'
+  )
+
+  NUCLEAR_SUPABASE_CLIENT = createBrowserClient(supabaseUrl, supabaseAnonKey, {
+    ...supabaseClientConfig,
+    auth: {
+      ...supabaseClientConfig.auth,
+      storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+      storageKey: 'supabase.auth.token.nuclear',
+      debug: process.env.NODE_ENV === 'development',
+    },
+  })
+
+  // Block all future client creation attempts
+  CLIENT_CREATION_BLOCKED = true
+
+  // Mark window to prevent any other libraries from creating clients
+  if (typeof window !== 'undefined') {
+    ;(window as any).__NUCLEAR_SUPABASE_CREATED__ = true
+    ;(window as any).__NUCLEAR_CLIENT__ = NUCLEAR_SUPABASE_CLIENT
+  }
+
+  console.log(
+    '💣 [NUCLEAR SUPABASE] Absolute singleton created - ALL FUTURE CREATION BLOCKED'
+  )
+  return NUCLEAR_SUPABASE_CLIENT
+}
 
 export const createClientComponentClient = () => {
   if (typeof window === 'undefined') {
@@ -78,84 +94,9 @@ export const createClientComponentClient = () => {
     )
   }
 
-  // Update access tracking
-  globalClientRegistry.lastAccess = Date.now()
-  globalClientRegistry.instanceCount++
-
-  // Client-side: use truly global singleton pattern
-  // Only create a new client if we don't have one yet
-  if (
-    !globalClientRegistry.browserClient ||
-    !globalClientRegistry.initialized
-  ) {
-    // Development debugging with instance tracking
-    if (process.env.NODE_ENV === 'development') {
-      if (globalClientRegistry.browserClient) {
-        console.warn(
-          `🔄 [Supabase Singleton] Recreating client (instance #${globalClientRegistry.instanceCount}) - this should only happen once`
-        )
-      } else {
-        console.log(
-          `🚀 [Supabase Singleton] Creating initial client instance #${globalClientRegistry.instanceCount}`
-        )
-      }
-    }
-
-    // Force cleanup any existing clients to prevent conflicts
-    if (globalClientRegistry.browserClient) {
-      try {
-        globalClientRegistry.browserClient.removeAllChannels()
-        // Additional cleanup for GoTrueClient
-        if (globalClientRegistry.browserClient.auth) {
-          globalClientRegistry.browserClient.auth.stopAutoRefresh()
-        }
-      } catch (error) {
-        if (process.env.NODE_ENV === 'development') {
-          console.warn(
-            '🧹 [Supabase Cleanup] Error during client cleanup:',
-            error
-          )
-        }
-      }
-    }
-
-    globalClientRegistry.browserClient = createBrowserClient(
-      supabaseUrl,
-      supabaseAnonKey,
-      {
-        ...supabaseClientConfig,
-        // Enhanced auth configuration to prevent conflicts
-        auth: {
-          ...supabaseClientConfig.auth,
-          storage:
-            typeof window !== 'undefined' ? window.localStorage : undefined,
-          storageKey: 'supabase.auth.token', // Use specific key to prevent conflicts
-          debug: process.env.NODE_ENV === 'development',
-        },
-      }
-    )
-    globalClientRegistry.initialized = true
-    globalClientRegistry.createdAt = Date.now()
-
-    // Development debugging
-    if (process.env.NODE_ENV === 'development') {
-      console.log(
-        `✅ [Supabase Singleton] Client #${globalClientRegistry.instanceCount} created successfully`
-      )
-    }
-  } else {
-    // Log repeated access in development
-    if (
-      process.env.NODE_ENV === 'development' &&
-      globalClientRegistry.instanceCount > 1
-    ) {
-      console.log(
-        `♻️ [Supabase Singleton] Reusing existing client (access #${globalClientRegistry.instanceCount})`
-      )
-    }
-  }
-
-  return globalClientRegistry.browserClient
+  // 💣 PHASE 1.4 NUCLEAR: Use absolute module-level singleton
+  // This completely prevents multiple GoTrueClient instances
+  return createNuclearSingleton()
 }
 
 // Server-side Supabase client for API routes with connection pooling
@@ -309,36 +250,25 @@ export const cleanupConnections = () => {
   }
 }
 
-// Development utility to check for multiple client instances
-export const debugClientInstances = () => {
+// 💣 PHASE 1.4 NUCLEAR: Debug function for nuclear singleton
+export const debugNuclearClient = () => {
   if (process.env.NODE_ENV !== 'development') return
 
-  const registry = globalClientRegistry
-  console.group('📊 [Supabase Debug] Client Instance Status')
-  console.log('Initialized:', registry.initialized)
-  console.log('Has Client:', !!registry.browserClient)
-  console.log('Created At:', new Date(registry.createdAt).toISOString())
+  console.group('💣 [NUCLEAR SUPABASE] Debug Status')
+  console.log('Nuclear Client Exists:', !!NUCLEAR_SUPABASE_CLIENT)
+  console.log('Creation Blocked:', CLIENT_CREATION_BLOCKED)
+  console.log(
+    'Window Marked:',
+    typeof window !== 'undefined' &&
+      !!(window as any).__NUCLEAR_SUPABASE_CREATED__
+  )
   console.log('Pool Size:', connectionPool.size)
-
-  // Check if there are multiple instances by looking at window properties
-  if (typeof window !== 'undefined') {
-    const windowProps = Object.keys(window).filter(
-      key => key.includes('supabase') || key.includes('gotrue')
-    )
-    if (windowProps.length > 1) {
-      console.warn(
-        '⚠️ Multiple Supabase-related properties detected:',
-        windowProps
-      )
-    }
-  }
-
   console.groupEnd()
 }
 
 // Make debug function available globally in development
 if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
-  ;(window as any).debugSupabaseClients = debugClientInstances
+  ;(window as any).debugNuclearSupabase = debugNuclearClient
 }
 
 // Auto cleanup every 5 minutes

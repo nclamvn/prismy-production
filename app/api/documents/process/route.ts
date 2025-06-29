@@ -5,9 +5,7 @@ import {
   withAuthRetry,
 } from '@/lib/supabase'
 import { cookies } from 'next/headers'
-import { writeFile, unlink } from 'fs/promises'
-import { join } from 'path'
-import { tmpdir } from 'os'
+import { unlink } from 'fs/promises'
 // Dynamic import to avoid build-time issues
 // import pdf from 'pdf-parse'
 
@@ -299,16 +297,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check file size (max 200MB for ultra-long documents)
-    const maxFileSize = 200 * 1024 * 1024 // 200MB
+    // 💣 PHASE 1.5: Ultra-conservative file size limit to prevent 413 errors
+    // Files >1MB should use chunked upload instead
+    const maxFileSize = 1 * 1024 * 1024 // 1MB - matches chunked upload threshold
     if (file.size > maxFileSize) {
       return NextResponse.json(
         {
-          error: 'File too large',
-          message: `File size must be less than 200MB. Current size: ${Math.round(file.size / 1024 / 1024)}MB`,
+          error: 'File too large for standard upload',
+          message: `File size must be less than 1MB for standard upload. Current size: ${Math.round(file.size / 1024 / 1024)}MB. Please use chunked upload for larger files.`,
           code: 'FILE_TOO_LARGE',
+          suggestion: 'Use chunked upload for files larger than 1MB',
         },
-        { status: 400 }
+        { status: 413 } // Changed to 413 to match the actual error being thrown
       )
     }
 

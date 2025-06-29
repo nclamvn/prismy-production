@@ -321,14 +321,17 @@ class Semaphore {
 
 // Utility functions for file size detection and routing
 export const shouldUseChunkedUpload = (file: File): boolean => {
-  const largeFileLimit = 50 * 1024 * 1024 // 50MB
+  // 💣 PHASE 1.4 NUCLEAR: Ultra-conservative threshold to absolutely prevent 413 errors
+  // Use chunked upload for anything >1MB - this guarantees no platform size limit issues
+  const largeFileLimit = 1 * 1024 * 1024 // 1MB (nuclear option - ultra-conservative)
   return file.size > largeFileLimit
 }
 
 export const getUploadMethod = (
   file: File
 ): 'standard' | 'chunked' | 'enterprise' => {
-  const smallFileLimit = 50 * 1024 * 1024 // 50MB
+  // 💣 PHASE 1.4 NUCLEAR: Ultra-conservative thresholds - absolutely prevent 413 errors
+  const smallFileLimit = 1 * 1024 * 1024 // 1MB - Nuclear option for maximum safety
   const enterpriseFileLimit = 1024 * 1024 * 1024 // 1GB
 
   if (file.size <= smallFileLimit) {

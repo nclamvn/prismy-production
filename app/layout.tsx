@@ -1,10 +1,7 @@
 import React from 'react'
 import type { Metadata, Viewport } from 'next'
-// NotebookLM Typography System Migration
-import { Inter } from 'next/font/google'
-
-// Keep Inter for now but prepare for NotebookLM-style font system
-// Google Sans is proprietary, so we'll use Inter as base and modify with CSS
+// 💣 PHASE 1.4 NUCLEAR: Completely removed Google Fonts to eliminate loading errors
+// Using only system fonts for 100% reliability
 import '@/styles/globals.css'
 import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration'
 import { SSRSafeLanguageProvider } from '@/contexts/SSRSafeLanguageContext'
@@ -43,26 +40,10 @@ import { PipelineProvider } from '@/contexts/PipelineContext'
 // Workspace Intelligence System - Phase 2 Integration
 import { WorkspaceIntelligenceProvider } from '@/contexts/WorkspaceIntelligenceContext'
 
-// Enhanced font configuration with robust fallbacks
-const inter = Inter({
-  subsets: ['latin'],
-  display: 'optional', // Use 'optional' instead of 'swap' for better performance
-  variable: '--font-inter',
-  weight: ['400', '500', '600', '700'],
-  fallback: [
-    'system-ui',
-    '-apple-system',
-    'BlinkMacSystemFont',
-    'Segoe UI',
-    'Roboto',
-    'Oxygen',
-    'Ubuntu',
-    'Cantarell',
-    'sans-serif',
-  ],
-  adjustFontFallback: false, // Disable to prevent loading issues
-  preload: true, // Re-enable with proper error handling
-})
+// 💣 PHASE 1.4 NUCLEAR: No Google Fonts at all - only system fonts
+// This completely eliminates all font loading errors
+const systemFontStack =
+  'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://prismy.in'),
@@ -238,7 +219,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="vi" className={inter.variable}>
+    <html lang="vi" style={{ fontFamily: systemFontStack }}>
       <head>
         <meta
           httpEquiv="Cache-Control"
@@ -260,45 +241,10 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="theme-color" content="#000000" />
 
-        {/* Preconnect for Performance */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin=""
-        />
+        {/* 💣 PHASE 1.4 NUCLEAR: Removed all Google Fonts preconnect links */}
         <link rel="preconnect" href="https://api.prismy.in" />
 
-        {/* Font optimization with error handling */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              // Font loading error handler
-              document.addEventListener('DOMContentLoaded', function() {
-                const fontErrors = [];
-                const originalError = window.onerror;
-                
-                window.onerror = function(msg, url, line, col, error) {
-                  if (msg && msg.toString().includes('font')) {
-                    fontErrors.push({msg, url, line, col});
-                    console.warn('Font loading error handled:', msg);
-                    return true; // Prevent error from being logged
-                  }
-                  if (originalError) {
-                    return originalError(msg, url, line, col, error);
-                  }
-                };
-                
-                // Force fallback fonts if Inter fails to load
-                setTimeout(function() {
-                  if (fontErrors.length > 0) {
-                    document.documentElement.style.setProperty('--font-inter', 'system-ui, -apple-system, sans-serif');
-                  }
-                }, 3000);
-              });
-            `,
-          }}
-        />
+        {/* 💣 PHASE 1.4 NUCLEAR: Removed font loading error handler - no Google Fonts to handle */}
 
         {/* DNS Prefetch */}
         <link rel="dns-prefetch" href="//prismy.in" />
@@ -339,8 +285,9 @@ export default function RootLayout({
         />
       </head>
       <body
-        className="font-inter antialiased overflow-x-hidden"
+        className="antialiased overflow-x-hidden"
         style={{
+          fontFamily: systemFontStack,
           fontSize: '18px',
           lineHeight: '1.6',
           backgroundColor: 'var(--surface-panel)',

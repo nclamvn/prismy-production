@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createRouteHandlerClient } from '@/lib/supabase'
 import { cookies } from 'next/headers'
 import { chunkedTranslationService } from '@/lib/chunked-translation-service'
+import { redisTranslationCache } from '@/lib/redis-translation-cache'
 
 /**
  * SIMPLIFIED TRANSLATION ENDPOINT
@@ -37,6 +38,69 @@ export async function POST(request: NextRequest) {
       preview: text.substring(0, 50) + '...',
     })
 
+    // ⚡ PHASE 1.2: Check cache first for performance optimization
+    console.log('🔍 Checking translation cache...')
+    const cachedTranslation = await redisTranslationCache.get(
+      text,
+      sourceLang,
+      targetLang,
+      'standard'
+    )
+
+    if (cachedTranslation) {
+      console.log('✅ Cache HIT - returning cached translation', {
+        hitCount: cachedTranslation.hitCount,
+        textCategory: cachedTranslation.textCategory,
+        cacheAge: Date.now() - new Date(cachedTranslation.timestamp).getTime(),
+      })
+
+      // Track cache hit in history if user is authenticated
+      if (session?.user) {
+        try {
+          await supabase.from('translation_history').insert({
+            user_id: session.user.id,
+            source_text: text.substring(0, 500),
+            translated_text: cachedTranslation.translatedText.substring(0, 500),
+            source_language: cachedTranslation.sourceLang,
+            target_language: cachedTranslation.targetLang,
+            processing_time: 50, // Cache response time
+            character_count: text.length,
+            quality_tier: cachedTranslation.qualityTier,
+            quality_score: cachedTranslation.qualityScore,
+            cached: true,
+          })
+        } catch (historyError) {
+          console.warn(
+            'Failed to save cached translation history:',
+            historyError
+          )
+        }
+      }
+
+      return NextResponse.json({
+        success: true,
+        result: {
+          translatedText: cachedTranslation.translatedText,
+          sourceLanguage: cachedTranslation.sourceLang,
+          targetLanguage: cachedTranslation.targetLang,
+          originalText: text,
+          processingTime: 50,
+          qualityScore: cachedTranslation.qualityScore,
+          cached: true,
+          timestamp: new Date().toISOString(),
+        },
+        metadata: {
+          endpoint: 'simple',
+          authenticated: !!session?.user,
+          characterCount: text.length,
+          wordCount: text.split(/\s+/).length,
+          cacheHit: true,
+          hitCount: cachedTranslation.hitCount,
+        },
+      })
+    }
+
+    console.log('❌ Cache MISS - proceeding with fresh translation')
     const startTime = Date.now()
     let translatedText: string
     let detectedSourceLang: string
@@ -112,6 +176,29 @@ export async function POST(request: NextRequest) {
       })
     }
 
+    // ⚡ PHASE 1.2: Cache the fresh translation result
+    console.log('💾 Caching fresh translation result...')
+    try {
+      await redisTranslationCache.set(
+        text,
+        sourceLang,
+        targetLang,
+        {
+          translatedText,
+          sourceLang: detectedSourceLang,
+          targetLang,
+          confidence: 0.95,
+          qualityScore: 0.95,
+          timestamp: new Date().toISOString(),
+          qualityTier: 'standard',
+        },
+        'standard'
+      )
+      console.log('✅ Translation cached successfully')
+    } catch (cacheError) {
+      console.warn('⚠️ Failed to cache translation (non-critical):', cacheError)
+    }
+
     // Track usage in history if user is authenticated
     if (session?.user) {
       try {
@@ -124,8 +211,12 @@ export async function POST(request: NextRequest) {
           processing_time: processingTime,
           character_count: text.length,
           quality_tier: 'standard',
+          quality_score: 0.95,
           cached: false,
         })
+
+        // Invalidate user history cache since we added a new entry
+        await redisTranslationCache.invalidateUserHistory(session.user.id)
       } catch (historyError) {
         console.warn('Failed to save translation history:', historyError)
       }

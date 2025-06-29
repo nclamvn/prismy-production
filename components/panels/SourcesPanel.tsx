@@ -389,16 +389,19 @@ export default function SourcesPanel({
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span>Up to 50MB: Standard processing</span>
+                <span>Up to 1MB: Standard processing</span>
               </div>
               <div className="flex items-center gap-1">
                 <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                <span>50MB-1GB: Chunked processing</span>
+                <span>1MB-1GB: Chunked processing</span>
               </div>
             </div>
             <div className="flex items-center gap-1">
               <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
               <span>1GB+: Enterprise processing (contact support)</span>
+            </div>
+            <div className="mt-1 text-xs text-red-600 font-medium">
+              💣 Phase 1.4 NUCLEAR: Ultra-conservative 1MB threshold
             </div>
           </div>
         </div>

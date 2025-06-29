@@ -1,4 +1,4 @@
-import { createBrowserClient } from '@/lib/supabase'
+import { createClientComponentClient } from '@/lib/supabase'
 
 export interface BatchJob {
   id: string
@@ -39,11 +39,15 @@ export interface ProcessedFile {
 
 class BatchProcessor {
   private jobs: Map<string, BatchJob> = new Map()
-  private supabase = createBrowserClient()
+  // 💣 PHASE 1.5: Use nuclear singleton to prevent multiple GoTrueClient instances
+  private supabase = createClientComponentClient()
 
-  async createBatch(files: File[], options: BatchProcessingOptions = {}): Promise<BatchJob> {
+  async createBatch(
+    files: File[],
+    options: BatchProcessingOptions = {}
+  ): Promise<BatchJob> {
     const jobId = `batch-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-    
+
     const job: BatchJob = {
       id: jobId,
       status: 'pending',
@@ -51,18 +55,18 @@ class BatchProcessor {
       progress: {
         current: 0,
         total: files.length,
-        percentage: 0
+        percentage: 0,
       },
       results: [],
       errors: [],
-      createdAt: new Date()
+      createdAt: new Date(),
     }
 
     this.jobs.set(jobId, job)
-    
+
     // Start processing asynchronously
     this.processBatch(job, options)
-    
+
     return job
   }
 
@@ -72,26 +76,26 @@ class BatchProcessor {
       retryAttempts = 2,
       onProgress,
       onFileComplete,
-      onFileError
+      onFileError,
     } = options
 
     job.status = 'processing'
-    
+
     try {
       // Process files in batches based on concurrency limit
       const results: ProcessedFile[] = []
-      
+
       for (let i = 0; i < job.files.length; i += maxConcurrency) {
         const batch = job.files.slice(i, i + maxConcurrency)
-        
+
         const batchResults = await Promise.all(
           batch.map(file => this.processFile(file, retryAttempts))
         )
-        
+
         for (let j = 0; j < batchResults.length; j++) {
           const result = batchResults[j]
           const file = batch[j]
-          
+
           if (result.status === 'success') {
             job.results.push(result)
             onFileComplete?.(file, result)
@@ -99,69 +103,74 @@ class BatchProcessor {
             job.errors.push(new Error(result.error || 'Unknown error'))
             onFileError?.(file, new Error(result.error || 'Unknown error'))
           }
-          
+
           job.progress.current++
-          job.progress.percentage = Math.round((job.progress.current / job.progress.total) * 100)
-          
+          job.progress.percentage = Math.round(
+            (job.progress.current / job.progress.total) * 100
+          )
+
           onProgress?.(job)
         }
-        
+
         results.push(...batchResults)
       }
-      
+
       job.status = 'completed'
       job.completedAt = new Date()
-      
     } catch (error) {
       job.status = 'failed'
       job.errors.push(error as Error)
     }
-    
+
     onProgress?.(job)
   }
 
-  private async processFile(file: File, retryAttempts: number): Promise<ProcessedFile> {
+  private async processFile(
+    file: File,
+    retryAttempts: number
+  ): Promise<ProcessedFile> {
     let lastError: Error | null = null
-    
+
     for (let attempt = 0; attempt <= retryAttempts; attempt++) {
       try {
         // First, upload the file to Supabase Storage
         const fileName = `${Date.now()}-${file.name}`
         const filePath = `documents/${fileName}`
-        
-        const { data: uploadData, error: uploadError } = await this.supabase.storage
-          .from('user-documents')
-          .upload(filePath, file, {
-            contentType: file.type,
-            upsert: false
-          })
-        
+
+        const { data: uploadData, error: uploadError } =
+          await this.supabase.storage
+            .from('user-documents')
+            .upload(filePath, file, {
+              contentType: file.type,
+              upsert: false,
+            })
+
         if (uploadError) throw uploadError
-        
+
         // Get the public URL
-        const { data: { publicUrl } } = this.supabase.storage
-          .from('user-documents')
-          .getPublicUrl(filePath)
-        
+        const {
+          data: { publicUrl },
+        } = this.supabase.storage.from('user-documents').getPublicUrl(filePath)
+
         // Create a task for document processing
         const formData = new FormData()
         formData.append('file', file)
         formData.append('targetLang', 'en') // Default to English, should be configurable
         formData.append('serviceType', 'google_translate')
-        
+
         const response = await fetch('/api/documents/process', {
           method: 'POST',
           body: formData,
-          credentials: 'include'
+          credentials: 'include',
         })
-        
+
         if (!response.ok) {
           const error = await response.json()
           throw new Error(error.message || 'Document processing failed')
         }
-        
+
         const result = await response.json()
-        
+
         return {
           id: fileName,
           fileName: file.name,
@@ -171,26 +180,27 @@ class BatchProcessor {
             translatedUrl: result.translatedUrl || publicUrl,
             pageCount: result.pageCount,
             wordCount: result.wordCount,
-            creditsUsed: result.creditsUsed
-          }
+            creditsUsed: result.creditsUsed,
+          },
         }
-        
       } catch (error) {
         lastError = error as Error
-        
+
         if (attempt < retryAttempts) {
           // Wait before retrying (exponential backoff)
-          await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000))
+          await new Promise(resolve =>
+            setTimeout(resolve, Math.pow(2, attempt) * 1000)
+          )
         }
       }
     }
-    
+
     return {
       id: file.name,
       fileName: file.name,
       fileSize: file.size,
       status: 'error',
-      error: lastError?.message || 'Unknown error'
+      error: lastError?.message || 'Unknown error',
     }
   }
 
