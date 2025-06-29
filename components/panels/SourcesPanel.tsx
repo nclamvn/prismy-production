@@ -117,72 +117,79 @@ export default function SourcesPanel({
             continue
           }
 
-          // Handle chunked upload for large files
-          if (isLargeFile && uploadMethod === 'chunked') {
-            console.log(
-              `🚀 Starting chunked upload for large file: ${file.name} (${formatFileSizeUtil(file.size)})`
-            )
+          // Critical: Prevent large files from going through standard API
+          if (isLargeFile) {
+            if (uploadMethod === 'chunked') {
+              console.log(
+                `🚀 Starting chunked upload for large file: ${file.name} (${formatFileSizeUtil(file.size)})`
+              )
 
-            const chunkedUploader = new ChunkedFileUploader(
-              {
-                chunkSize: 50 * 1024 * 1024, // 50MB chunks
-                maxConcurrentUploads: 3,
-                retryAttempts: 3,
-              },
-              // Progress callback
-              (progress: ChunkUploadProgress) => {
+              const chunkedUploader = new ChunkedFileUploader(
+                {
+                  chunkSize: 50 * 1024 * 1024, // 50MB chunks
+                  maxConcurrentUploads: 3,
+                  retryAttempts: 3,
+                },
+                // Progress callback
+                (progress: ChunkUploadProgress) => {
+                  setDocuments(prev =>
+                    prev.map(doc =>
+                      doc.id === newDoc.id
+                        ? {
+                            ...doc,
+                            chunkProgress: progress,
+                            status:
+                              progress.status === 'complete'
+                                ? 'ready'
+                                : 'chunked-uploading',
+                          }
+                        : doc
+                    )
+                  )
+                }
+              )
+
+              setDocuments(prev =>
+                prev.map(doc =>
+                  doc.id === newDoc.id
+                    ? { ...doc, status: 'chunked-processing' }
+                    : doc
+                )
+              )
+
+              const result = await chunkedUploader.uploadFile(file)
+
+              if (result.success) {
+                content = result.extractedText || ''
+
+                // Update document with final result
                 setDocuments(prev =>
                   prev.map(doc =>
                     doc.id === newDoc.id
                       ? {
                           ...doc,
-                          chunkProgress: progress,
-                          status:
-                            progress.status === 'complete'
-                              ? 'ready'
-                              : 'chunked-uploading',
+                          status: 'ready',
+                          content,
+                          metadata: {
+                            ...result.metadata,
+                            processingMethod: 'chunked',
+                            isEnterpriseScale: true,
+                          },
                         }
                       : doc
                   )
                 )
+              } else {
+                throw new Error(result.error || 'Chunked upload failed')
               }
-            )
-
-            setDocuments(prev =>
-              prev.map(doc =>
-                doc.id === newDoc.id
-                  ? { ...doc, status: 'chunked-processing' }
-                  : doc
-              )
-            )
-
-            const result = await chunkedUploader.uploadFile(file)
-
-            if (result.success) {
-              content = result.extractedText || ''
-
-              // Update document with final result
-              setDocuments(prev =>
-                prev.map(doc =>
-                  doc.id === newDoc.id
-                    ? {
-                        ...doc,
-                        status: 'ready',
-                        content,
-                        metadata: {
-                          ...result.metadata,
-                          processingMethod: 'chunked',
-                          isEnterpriseScale: true,
-                        },
-                      }
-                    : doc
-                )
-              )
             } else {
-              throw new Error(result.error || 'Chunked upload failed')
+              // Large file but not chunked - should not happen
+              throw new Error(
+                `Large file detected but chunked upload not available. File size: ${formatFileSizeUtil(file.size)}. Contact support for files >50MB.`
+              )
             }
           }
-          // Handle standard upload for smaller files
+          // Handle standard upload for smaller files ONLY
           else if (file.type === 'text/plain') {
             content = await file.text()
 

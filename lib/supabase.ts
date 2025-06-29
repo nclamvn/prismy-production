@@ -37,7 +37,7 @@ const supabaseClientConfig = {
 const connectionPool = new Map<string, any>()
 const MAX_POOL_SIZE = 10
 const CONNECTION_TIMEOUT = 300000 // 5 minutes for connection pool cleanup
-// Global singleton registry to prevent multiple GoTrueClient instances
+// Enhanced global singleton registry to prevent multiple GoTrueClient instances
 const globalClientRegistry = (() => {
   if (typeof window !== 'undefined') {
     // Use window object to ensure truly global singleton
@@ -46,11 +46,26 @@ const globalClientRegistry = (() => {
         browserClient: null,
         initialized: false,
         createdAt: Date.now(),
+        instanceCount: 0,
+        lastAccess: Date.now(),
+      }
+
+      // Debug monitoring for multiple instances
+      if (process.env.NODE_ENV === 'development') {
+        console.log(
+          '🔐 [Supabase Registry] Global singleton registry initialized'
+        )
       }
     }
     return (window as any).__supabase_client_registry__
   }
-  return { browserClient: null, initialized: false, createdAt: Date.now() }
+  return {
+    browserClient: null,
+    initialized: false,
+    createdAt: Date.now(),
+    instanceCount: 0,
+    lastAccess: Date.now(),
+  }
 })()
 
 export const createClientComponentClient = () => {
@@ -63,29 +78,44 @@ export const createClientComponentClient = () => {
     )
   }
 
+  // Update access tracking
+  globalClientRegistry.lastAccess = Date.now()
+  globalClientRegistry.instanceCount++
+
   // Client-side: use truly global singleton pattern
   // Only create a new client if we don't have one yet
   if (
     !globalClientRegistry.browserClient ||
     !globalClientRegistry.initialized
   ) {
-    // Development debugging
+    // Development debugging with instance tracking
     if (process.env.NODE_ENV === 'development') {
       if (globalClientRegistry.browserClient) {
         console.warn(
-          '🔄 [Supabase Singleton] Recreating client (should only happen once)'
+          `🔄 [Supabase Singleton] Recreating client (instance #${globalClientRegistry.instanceCount}) - this should only happen once`
         )
       } else {
-        console.log('🚀 [Supabase Singleton] Creating initial client instance')
+        console.log(
+          `🚀 [Supabase Singleton] Creating initial client instance #${globalClientRegistry.instanceCount}`
+        )
       }
     }
 
+    // Force cleanup any existing clients to prevent conflicts
     if (globalClientRegistry.browserClient) {
-      // Clean up old client safely
       try {
         globalClientRegistry.browserClient.removeAllChannels()
+        // Additional cleanup for GoTrueClient
+        if (globalClientRegistry.browserClient.auth) {
+          globalClientRegistry.browserClient.auth.stopAutoRefresh()
+        }
       } catch (error) {
-        // Silent cleanup failure
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(
+            '🧹 [Supabase Cleanup] Error during client cleanup:',
+            error
+          )
+        }
       }
     }
 
@@ -94,12 +124,13 @@ export const createClientComponentClient = () => {
       supabaseAnonKey,
       {
         ...supabaseClientConfig,
-        // Use default Supabase auth configuration for consistency
+        // Enhanced auth configuration to prevent conflicts
         auth: {
           ...supabaseClientConfig.auth,
           storage:
             typeof window !== 'undefined' ? window.localStorage : undefined,
-          // Use default Supabase storage key for better compatibility
+          storageKey: 'supabase.auth.token', // Use specific key to prevent conflicts
+          debug: process.env.NODE_ENV === 'development',
         },
       }
     )
@@ -108,7 +139,19 @@ export const createClientComponentClient = () => {
 
     // Development debugging
     if (process.env.NODE_ENV === 'development') {
-      console.log('✅ [Supabase Singleton] Client created successfully')
+      console.log(
+        `✅ [Supabase Singleton] Client #${globalClientRegistry.instanceCount} created successfully`
+      )
+    }
+  } else {
+    // Log repeated access in development
+    if (
+      process.env.NODE_ENV === 'development' &&
+      globalClientRegistry.instanceCount > 1
+    ) {
+      console.log(
+        `♻️ [Supabase Singleton] Reusing existing client (access #${globalClientRegistry.instanceCount})`
+      )
     }
   }
 

@@ -30,6 +30,7 @@ import AccessibilityEnhancer from '@/components/accessibility/AccessibilityEnhan
 // Phase 8: Advanced Features & Monitoring
 import { ToastProvider } from '@/components/ui/Toast'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
+import { GlobalErrorBoundary } from '@/components/ErrorBoundary/GlobalErrorBoundary'
 import { WebVitalsMonitor } from '@/components/monitoring/WebVitalsMonitor'
 
 // AI Agent System Integration
@@ -42,9 +43,10 @@ import { PipelineProvider } from '@/contexts/PipelineContext'
 // Workspace Intelligence System - Phase 2 Integration
 import { WorkspaceIntelligenceProvider } from '@/contexts/WorkspaceIntelligenceContext'
 
+// Enhanced font configuration with robust fallbacks
 const inter = Inter({
   subsets: ['latin'],
-  display: 'swap',
+  display: 'optional', // Use 'optional' instead of 'swap' for better performance
   variable: '--font-inter',
   weight: ['400', '500', '600', '700'],
   fallback: [
@@ -53,10 +55,13 @@ const inter = Inter({
     'BlinkMacSystemFont',
     'Segoe UI',
     'Roboto',
+    'Oxygen',
+    'Ubuntu',
+    'Cantarell',
     'sans-serif',
   ],
   adjustFontFallback: false, // Disable to prevent loading issues
-  preload: false, // Disable preload to avoid CORS issues
+  preload: true, // Re-enable with proper error handling
 })
 
 export const metadata: Metadata = {
@@ -264,7 +269,36 @@ export default function RootLayout({
         />
         <link rel="preconnect" href="https://api.prismy.in" />
 
-        {/* Font optimization - let Next.js handle font preloading automatically */}
+        {/* Font optimization with error handling */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // Font loading error handler
+              document.addEventListener('DOMContentLoaded', function() {
+                const fontErrors = [];
+                const originalError = window.onerror;
+                
+                window.onerror = function(msg, url, line, col, error) {
+                  if (msg && msg.toString().includes('font')) {
+                    fontErrors.push({msg, url, line, col});
+                    console.warn('Font loading error handled:', msg);
+                    return true; // Prevent error from being logged
+                  }
+                  if (originalError) {
+                    return originalError(msg, url, line, col, error);
+                  }
+                };
+                
+                // Force fallback fonts if Inter fails to load
+                setTimeout(function() {
+                  if (fontErrors.length > 0) {
+                    document.documentElement.style.setProperty('--font-inter', 'system-ui, -apple-system, sans-serif');
+                  }
+                }, 3000);
+              });
+            `,
+          }}
+        />
 
         {/* DNS Prefetch */}
         <link rel="dns-prefetch" href="//prismy.in" />
@@ -314,56 +348,60 @@ export default function RootLayout({
         }}
       >
         <CriticalCSS>
-          <ErrorBoundary>
-            <ThemeProvider defaultTheme="system">
-              <AccessibilityProvider>
-                <AccessibilityEnhancer
-                  enableAnnouncements={true}
-                  enableKeyboardNavigation={true}
-                  enableFocusManagement={true}
-                  enableReducedMotion={true}
-                >
-                  <ToastProvider>
-                    <LoadingProvider>
-                      <SkeletonProvider
-                        loading={false}
-                        skeleton={
-                          <div className="min-h-screen bg-gray-50 animate-pulse" />
-                        }
-                      >
-                        <SSRSafeLanguageProvider
-                          defaultLanguage="en"
-                          ssrLanguage="en"
+          <GlobalErrorBoundary>
+            <ErrorBoundary>
+              <ThemeProvider defaultTheme="system">
+                <AccessibilityProvider>
+                  <AccessibilityEnhancer
+                    enableAnnouncements={true}
+                    enableKeyboardNavigation={true}
+                    enableFocusManagement={true}
+                    enableReducedMotion={true}
+                  >
+                    <ToastProvider>
+                      <LoadingProvider>
+                        <SkeletonProvider
+                          loading={false}
+                          skeleton={
+                            <div className="min-h-screen bg-gray-50 animate-pulse" />
+                          }
                         >
-                          <AuthProvider>
-                            <UnifiedAuthProvider>
-                              <AgentProvider>
-                                <WorkspaceIntelligenceProvider>
-                                  <PipelineProvider>
-                                    <GlobalLoadingIndicator />
-                                    <AuthErrorHandler />
-                                    <AnalyticsInitializer />
-                                    <WebVitalsMonitor
-                                      debug={
-                                        process.env.NODE_ENV === 'development'
-                                      }
-                                    />
-                                    {/* Conditional Navbar - only on public pages */}
-                                    <ConditionalNavbar />
-                                    <PageTransition>{children}</PageTransition>
-                                  </PipelineProvider>
-                                </WorkspaceIntelligenceProvider>
-                              </AgentProvider>
-                            </UnifiedAuthProvider>
-                          </AuthProvider>
-                        </SSRSafeLanguageProvider>
-                      </SkeletonProvider>
-                    </LoadingProvider>
-                  </ToastProvider>
-                </AccessibilityEnhancer>
-              </AccessibilityProvider>
-            </ThemeProvider>
-          </ErrorBoundary>
+                          <SSRSafeLanguageProvider
+                            defaultLanguage="en"
+                            ssrLanguage="en"
+                          >
+                            <AuthProvider>
+                              <UnifiedAuthProvider>
+                                <AgentProvider>
+                                  <WorkspaceIntelligenceProvider>
+                                    <PipelineProvider>
+                                      <GlobalLoadingIndicator />
+                                      <AuthErrorHandler />
+                                      <AnalyticsInitializer />
+                                      <WebVitalsMonitor
+                                        debug={
+                                          process.env.NODE_ENV === 'development'
+                                        }
+                                      />
+                                      {/* Conditional Navbar - only on public pages */}
+                                      <ConditionalNavbar />
+                                      <PageTransition>
+                                        {children}
+                                      </PageTransition>
+                                    </PipelineProvider>
+                                  </WorkspaceIntelligenceProvider>
+                                </AgentProvider>
+                              </UnifiedAuthProvider>
+                            </AuthProvider>
+                          </SSRSafeLanguageProvider>
+                        </SkeletonProvider>
+                      </LoadingProvider>
+                    </ToastProvider>
+                  </AccessibilityEnhancer>
+                </AccessibilityProvider>
+              </ThemeProvider>
+            </ErrorBoundary>
+          </GlobalErrorBoundary>
         </CriticalCSS>
         <ServiceWorkerRegistration />
       </body>
