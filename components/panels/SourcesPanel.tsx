@@ -71,6 +71,15 @@ export default function SourcesPanel({
         const uploadMethod = getUploadMethod(file)
         const isLargeFile = shouldUseChunkedUpload(file)
 
+        console.log(`📁 File upload analysis:`, {
+          name: file.name,
+          size: file.size,
+          sizeMB: (file.size / (1024 * 1024)).toFixed(2),
+          uploadMethod,
+          isLargeFile,
+          shouldUseChunked: file.size > 50 * 1024 * 1024,
+        })
+
         const newDoc: Document = {
           id: `doc_${Date.now()}_${i}`,
           name: file.name,

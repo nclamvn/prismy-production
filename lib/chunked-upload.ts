@@ -321,8 +321,8 @@ class Semaphore {
 
 // Utility functions for file size detection and routing
 export const shouldUseChunkedUpload = (file: File): boolean => {
-  const largeFleLimit = 50 * 1024 * 1024 // 50MB
-  return file.size > largeFleLimit
+  const largeFileLimit = 50 * 1024 * 1024 // 50MB
+  return file.size > largeFileLimit
 }
 
 export const getUploadMethod = (

@@ -55,8 +55,8 @@ const inter = Inter({
     'Roboto',
     'sans-serif',
   ],
-  adjustFontFallback: true, // Better fallback handling
-  preload: true,
+  adjustFontFallback: false, // Disable to prevent loading issues
+  preload: false, // Disable preload to avoid CORS issues
 })
 
 export const metadata: Metadata = {
