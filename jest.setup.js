@@ -1,6 +1,31 @@
 import '@testing-library/jest-dom'
+import 'jest-axe/extend-expect'
 
 // Mock Next.js router
+jest.mock('next/router', () => ({
+  useRouter() {
+    return {
+      route: '/',
+      pathname: '/',
+      query: {},
+      asPath: '/',
+      push: jest.fn(),
+      pop: jest.fn(),
+      reload: jest.fn(),
+      back: jest.fn(),
+      prefetch: jest.fn().mockResolvedValue(undefined),
+      beforePopState: jest.fn(),
+      events: {
+        on: jest.fn(),
+        off: jest.fn(),
+        emit: jest.fn(),
+      },
+      isFallback: false,
+    }
+  },
+}))
+
+// Mock Next.js navigation
 jest.mock('next/navigation', () => ({
   useRouter() {
     return {
@@ -12,125 +37,56 @@ jest.mock('next/navigation', () => ({
       refresh: jest.fn(),
     }
   },
-  usePathname() {
-    return ''
-  },
   useSearchParams() {
     return new URLSearchParams()
   },
-}))
-
-// Mock Next.js headers
-jest.mock('next/headers', () => ({
-  cookies: jest.fn(() => ({
-    get: jest.fn(),
-    set: jest.fn(),
-    delete: jest.fn(),
-    has: jest.fn(),
-    getAll: jest.fn(() => []),
-  })),
-  headers: jest.fn(() => ({
-    get: jest.fn(),
-    has: jest.fn(),
-    forEach: jest.fn(),
-    entries: jest.fn(),
-    keys: jest.fn(),
-    values: jest.fn(),
-  })),
-}))
-
-// Mock Next.js server components
-jest.mock('next/server', () => ({
-  NextRequest: jest.fn().mockImplementation((url, init) => ({
-    url: url || 'http://localhost:3000',
-    method: init?.method || 'GET',
-    headers: new Map(),
-    json: jest.fn().mockResolvedValue({}),
-    formData: jest.fn().mockResolvedValue(new FormData()),
-    text: jest.fn().mockResolvedValue(''),
-  })),
-  NextResponse: {
-    json: jest.fn((data, init) => ({
-      json: () => Promise.resolve(data),
-      status: init?.status || 200,
-      headers: new Map(),
-    })),
-    redirect: jest.fn(),
-    rewrite: jest.fn(),
-    next: jest.fn(),
+  usePathname() {
+    return '/'
   },
 }))
 
-// Mock global Request/Response
-global.Request = class MockRequest {
-  constructor(url, options = {}) {
-    this.url = url
-    this.method = options.method || 'GET'
-    this.headers = new Map()
-    this.body = options.body
-  }
-  
-  async json() { return {} }
-  async text() { return '' }
-  async formData() { return new FormData() }
-}
+// Mock Next.js Image component
+jest.mock('next/image', () => ({
+  __esModule: true,
+  default: ({ src, alt, ...props }) => {
+    // eslint-disable-next-line jsx-a11y/alt-text, @next/next/no-img-element
+    return <img src={src} alt={alt} {...props} />
+  },
+}))
 
-global.Response = class MockResponse {
-  constructor(body, options = {}) {
-    this.body = body
-    this.status = options.status || 200
-    this.headers = new Map()
-  }
-  
-  async json() { return this.body }
-  async text() { return this.body }
-}
-
-// Mock environment variables
-process.env.NODE_ENV = 'test'
-process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test-project.supabase.co'
-process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key'
-process.env.SUPABASE_SERVICE_ROLE_KEY = 'test-service-role-key'
-process.env.UPSTASH_REDIS_REST_URL = 'https://test-redis.upstash.io'
-process.env.UPSTASH_REDIS_REST_TOKEN = 'test-redis-token'
-process.env.CSRF_SECRET = 'test-csrf-secret'
-process.env.STRIPE_SECRET_KEY = 'sk_test_test'
-process.env.STRIPE_WEBHOOK_SECRET = 'whsec_test'
-process.env.VNPAY_HASH_SECRET = 'test-vnpay-secret'
-process.env.MOMO_SECRET_KEY = 'test-momo-secret'
-
-// AI Provider environment variables
-process.env.OPENAI_API_KEY = 'sk-test-openai-key'
-process.env.ANTHROPIC_API_KEY = 'sk-ant-test-anthropic-key'
-process.env.COHERE_API_KEY = 'test-cohere-key'
-
-// Mock fetch globally
-global.fetch = jest.fn()
-
-// Mock crypto for Node.js environment
-const { webcrypto } = require('crypto')
-if (!global.crypto) {
-  global.crypto = webcrypto
-}
+// Mock Next.js Link component
+jest.mock('next/link', () => ({
+  __esModule: true,
+  default: ({ children, href, ...props }) => {
+    return (
+      <a href={href} {...props}>
+        {children}
+      </a>
+    )
+  },
+}))
 
 // Mock IntersectionObserver
-global.IntersectionObserver = jest.fn(() => ({
+global.IntersectionObserver = jest.fn().mockImplementation(_callback => ({
   observe: jest.fn(),
-  disconnect: jest.fn(),
   unobserve: jest.fn(),
+  disconnect: jest.fn(),
+  root: null,
+  rootMargin: '',
+  thresholds: [],
 }))
 
 // Mock ResizeObserver
-global.ResizeObserver = jest.fn(() => ({
+global.ResizeObserver = jest.fn().mockImplementation(_callback => ({
   observe: jest.fn(),
-  disconnect: jest.fn(),
   unobserve: jest.fn(),
+  disconnect: jest.fn(),
 }))
 
-// Mock window.matchMedia
+// Mock matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: jest.fn().mockImplementation((query) => ({
+  value: jest.fn().mockImplementation(query => ({
     matches: false,
     media: query,
     onchange: null,
@@ -142,156 +98,221 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 })
 
-// Mock clipboard API
-Object.defineProperty(window.navigator, 'clipboard', {
-  value: {
-    writeText: jest.fn().mockResolvedValue(undefined),
-    readText: jest.fn().mockResolvedValue(''),
-  },
+// Mock localStorage
+const localStorageMock = {
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
+  clear: jest.fn(),
+}
+Object.defineProperty(window, 'localStorage', {
+  value: localStorageMock,
+})
+
+// Mock sessionStorage
+const sessionStorageMock = {
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
+  clear: jest.fn(),
+}
+Object.defineProperty(window, 'sessionStorage', {
+  value: sessionStorageMock,
+})
+
+// Mock scrollTo
+Object.defineProperty(window, 'scrollTo', {
+  value: jest.fn(),
   writable: true,
 })
 
-// Mock problematic ESM modules
-jest.mock('uncrypto', () => ({
-  default: {
-    getRandomValues: jest.fn(() => new Uint8Array(16)),
-    randomUUID: jest.fn(() => 'test-uuid-1234'),
-    subtle: {
-      importKey: jest.fn(),
-      sign: jest.fn(),
-      verify: jest.fn(),
-    }
-  },
-  getRandomValues: jest.fn(() => new Uint8Array(16)),
-  randomUUID: jest.fn(() => 'test-uuid-1234'),
-}))
-
-// Mock OpenAI
-jest.mock('openai', () => {
-  const mockOpenAI = jest.fn().mockImplementation(() => ({
-    chat: {
-      completions: {
-        create: jest.fn().mockResolvedValue({
-          id: 'chatcmpl-test',
-          created: Date.now(),
-          model: 'gpt-4o-mini',
-          choices: [{ 
-            message: { content: 'Test response' },
-            finish_reason: 'stop'
-          }],
-          usage: { 
-            prompt_tokens: 10,
-            completion_tokens: 20,
-            total_tokens: 30
-          }
-        })
-      }
-    },
-    embeddings: {
-      create: jest.fn().mockResolvedValue({
-        model: 'text-embedding-3-small',
-        data: [{ embedding: Array(384).fill(0.1) }],
-        usage: { total_tokens: 50 }
-      })
-    }
-  }))
-  
-  return {
-    __esModule: true,
-    default: mockOpenAI,
-    OpenAI: mockOpenAI
-  }
+// Mock document.elementFromPoint
+Object.defineProperty(document, 'elementFromPoint', {
+  value: jest.fn(),
+  writable: true,
 })
 
-// Mock Anthropic
-jest.mock('@anthropic-ai/sdk', () => {
-  const mockAnthropic = jest.fn().mockImplementation(() => ({
-    messages: {
-      create: jest.fn().mockResolvedValue({
-        id: 'msg_test',
-        type: 'message',
-        role: 'assistant',
-        content: [{ type: 'text', text: 'Test response' }],
-        model: 'claude-3-5-haiku-20241022',
-        stop_reason: 'end_turn',
-        stop_sequence: null,
-        usage: { input_tokens: 10, output_tokens: 20 }
-      })
-    }
-  }))
-  
-  return {
-    __esModule: true,
-    default: mockAnthropic,
-    Anthropic: mockAnthropic
-  }
+// Mock getComputedStyle
+Object.defineProperty(window, 'getComputedStyle', {
+  value: jest.fn().mockImplementation(() => ({
+    getPropertyValue: jest.fn(),
+    minHeight: '40px',
+    minWidth: '40px',
+  })),
 })
 
-// Mock Cohere
-jest.mock('cohere-ai', () => {
-  const mockCohere = jest.fn().mockImplementation(() => ({
-    generate: jest.fn().mockResolvedValue({
-      id: 'gen_test',
-      generations: [{ 
-        id: 'gen_test_1',
-        text: 'Test response',
-        finish_reason: 'COMPLETE'
-      }],
-      meta: {
-        api_version: { version: '1' },
-        billed_units: { input_tokens: 10, output_tokens: 20 }
-      }
-    }),
-    embed: jest.fn().mockResolvedValue({
-      id: 'embed_test',
-      embeddings: [Array(384).fill(0.1)],
-      meta: {
-        api_version: { version: '1' },
-        billed_units: { input_tokens: 50 }
-      }
-    })
-  }))
-  
-  return {
-    __esModule: true,
-    default: mockCohere,
-    CohereApi: mockCohere
-  }
+// Mock fetch globally
+global.fetch = jest.fn()
+
+// Mock console methods to reduce noise in tests
+const originalError = console.error
+const originalWarn = console.warn
+
+beforeAll(() => {
+  console.error = jest.fn()
+  console.warn = jest.fn()
 })
 
-// Mock AuthContext
-const mockAuthContext = {
-  user: {
-    id: 'test-user-id',
-    email: 'test@example.com',
-  },
-  session: null,
-  profile: {
-    id: 'test-user-id',
-    full_name: 'Test User',
-    tier: 'standard',
-    usage_count: 0,
-    usage_limit: 50,
-  },
-  loading: false,
-  signIn: jest.fn(),
-  signUp: jest.fn(),
-  signInWithGoogle: jest.fn(),
-  signInWithApple: jest.fn(),
-  signOut: jest.fn(),
-  updateProfile: jest.fn(),
-  refreshProfile: jest.fn(),
-}
-
-jest.mock('@/contexts/AuthContext', () => ({
-  useAuth: () => mockAuthContext,
-  AuthContext: {
-    Provider: ({ children, value }) => children,
-  },
-  AuthProvider: ({ children }) => children,
-}))
+afterAll(() => {
+  console.error = originalError
+  console.warn = originalWarn
+})
 
 // Clean up after each test
 afterEach(() => {
   jest.clearAllMocks()
+  localStorageMock.clear()
+  sessionStorageMock.clear()
+
+  // Clean up DOM
+  document.body.innerHTML = ''
+  document.documentElement.className = ''
+  document.body.className = ''
+
+  // Reset fetch mock
+  global.fetch.mockClear()
 })
+
+// Mock environment variables
+process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test.supabase.co'
+process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key'
+process.env.NODE_ENV = 'test'
+
+// Increase timeout for accessibility tests
+jest.setTimeout(30000)
+
+// Mock Supabase client
+jest.mock('@/lib/supabase', () => ({
+  supabase: {
+    auth: {
+      getUser: jest.fn(),
+      getSession: jest.fn(),
+      signIn: jest.fn(),
+      signOut: jest.fn(),
+      onAuthStateChange: jest.fn(),
+    },
+    from: jest.fn(() => ({
+      select: jest.fn().mockReturnThis(),
+      insert: jest.fn().mockReturnThis(),
+      update: jest.fn().mockReturnThis(),
+      delete: jest.fn().mockReturnThis(),
+      eq: jest.fn().mockReturnThis(),
+      single: jest.fn(),
+    })),
+  },
+}))
+
+// Mock Radix UI components to avoid complex setup
+jest.mock(
+  '@radix-ui/react-slot',
+  () => ({
+    Slot: ({ children, ...props }) => <div {...props}>{children}</div>,
+  }),
+  { virtual: true }
+)
+
+// Mock Lucide React icons
+jest.mock('lucide-react', () => ({
+  Mail: () => <svg data-testid="mail-icon" />,
+  Download: () => <svg data-testid="download-icon" />,
+  Trash2: () => <svg data-testid="trash-icon" />,
+  Plus: () => <svg data-testid="plus-icon" />,
+  ArrowRight: () => <svg data-testid="arrow-right-icon" />,
+  X: () => <svg data-testid="x-icon" />,
+  Menu: () => <svg data-testid="menu-icon" />,
+  Search: () => <svg data-testid="search-icon" />,
+  User: () => <svg data-testid="user-icon" />,
+  Settings: () => <svg data-testid="settings-icon" />,
+}))
+
+// Mock framer-motion to avoid animation issues in tests
+jest.mock('framer-motion', () => ({
+  motion: {
+    div: ({ children, ...props }) => <div {...props}>{children}</div>,
+    button: ({ children, ...props }) => <button {...props}>{children}</button>,
+    span: ({ children, ...props }) => <span {...props}>{children}</span>,
+    p: ({ children, ...props }) => <p {...props}>{children}</p>,
+    h1: ({ children, ...props }) => <h1 {...props}>{children}</h1>,
+    h2: ({ children, ...props }) => <h2 {...props}>{children}</h2>,
+    h3: ({ children, ...props }) => <h3 {...props}>{children}</h3>,
+    section: ({ children, ...props }) => (
+      <section {...props}>{children}</section>
+    ),
+    article: ({ children, ...props }) => (
+      <article {...props}>{children}</article>
+    ),
+    nav: ({ children, ...props }) => <nav {...props}>{children}</nav>,
+    header: ({ children, ...props }) => <header {...props}>{children}</header>,
+    footer: ({ children, ...props }) => <footer {...props}>{children}</footer>,
+  },
+  AnimatePresence: ({ children }) => <div>{children}</div>,
+  useAnimation: () => ({
+    start: jest.fn(),
+    stop: jest.fn(),
+    set: jest.fn(),
+  }),
+  useInView: () => true,
+}))
+
+// Add custom jest matchers for better accessibility testing
+expect.extend({
+  toHaveAccessibleName(received, expected) {
+    const accessibleName =
+      received.getAttribute('aria-label') ||
+      received.getAttribute('aria-labelledby') ||
+      received.textContent
+
+    const pass = accessibleName === expected
+
+    return {
+      message: () =>
+        pass
+          ? `Expected element not to have accessible name "${expected}"`
+          : `Expected element to have accessible name "${expected}", but got "${accessibleName}"`,
+      pass,
+    }
+  },
+
+  toBeAccessible(received) {
+    const hasAccessibleName =
+      received.getAttribute('aria-label') ||
+      received.getAttribute('aria-labelledby') ||
+      received.textContent?.trim()
+
+    const hasProperRole =
+      received.getAttribute('role') ||
+      ['button', 'link', 'input', 'textarea'].includes(
+        received.tagName.toLowerCase()
+      )
+
+    const pass = hasAccessibleName && hasProperRole
+
+    return {
+      message: () =>
+        pass
+          ? `Expected element not to be accessible`
+          : `Expected element to be accessible (have name and role)`,
+      pass,
+    }
+  },
+})
+
+// Mock CSS imports
+jest.mock('*/globals.css', () => ({}))
+jest.mock('*/design-tokens.css', () => ({}))
+jest.mock('*/components.css', () => ({}))
+jest.mock('*/utilities.css', () => ({}))
+
+// Suppress console warnings for tests
+const originalConsoleWarn = console.warn
+console.warn = (...args) => {
+  if (
+    typeof args[0] === 'string' &&
+    (args[0].includes('ReactDOM.render') ||
+      args[0].includes('findDOMNode') ||
+      args[0].includes('componentWillReceiveProps'))
+  ) {
+    return
+  }
+  originalConsoleWarn(...args)
+}

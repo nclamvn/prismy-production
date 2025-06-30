@@ -1,5 +1,9 @@
 {
-  "extends": ["next/core-web-vitals", "next/typescript"],
+  "extends": [
+    "next/core-web-vitals",
+    "next/typescript",
+    "plugin:storybook/recommended"
+  ],
   "plugins": ["@typescript-eslint"],
   "rules": {
     "react-hooks/exhaustive-deps": "warn",
@@ -7,12 +11,22 @@
     "react/no-unescaped-entities": "off",
     "@typescript-eslint/no-unused-vars": [
       "warn",
-      { "argsIgnorePattern": "^_" }
+      {
+        "argsIgnorePattern": "^_"
+      }
     ],
     "@typescript-eslint/no-explicit-any": "off",
     "prefer-const": "warn",
     "no-var": "error",
     "no-console": "off"
   },
-  "ignorePatterns": ["node_modules/", ".next/", "build/", "dist/"]
+  "ignorePatterns": ["node_modules/", ".next/", "build/", "dist/"],
+  "overrides": [
+    {
+      "files": ["jest.config.js", "jest.setup.js", "jest.polyfills.js"],
+      "rules": {
+        "@typescript-eslint/no-var-requires": "off"
+      }
+    }
+  ]
 }
