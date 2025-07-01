@@ -3,7 +3,7 @@
 // ===================================
 // PRISMY UNIFIED NEXT.JS CONFIGURATION
 // Consolidated from 7 config files
-// Phase 4.1: Production Deployment with Sentry
+// Phase 6.1: Production CSP Fix
 // ===================================
 
 // Import Sentry webpack plugin conditionally
@@ -37,16 +37,6 @@ const nextConfig = {
       'recharts',
     ],
 
-    // Additional optimizations for bundle size
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
-      },
-    },
-
     // CSS optimization (disabled due to missing 'critters' dependency)
     optimizeCss: false,
   },
@@ -78,18 +68,6 @@ const nextConfig = {
       skipDefaultConversion: true,
     },
   },
-
-  // ===== TURBOPACK CONFIGURATION =====
-  turbopack: {
-    rules: {
-      '*.svg': {
-        loaders: ['@svgr/webpack'],
-        as: '*.js',
-      },
-    },
-  },
-
-  // Note: compiler config is above
 
   // ===== IMAGES OPTIMIZATION =====
   images: {
@@ -153,7 +131,7 @@ const nextConfig = {
           },
         ],
       },
-      // Security headers for pages (excluding static files)
+      // Security headers for pages (excluding static files) - RELAXED CSP
       {
         source:
           '/((?!api|_next/static|_next/image|favicon.ico|robots.txt|manifest.json|sitemap.xml|sw.js|icons/|assets/).*)',
@@ -174,6 +152,11 @@ const nextConfig = {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=()',
           },
+          // Relaxed CSP for Next.js compatibility
+          {
+            key: 'Content-Security-Policy',
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self'; connect-src 'self' https://*.supabase.co https://*.supabase.com wss://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';"
+          }
         ],
       },
     ]
