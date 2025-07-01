@@ -1,5 +1,8 @@
 'use client'
 
+// Force dynamic rendering to avoid SSR issues with auth
+export const dynamic = 'force-dynamic'
+
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { FileDropZone } from '@/components/ui/FileDropZone'

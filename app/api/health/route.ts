@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
-import { getBrowserClient } from '@/lib/supabase-browser'
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
 
 export async function GET() {
   const startTime = Date.now()
@@ -10,6 +11,7 @@ export async function GET() {
     version: process.env.NEXT_PUBLIC_APP_VERSION || '2.0.0',
     environment: process.env.NODE_ENV || 'development',
     region: process.env.VERCEL_REGION || 'unknown',
+    requestId: Math.random().toString(36).substring(7),
     checks: {
       api: 'operational',
       database: 'unknown',
@@ -18,12 +20,31 @@ export async function GET() {
   }
 
   try {
-    // Check Supabase connection
+    // Check Supabase connection using server client
     if (process.env.NEXT_PUBLIC_SUPABASE_URL) {
-      const supabase = getBrowserClient()
-      const { error } = await supabase.auth.getSession()
-      health.checks.auth = error ? 'degraded' : 'operational'
-      health.checks.database = 'operational'
+      const cookieStore = cookies()
+      const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+          cookies: {
+            get(name: string) {
+              return cookieStore.get(name)?.value
+            },
+            set(name: string, value: string, options: any) {
+              cookieStore.set({ name, value, ...options })
+            },
+            remove(name: string, options: any) {
+              cookieStore.set({ name, value: '', ...options })
+            },
+          },
+        }
+      )
+      
+      // Simple database check
+      const { error } = await supabase.from('user_credits').select('count').limit(1)
+      health.checks.database = error ? 'degraded' : 'operational'
+      health.checks.auth = 'operational'
     }
   } catch (error) {
     health.checks.database = 'degraded'

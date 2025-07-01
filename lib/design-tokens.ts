@@ -20,11 +20,10 @@ export const designTokens = {
       900: '#171717', // text-primary
     },
 
-    // Brand accents (2 colors only)
-    indigo: {
-      500: '#4F46E5', // brand-primary
-      600: '#4338CA', // brand-hover
-      50: '#EEF2FF', // brand-light
+    // Brand accents (2 colors only - DOCTRINE SPEC)
+    accent: {
+      600: '#4E82FF', // brand-primary (doctrine spec)
+      50: '#E8F0FF', // brand-light (doctrine spec)
     },
 
     // Semantic colors
@@ -51,14 +50,12 @@ export const designTokens = {
     border: {
       default: '#E5E5E5', // gray.200
       muted: '#F5F5F5', // gray.100
-      focus: '#4F46E5', // indigo.500
+      focus: '#4E82FF', // accent.600
     },
 
-    accent: {
-      brand: '#4F46E5', // indigo.500
-      'brand-hover': '#4338CA', // indigo.600
-      'brand-light': '#EEF2FF', // indigo.50
-    },
+    // Updated semantic aliases to use doctrine colors
+    'accent-brand': '#4E82FF', // accent.600
+    'accent-brand-light': '#E8F0FF', // accent.50
   },
 
   // Spacing Scale - 8px base rhythm
@@ -99,18 +96,18 @@ export const designTokens = {
     full: '9999px',
   },
 
-  // Typography Scale - Inter + JetBrains Mono
+  // Typography Scale - DOCTRINE SPEC: Inter var, 300-700, letter-spacing -0.01em
   fontSize: {
-    xs: ['12px', { lineHeight: '16px' }],
-    sm: ['14px', { lineHeight: '20px' }],
-    base: ['16px', { lineHeight: '24px' }],
-    lg: ['18px', { lineHeight: '28px' }],
-    xl: ['20px', { lineHeight: '28px' }],
-    '2xl': ['24px', { lineHeight: '32px' }],
-    '3xl': ['30px', { lineHeight: '36px' }],
-    '4xl': ['36px', { lineHeight: '40px' }],
-    '5xl': ['48px', { lineHeight: '1' }],
-    '6xl': ['60px', { lineHeight: '1' }],
+    xs: ['12px', { lineHeight: '16px', letterSpacing: '-0.01em' }],
+    sm: ['14px', { lineHeight: '20px', letterSpacing: '-0.01em' }],
+    base: ['16px', { lineHeight: '24px', letterSpacing: '-0.01em' }], // body 16/24
+    lg: ['18px', { lineHeight: '28px', letterSpacing: '-0.01em' }],
+    xl: ['20px', { lineHeight: '28px', letterSpacing: '-0.01em' }],
+    '2xl': ['22px', { lineHeight: '28px', letterSpacing: '-0.01em' }], // h3 22/28
+    '3xl': ['28px', { lineHeight: '32px', letterSpacing: '-0.01em' }], // h2 28/32
+    '4xl': ['40px', { lineHeight: '44px', letterSpacing: '-0.01em' }], // h1 40/44
+    '5xl': ['48px', { lineHeight: '1', letterSpacing: '-0.01em' }],
+    '6xl': ['60px', { lineHeight: '1', letterSpacing: '-0.01em' }],
   },
 
   fontFamily: {
@@ -119,10 +116,11 @@ export const designTokens = {
   },
 
   fontWeight: {
+    light: '300',    // doctrine: 300-700 range
     normal: '400',
     medium: '500',
     semibold: '600',
-    bold: '700',
+    bold: '700',     // doctrine: max 700
   },
 
   // Elevation - Subtle shadows for depth

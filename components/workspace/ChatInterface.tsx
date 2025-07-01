@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { Bot, Send } from 'lucide-react'
 
 interface ChatMessage {
   id: string
@@ -42,7 +43,7 @@ export function ChatInterface({
     if (documentName && messages.length === 0) {
       const welcomeMessage: ChatMessage = {
         id: 'welcome',
-        content: `👋 Hi! I'm your AI assistant. I can help you understand, analyze, and work with your document "${documentName}". What would you like to know?`,
+        content: `Hi! I'm your AI assistant. I can help you understand, analyze, and work with your document "${documentName}". What would you like to know?`,
         role: 'assistant',
         timestamp: new Date(),
         documentContext: documentName
@@ -119,7 +120,7 @@ export function ChatInterface({
       <div className="flex-shrink-0 p-4 border-b border-border-default bg-surface">
         <div className="flex items-center space-x-3">
           <div className="w-8 h-8 bg-accent-brand rounded-full flex items-center justify-center">
-            <span className="text-white text-sm">🤖</span>
+            <Bot size={16} className="text-white" />
           </div>
           <div>
             <div className="font-semibold text-primary">AI Assistant</div>

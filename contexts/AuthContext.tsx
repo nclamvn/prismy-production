@@ -295,6 +295,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  // Helper functions for new typed methods
+  const login = async (credentials: LoginRequest) => {
+    return await signIn(credentials.email, credentials.password)
+  }
+
+  const register = async (data: RegisterRequest) => {
+    return await signUp(data.email, data.password, `${data.firstName} ${data.lastName}`, data.language)
+  }
+
+  // Computed state values
+  const isAuthenticated = !!user && !!session
+  const error: AuthError | null = null // Implement error state as needed
+  const state: AuthState = {
+    user: user as any, // Cast to match type definition
+    isAuthenticated,
+    isLoading: loading,
+    isInitialized: sessionRestored,
+    error,
+    session: session as any, // Cast to match type definition
+    tokens: null // Implement tokens as needed
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -310,6 +332,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         signOut,
         updateProfile,
         refreshProfile,
+        login,
+        register,
+        state,
+        isAuthenticated,
+        error,
       }}
     >
       {children}

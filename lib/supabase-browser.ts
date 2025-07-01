@@ -199,3 +199,6 @@ export const getBrowserClient = (): SupabaseClient => {
 
 // Export default instance getter
 export default getBrowserClient
+
+// Simple alias for auth components
+export const createClient = getBrowserClient

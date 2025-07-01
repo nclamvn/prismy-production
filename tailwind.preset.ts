@@ -27,13 +27,21 @@ const prismyPreset: Partial<Config> = {
         'border-muted': designTokens.color.border.muted,
         'border-focus': designTokens.color.border.focus,
 
-        'accent-brand': designTokens.color.accent.brand,
-        'accent-brand-hover': designTokens.color.accent['brand-hover'],
-        'accent-brand-light': designTokens.color.accent['brand-light'],
+        'accent-brand': designTokens.color['accent-brand'],
+        'accent-brand-light': designTokens.color['accent-brand-light'],
 
-        // Original color scales
+        // DOCTRINE: Only 8 grays + 2 accents
         gray: designTokens.color.gray,
-        indigo: designTokens.color.indigo,
+        accent: designTokens.color.accent,
+
+        // Status colors (doctrine: green-500 on green-50, yellow-600 on transparent)
+        green: {
+          50: '#F0FDF4',
+          500: '#22C55E',
+        },
+        yellow: {
+          600: '#D97706',
+        },
 
         // Standard colors
         white: designTokens.color.white,

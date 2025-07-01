@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { MarketingLayout } from '@/components/layouts/MarketingLayout'
 import { Button } from '@/components/ui/Button'
+import { Rocket, Globe, Zap, Shield, Bot, BarChart3, Plug, Star } from 'lucide-react'
 import dynamic from 'next/dynamic'
 
 const FileDropZone = dynamic(() => import('@/components/ui/FileDropZone').then(mod => mod.FileDropZone), {
@@ -16,36 +17,26 @@ const FileDropZone = dynamic(() => import('@/components/ui/FileDropZone').then(m
     </div>
   )
 })
-import { AuthModal } from '@/components/auth/AuthModal'
 import { useRouter } from 'next/navigation'
 
 export default function HomePage() {
-  const [showAuthModal, setShowAuthModal] = useState(false)
-  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signup')
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const router = useRouter()
 
   const handleGetStarted = () => {
-    setAuthMode('signup')
-    setShowAuthModal(true)
+    router.push('/login?next=/app')
   }
 
   const handleSignIn = () => {
-    setAuthMode('signin')
-    setShowAuthModal(true)
+    router.push('/login')
   }
 
   const handleFilesSelected = (files: File[]) => {
     setSelectedFiles(files)
-    // Show auth modal to save work
-    setAuthMode('signup')
-    setShowAuthModal(true)
+    // Redirect to login to save work
+    router.push('/login?next=/app')
   }
 
-  const handleAuthSuccess = () => {
-    setShowAuthModal(false)
-    router.push('/workspace')
-  }
 
   return (
     <MarketingLayout>
@@ -65,7 +56,7 @@ export default function HomePage() {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" onClick={handleGetStarted}>
-                Start Free Trial
+                Workspace
               </Button>
               <Button size="lg" variant="outline" onClick={handleSignIn}>
                 Sign In
@@ -99,7 +90,7 @@ export default function HomePage() {
               maxSize={10 * 1024 * 1024}
             >
               <div className="space-y-4">
-                <div className="text-5xl">🚀</div>
+                <Rocket size={48} className="text-accent-brand mx-auto" />
                 <div>
                   <h3 className="text-xl font-semibold text-primary mb-2">
                     Drop Your Document Here
@@ -136,32 +127,32 @@ export default function HomePage() {
 
           <div className="grid md:grid-cols-3 gap-8">
             <FeatureCard
-              icon="🌍"
+              icon={<Globe size={24} className="text-accent-brand" />}
               title="50+ Languages"
               description="Translate between major world languages with AI-powered accuracy"
             />
             <FeatureCard
-              icon="⚡"
+              icon={<Zap size={24} className="text-accent-brand" />}
               title="Lightning Fast"
               description="Process documents in seconds, not hours. Built for speed at scale"
             />
             <FeatureCard
-              icon="🔒"
+              icon={<Shield size={24} className="text-accent-brand" />}
               title="Enterprise Security"
               description="Bank-level encryption and SOC 2 compliance for your sensitive data"
             />
             <FeatureCard
-              icon="🤖"
+              icon={<Bot size={24} className="text-accent-brand" />}
               title="AI Chat Assistant"
               description="Ask questions about your documents in any language"
             />
             <FeatureCard
-              icon="📊"
+              icon={<BarChart3 size={24} className="text-accent-brand" />}
               title="Batch Processing"
               description="Upload and translate multiple documents simultaneously"
             />
             <FeatureCard
-              icon="🔌"
+              icon={<Plug size={24} className="text-accent-brand" />}
               title="API Access"
               description="Integrate translation capabilities into your existing workflow"
             />
@@ -213,7 +204,7 @@ export default function HomePage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" onClick={handleGetStarted}>
-                Start Your Free Trial
+                Workspace
               </Button>
               <Button size="lg" variant="outline" onClick={() => router.push('/demo')}>
                 View Live Demo
@@ -223,19 +214,12 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Auth Modal */}
-      <AuthModal
-        isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-        onSuccess={handleAuthSuccess}
-        mode={authMode}
-      />
     </MarketingLayout>
   )
 }
 
 interface FeatureCardProps {
-  icon: string
+  icon: React.ReactNode
   title: string
   description: string
 }
@@ -243,7 +227,9 @@ interface FeatureCardProps {
 function FeatureCard({ icon, title, description }: FeatureCardProps) {
   return (
     <div className="bg-surface border border-border-default rounded-lg p-6 space-y-4 hover:elevation-md transition-all">
-      <div className="text-4xl">{icon}</div>
+      <div className="flex items-center justify-center w-12 h-12 bg-accent-brand-light rounded-lg">
+        {icon}
+      </div>
       <h3 className="text-xl font-semibold text-primary">{title}</h3>
       <p className="text-secondary">{description}</p>
     </div>
@@ -262,7 +248,7 @@ function TestimonialCard({ quote, author, role, rating }: TestimonialCardProps) 
     <div className="bg-surface border border-border-default rounded-lg p-6 space-y-4">
       <div className="flex space-x-1">
         {[...Array(rating)].map((_, i) => (
-          <span key={i} className="text-yellow-500">★</span>
+          <Star key={i} size={16} className="text-yellow-500 fill-current" />
         ))}
       </div>
       <p className="text-secondary italic">"{quote}"</p>

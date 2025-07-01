@@ -21,9 +21,16 @@ export function MarketingLayout({ children }: MarketingLayoutProps) {
   const [user, setUser] = useState<User | null>(null)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
+  const [mounted, setMounted] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return
+
     const supabase = getBrowserClient()
 
     // Get initial user
@@ -39,7 +46,7 @@ export function MarketingLayout({ children }: MarketingLayoutProps) {
     return () => {
       subscription.unsubscribe()
     }
-  }, [])
+  }, [mounted])
 
   const handleGetStarted = () => {
     if (user) {

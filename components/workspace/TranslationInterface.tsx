@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
+import { RefreshCw, Bot, Languages } from 'lucide-react'
 
 interface TranslationJob {
   id: string
@@ -16,14 +17,14 @@ interface TranslationJob {
 }
 
 const SUPPORTED_LANGUAGES = [
-  { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'vi', name: 'Vietnamese', flag: '🇻🇳' },
-  { code: 'zh', name: 'Chinese', flag: '🇨🇳' },
-  { code: 'ja', name: 'Japanese', flag: '🇯🇵' },
-  { code: 'ko', name: 'Korean', flag: '🇰🇷' },
-  { code: 'fr', name: 'French', flag: '🇫🇷' },
-  { code: 'de', name: 'German', flag: '🇩🇪' },
-  { code: 'es', name: 'Spanish', flag: '🇪🇸' }
+  { code: 'en', name: 'English' },
+  { code: 'vi', name: 'Vietnamese' },
+  { code: 'zh', name: 'Chinese' },
+  { code: 'ja', name: 'Japanese' },
+  { code: 'ko', name: 'Korean' },
+  { code: 'fr', name: 'French' },
+  { code: 'de', name: 'German' },
+  { code: 'es', name: 'Spanish' }
 ]
 
 interface TranslationInterfaceProps {
@@ -79,7 +80,7 @@ export function TranslationInterface({
       
       const mockTranslation = `[AI Translation from ${SUPPORTED_LANGUAGES.find(l => l.code === fromLanguage)?.name} to ${SUPPORTED_LANGUAGES.find(l => l.code === toLanguage)?.name}]\n\n` +
         sourceText.split('\n').map(line => 
-          line.trim() ? `✨ ${line}` : ''
+          line.trim() ? `• ${line}` : ''
         ).join('\n')
 
       const completedJob = {
@@ -126,7 +127,7 @@ export function TranslationInterface({
           >
             {SUPPORTED_LANGUAGES.map(lang => (
               <option key={lang.code} value={lang.code}>
-                {lang.flag} {lang.name}
+                {lang.name}
               </option>
             ))}
           </select>
@@ -139,7 +140,7 @@ export function TranslationInterface({
             onClick={handleSwapLanguages}
             disabled={isTranslating}
           >
-            🔄
+            <RefreshCw size={20} />
           </Button>
         </div>
 
@@ -154,7 +155,7 @@ export function TranslationInterface({
           >
             {SUPPORTED_LANGUAGES.map(lang => (
               <option key={lang.code} value={lang.code}>
-                {lang.flag} {lang.name}
+                {lang.name}
               </option>
             ))}
           </select>
@@ -192,7 +193,7 @@ export function TranslationInterface({
             {isTranslating && (
               <div className="absolute inset-0 bg-surface/50 flex items-center justify-center">
                 <div className="bg-surface border border-border-default rounded-lg p-6 text-center">
-                  <div className="text-2xl mb-2">🤖</div>
+                  <Bot size={32} className="text-accent-brand mx-auto mb-2" />
                   <div className="text-sm font-medium text-primary mb-2">
                     AI Translation in Progress
                   </div>

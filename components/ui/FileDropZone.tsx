@@ -2,6 +2,7 @@
 
 import React, { useCallback, useState } from 'react'
 import { cn } from '@/lib/utils'
+import { FileText } from 'lucide-react'
 
 interface FileDropZoneProps {
   onFilesSelected: (files: File[]) => void
@@ -121,7 +122,7 @@ export function FileDropZone({
 
         {children || (
           <div className="space-y-4">
-            <div className="text-4xl">📄</div>
+            <FileText size={48} className="text-accent-brand mx-auto" />
             <div>
               <h3 className="text-lg font-semibold text-primary mb-2">
                 Drop files here or click to browse
@@ -141,7 +142,7 @@ export function FileDropZone({
       </div>
 
       {error && (
-        <div className="mt-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md p-2">
+        <div className="mt-2 text-sm text-primary bg-bg-muted border border-border-default rounded-lg p-2">
           {error}
         </div>
       )}

@@ -4,14 +4,15 @@ import { NextResponse, type NextRequest } from 'next/server'
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Skip middleware for static files and API routes
+  // Skip middleware for static files, API routes, and auth callback
   if (
     pathname.startsWith('/_next/') ||
     pathname.startsWith('/api/') ||
     pathname === '/favicon.ico' ||
     pathname === '/robots.txt' ||
     pathname.startsWith('/icons/') ||
-    pathname.startsWith('/images/')
+    pathname.startsWith('/images/') ||
+    pathname.startsWith('/auth/callback')
   ) {
     return NextResponse.next()
   }
@@ -22,6 +23,13 @@ export async function middleware(request: NextRequest) {
   // Generate nonce for future use
   const nonce = crypto.randomUUID().replace(/-/g, '')
   response.headers.set('X-CSP-Nonce', nonce)
+
+  // Define protected routes that require authentication
+  const protectedRoutes = ['/app', '/workspace', '/dashboard']
+  const authRoutes = ['/login', '/auth']
+  
+  const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route))
+  const isAuthRoute = authRoutes.some(route => pathname.startsWith(route))
 
   // Handle auth flow with Supabase
   try {
@@ -43,9 +51,30 @@ export async function middleware(request: NextRequest) {
       }
     )
 
-    await supabase.auth.getUser()
+    const { data: { user }, error } = await supabase.auth.getUser()
+
+    // Redirect unauthenticated users from protected routes
+    if (isProtectedRoute && (!user || error)) {
+      const loginUrl = new URL('/login', request.url)
+      loginUrl.searchParams.set('next', pathname)
+      return NextResponse.redirect(loginUrl)
+    }
+
+    // Redirect authenticated users away from auth routes
+    if (isAuthRoute && user && !error) {
+      const nextUrl = request.nextUrl.searchParams.get('next') || '/app'
+      return NextResponse.redirect(new URL(nextUrl, request.url))
+    }
+
   } catch (error) {
     console.error('Auth error in middleware:', error)
+    
+    // If there's an auth error on a protected route, redirect to login
+    if (isProtectedRoute) {
+      const loginUrl = new URL('/login', request.url)
+      loginUrl.searchParams.set('next', pathname)
+      return NextResponse.redirect(loginUrl)
+    }
   }
 
   return response
@@ -53,6 +82,16 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico|robots.txt|icons|images).*)',
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - robots.txt (robots file)
+     * - icons (icon files)
+     * - images (image files)
+     */
+    '/((?!api/|_next/static|_next/image|favicon.ico|robots.txt|icons/|images/).*)',
   ],
 }

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { FileDropZone } from '@/components/ui/FileDropZone'
 import { Button } from '@/components/ui/Button'
+import { FileText, FileEdit, Clipboard, Folder } from 'lucide-react'
 
 interface UploadedDocument {
   id: string
@@ -101,7 +102,7 @@ export function DocumentUpload({ onDocumentUploaded }: DocumentUploadProps) {
           disabled={isProcessing}
         >
           <div className="space-y-4">
-            <div className="text-4xl">📄</div>
+            <FileText size={48} className="text-accent-brand mx-auto" />
             <div>
               <h3 className="text-lg font-semibold text-primary mb-2">
                 Drop documents here
@@ -128,9 +129,10 @@ export function DocumentUpload({ onDocumentUploaded }: DocumentUploadProps) {
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                    <div className="text-2xl">
-                      {doc.type.includes('pdf') ? '📄' : 
-                       doc.type.includes('doc') ? '📝' : '📋'}
+                    <div className="flex items-center justify-center w-8 h-8">
+                      {doc.type.includes('pdf') ? <FileText size={20} className="text-accent-brand" /> : 
+                       doc.type.includes('doc') ? <FileEdit size={20} className="text-accent-brand" /> : 
+                       <Clipboard size={20} className="text-accent-brand" />}
                     </div>
                     <div>
                       <div className="font-medium text-primary">{doc.name}</div>
@@ -159,7 +161,7 @@ export function DocumentUpload({ onDocumentUploaded }: DocumentUploadProps) {
       {/* Empty State */}
       {documents.length === 0 && (
         <div className="text-center py-12">
-          <div className="text-6xl mb-4">📁</div>
+          <Folder size={64} className="text-accent-brand mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-primary mb-2">
             No documents uploaded yet
           </h3>

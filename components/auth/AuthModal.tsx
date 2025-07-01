@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { getBrowserClient } from '@/lib/supabase-browser'
+import { X } from 'lucide-react'
 
 interface AuthModalProps {
   isOpen: boolean
@@ -77,18 +78,18 @@ export function AuthModal({ isOpen, onClose, onSuccess, mode = 'signin' }: AuthM
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-black/50"
+        className="absolute inset-0 bg-bg-overlay"
         onClick={onClose}
       />
 
       {/* Modal */}
-      <div className="relative bg-surface border border-border-default rounded-lg shadow-xl w-full max-w-md p-6 m-4">
+      <div className="relative bg-surface border border-border-default rounded-lg elevation-xl w-full max-w-md p-6 m-4">
         {/* Close button */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-muted hover:text-primary transition-colors"
         >
-          ✕
+          <X size={20} />
         </button>
 
         {/* Header */}

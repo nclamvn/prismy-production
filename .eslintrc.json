@@ -18,7 +18,18 @@
     "@typescript-eslint/no-explicit-any": "off",
     "prefer-const": "warn",
     "no-var": "error",
-    "no-console": "off"
+    "no-console": "off",
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "Literal[value=/(#[0-9a-fA-F]{6}|#[0-9a-fA-F]{3})/]",
+        "message": "Use design tokens instead of hardcoded hex colors"
+      },
+      {
+        "selector": "TemplateElement[value.raw=/(text-(red|blue|green|yellow|purple|pink|indigo)-[0-9]{2,3}|bg-(red|blue|green|yellow|purple|pink|indigo)-[0-9]{2,3}|border-(red|blue|green|yellow|purple|pink|indigo)-[0-9]{2,3})/]",
+        "message": "Use semantic design tokens instead of hardcoded color utilities"
+      }
+    ]
   },
   "ignorePatterns": ["node_modules/", ".next/", "build/", "dist/"],
   "overrides": [
