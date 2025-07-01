@@ -1,0 +1,172 @@
+# ===============================================
+# Alertmanager Configuration
+# Alert routing and notification management
+# ===============================================
+
+global:
+  # ResolveTimeout is the default value used by alertmanager if the alert does
+  # not include EndsAt, after this time passes it can declare the alert as resolved
+  resolve_timeout: 5m
+  
+  # SMTP configuration
+  smtp_smarthost: 'smtp.resend.com:587'
+  smtp_from: 'alerts@prismy.com'
+  smtp_auth_username: 'resend'
+  smtp_auth_password: '$RESEND_API_KEY'
+  
+  # Slack configuration
+  slack_api_url: '$SLACK_WEBHOOK_URL'
+
+# Templates for notifications
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'
+
+# The root route on which each incoming alert enters
+route:
+  # Group alerts by these labels
+  group_by: ['alertname', 'cluster', 'service']
+  
+  # When a new group of alerts is created by an incoming alert, wait at
+  # least 'group_wait' to send the initial notification
+  group_wait: 10s
+  
+  # When the first notification was sent, wait 'group_interval' to send a batch
+  # of new alerts that started firing for that group
+  group_interval: 10s
+  
+  # If an alert has successfully been sent, wait 'repeat_interval' to
+  # resend them
+  repeat_interval: 1h
+  
+  # Default receiver
+  receiver: 'team-platform'
+  
+  # Child routes
+  routes:
+    # Critical alerts go to PagerDuty
+    - match:
+        severity: critical
+      receiver: pagerduty-critical
+      group_wait: 0s
+      repeat_interval: 5m
+      continue: true
+      
+    # Database alerts go to DBA team
+    - match_re:
+        service: database|postgres|redis
+      receiver: team-database
+      group_by: ['alertname', 'service']
+      
+    # Security alerts
+    - match:
+        alertname: SecurityAlert
+      receiver: security-team
+      group_wait: 0s
+      
+    # Business metrics alerts
+    - match_re:
+        alertname: ^(HighChurnRate|LowConversionRate|HighRefundRate)
+      receiver: business-alerts
+      repeat_interval: 24h
+      
+    # Development environment alerts (less noisy)
+    - match:
+        environment: development
+      receiver: dev-alerts
+      repeat_interval: 24h
+      
+    # Staging environment alerts
+    - match:
+        environment: staging
+      receiver: staging-alerts
+      repeat_interval: 4h
+
+# Receivers
+receivers:
+  # Platform team (default)
+  - name: 'team-platform'
+    email_configs:
+      - to: 'platform@prismy.com'
+        headers:
+          Subject: 'Prismy Alert: {{ .GroupLabels.alertname }}'
+    slack_configs:
+      - channel: '#platform-alerts'
+        title: '{{ .GroupLabels.alertname }}'
+        text: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
+        send_resolved: true
+        
+  # PagerDuty for critical alerts
+  - name: 'pagerduty-critical'
+    pagerduty_configs:
+      - service_key: '$PAGERDUTY_SERVICE_KEY'
+        description: '{{ .GroupLabels.alertname }}: {{ .CommonAnnotations.summary }}'
+        details:
+          firing: '{{ template "pagerduty.default.firing" . }}'
+          resolved: '{{ template "pagerduty.default.resolved" . }}'
+          num_firing: '{{ .Alerts.Firing | len }}'
+          num_resolved: '{{ .Alerts.Resolved | len }}'
+        
+  # Database team
+  - name: 'team-database'
+    email_configs:
+      - to: 'database@prismy.com'
+    slack_configs:
+      - channel: '#database-alerts'
+        title: 'Database Alert: {{ .GroupLabels.alertname }}'
+        
+  # Security team
+  - name: 'security-team'
+    email_configs:
+      - to: 'security@prismy.com'
+        headers:
+          Priority: 'urgent'
+    slack_configs:
+      - channel: '#security-alerts'
+        title: '🚨 SECURITY ALERT: {{ .GroupLabels.alertname }}'
+        color: 'danger'
+        
+  # Business alerts
+  - name: 'business-alerts'
+    email_configs:
+      - to: 'business@prismy.com'
+        send_resolved: false
+    slack_configs:
+      - channel: '#business-metrics'
+        title: 'Business Metric Alert: {{ .GroupLabels.alertname }}'
+        send_resolved: false
+        
+  # Development alerts
+  - name: 'dev-alerts'
+    slack_configs:
+      - channel: '#dev-alerts'
+        title: '[DEV] {{ .GroupLabels.alertname }}'
+        send_resolved: false
+        
+  # Staging alerts
+  - name: 'staging-alerts'
+    slack_configs:
+      - channel: '#staging-alerts'
+        title: '[STAGING] {{ .GroupLabels.alertname }}'
+
+# Inhibition rules (prevent notifications for certain alerts if others are firing)
+inhibit_rules:
+  # Inhibit less severe alerts for the same alertname
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'cluster', 'service']
+    
+  # If a cluster is down, inhibit all other alerts for that cluster
+  - source_match:
+      alertname: 'ClusterDown'
+    target_match_re:
+      alertname: '.*'
+    equal: ['cluster']
+    
+  # If a service is down, inhibit high latency alerts
+  - source_match:
+      alertname: 'ServiceDown'
+    target_match:
+      alertname: 'HighLatency'
+    equal: ['service']

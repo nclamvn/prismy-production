@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClientComponentClient } from '@/lib/supabase'
+import { getBrowserClient } from '@/lib/supabase-browser'
 import { 
   Users, 
   CreditCard, 
@@ -58,7 +58,7 @@ export default function AdminDashboard() {
   const [inviteCode, setInviteCode] = useState('')
   const [creditAmount, setCreditAmount] = useState(15000)
 
-  const supabase = createClientComponentClient()
+  const supabase = getBrowserClient()
 
   useEffect(() => {
     fetchDashboardData()

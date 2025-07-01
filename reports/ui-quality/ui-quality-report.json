@@ -1,0 +1,71 @@
+{
+  "timestamp": "2025-06-30T10:20:44.827Z",
+  "summary": {
+    "total": 13,
+    "passed": 9,
+    "failed": 4,
+    "warnings": 0,
+    "score": 69.23076923076923
+  },
+  "metrics": {
+    "Vietnamese Diacritics Support": {
+      "passed": true,
+      "details": "Vietnamese font support: true, Components: 14"
+    },
+    "VND Currency Formatting": {
+      "passed": true,
+      "details": "VND utilities: true, Currency components: 21"
+    },
+    "Vietnamese Cultural Colors": {
+      "passed": false,
+      "details": "Vietnamese red: true, Gold: true, Tết colors: false"
+    },
+    "Bilingual Text Support": {
+      "passed": true,
+      "details": "Bilingual components: 12, Utils support: true"
+    },
+    "Color Token Usage": {
+      "passed": false,
+      "details": "8.5% (target: 80%)"
+    },
+    "Spacing Token Usage": {
+      "passed": false,
+      "details": "8.5% (target: 80%)"
+    },
+    "Typography Token Usage": {
+      "passed": false,
+      "details": "8.5% (target: 75%)"
+    },
+    "Performance Score": {
+      "passed": true,
+      "details": "Score: 96/100 (target: ≥85)"
+    },
+    "Vietnamese Content Performance": {
+      "passed": true,
+      "details": "Accessibility score: 99/100 (target: ≥90)"
+    },
+    "Accessibility Implementation": {
+      "passed": true,
+      "details": "26 components with accessibility features"
+    },
+    "Vietnamese Accessibility": {
+      "passed": true,
+      "details": "Accessibility tokens: true, Contrast: true, Readability: true"
+    },
+    "Storybook Build": {
+      "passed": true,
+      "details": "Storybook built successfully"
+    },
+    "Vietnamese Stories": {
+      "passed": true,
+      "details": "5 story files with Vietnamese content"
+    }
+  },
+  "vietnamese": {
+    "compliance": 85.71428571428571,
+    "marketReadiness": "Near Production Ready"
+  },
+  "recommendations": [
+    "Increase usage of design tokens for colors"
+  ]
+}

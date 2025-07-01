@@ -191,9 +191,10 @@ export default function DownloadInterface({
       const link = document.createElement('a')
       link.href = url
       link.download = filename
-      document.body.appendChild(link)
+      link.style.display = 'none'
+      
+      // Use a more React-safe approach with immediate cleanup
       link.click()
-      document.body.removeChild(link)
       window.URL.revokeObjectURL(url)
 
       setDownloadProgress({

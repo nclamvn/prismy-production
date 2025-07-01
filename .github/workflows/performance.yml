@@ -1,0 +1,170 @@
+name: Performance Monitoring
+
+on:
+  schedule:
+    - cron: '0 6 * * 1,3,5' # Mon, Wed, Fri at 6 AM UTC
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - 'app/**'
+      - 'components/**'
+      - 'lib/**'
+      - 'public/**'
+      - 'package*.json'
+
+jobs:
+  lighthouse-audit:
+    name: Lighthouse Performance Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Build application
+        run: npm run build
+        env:
+          NODE_ENV: production
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          
+      - name: Start application
+        run: |
+          npm start &
+          sleep 10
+          
+      - name: Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v11
+        with:
+          urls: |
+            http://localhost:3000
+            http://localhost:3000/pricing
+            http://localhost:3000/workspace
+          configPath: './lighthouserc.json'
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+          
+      - name: Upload performance results
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-report
+          path: '.lighthouseci'
+          retention-days: 30
+
+  bundle-analysis:
+    name: Bundle Size Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Analyze bundle size
+        run: |
+          npm run build
+          npx next-bundle-analyzer
+        env:
+          ANALYZE: true
+          
+      - name: Generate bundle report
+        run: |
+          echo "# Bundle Size Report" > bundle-report.md
+          echo "Generated on: $(date)" >> bundle-report.md
+          echo "" >> bundle-report.md
+          
+          # Get build directory size
+          BUILD_SIZE=$(du -sh .next | cut -f1)
+          echo "- Total build size: $BUILD_SIZE" >> bundle-report.md
+          
+          # Check for large files
+          echo "- Large files (>1MB):" >> bundle-report.md
+          find .next -size +1M -type f | while read file; do
+            size=$(du -sh "$file" | cut -f1)
+            echo "  - $file: $size" >> bundle-report.md
+          done
+          
+      - name: Upload bundle analysis
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundle-analysis
+          path: |
+            bundle-report.md
+            .next/analyze/
+          retention-days: 30
+
+  core-web-vitals:
+    name: Core Web Vitals Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Build and start application
+        run: |
+          npm run build
+          npm start &
+          sleep 15
+        env:
+          NODE_ENV: production
+          
+      - name: Run Core Web Vitals audit
+        run: |
+          npx web-vitals-cli http://localhost:3000 \
+            --output-format json \
+            --output-file cwv-results.json \
+            --repeat 3
+            
+      - name: Generate CWV report
+        run: |
+          node -e "
+            const fs = require('fs');
+            const results = JSON.parse(fs.readFileSync('cwv-results.json', 'utf8'));
+            
+            console.log('# Core Web Vitals Report');
+            console.log('Generated on:', new Date().toISOString());
+            console.log('');
+            
+            Object.entries(results).forEach(([metric, value]) => {
+              const status = value < 2500 ? '✅ Good' : 
+                           value < 4000 ? '⚠️ Needs Improvement' : '❌ Poor';
+              console.log(\`- \${metric}: \${value}ms \${status}\`);
+            });
+          " > cwv-report.md
+          
+      - name: Upload CWV results
+        uses: actions/upload-artifact@v4
+        with:
+          name: core-web-vitals
+          path: |
+            cwv-results.json
+            cwv-report.md
+          retention-days: 30

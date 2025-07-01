@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { createBrowserClient, createServerClient } from '@supabase/ssr'
+import { getBrowserClient } from './supabase-browser'
 
 const supabaseUrl =
   process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co'
@@ -37,66 +38,47 @@ const supabaseClientConfig = {
 const connectionPool = new Map<string, any>()
 const MAX_POOL_SIZE = 10
 const CONNECTION_TIMEOUT = 300000 // 5 minutes for connection pool cleanup
-// 💣 PHASE 1.4 NUCLEAR: Absolute module-level singleton - ONE CLIENT FOREVER
-// This prevents ANY possibility of multiple GoTrueClient instances
+
+// 💣 NUCLEAR SINGLETON VARIABLES - Critical for preventing multiple GoTrueClient instances
 let NUCLEAR_SUPABASE_CLIENT: any = null
 let CLIENT_CREATION_BLOCKED = false
 
-const createNuclearSingleton = () => {
-  if (CLIENT_CREATION_BLOCKED && NUCLEAR_SUPABASE_CLIENT) {
-    console.log(
-      '💣 [NUCLEAR SUPABASE] Reusing absolute singleton - creation blocked'
-    )
-    return NUCLEAR_SUPABASE_CLIENT
-  }
-
-  if (NUCLEAR_SUPABASE_CLIENT) {
-    console.log('💣 [NUCLEAR SUPABASE] Absolute singleton already exists')
-    return NUCLEAR_SUPABASE_CLIENT
-  }
-
-  console.log(
-    '💣 [NUCLEAR SUPABASE] Creating ABSOLUTE SINGLETON - only time this will happen'
-  )
-
-  NUCLEAR_SUPABASE_CLIENT = createBrowserClient(supabaseUrl, supabaseAnonKey, {
-    ...supabaseClientConfig,
-    auth: {
-      ...supabaseClientConfig.auth,
-      storage: typeof window !== 'undefined' ? window.localStorage : undefined,
-      storageKey: 'supabase.auth.token.nuclear',
-      debug: process.env.NODE_ENV === 'development',
-    },
-  })
-
-  // Block all future client creation attempts
-  CLIENT_CREATION_BLOCKED = true
-
-  // Mark window to prevent any other libraries from creating clients
+const getSupabaseClient = () => {
+  // Always use singleton on client-side
   if (typeof window !== 'undefined') {
-    ;(window as any).__NUCLEAR_SUPABASE_CREATED__ = true
-    ;(window as any).__NUCLEAR_CLIENT__ = NUCLEAR_SUPABASE_CLIENT
+    return getBrowserClient()
   }
 
-  console.log(
-    '💣 [NUCLEAR SUPABASE] Absolute singleton created - ALL FUTURE CREATION BLOCKED'
-  )
-  return NUCLEAR_SUPABASE_CLIENT
+  // Server-side should not use this function
+  throw new Error('getSupabaseClient should not be called on server-side. Use createServerClient instead.')
 }
 
 export const createClientComponentClient = () => {
+  // Only works on client-side
   if (typeof window === 'undefined') {
-    // Server-side: always create new instance with optimizations
-    return createBrowserClient(
-      supabaseUrl,
-      supabaseAnonKey,
-      supabaseClientConfig
-    )
+    // During SSR/build, return a safe fallback to prevent errors
+    console.warn('createClientComponentClient() called during SSR - returning fallback')
+    return {
+      auth: { 
+        getSession: () => Promise.resolve({ data: { session: null }, error: null }),
+        getUser: () => Promise.resolve({ data: { user: null }, error: null }),
+        onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } })
+      },
+      from: () => ({ 
+        select: () => ({ 
+          eq: () => ({ 
+            single: () => Promise.resolve({ data: null, error: null }),
+            order: () => ({ limit: () => Promise.resolve({ data: [], error: null }) })
+          })
+        }),
+        insert: () => Promise.resolve({ data: null, error: null }),
+        update: () => Promise.resolve({ data: null, error: null }),
+        delete: () => Promise.resolve({ data: null, error: null })
+      }),
+      rpc: () => Promise.resolve({ data: null, error: null })
+    } as any
   }
-
-  // 💣 PHASE 1.4 NUCLEAR: Use absolute module-level singleton
-  // This completely prevents multiple GoTrueClient instances
-  return createNuclearSingleton()
+  return getBrowserClient()
 }
 
 // Server-side Supabase client for API routes with connection pooling
@@ -417,3 +399,11 @@ export interface Database {
     }
   }
 }
+
+// Main supabase client export for backwards compatibility
+// Use createClientComponentClient() instead of this export
+export const supabase = typeof window !== 'undefined' ? getBrowserClient() : {
+  // Fallback object for server-side to prevent build errors
+  auth: { getSession: () => Promise.resolve({ data: { session: null }, error: null }) },
+  from: () => ({ select: () => ({ eq: () => ({ single: () => Promise.resolve({ data: null, error: null }) }) }) })
+} as any

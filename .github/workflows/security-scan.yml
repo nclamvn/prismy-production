@@ -1,0 +1,441 @@
+# ===============================================
+# Security Scanning Pipeline
+# Comprehensive security checks and monitoring
+# ===============================================
+
+name: Security Scan
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # Daily at 2 AM UTC
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '8'
+
+jobs:
+  # ===============================================
+  # Dependency Vulnerability Scan
+  # ===============================================
+  dependency-scan:
+    name: Dependency Vulnerabilities
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: NPM Audit
+        run: |
+          pnpm audit --audit-level high --json > npm-audit.json || true
+          cat npm-audit.json
+
+      - name: Snyk Security Scan
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high --json > snyk-report.json
+        continue-on-error: true
+
+      - name: Upload Snyk report
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: snyk-report.json
+
+  # ===============================================
+  # Code Security Analysis
+  # ===============================================
+  code-scan:
+    name: Code Security Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: javascript
+          queries: security-and-quality
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build application
+        run: pnpm build
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+
+      - name: Semgrep Security Scan
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >-
+            p/security-audit
+            p/secrets
+            p/owasp-top-ten
+            p/javascript
+            p/typescript
+            p/react
+            p/nextjs
+        env:
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+
+  # ===============================================
+  # Infrastructure Security Scan
+  # ===============================================
+  infrastructure-scan:
+    name: Infrastructure Security
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Terraform Security Scan
+        uses: aquasecurity/tfsec-action@v1.0.3
+        with:
+          working_directory: infrastructure/terraform
+          format: sarif
+          soft_fail: true
+
+      - name: Upload tfsec results
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: tfsec.sarif
+
+      - name: Checkov Infrastructure Scan
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: infrastructure/
+          framework: terraform
+          output_format: sarif
+          output_file_path: checkov.sarif
+          soft_fail: true
+
+      - name: Upload Checkov results
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: checkov.sarif
+
+  # ===============================================
+  # Container Security Scan
+  # ===============================================
+  container-scan:
+    name: Container Security
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          load: true
+          tags: prismy-security-scan:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Trivy Container Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: prismy-security-scan:latest
+          format: 'sarif'
+          output: 'trivy-container-results.sarif'
+
+      - name: Upload Trivy results
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-container-results.sarif'
+
+      - name: Docker Scout
+        uses: docker/scout-action@v1
+        if: always()
+        with:
+          command: cves
+          image: prismy-security-scan:latest
+          sarif-file: scout-results.sarif
+          summary: true
+
+      - name: Upload Scout results
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: scout-results.sarif
+
+  # ===============================================
+  # Secrets Detection
+  # ===============================================
+  secrets-scan:
+    name: Secrets Detection
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: TruffleHog Secrets Scan
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: main
+          head: HEAD
+          extra_args: --debug --only-verified
+
+      - name: GitLeaks Secrets Scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+
+  # ===============================================
+  # License Compliance
+  # ===============================================
+  license-scan:
+    name: License Compliance
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: License Check
+        run: |
+          npx license-checker --production --json > licenses.json
+          
+          # Check for forbidden licenses
+          FORBIDDEN_LICENSES=("GPL-2.0" "GPL-3.0" "AGPL-1.0" "AGPL-3.0" "CPAL-1.0" "EUPL-1.1" "EUPL-1.2")
+          
+          for license in "${FORBIDDEN_LICENSES[@]}"; do
+            if grep -q "$license" licenses.json; then
+              echo "❌ Forbidden license found: $license"
+              exit 1
+            fi
+          done
+          
+          echo "✅ All licenses are compliant"
+
+  # ===============================================
+  # Security Report Generation
+  # ===============================================
+  security-report:
+    name: Generate Security Report
+    runs-on: ubuntu-latest
+    needs: [dependency-scan, code-scan, infrastructure-scan, container-scan, secrets-scan, license-scan]
+    if: always()
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Generate Security Report
+        run: |
+          cat > security-report.md << 'EOF'
+          # Security Scan Report
+          
+          **Scan Date:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Repository:** ${{ github.repository }}
+          **Branch:** ${{ github.ref_name }}
+          **Commit:** ${{ github.sha }}
+          
+          ## Scan Results Summary
+          
+          | Scan Type | Status |
+          |-----------|---------|
+          | Dependency Vulnerabilities | ${{ needs.dependency-scan.result == 'success' && '✅ Pass' || '❌ Fail' }} |
+          | Code Security Analysis | ${{ needs.code-scan.result == 'success' && '✅ Pass' || '❌ Fail' }} |
+          | Infrastructure Security | ${{ needs.infrastructure-scan.result == 'success' && '✅ Pass' || '❌ Fail' }} |
+          | Container Security | ${{ needs.container-scan.result == 'success' && '✅ Pass' || '❌ Fail' }} |
+          | Secrets Detection | ${{ needs.secrets-scan.result == 'success' && '✅ Pass' || '❌ Fail' }} |
+          | License Compliance | ${{ needs.license-scan.result == 'success' && '✅ Pass' || '❌ Fail' }} |
+          
+          ## Recommendations
+          
+          - Review all failed scans and address identified vulnerabilities
+          - Update dependencies to latest secure versions
+          - Implement additional security controls as needed
+          - Schedule regular security reviews
+          
+          ## Next Steps
+          
+          1. Address critical and high severity findings immediately
+          2. Create issues for medium severity findings
+          3. Update security documentation
+          4. Schedule follow-up security review
+          
+          EOF
+
+      - name: Upload Security Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: security-report
+          path: security-report.md
+
+      - name: Create Security Issue
+        if: needs.dependency-scan.result == 'failure' || needs.code-scan.result == 'failure' || needs.infrastructure-scan.result == 'failure' || needs.container-scan.result == 'failure' || needs.secrets-scan.result == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('security-report.md', 'utf8');
+            
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🚨 Security Scan Failed - ${new Date().toISOString().split('T')[0]}`,
+              body: report,
+              labels: ['security', 'bug', 'high-priority']
+            });
+
+      - name: Send Slack Notification
+        if: always()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          channel: '#security'
+          fields: repo,message,commit,author,action,eventName,ref,workflow
+          text: |
+            Security scan completed for ${{ github.repository }}
+            Results: 
+            - Dependencies: ${{ needs.dependency-scan.result }}
+            - Code: ${{ needs.code-scan.result }}
+            - Infrastructure: ${{ needs.infrastructure-scan.result }}
+            - Container: ${{ needs.container-scan.result }}
+            - Secrets: ${{ needs.secrets-scan.result }}
+            - Licenses: ${{ needs.license-scan.result }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  # ===============================================
+  # Security Metrics Collection
+  # ===============================================
+  security-metrics:
+    name: Security Metrics
+    runs-on: ubuntu-latest
+    needs: [dependency-scan, code-scan, infrastructure-scan, container-scan, secrets-scan, license-scan]
+    if: always() && github.ref == 'refs/heads/main'
+    timeout-minutes: 5
+
+    steps:
+      - name: Collect Security Metrics
+        run: |
+          # Calculate security score
+          TOTAL_SCANS=6
+          PASSED_SCANS=0
+          
+          [[ "${{ needs.dependency-scan.result }}" == "success" ]] && ((PASSED_SCANS++))
+          [[ "${{ needs.code-scan.result }}" == "success" ]] && ((PASSED_SCANS++))
+          [[ "${{ needs.infrastructure-scan.result }}" == "success" ]] && ((PASSED_SCANS++))
+          [[ "${{ needs.container-scan.result }}" == "success" ]] && ((PASSED_SCANS++))
+          [[ "${{ needs.secrets-scan.result }}" == "success" ]] && ((PASSED_SCANS++))
+          [[ "${{ needs.license-scan.result }}" == "success" ]] && ((PASSED_SCANS++))
+          
+          SECURITY_SCORE=$((PASSED_SCANS * 100 / TOTAL_SCANS))
+          
+          echo "Security Score: ${SECURITY_SCORE}%"
+          echo "Passed Scans: ${PASSED_SCANS}/${TOTAL_SCANS}"
+
+      - name: Update Security Badge
+        run: |
+          # Create security badge
+          SECURITY_SCORE=$((PASSED_SCANS * 100 / TOTAL_SCANS))
+          
+          if [ $SECURITY_SCORE -ge 90 ]; then
+            COLOR="brightgreen"
+          elif [ $SECURITY_SCORE -ge 70 ]; then
+            COLOR="yellow"
+          else
+            COLOR="red"
+          fi
+          
+          curl -X GET "https://img.shields.io/badge/Security%20Score-${SECURITY_SCORE}%25-${COLOR}" > security-badge.svg
+
+      - name: Store Metrics
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Store security metrics for tracking over time
+            const metrics = {
+              timestamp: new Date().toISOString(),
+              security_score: process.env.SECURITY_SCORE,
+              passed_scans: process.env.PASSED_SCANS,
+              total_scans: process.env.TOTAL_SCANS,
+              commit: context.sha,
+              results: {
+                dependency_scan: '${{ needs.dependency-scan.result }}',
+                code_scan: '${{ needs.code-scan.result }}',
+                infrastructure_scan: '${{ needs.infrastructure-scan.result }}',
+                container_scan: '${{ needs.container-scan.result }}',
+                secrets_scan: '${{ needs.secrets-scan.result }}',
+                license_scan: '${{ needs.license-scan.result }}'
+              }
+            };
+            
+            console.log('Security Metrics:', JSON.stringify(metrics, null, 2));

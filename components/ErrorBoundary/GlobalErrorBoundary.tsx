@@ -41,26 +41,64 @@ export class GlobalErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    // Detect specific error types
+    const isDOMError = error.message.includes('removeChild') || 
+                      error.message.includes('Node') || 
+                      error.name === 'NotFoundError'
+    const isGoTrueError = error.message.includes('GoTrueClient') || 
+                         error.message.includes('Supabase')
+    const isPortalError = error.stack?.includes('createPortal') || 
+                         error.stack?.includes('Portal')
+
     // Enhanced error logging with context
     const errorDetails = {
       error: {
         name: error.name,
         message: error.message,
         stack: error.stack,
+        type: isDOMError ? 'DOM_MANIPULATION' : 
+              isGoTrueError ? 'SUPABASE_CLIENT' :
+              isPortalError ? 'REACT_PORTAL' : 'UNKNOWN'
       },
       errorInfo,
+      componentStack: errorInfo.componentStack,
       errorId: this.state.errorId,
       timestamp: new Date().toISOString(),
       userAgent:
         typeof window !== 'undefined' ? window.navigator.userAgent : 'server',
       url: typeof window !== 'undefined' ? window.location.href : 'server',
       retryCount: this.retryCount,
+      portalElements: typeof window !== 'undefined' ? 
+        document.querySelectorAll('#portal-root').length : 0,
+      bodyOverflow: typeof window !== 'undefined' ? 
+        document.body.style.overflow : 'unknown'
     }
 
-    // Log to console with enhanced details
-    console.group(`🚨 [Global Error Boundary] Error ${this.state.errorId}`)
+    // Enhanced console logging with Vietnamese analysis context
+    console.group(`🚨 [Global Error Boundary] ${errorDetails.error.type} Error ${this.state.errorId}`)
     console.error('Error:', error)
     console.error('Error Info:', errorInfo)
+    console.error('Component Stack:', errorInfo.componentStack)
+    
+    if (isDOMError) {
+      console.error('🔍 DOM Error Analysis:')
+      console.error('- Portal containers:', errorDetails.portalElements)
+      console.error('- Body overflow style:', errorDetails.bodyOverflow)
+      console.error('- Possible cause: Multiple React roots or portal conflicts')
+    }
+    
+    if (isGoTrueError) {
+      console.error('🔍 Supabase Error Analysis:')
+      console.error('- Possible cause: Multiple GoTrueClient instances')
+      console.error('- Check: Supabase singleton implementation')
+    }
+    
+    if (isPortalError) {
+      console.error('🔍 Portal Error Analysis:')
+      console.error('- Possible cause: Portal DOM conflicts')
+      console.error('- Check: Modal/overlay unmounting')
+    }
+    
     console.error('Full Context:', errorDetails)
     console.groupEnd()
 

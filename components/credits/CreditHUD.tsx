@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createClientComponentClient } from '@/lib/supabase'
+import { getBrowserClient } from '@/lib/supabase-browser'
 import { useAuth } from '@/contexts/AuthContext'
 import { Zap, AlertCircle } from 'lucide-react'
 import { useToast } from '@/components/ui/Toast'

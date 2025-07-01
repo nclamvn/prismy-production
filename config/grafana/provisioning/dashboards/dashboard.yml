@@ -1,0 +1,20 @@
+# ===============================================
+# Grafana Dashboard Provisioning Configuration
+# Automatically load dashboards from files
+# ===============================================
+
+apiVersion: 1
+
+providers:
+  # Main dashboard provider
+  - name: 'Prismy Dashboards'
+    orgId: 1
+    folder: 'Prismy'
+    folderUid: 'prismy'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/dashboards
+      foldersFromFilesStructure: true

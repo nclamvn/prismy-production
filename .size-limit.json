@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Main App Bundle",
+    "path": ".next/static/chunks/main-*.js",
+    "limit": "400 KB",
+    "gzip": true
+  },
+  {
+    "name": "Framework Bundle", 
+    "path": ".next/static/chunks/framework-*.js",
+    "limit": "300 KB",
+    "gzip": true
+  },
+  {
+    "name": "CSS Bundle",
+    "path": ".next/static/css/*.css",
+    "limit": "120 KB",
+    "gzip": true
+  },
+  {
+    "name": "Polyfills",
+    "path": ".next/static/chunks/polyfills-*.js",
+    "limit": "50 KB",
+    "gzip": true
+  }
+]

@@ -7,9 +7,11 @@
  */
 
 import React, { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { errorTracker } from '@/lib/error-tracking/mock-sentry'
 import { logger } from '@/lib/logger'
+import { getPortalRoot } from '@/components/ui/PortalRoot'
 
 interface ErrorReportDialogProps {
   isOpen: boolean
@@ -162,7 +164,7 @@ export default function ErrorReportDialog({
 
   if (!isOpen) return null
 
-  return (
+  return createPortal(
     <AnimatePresence>
       <div className="fixed inset-0 z-50 overflow-y-auto">
         <div className="flex min-h-full items-center justify-center p-4">
@@ -391,7 +393,8 @@ export default function ErrorReportDialog({
           </motion.div>
         </div>
       </div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    getPortalRoot()
   )
 }
 

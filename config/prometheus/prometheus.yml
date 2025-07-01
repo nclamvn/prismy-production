@@ -1,0 +1,280 @@
+# ===============================================
+# Prometheus Configuration for Prismy Monitoring
+# Comprehensive metrics collection and alerting
+# ===============================================
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'prismy-production'
+    environment: 'production'
+
+# Rule files
+rule_files:
+  - "alert_rules.yml"
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+# Scrape configurations
+scrape_configs:
+  # ===============================================
+  # Prometheus Self-Monitoring
+  # ===============================================
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 30s
+    metrics_path: /metrics
+
+  # ===============================================
+  # Application Monitoring
+  # ===============================================
+  - job_name: 'prismy-app'
+    static_configs:
+      - targets: ['app:3000']
+    scrape_interval: 15s
+    metrics_path: /api/metrics
+    scrape_timeout: 10s
+    honor_labels: true
+    params:
+      format: ['prometheus']
+
+  # Worker processes
+  - job_name: 'prismy-worker'
+    static_configs:
+      - targets: ['worker:3001']
+    scrape_interval: 30s
+    metrics_path: /metrics
+
+  # ===============================================
+  # Infrastructure Monitoring
+  # ===============================================
+  
+  # Nginx metrics
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['nginx:8080']
+    scrape_interval: 15s
+    metrics_path: /metrics
+
+  # PostgreSQL metrics
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+    scrape_interval: 30s
+
+  # Redis metrics
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+    scrape_interval: 30s
+
+  # Node exporter (system metrics)
+  - job_name: 'node'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 30s
+
+  # ===============================================
+  # Container Monitoring
+  # ===============================================
+  - job_name: 'docker'
+    static_configs:
+      - targets: ['cadvisor:8080']
+    scrape_interval: 30s
+    metrics_path: /metrics
+
+  # ===============================================
+  # External Service Monitoring
+  # ===============================================
+  
+  # Blackbox exporter for external endpoint monitoring
+  - job_name: 'blackbox'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+        - https://prismy.com
+        - https://api.prismy.com/health
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+
+  # SSL certificate monitoring
+  - job_name: 'ssl-expiry'
+    metrics_path: /probe
+    params:
+      module: [ssl_expiry]
+    static_configs:
+      - targets:
+        - prismy.com:443
+        - api.prismy.com:443
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+
+  # ===============================================
+  # Custom Business Metrics
+  # ===============================================
+  - job_name: 'prismy-business-metrics'
+    static_configs:
+      - targets: ['app:3000']
+    scrape_interval: 60s
+    metrics_path: /api/metrics/business
+    honor_labels: true
+
+  # API performance metrics
+  - job_name: 'prismy-api-performance'
+    static_configs:
+      - targets: ['app:3000']
+    scrape_interval: 30s
+    metrics_path: /api/metrics/performance
+    honor_labels: true
+
+  # User engagement metrics
+  - job_name: 'prismy-user-metrics'
+    static_configs:
+      - targets: ['app:3000']
+    scrape_interval: 300s  # 5 minutes
+    metrics_path: /api/metrics/users
+    honor_labels: true
+
+# ===============================================
+# Recording Rules for Aggregations
+# ===============================================
+recording_rules:
+  - name: prismy_aggregations
+    interval: 30s
+    rules:
+      # Request rate
+      - record: prismy:http_requests:rate5m
+        expr: sum(rate(http_requests_total[5m])) by (method, handler, status)
+
+      # Error rate
+      - record: prismy:http_requests:error_rate5m
+        expr: sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m]))
+
+      # Response time percentiles
+      - record: prismy:http_request_duration:p95
+        expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))
+
+      - record: prismy:http_request_duration:p99
+        expr: histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))
+
+      # Database connection pool
+      - record: prismy:db_connections:utilization
+        expr: prismy_db_connections_active / prismy_db_connections_max
+
+      # Memory usage
+      - record: prismy:memory:usage_percent
+        expr: (process_resident_memory_bytes / node_memory_MemTotal_bytes) * 100
+
+      # CPU usage
+      - record: prismy:cpu:usage_percent
+        expr: 100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)
+
+# ===============================================
+# Global Alerting Rules
+# ===============================================
+groups:
+  - name: prismy_alerts
+    rules:
+      # High error rate
+      - alert: HighErrorRate
+        expr: prismy:http_requests:error_rate5m > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          service: prismy-app
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value | humanizePercentage }} for the last 5 minutes"
+
+      # High response time
+      - alert: HighResponseTime
+        expr: prismy:http_request_duration:p95 > 2
+        for: 5m
+        labels:
+          severity: warning
+          service: prismy-app
+        annotations:
+          summary: "High response time detected"
+          description: "95th percentile response time is {{ $value }}s"
+
+      # High memory usage
+      - alert: HighMemoryUsage
+        expr: prismy:memory:usage_percent > 80
+        for: 10m
+        labels:
+          severity: warning
+          service: prismy-app
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is {{ $value | humanizePercentage }}"
+
+      # High CPU usage
+      - alert: HighCPUUsage
+        expr: prismy:cpu:usage_percent > 80
+        for: 10m
+        labels:
+          severity: warning
+          service: prismy-app
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is {{ $value | humanizePercentage }}"
+
+      # Database connection pool exhaustion
+      - alert: DatabaseConnectionPoolHigh
+        expr: prismy:db_connections:utilization > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          service: database
+        annotations:
+          summary: "Database connection pool utilization high"
+          description: "Connection pool utilization is {{ $value | humanizePercentage }}"
+
+      # Service down
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Service {{ $labels.job }} is down"
+          description: "Service {{ $labels.job }} on {{ $labels.instance }} has been down for more than 1 minute"
+
+      # SSL certificate expiring
+      - alert: SSLCertExpiringSoon
+        expr: probe_ssl_earliest_cert_expiry - time() < 86400 * 30
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: "SSL certificate expiring soon"
+          description: "SSL certificate for {{ $labels.instance }} expires in {{ $value | humanizeDuration }}"
+
+      # Disk space low
+      - alert: DiskSpaceLow
+        expr: (node_filesystem_avail_bytes / node_filesystem_size_bytes) * 100 < 10
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Disk space low"
+          description: "Disk space on {{ $labels.instance }} is {{ $value | humanizePercentage }} full"

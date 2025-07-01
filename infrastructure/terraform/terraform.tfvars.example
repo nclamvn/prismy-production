@@ -1,0 +1,143 @@
+# ===============================================
+# Terraform Variables Example Configuration
+# Copy this file to terraform.tfvars and update values
+# ===============================================
+
+# ===============================================
+# General Configuration
+# ===============================================
+environment    = "production"
+aws_region     = "us-east-1"
+project_name   = "prismy"
+
+# ===============================================
+# Domain and DNS
+# ===============================================
+domain_name           = "prismy.com"
+cloudflare_api_token  = "your-cloudflare-api-token-here"
+cloudflare_zone_id    = "your-cloudflare-zone-id-here"
+
+# ===============================================
+# Database Configuration
+# ===============================================
+rds_instance_class        = "db.r6g.large"
+rds_allocated_storage     = 100
+rds_max_allocated_storage = 1000
+db_username               = "prismy"
+db_password               = "secure-database-password-here"
+db_backup_retention       = 30
+
+# ===============================================
+# Redis Configuration
+# ===============================================
+redis_node_type   = "cache.r6g.large"
+redis_num_nodes   = 2
+redis_auth_token  = "secure-redis-auth-token-here"
+
+# ===============================================
+# ECS Configuration
+# ===============================================
+ecs_app_cpu      = 1024
+ecs_app_memory   = 2048
+ecs_app_count    = 3
+ecs_worker_cpu   = 512
+ecs_worker_memory = 1024
+ecs_worker_count = 2
+
+# ===============================================
+# Auto Scaling Configuration
+# ===============================================
+autoscaling_min_capacity   = 2
+autoscaling_max_capacity   = 20
+autoscaling_target_cpu     = 70
+autoscaling_target_memory  = 80
+
+# ===============================================
+# Application Configuration
+# ===============================================
+app_image_tag      = "latest"
+worker_image_tag   = "latest"
+ecr_repository_url = "123456789012.dkr.ecr.us-east-1.amazonaws.com"
+
+# ===============================================
+# Environment Variables and Secrets
+# ===============================================
+nextauth_secret              = "secure-nextauth-secret-here"
+supabase_url                = "https://your-project.supabase.co"
+supabase_anon_key           = "your-supabase-anon-key-here"
+supabase_service_role_key   = "your-supabase-service-role-key-here"
+stripe_secret_key           = "sk_live_your-stripe-secret-key-here"
+stripe_webhook_secret       = "whsec_your-stripe-webhook-secret-here"
+openai_api_key              = "sk-your-openai-api-key-here"
+resend_api_key              = "re_your-resend-api-key-here"
+
+# ===============================================
+# Monitoring Configuration
+# ===============================================
+cloudwatch_log_retention    = 30
+enable_container_insights   = true
+enable_enhanced_monitoring  = true
+
+# ===============================================
+# Security Configuration
+# ===============================================
+enable_deletion_protection  = true
+enable_backup_encryption    = true
+kms_key_deletion_window     = 30
+
+# ===============================================
+# Feature Flags
+# ===============================================
+enable_waf                  = true
+enable_cloudfront          = true
+enable_auto_scaling         = true
+enable_performance_insights = true
+enable_multi_az             = true
+
+# ===============================================
+# Cost Optimization
+# ===============================================
+use_spot_instances               = false
+enable_s3_intelligent_tiering    = true
+enable_rds_auto_scaling         = true
+cloudfront_price_class          = "PriceClass_All"
+
+# ===============================================
+# Backup Configuration
+# ===============================================
+backup_schedule         = "cron(0 3 * * ? *)"  # Daily at 3 AM UTC
+backup_retention_period = 30
+
+# ===============================================
+# Notification Configuration
+# ===============================================
+notification_email  = "alerts@prismy.com"
+slack_webhook_url   = "https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK"
+
+# ===============================================
+# Common Tags
+# ===============================================
+common_tags = {
+  Project     = "prismy"
+  ManagedBy   = "terraform"
+  Environment = "production"
+  Team        = "platform"
+  Owner       = "devops"
+}
+
+# ===============================================
+# Networking (Advanced)
+# ===============================================
+vpc_cidr = "10.0.0.0/16"
+availability_zones = [
+  "us-east-1a",
+  "us-east-1b", 
+  "us-east-1c"
+]
+
+# ===============================================
+# S3 Configuration
+# ===============================================
+s3_storage_class              = "STANDARD"
+s3_lifecycle_transition_days  = 30
+s3_lifecycle_expiration_days  = 2555  # 7 years

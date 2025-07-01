@@ -1,0 +1,63 @@
+{
+  "color": {
+    "gray": {
+      "50": "#f9fafb",
+      "100": "#f3f4f6", 
+      "200": "#e5e7eb",
+      "300": "#d1d5db",
+      "400": "#9ca3af",
+      "500": "#6b7280",
+      "600": "#4b5563",
+      "700": "#374151",
+      "800": "#1f2937",
+      "900": "#111827"
+    },
+    "accent": "#7F56D9",
+    "white": "#ffffff",
+    "black": "#000000",
+    "semantic": {
+      "success": "#10b981",
+      "warning": "#f59e0b", 
+      "error": "#ef4444",
+      "info": "#3b82f6"
+    },
+    "background": {
+      "primary": "#ffffff",
+      "secondary": "#f9fafb",
+      "tertiary": "#f3f4f6",
+      "panel": "#ffffff",
+      "surface": "#f9fafb",
+      "overlay": "rgba(0, 0, 0, 0.5)"
+    },
+    "foreground": {
+      "primary": "#111827",
+      "secondary": "#374151", 
+      "tertiary": "#6b7280",
+      "inverse": "#ffffff",
+      "muted": "#9ca3af",
+      "disabled": "#d1d5db"
+    },
+    "border": {
+      "default": "#e5e7eb",
+      "strong": "#d1d5db",
+      "accent": "#7F56D9",
+      "focus": "#7F56D9",
+      "error": "#ef4444",
+      "success": "#10b981"
+    },
+    "workspace": {
+      "sidebar": "#ffffff",
+      "panel": "#f9fafb",
+      "canvas": "#ffffff",
+      "toolbar": "#f3f4f6"
+    },
+    "notebookml": {
+      "background": "#f9fafb",
+      "surface": "#ffffff",
+      "accent": "#7F56D9",
+      "text": "#111827",
+      "textSecondary": "#374151",
+      "border": "#e5e7eb"
+    }
+  }
+}

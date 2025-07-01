@@ -1,8 +1,10 @@
 import React from 'react'
 import type { Metadata, Viewport } from 'next'
+// Removed headers import to enable static rendering
 // 💣 PHASE 1.4 NUCLEAR: Completely removed Google Fonts to eliminate loading errors
 // Using only system fonts for 100% reliability
 import '@/styles/globals.css'
+// import { StyleSheetManager } from 'styled-components'
 import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration'
 import { SSRSafeLanguageProvider } from '@/contexts/SSRSafeLanguageContext'
 import { AuthProvider } from '@/contexts/AuthContext'
@@ -29,6 +31,8 @@ import { ToastProvider } from '@/components/ui/Toast'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { GlobalErrorBoundary } from '@/components/ErrorBoundary/GlobalErrorBoundary'
 import { WebVitalsMonitor } from '@/components/monitoring/WebVitalsMonitor'
+import { PortalRoot } from '@/components/ui/PortalRoot'
+// Removed styled-components imports - using pure Tailwind CSS
 
 // AI Agent System Integration
 import { AgentProvider } from '@/contexts/AgentContext'
@@ -218,6 +222,9 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  // CSP nonce will be handled client-side in StyledComponentsCSP
+  const nonce = ''
+  
   return (
     <html lang="vi" style={{ fontFamily: systemFontStack }}>
       <head>
@@ -240,6 +247,37 @@ export default function RootLayout({
         <meta name="format-detection" content="telephone=no" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="theme-color" content="#000000" />
+        
+        {/* CSP Nonce Meta Tag */}
+        <meta name="csp-nonce" content={process.env.NODE_ENV === 'development' ? 'dev-nonce' : ''} />
+        
+        {/* CSP-compliant Development Scripts */}
+        {process.env.NODE_ENV === 'development' && (
+          <>
+            <script 
+              nonce={process.env.NODE_ENV === 'development' ? 'dev-nonce' : undefined}
+              dangerouslySetInnerHTML={{
+                __html: `
+                  // CSP Development Monitoring
+                  if (typeof window !== 'undefined') {
+                    document.addEventListener('securitypolicyviolation', function(e) {
+                      console.group('🚨 CSP Violation');
+                      console.error('Blocked:', e.blockedURI);
+                      console.error('Directive:', e.violatedDirective);
+                      console.groupEnd();
+                    });
+                    console.log('🛡️ CSP monitoring active');
+                  }
+                `
+              }}
+            />
+            <script 
+              src="/scripts/diagnostic-script.js"
+              defer
+              nonce={process.env.NODE_ENV === 'development' ? 'dev-nonce' : undefined}
+            />
+          </>
+        )}
 
         {/* 💣 PHASE 1.4 NUCLEAR: Removed all Google Fonts preconnect links */}
         <link rel="preconnect" href="https://api.prismy.in" />
@@ -250,7 +288,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="//prismy.in" />
         <link rel="dns-prefetch" href="//cdn.prismy.in" />
 
-        {/* Structured Data */}
+        {/* Structured Data - CSP compliant */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -294,11 +332,11 @@ export default function RootLayout({
           color: 'var(--text-primary)',
         }}
       >
-        <CriticalCSS>
-          <GlobalErrorBoundary>
-            <ErrorBoundary>
-              <ThemeProvider defaultTheme="system">
-                <AccessibilityProvider>
+            <CriticalCSS>
+            <GlobalErrorBoundary>
+              <ErrorBoundary>
+                <ThemeProvider defaultTheme="system">
+                  <AccessibilityProvider>
                   <AccessibilityEnhancer
                     enableAnnouncements={true}
                     enableKeyboardNavigation={true}
@@ -345,11 +383,12 @@ export default function RootLayout({
                       </LoadingProvider>
                     </ToastProvider>
                   </AccessibilityEnhancer>
-                </AccessibilityProvider>
-              </ThemeProvider>
-            </ErrorBoundary>
-          </GlobalErrorBoundary>
-        </CriticalCSS>
+                  </AccessibilityProvider>
+                </ThemeProvider>
+              </ErrorBoundary>
+            </GlobalErrorBoundary>
+            </CriticalCSS>
+        <PortalRoot />
         <ServiceWorkerRegistration />
       </body>
     </html>

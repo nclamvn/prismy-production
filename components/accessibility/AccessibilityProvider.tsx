@@ -115,17 +115,40 @@ export function AccessibilityProvider({ children }: AccessibilityProviderProps) 
   }, [settings])
 
   useEffect(() => {
-    // Create announcement element for screen readers
+    // Create announcement element for screen readers with safer styling
     const element = document.createElement('div')
     element.setAttribute('aria-live', 'polite')
     element.setAttribute('aria-atomic', 'true')
     element.className = 'aria-live-region'
-    document.body.appendChild(element)
+    element.style.position = 'absolute'
+    element.style.left = '-10000px'
+    element.style.width = '1px'
+    element.style.height = '1px'
+    element.style.overflow = 'hidden'
+    element.style.clip = 'rect(0 0 0 0)'
+    
+    // Use a safer container approach
+    let container = document.getElementById('accessibility-announcements')
+    if (!container) {
+      container = document.createElement('div')
+      container.id = 'accessibility-announcements'
+      container.style.position = 'absolute'
+      container.style.left = '-10000px'
+      document.body.appendChild(container)
+    }
+    
+    container.appendChild(element)
     setAnnounceElement(element)
 
     return () => {
-      if (element.parentNode) {
-        element.parentNode.removeChild(element)
+      // Safe DOM cleanup with defensive checks
+      try {
+        if (element && element.parentNode && element.parentNode.contains(element)) {
+          element.parentNode.removeChild(element)
+        }
+      } catch (error) {
+        // Silently handle if element was already removed by React reconciliation
+        console.debug('Accessibility element already removed:', error)
       }
     }
   }, [])

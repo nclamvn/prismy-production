@@ -1,23 +1,50 @@
 'use client'
 
-// NotebookLM-Inspired Unified Workspace
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
+import dynamic from 'next/dynamic'
 import { motion } from 'framer-motion'
 import { useAuth } from '@/contexts/AuthContext'
 import { useSSRSafeLanguage } from '@/contexts/SSRSafeLanguageContext'
 import { motionSafe, slideUp } from '@/lib/motion'
 import AuthGuard from '@/components/auth/AuthGuard'
-import NotebookLMLayout from '@/components/layouts/NotebookLMLayout'
-import SimpleTranslationInterface from '@/components/workspace/SimpleTranslationInterface'
-import SourcesPanel from '@/components/panels/SourcesPanel'
-import ExportPanel from '@/components/panels/ExportPanel'
-import PerformanceMonitor from '@/components/optimization/PerformanceMonitor'
-import { createLazyComponent } from '@/components/optimization/LazyComponentLoader'
 
-// Lazy load supporting components
-const ContextualAssistant = createLazyComponent(
-  () => import('@/components/workspace/ContextualAssistant')
-)
+// Dynamic imports for heavy workspace components
+const NotebookLMLayout = dynamic(() => import('@/components/layouts/NotebookLMLayout'), {
+  loading: () => (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-600 border-t-transparent mx-auto mb-4"></div>
+        <p className="text-gray-600">Loading workspace...</p>
+      </div>
+    </div>
+  ),
+  ssr: false
+})
+
+const SimpleTranslationInterface = dynamic(() => import('@/components/workspace/SimpleTranslationInterface'), {
+  loading: () => <div className="h-64 animate-pulse bg-gray-200 rounded-lg"></div>,
+  ssr: false
+})
+
+const SourcesPanel = dynamic(() => import('@/components/panels/SourcesPanel'), {
+  loading: () => <div className="h-full animate-pulse bg-gray-200 rounded-lg"></div>,
+  ssr: false
+})
+
+const ExportPanel = dynamic(() => import('@/components/panels/ExportPanel'), {
+  loading: () => <div className="h-full animate-pulse bg-gray-200 rounded-lg"></div>,
+  ssr: false
+})
+
+const PerformanceMonitor = dynamic(() => import('@/components/optimization/PerformanceMonitor'), {
+  loading: () => null,
+  ssr: false
+})
+
+const ContextualAssistant = dynamic(() => import('@/components/workspace/ContextualAssistant'), {
+  loading: () => null,
+  ssr: false
+})
 
 export default function Workspace() {
   const { user } = useAuth()
@@ -141,47 +168,56 @@ export default function Workspace() {
 
   return (
     <AuthGuard>
-      <PerformanceMonitor
-        enableLogging={process.env.NODE_ENV === 'development'}
-        threshold={{
-          routeChange: 1000,
-          componentMount: 500,
-          render: 100,
-        }}
-      >
-        <NotebookLMLayout
-          activePanel={activePanel}
-          onPanelChange={setActivePanel}
-          sourcesPanel={
-            <SourcesPanel
-              onDocumentSelect={setSelectedDocument}
-              onTextExtracted={handleTextExtracted}
-            />
-          }
-          exportPanel={
-            <ExportPanel exportData={exportData} onDownload={handleDownload} />
-          }
-          uploadedDocument={uploadedDocument}
-          onDocumentTranslate={handleDocumentTranslate}
-          onDocumentDownload={handleDocumentDownload}
+      <Suspense fallback={
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-600 border-t-transparent mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading workspace...</p>
+          </div>
+        </div>
+      }>
+        <PerformanceMonitor
+          enableLogging={process.env.NODE_ENV === 'development'}
+          threshold={{
+            routeChange: 1000,
+            componentMount: 500,
+            render: 100,
+          }}
         >
-          {/* Middle Panel Content - Translation Interface */}
-          <motion.div
-            variants={motionSafe(slideUp)}
-            initial="hidden"
-            animate="visible"
-            className="h-full"
+          <NotebookLMLayout
+            activePanel={activePanel}
+            onPanelChange={setActivePanel}
+            sourcesPanel={
+              <SourcesPanel
+                onDocumentSelect={setSelectedDocument}
+                onTextExtracted={handleTextExtracted}
+              />
+            }
+            exportPanel={
+              <ExportPanel exportData={exportData} onDownload={handleDownload} />
+            }
+            uploadedDocument={uploadedDocument}
+            onDocumentTranslate={handleDocumentTranslate}
+            onDocumentDownload={handleDocumentDownload}
           >
-            <SimpleTranslationInterface
-              variant="clean"
-              onTranslationComplete={handleTranslationComplete}
-            />
-          </motion.div>
-        </NotebookLMLayout>
+            {/* Middle Panel Content - Translation Interface */}
+            <motion.div
+              variants={motionSafe(slideUp)}
+              initial="hidden"
+              animate="visible"
+              className="h-full"
+            >
+              <SimpleTranslationInterface
+                variant="clean"
+                onTranslationComplete={handleTranslationComplete}
+              />
+            </motion.div>
+          </NotebookLMLayout>
 
-        {/* Contextual AI Assistant - Floating globally */}
-        <ContextualAssistant position="bottom-right" />
-      </PerformanceMonitor>
+          {/* Contextual AI Assistant - Floating globally */}
+          <ContextualAssistant position="bottom-right" />
+        </PerformanceMonitor>
+      </Suspense>
     </AuthGuard>
   )
 }

@@ -34,10 +34,49 @@ const nextConfig = {
       '@supabase/supabase-js',
       'mammoth',
       'exceljs',
+      'recharts',
     ],
+
+    // Additional optimizations for bundle size
+    turbo: {
+      rules: {
+        '*.svg': {
+          loaders: ['@svgr/webpack'],
+          as: '*.js',
+        },
+      },
+    },
 
     // CSS optimization (disabled due to missing 'critters' dependency)
     optimizeCss: false,
+  },
+
+  // ===== COMPILER OPTIMIZATIONS =====
+  compiler: {
+    removeConsole: {
+      exclude: ['error', 'warn', 'info'], // Keep important logs
+    },
+    // No styled-components - using pure Tailwind CSS
+  },
+
+  // ===== MODULARIZE IMPORTS =====
+  modularizeImports: {
+    'lucide-react': {
+      transform: 'lucide-react/dist/esm/icons/{{member}}',
+      skipDefaultConversion: true,
+    },
+    'recharts': {
+      transform: 'recharts/lib/{{member}}',
+      skipDefaultConversion: true,
+    },
+    '@radix-ui/react-dropdown-menu': {
+      transform: '@radix-ui/react-dropdown-menu/dist/{{member}}',
+      skipDefaultConversion: true,
+    },
+    'framer-motion': {
+      transform: 'framer-motion/dist/{{member}}',
+      skipDefaultConversion: true,
+    },
   },
 
   // ===== TURBOPACK CONFIGURATION =====
@@ -50,13 +89,7 @@ const nextConfig = {
     },
   },
 
-  // ===== COMPILER OPTIMIZATIONS =====
-  compiler: {
-    removeConsole: {
-      exclude: ['error', 'warn', 'info'], // Keep important logs
-    },
-    styledComponents: false, // We use Tailwind
-  },
+  // Note: compiler config is above
 
   // ===== IMAGES OPTIMIZATION =====
   images: {
@@ -148,12 +181,14 @@ const nextConfig = {
 
   // ===== WEBPACK OPTIMIZATIONS =====
   webpack: (config, { dev, isServer }) => {
-    // CSS optimization for production
+    // Production optimizations
     if (!dev && !isServer) {
+      // Enhanced chunk splitting for better caching
       config.optimization.splitChunks = {
         ...config.optimization.splitChunks,
         cacheGroups: {
           ...config.optimization.splitChunks.cacheGroups,
+          // Separate styles
           styles: {
             name: 'styles',
             test: /\.(css|scss)$/,
@@ -161,8 +196,27 @@ const nextConfig = {
             enforce: true,
             minSize: 0,
           },
+          // Separate vendor libraries
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all',
+            minSize: 20000,
+            maxSize: 200000,
+          },
+          // Separate UI components
+          ui: {
+            test: /[\\/]components[\\/]ui[\\/]/,
+            name: 'ui-components',
+            chunks: 'all',
+            minSize: 10000,
+          },
         },
       }
+
+      // Tree shaking optimizations
+      config.optimization.usedExports = true
+      config.optimization.sideEffects = false
     }
 
     // Enhanced configuration for document processing libraries

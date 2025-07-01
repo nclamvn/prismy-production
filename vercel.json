@@ -1,59 +1,89 @@
 {
-  "buildCommand": "SKIP_ENV_VALIDATION=true next build",
-  "outputDirectory": ".next",
-  "devCommand": "npm run dev",
-  "installCommand": "npm install --legacy-peer-deps",
-  "framework": "nextjs",
-  "regions": ["sin1"],
-  "build": {
-    "env": {
-      "NODE_OPTIONS": "--max-old-space-size=4096",
-      "NEXT_TELEMETRY_DISABLED": "1",
-      "SKIP_ENV_VALIDATION": "true"
-    }
+  "version": 2,
+  "github": {
+    "silent": true
   },
   "functions": {
-    "app/api/translate/route.ts": {
-      "maxDuration": 60
-    },
-    "app/api/translate/unified/route.ts": {
-      "maxDuration": 60
-    },
-    "app/api/translate/simple/route.ts": {
-      "maxDuration": 60
-    },
-    "app/api/translate/public/route.ts": {
+    "app/api/**/*.ts": {
       "maxDuration": 30
-    },
-    "app/api/translate/test/route.ts": {
-      "maxDuration": 30
-    },
-    "app/api/documents/process/route.ts": {
-      "maxDuration": 300
-    },
-    "app/api/documents/process-simple/route.ts": {
-      "maxDuration": 300
-    },
-    "app/api/documents/download/route.ts": {
-      "maxDuration": 60
-    },
-    "app/api/documents/chat/route.ts": {
-      "maxDuration": 120
-    },
-    "app/api/documents/analyze/route.ts": {
-      "maxDuration": 120
-    },
-    "app/api/test/pipeline/route.ts": {
-      "maxDuration": 30
-    },
-    "app/api/agents/dashboard/route.ts": {
-      "maxDuration": 60
-    },
-    "app/api/ocr/google-vision/route.ts": {
-      "maxDuration": 30
-    },
-    "app/api/documents/process-chunked/route.ts": {
-      "maxDuration": 600
     }
-  }
+  },
+  "regions": [
+    "sin1"
+  ],
+  "redirects": [
+    {
+      "source": "/docs",
+      "destination": "/api-docs",
+      "permanent": false
+    },
+    {
+      "source": "/storybook",
+      "destination": "https://prismy-storybook.vercel.app",
+      "permanent": false
+    }
+  ],
+  "headers": [
+    {
+      "source": "/manifest.json",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/manifest+json"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        }
+      ]
+    },
+    {
+      "source": "/((?!api|_next/static|_next/image|favicon.ico|robots.txt|manifest.json|sitemap.xml|sw.js|icons/|assets/).*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        }
+      ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, PUT, DELETE, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/storybook-static/(.*)",
+      "destination": "/storybook-static/$1"
+    }
+  ]
 }

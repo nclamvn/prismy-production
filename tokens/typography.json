@@ -1,0 +1,121 @@
+{
+  "fontSize": {
+    "xs": "0.75rem",
+    "sm": "0.875rem", 
+    "base": "1rem",
+    "lg": "1.125rem",
+    "xl": "1.25rem",
+    "2xl": "1.5rem",
+    "3xl": "1.875rem",
+    "4xl": "2.25rem",
+    "5xl": "3rem",
+    "6xl": "3.75rem",
+    "7xl": "4.5rem",
+    "8xl": "6rem",
+    "9xl": "8rem"
+  },
+  "fontWeight": {
+    "thin": "100",
+    "extralight": "200", 
+    "light": "300",
+    "normal": "400",
+    "medium": "500",
+    "semibold": "600",
+    "bold": "700",
+    "extrabold": "800",
+    "black": "900"
+  },
+  "lineHeight": {
+    "3": "0.75rem",
+    "4": "1rem",
+    "5": "1.25rem", 
+    "6": "1.5rem",
+    "7": "1.75rem",
+    "8": "2rem",
+    "9": "2.25rem",
+    "10": "2.5rem",
+    "none": "1",
+    "tight": "1.25",
+    "snug": "1.375",
+    "normal": "1.5", 
+    "relaxed": "1.625",
+    "loose": "2"
+  },
+  "letterSpacing": {
+    "tighter": "-0.05em",
+    "tight": "-0.025em",
+    "normal": "0em",
+    "wide": "0.025em",
+    "wider": "0.05em",
+    "widest": "0.1em"
+  },
+  "fontFamily": {
+    "sans": ["Inter", "ui-sans-serif", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "Noto Sans", "sans-serif"],
+    "serif": ["ui-serif", "Georgia", "Cambria", "Times New Roman", "Times", "serif"],
+    "mono": ["ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", "monospace"],
+    "vietnamese": ["Inter", "Roboto", "Noto Sans", "-apple-system", "BlinkMacSystemFont", "sans-serif"]
+  },
+  "semantic": {
+    "heading": {
+      "h1": {
+        "fontSize": "2.25rem",
+        "fontWeight": "700",
+        "lineHeight": "1.25",
+        "letterSpacing": "-0.025em"
+      },
+      "h2": {
+        "fontSize": "1.875rem", 
+        "fontWeight": "600",
+        "lineHeight": "1.375",
+        "letterSpacing": "-0.025em"
+      },
+      "h3": {
+        "fontSize": "1.5rem",
+        "fontWeight": "600", 
+        "lineHeight": "1.5"
+      },
+      "h4": {
+        "fontSize": "1.25rem",
+        "fontWeight": "600",
+        "lineHeight": "1.5"
+      },
+      "h5": {
+        "fontSize": "1.125rem",
+        "fontWeight": "600",
+        "lineHeight": "1.5"
+      },
+      "h6": {
+        "fontSize": "1rem",
+        "fontWeight": "600",
+        "lineHeight": "1.5"
+      }
+    },
+    "body": {
+      "large": {
+        "fontSize": "1.125rem",
+        "lineHeight": "1.625"
+      },
+      "base": {
+        "fontSize": "1rem", 
+        "lineHeight": "1.5"
+      },
+      "small": {
+        "fontSize": "0.875rem",
+        "lineHeight": "1.375"
+      },
+      "caption": {
+        "fontSize": "0.75rem",
+        "lineHeight": "1.25"
+      }
+    },
+    "button": {
+      "fontSize": "0.875rem",
+      "fontWeight": "500",
+      "lineHeight": "1.25"
+    },
+    "input": {
+      "fontSize": "1rem",
+      "lineHeight": "1.5"
+    }
+  }
+}

@@ -1,0 +1,175 @@
+name: Health Monitoring & Alerts
+
+on:
+  schedule:
+    - cron: '*/15 * * * *' # Every 15 minutes
+  workflow_dispatch:
+
+jobs:
+  health-check:
+    name: Application Health Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Check Production Health
+        run: |
+          # Check main application
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" https://prismy.vercel.app/api/health || echo "000")
+          
+          if [ "$RESPONSE" != "200" ]; then
+            echo "🚨 Production health check failed: HTTP $RESPONSE"
+            exit 1
+          else
+            echo "✅ Production health check passed"
+          fi
+          
+      - name: Check API Endpoints
+        run: |
+          # Test critical API endpoints
+          endpoints=(
+            "https://prismy.vercel.app/api/translate/public"
+            "https://prismy.vercel.app/api/documents/upload"
+          )
+          
+          for endpoint in "${endpoints[@]}"; do
+            echo "Testing $endpoint..."
+            RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" "$endpoint" || echo "000")
+            
+            if [ "$RESPONSE" = "000" ] || [ "$RESPONSE" = "500" ] || [ "$RESPONSE" = "502" ] || [ "$RESPONSE" = "503" ]; then
+              echo "🚨 API endpoint failed: $endpoint (HTTP $RESPONSE)"
+              exit 1
+            else
+              echo "✅ API endpoint healthy: $endpoint (HTTP $RESPONSE)"
+            fi
+          done
+          
+      - name: Database Connection Test
+        run: |
+          # Test database connectivity through API
+          RESPONSE=$(curl -s -X POST \
+            -H "Content-Type: application/json" \
+            -d '{"query": "SELECT 1"}' \
+            https://prismy.vercel.app/api/health/db || echo '{"error": "connection failed"}')
+          
+          if echo "$RESPONSE" | grep -q "error"; then
+            echo "🚨 Database connection failed"
+            exit 1
+          else
+            echo "✅ Database connection healthy"
+          fi
+
+  performance-monitoring:
+    name: Performance Monitoring
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Monitor Response Times
+        run: |
+          # Test response times for critical pages
+          pages=(
+            "https://prismy.vercel.app"
+            "https://prismy.vercel.app/pricing"
+            "https://prismy.vercel.app/workspace"
+          )
+          
+          for page in "${pages[@]}"; do
+            echo "Testing response time for $page..."
+            
+            RESPONSE_TIME=$(curl -s -o /dev/null -w "%{time_total}" "$page" || echo "0")
+            RESPONSE_TIME_MS=$(echo "$RESPONSE_TIME * 1000" | bc)
+            
+            if (( $(echo "$RESPONSE_TIME > 5.0" | bc -l) )); then
+              echo "🐌 Slow response time: $page (${RESPONSE_TIME_MS}ms)"
+              exit 1
+            else
+              echo "⚡ Good response time: $page (${RESPONSE_TIME_MS}ms)"
+            fi
+          done
+          
+      - name: Check SSL Certificate
+        run: |
+          echo "Checking SSL certificate expiry..."
+          EXPIRY=$(echo | openssl s_client -servername prismy.vercel.app -connect prismy.vercel.app:443 2>/dev/null | openssl x509 -noout -dates | grep notAfter | cut -d= -f2)
+          EXPIRY_EPOCH=$(date -d "$EXPIRY" +%s)
+          CURRENT_EPOCH=$(date +%s)
+          DAYS_LEFT=$(( (EXPIRY_EPOCH - CURRENT_EPOCH) / 86400 ))
+          
+          if [ $DAYS_LEFT -lt 30 ]; then
+            echo "⚠️ SSL certificate expires in $DAYS_LEFT days"
+            exit 1
+          else
+            echo "✅ SSL certificate valid for $DAYS_LEFT days"
+          fi
+
+  security-monitoring:
+    name: Security Monitoring
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Check Security Headers
+        run: |
+          echo "Checking security headers..."
+          
+          # Check for important security headers
+          HEADERS=$(curl -s -I https://prismy.vercel.app)
+          
+          if ! echo "$HEADERS" | grep -i "content-security-policy"; then
+            echo "⚠️ Missing Content-Security-Policy header"
+          else
+            echo "✅ Content-Security-Policy header present"
+          fi
+          
+          if ! echo "$HEADERS" | grep -i "x-frame-options"; then
+            echo "⚠️ Missing X-Frame-Options header"
+          else
+            echo "✅ X-Frame-Options header present"
+          fi
+          
+          if ! echo "$HEADERS" | grep -i "strict-transport-security"; then
+            echo "⚠️ Missing Strict-Transport-Security header"
+          else
+            echo "✅ Strict-Transport-Security header present"
+          fi
+          
+      - name: Check for Exposed Sensitive Data
+        run: |
+          # Check common sensitive endpoints
+          sensitive_paths=(
+            "/.env"
+            "/config.json"
+            "/admin"
+            "/.git"
+            "/package.json"
+          )
+          
+          for path in "${sensitive_paths[@]}"; do
+            RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" "https://prismy.vercel.app$path")
+            
+            if [ "$RESPONSE" = "200" ]; then
+              echo "🚨 Sensitive path exposed: $path"
+              exit 1
+            else
+              echo "✅ Sensitive path protected: $path"
+            fi
+          done
+
+  alert-on-failure:
+    name: Send Alerts
+    runs-on: ubuntu-latest
+    needs: [health-check, performance-monitoring, security-monitoring]
+    if: failure()
+    
+    steps:
+      - name: Send Slack Alert
+        if: env.SLACK_WEBHOOK_URL != ''
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+            --data '{"text":"🚨 Prismy Production Alert: Monitoring checks failed"}' \
+            ${{ secrets.SLACK_WEBHOOK_URL }}
+            
+      - name: Send Discord Alert
+        if: env.DISCORD_WEBHOOK_URL != ''
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+            --data '{"content":"🚨 **Prismy Production Alert**: Monitoring checks failed"}' \
+            ${{ secrets.DISCORD_WEBHOOK_URL }}

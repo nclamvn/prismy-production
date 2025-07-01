@@ -1,26 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import SwaggerUI from 'swagger-ui-react'
-import 'swagger-ui-react/swagger-ui.css'
+// Temporary disable swagger-ui-react due to CVE-2024-45461 (prismjs vulnerability)
+// TODO: Re-enable when vulnerability is fixed in upstream dependencies
 
 export default function ApiDocsPage() {
-  const [spec, setSpec] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    fetch('/api/swagger')
-      .then(response => response.json())
-      .then(data => {
-        setSpec(data)
-        setLoading(false)
-      })
-      .catch(err => {
-        setError(err.message)
-        setLoading(false)
-      })
-  }, [])
+  const loading = false
+  const error = null
 
   if (loading) {
     return (
@@ -57,55 +42,55 @@ export default function ApiDocsPage() {
       </div>
 
       {/* API Documentation */}
-      <div className="max-w-7xl mx-auto">
-        {spec && (
-          <SwaggerUI
-            spec={spec}
-            docExpansion="list"
-            defaultModelsExpandDepth={2}
-            defaultModelRendering="model"
-            displayRequestDuration={true}
-            tryItOutEnabled={true}
-            requestInterceptor={(req) => {
-              // Add custom headers or modify requests if needed
-              req.headers['X-API-Client'] = 'Prismy-Docs'
-              return req
-            }}
-            responseInterceptor={(res) => {
-              // Log responses for debugging
-              console.log('API Response:', res)
-              return res
-            }}
-            supportedSubmitMethods={['get', 'post', 'put', 'delete', 'patch']}
-            plugins={[
-              // Custom plugins can be added here
-            ]}
-            layout="BaseLayout"
-            deepLinking={true}
-            showExtensions={true}
-            showCommonExtensions={true}
-            filter={true}
-            requestSnippetsEnabled={true}
-            requestSnippets={{
-              generators: {
-                curl_bash: {
-                  title: 'cURL (bash)',
-                  syntax: 'bash'
-                },
-                curl_powershell: {
-                  title: 'cURL (PowerShell)',
-                  syntax: 'powershell'
-                },
-                curl_cmd: {
-                  title: 'cURL (CMD)',
-                  syntax: 'bash'
-                }
-              },
-              defaultExpanded: true,
-              languages: ['curl_bash', 'curl_powershell', 'curl_cmd']
-            }}
-          />
-        )}
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+          <h3 className="text-lg font-semibold text-yellow-800 mb-2">🚧 Temporary Maintenance</h3>
+          <p className="text-yellow-700">
+            API documentation is temporarily unavailable due to security updates. 
+            We're upgrading our documentation system to ensure the highest security standards.
+          </p>
+          <p className="text-yellow-700 mt-2">
+            For immediate API access, please contact our support team or check our GitHub repository.
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <h3 className="text-xl font-bold mb-4">Core Translation API</h3>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="font-mono text-sm">POST /api/translate</span>
+                <span className="text-green-600 font-semibold">ACTIVE</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-mono text-sm">GET /api/languages</span>
+                <span className="text-green-600 font-semibold">ACTIVE</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-mono text-sm">POST /api/documents/upload</span>
+                <span className="text-green-600 font-semibold">ACTIVE</span>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <h3 className="text-xl font-bold mb-4">Payment & Billing</h3>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="font-mono text-sm">POST /api/payments/create</span>
+                <span className="text-green-600 font-semibold">ACTIVE</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-mono text-sm">GET /api/billing/usage</span>
+                <span className="text-green-600 font-semibold">ACTIVE</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-mono text-sm">POST /api/credits/purchase</span>
+                <span className="text-green-600 font-semibold">ACTIVE</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Footer */}

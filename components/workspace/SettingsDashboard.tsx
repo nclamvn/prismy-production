@@ -1112,9 +1112,10 @@ export default function SettingsDashboard({
                 const a = document.createElement('a')
                 a.href = url
                 a.download = `prismy-analytics-${new Date().toISOString().split('T')[0]}.json`
-                document.body.appendChild(a)
+                a.style.display = 'none'
+                
+                // Use React-safe download approach
                 a.click()
-                document.body.removeChild(a)
                 URL.revokeObjectURL(url)
 
                 // Track report generation

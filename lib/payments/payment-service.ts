@@ -197,6 +197,10 @@ export const getPaymentMethodIconType = (method: PaymentMethod): string => {
 export const getPlanId = (planKey: UnifiedSubscriptionPlan, method: PaymentMethod): string | null => {
   const plan = UNIFIED_SUBSCRIPTION_PLANS[planKey]
   
+  if (!plan) {
+    return null
+  }
+  
   switch (method) {
     case 'stripe':
       return (plan as any).stripeId || null

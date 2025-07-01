@@ -1,0 +1,33 @@
+{
+  "borderRadius": {
+    "none": "0px",
+    "sm": "4px",
+    "default": "8px",
+    "lg": "16px",
+    "xl": "24px",
+    "2xl": "32px",
+    "3xl": "48px",
+    "full": "9999px"
+  },
+  "semantic": {
+    "card": "8px",
+    "button": "8px",
+    "input": "8px",
+    "badge": "4px",
+    "modal": "16px",
+    "tooltip": "4px",
+    "avatar": "9999px"
+  },
+  "component": {
+    "workspace": {
+      "sidebar": "0px",
+      "panel": "8px",
+      "toolbar": "8px"
+    },
+    "marketing": {
+      "hero": "16px",
+      "feature": "8px",
+      "testimonial": "8px"
+    }
+  }
+}

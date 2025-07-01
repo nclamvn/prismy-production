@@ -5,8 +5,10 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createServiceRoleClient } from '@/lib/supabase'
 import { logger } from '@/lib/logger'
+import { checkPgBossHealth } from '@/lib/pg-boss-setup'
+import { healthCheck as advancedHealthCheck } from '@/lib/load-balancer/health-check'
 
 export interface HealthCheckResult {
   status: 'healthy' | 'unhealthy' | 'degraded'
@@ -20,6 +22,7 @@ export interface HealthCheckResult {
     aiServices: HealthCheck
     storage: HealthCheck
     externalApis: HealthCheck
+    jobQueue: HealthCheck
   }
   performance: {
     responseTime: number
@@ -44,6 +47,15 @@ export async function GET(request: NextRequest) {
   const startTime = Date.now()
   
   try {
+    // Check if request wants advanced health check
+    const url = new URL(request.url)
+    const advanced = url.searchParams.get('advanced') === 'true'
+    
+    if (advanced) {
+      // Use the advanced health check system
+      return await advancedHealthCheck(request)
+    }
+    
     // Return cached result if still valid
     if (cachedResult && Date.now() - cacheTimestamp < CACHE_TTL) {
       return NextResponse.json(cachedResult, { 
@@ -78,7 +90,8 @@ export async function GET(request: NextRequest) {
         redis: { status: 'unhealthy', responseTime: 0, error: 'Health check failed' },
         aiServices: { status: 'unhealthy', responseTime: 0, error: 'Health check failed' },
         storage: { status: 'unhealthy', responseTime: 0, error: 'Health check failed' },
-        externalApis: { status: 'unhealthy', responseTime: 0, error: 'Health check failed' }
+        externalApis: { status: 'unhealthy', responseTime: 0, error: 'Health check failed' },
+        jobQueue: { status: 'unhealthy', responseTime: 0, error: 'Health check failed' }
       },
       performance: {
         responseTime: Date.now() - startTime,
@@ -92,12 +105,13 @@ export async function GET(request: NextRequest) {
 
 async function performHealthChecks(startTime: number): Promise<HealthCheckResult> {
   // Run all health checks in parallel
-  const [database, redis, aiServices, storage, externalApis] = await Promise.allSettled([
+  const [database, redis, aiServices, storage, externalApis, jobQueue] = await Promise.allSettled([
     checkDatabase(),
     checkRedis(),
     checkAIServices(),
     checkStorage(),
-    checkExternalAPIs()
+    checkExternalAPIs(),
+    checkJobQueue()
   ])
 
   const checks = {
@@ -105,7 +119,8 @@ async function performHealthChecks(startTime: number): Promise<HealthCheckResult
     redis: getCheckResult(redis),
     aiServices: getCheckResult(aiServices),
     storage: getCheckResult(storage),
-    externalApis: getCheckResult(externalApis)
+    externalApis: getCheckResult(externalApis),
+    jobQueue: getCheckResult(jobQueue)
   }
 
   // Determine overall status
@@ -155,10 +170,7 @@ async function checkDatabase(): Promise<HealthCheck> {
       throw new Error('Supabase credentials not configured')
     }
 
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-    )
+    const supabase = createServiceRoleClient()
 
     // Simple connectivity test
     const { data, error } = await supabase
@@ -397,5 +409,29 @@ async function checkGoogleTranslate(): Promise<void> {
   // Simple validation - just check if the API key is configured
   if (!process.env.GOOGLE_TRANSLATE_API_KEY) {
     throw new Error('Google Translate API key not configured')
+  }
+}
+
+async function checkJobQueue(): Promise<HealthCheck> {
+  const startTime = Date.now()
+  
+  try {
+    const queueHealth = await checkPgBossHealth()
+    
+    return {
+      status: queueHealth.isHealthy ? 'healthy' : 'unhealthy',
+      responseTime: Date.now() - startTime,
+      error: queueHealth.error,
+      details: queueHealth.queueStats ? {
+        queueSize: queueHealth.queueStats,
+        version: queueHealth.version
+      } : undefined
+    }
+  } catch (error) {
+    return {
+      status: 'unhealthy',
+      responseTime: Date.now() - startTime,
+      error: error instanceof Error ? error.message : 'Job queue check failed'
+    }
   }
 }

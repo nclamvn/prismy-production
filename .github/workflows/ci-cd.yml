@@ -1,0 +1,523 @@
+# ===============================================
+# Prismy CI/CD Pipeline
+# Complete automated testing and deployment
+# ===============================================
+
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  release:
+    types: [published]
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com
+  NODE_VERSION: '20'
+  PNPM_VERSION: '8'
+
+jobs:
+  # ===============================================
+  # Quality Checks & Testing
+  # ===============================================
+  test:
+    name: Test & Quality Checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: prismy_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup test environment
+        run: |
+          cp .env.example .env.test
+          echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/prismy_test" >> .env.test
+          echo "REDIS_URL=redis://localhost:6379" >> .env.test
+
+      - name: Run database migrations
+        run: pnpm db:migrate
+        env:
+          NODE_ENV: test
+
+      - name: Lint code
+        run: pnpm lint
+
+      - name: Type check
+        run: pnpm type-check
+
+      - name: Run unit tests
+        run: pnpm test:unit --coverage
+        env:
+          NODE_ENV: test
+
+      - name: Run integration tests
+        run: pnpm test:integration
+        env:
+          NODE_ENV: test
+
+      - name: Run E2E tests
+        run: pnpm test:e2e
+        env:
+          NODE_ENV: test
+
+      - name: Security audit
+        run: pnpm audit --audit-level high
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  # ===============================================
+  # Security Scanning
+  # ===============================================
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: test
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+      - name: Snyk security scan
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
+
+  # ===============================================
+  # Build and Push Images
+  # ===============================================
+  build:
+    name: Build & Push
+    runs-on: ubuntu-latest
+    needs: [test, security]
+    if: github.ref == 'refs/heads/main' || github.event_name == 'release'
+    timeout-minutes: 20
+
+    outputs:
+      image-tag: ${{ steps.meta.outputs.tags }}
+      image-digest: ${{ steps.build.outputs.digest }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ${{ env.ECR_REGISTRY }}/production-prismy-app
+            ${{ env.ECR_REGISTRY }}/production-prismy-worker
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push app image
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          target: runner
+
+      - name: Tag worker image
+        run: |
+          # Worker uses same image as app for now
+          docker tag ${{ env.ECR_REGISTRY }}/production-prismy-app:latest ${{ env.ECR_REGISTRY }}/production-prismy-worker:latest
+          docker push ${{ env.ECR_REGISTRY }}/production-prismy-worker:latest
+
+      - name: Scan image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.ECR_REGISTRY }}/production-prismy-app:latest
+          format: 'sarif'
+          output: 'trivy-image-results.sarif'
+
+      - name: Upload image scan results
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-image-results.sarif'
+
+  # ===============================================
+  # Deploy to Staging
+  # ===============================================
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/develop'
+    environment: staging
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "~1.0"
+
+      - name: Deploy to staging
+        run: |
+          cd infrastructure/terraform
+          terraform init -backend-config="key=staging/terraform.tfstate"
+          terraform workspace select staging || terraform workspace new staging
+          terraform plan -var="environment=staging" -var="app_image_tag=latest"
+          terraform apply -auto-approve -var="environment=staging" -var="app_image_tag=latest"
+
+      - name: Update ECS service
+        run: |
+          aws ecs update-service \
+            --cluster staging-prismy \
+            --service staging-prismy-app \
+            --force-new-deployment \
+            --region ${{ env.AWS_REGION }}
+
+      - name: Wait for deployment
+        run: |
+          aws ecs wait services-stable \
+            --cluster staging-prismy \
+            --services staging-prismy-app \
+            --region ${{ env.AWS_REGION }}
+
+      - name: Run smoke tests
+        run: |
+          # Wait for application to be ready
+          sleep 60
+          
+          # Get staging URL from Terraform output
+          cd infrastructure/terraform
+          STAGING_URL=$(terraform output -raw application_url)
+          
+          # Basic health checks
+          curl -f "$STAGING_URL/api/health" || exit 1
+          curl -f "$STAGING_URL/api/status" || exit 1
+
+  # ===============================================
+  # Deploy to Production
+  # ===============================================
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' || github.event_name == 'release'
+    environment: production
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "~1.0"
+
+      - name: Deploy infrastructure updates
+        run: |
+          cd infrastructure/terraform
+          terraform init
+          terraform plan -var="app_image_tag=latest" -out=tfplan
+          terraform apply tfplan
+
+      - name: Blue-Green Deployment
+        run: |
+          # Get current task definition
+          CURRENT_TASK_DEF=$(aws ecs describe-services \
+            --cluster production-prismy \
+            --services production-prismy-app \
+            --query 'services[0].taskDefinition' \
+            --output text \
+            --region ${{ env.AWS_REGION }})
+          
+          # Create new task definition with updated image
+          NEW_TASK_DEF=$(aws ecs describe-task-definition \
+            --task-definition $CURRENT_TASK_DEF \
+            --query 'taskDefinition' \
+            --region ${{ env.AWS_REGION }})
+          
+          # Update image in task definition
+          echo $NEW_TASK_DEF | jq '.containerDefinitions[0].image = "${{ env.ECR_REGISTRY }}/production-prismy-app:latest"' | jq 'del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .placementConstraints, .compatibilities, .registeredAt, .registeredBy)' > new-task-def.json
+          
+          # Register new task definition
+          NEW_TASK_DEF_ARN=$(aws ecs register-task-definition \
+            --cli-input-json file://new-task-def.json \
+            --query 'taskDefinition.taskDefinitionArn' \
+            --output text \
+            --region ${{ env.AWS_REGION }})
+          
+          # Update service with new task definition
+          aws ecs update-service \
+            --cluster production-prismy \
+            --service production-prismy-app \
+            --task-definition $NEW_TASK_DEF_ARN \
+            --region ${{ env.AWS_REGION }}
+
+      - name: Wait for deployment
+        run: |
+          aws ecs wait services-stable \
+            --cluster production-prismy \
+            --services production-prismy-app \
+            --region ${{ env.AWS_REGION }}
+
+      - name: Verify deployment
+        run: |
+          # Get production URL
+          cd infrastructure/terraform
+          PROD_URL=$(terraform output -raw application_url)
+          
+          # Health checks
+          for i in {1..10}; do
+            if curl -f "$PROD_URL/api/health"; then
+              echo "Health check passed"
+              break
+            fi
+            if [ $i -eq 10 ]; then
+              echo "Health check failed after 10 attempts"
+              exit 1
+            fi
+            sleep 30
+          done
+          
+          # Performance check
+          RESPONSE_TIME=$(curl -o /dev/null -s -w '%{time_total}' "$PROD_URL")
+          if (( $(echo "$RESPONSE_TIME > 5.0" | bc -l) )); then
+            echo "Response time too high: ${RESPONSE_TIME}s"
+            exit 1
+          fi
+
+      - name: Rollback on failure
+        if: failure()
+        run: |
+          echo "Deployment failed, rolling back..."
+          aws ecs update-service \
+            --cluster production-prismy \
+            --service production-prismy-app \
+            --task-definition $CURRENT_TASK_DEF \
+            --region ${{ env.AWS_REGION }}
+
+      - name: Update CloudFront cache
+        run: |
+          DISTRIBUTION_ID=$(cd infrastructure/terraform && terraform output -raw cloudfront_distribution_id)
+          aws cloudfront create-invalidation \
+            --distribution-id $DISTRIBUTION_ID \
+            --paths "/*" \
+            --region ${{ env.AWS_REGION }}
+
+  # ===============================================
+  # Post-Deploy Monitoring
+  # ===============================================
+  post-deploy:
+    name: Post-Deploy Monitoring
+    runs-on: ubuntu-latest
+    needs: [deploy-production]
+    if: github.ref == 'refs/heads/main' && success()
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Send deployment notification
+        run: |
+          # Send Slack notification
+          curl -X POST -H 'Content-type: application/json' \
+            --data '{"text":"🚀 Prismy deployed successfully to production!","channel":"#deployments"}' \
+            ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Create GitHub deployment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: context.payload.deployment.id,
+              state: 'success',
+              environment: 'production',
+              description: 'Deployment completed successfully'
+            });
+
+      - name: Monitor initial metrics
+        run: |
+          # Wait 5 minutes and check key metrics
+          sleep 300
+          
+          # Check error rate
+          ERROR_RATE=$(aws logs filter-log-events \
+            --log-group-name /aws/ecs/production-prismy-app \
+            --start-time $(date -d '5 minutes ago' +%s)000 \
+            --filter-pattern 'ERROR' \
+            --query 'length(events)' \
+            --output text \
+            --region ${{ env.AWS_REGION }})
+          
+          if [ "$ERROR_RATE" -gt 10 ]; then
+            echo "High error rate detected: $ERROR_RATE errors in 5 minutes"
+            # Send alert
+            curl -X POST -H 'Content-type: application/json' \
+              --data '{"text":"⚠️ High error rate detected after deployment!","channel":"#alerts"}' \
+              ${{ secrets.SLACK_WEBHOOK_URL }}
+          fi
+
+  # ===============================================
+  # Cleanup
+  # ===============================================
+  cleanup:
+    name: Cleanup
+    runs-on: ubuntu-latest
+    needs: [deploy-production, post-deploy]
+    if: always()
+    timeout-minutes: 5
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Cleanup old ECR images
+        run: |
+          # Keep only the last 10 images
+          aws ecr list-images \
+            --repository-name production-prismy-app \
+            --filter tagStatus=UNTAGGED \
+            --query 'imageIds[?imageDigest!=null]' \
+            --output json \
+            --region ${{ env.AWS_REGION }} | \
+          jq '.[:(-10)]' | \
+          aws ecr batch-delete-image \
+            --repository-name production-prismy-app \
+            --image-ids file:///dev/stdin \
+            --region ${{ env.AWS_REGION }} || true

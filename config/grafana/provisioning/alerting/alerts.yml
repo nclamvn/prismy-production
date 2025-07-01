@@ -1,0 +1,384 @@
+# ===============================================
+# Grafana Alerting Rules Configuration
+# Define alert rules for monitoring
+# ===============================================
+
+apiVersion: 1
+
+groups:
+  - name: prismy_alerts
+    folder: Prismy Alerts
+    interval: 1m
+    rules:
+      # High Error Rate Alert
+      - uid: high-error-rate
+        title: High Error Rate
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: 'sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m]))'
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0.05
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              reducer: last
+              refId: B
+              type: threshold
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: []
+                  reducer:
+                    params: []
+                    type: avg
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: B
+              refId: C
+              type: math
+        noDataState: NoData
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: "Error rate is above 5%"
+          description: "The error rate is {{ humanizePercentage $values.A.Value }} for the last 5 minutes"
+        labels:
+          severity: critical
+          team: platform
+          
+      # High Response Time Alert
+      - uid: high-response-time
+        title: High Response Time
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: 'histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))'
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 2
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              reducer: last
+              refId: B
+              type: threshold
+        noDataState: NoData
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: "Response time P95 is above 2 seconds"
+          description: "The 95th percentile response time is {{ $values.A.Value }}s"
+        labels:
+          severity: warning
+          team: platform
+          
+      # High CPU Usage Alert
+      - uid: high-cpu-usage
+        title: High CPU Usage
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: '100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)'
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 80
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              reducer: last
+              refId: B
+              type: threshold
+        noDataState: NoData
+        execErrState: Alerting
+        for: 10m
+        annotations:
+          summary: "CPU usage is above 80%"
+          description: "CPU usage is {{ humanizePercentage $values.A.Value }}"
+        labels:
+          severity: warning
+          team: platform
+          
+      # High Memory Usage Alert
+      - uid: high-memory-usage
+        title: High Memory Usage
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: '(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100'
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 80
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              reducer: last
+              refId: B
+              type: threshold
+        noDataState: NoData
+        execErrState: Alerting
+        for: 10m
+        annotations:
+          summary: "Memory usage is above 80%"
+          description: "Memory usage is {{ humanizePercentage $values.A.Value }}"
+        labels:
+          severity: warning
+          team: platform
+          
+      # Database Connection Pool Alert
+      - uid: db-connection-pool-high
+        title: Database Connection Pool High
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: 'prismy_db_connections_active / prismy_db_connections_max'
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0.8
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              reducer: last
+              refId: B
+              type: threshold
+        noDataState: NoData
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: "Database connection pool utilization is high"
+          description: "Connection pool utilization is {{ humanizePercentage $values.A.Value }}"
+        labels:
+          severity: warning
+          team: platform
+          
+      # Service Down Alert
+      - uid: service-down
+        title: Service Down
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: 'up'
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: '-100'
+              expression: A
+              reducer: last
+              refId: B
+              type: threshold
+        noDataState: Alerting
+        execErrState: Alerting
+        for: 1m
+        annotations:
+          summary: "Service {{ $labels.job }} is down"
+          description: "Service {{ $labels.job }} on {{ $labels.instance }} has been down for more than 1 minute"
+        labels:
+          severity: critical
+          team: platform
+          
+# Contact points
+contactPoints:
+  - name: email-notifications
+    receivers:
+      - uid: email-receiver
+        type: email
+        settings:
+          addresses: alerts@prismy.com
+          singleEmail: true
+          
+  - name: slack-notifications
+    receivers:
+      - uid: slack-receiver
+        type: slack
+        settings:
+          url: $SLACK_WEBHOOK_URL
+          title: 'Prismy Alert: {{ .GroupLabels.alertname }}'
+          text: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
+          
+  - name: pagerduty-critical
+    receivers:
+      - uid: pagerduty-receiver
+        type: pagerduty
+        settings:
+          integrationKey: $PAGERDUTY_INTEGRATION_KEY
+          severity: critical
+          
+# Notification policies
+policies:
+  - receiver: email-notifications
+    group_by: ['alertname', 'cluster', 'service']
+    group_wait: 30s
+    group_interval: 5m
+    repeat_interval: 12h
+    matchers:
+      - severity = warning
+      
+  - receiver: slack-notifications
+    group_by: ['alertname', 'cluster', 'service']
+    group_wait: 10s
+    group_interval: 5m
+    repeat_interval: 1h
+    matchers:
+      - severity =~ "warning|critical"
+      
+  - receiver: pagerduty-critical
+    group_by: ['alertname', 'cluster', 'service']
+    group_wait: 0s
+    group_interval: 1m
+    repeat_interval: 5m
+    matchers:
+      - severity = critical

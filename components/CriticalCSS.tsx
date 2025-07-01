@@ -36,8 +36,13 @@ export function CriticalCSS({ children }: { children: React.ReactNode }) {
             
             // Remove the preload link after a short delay
             setTimeout(() => {
-              if (link.parentNode) {
-                link.parentNode.removeChild(link)
+              try {
+                if (link && link.parentNode && link.parentNode.contains(link)) {
+                  link.parentNode.removeChild(link)
+                }
+              } catch (error) {
+                // Silently handle if link was already removed
+                console.debug('Preload link already removed:', error)
               }
             }, 100)
           }

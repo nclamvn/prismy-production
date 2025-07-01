@@ -333,8 +333,10 @@ export function validateURL(url: string): boolean {
     return false
   }
 
-  // Use our type-safe validator first
-  if (!validateURLUtil(url)) {
+  // Basic URL validation first
+  try {
+    new URL(url)
+  } catch {
     return false
   }
 
@@ -343,7 +345,6 @@ export function validateURL(url: string): boolean {
     protocols: ['https'],
     require_protocol: true,
     require_valid_protocol: true,
-    host_whitelist: [], // Can be configured for specific allowed hosts
     host_blacklist: ['localhost', '127.0.0.1', '0.0.0.0'], // Security: block local hosts
   })
 }

@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { useAuth } from '@/contexts/AuthContext'
+import { getPortalRoot } from '@/components/ui/PortalRoot'
 
 interface AuthModalProps {
   isOpen: boolean
@@ -36,13 +37,22 @@ export default function AuthModal({
   const [loadingState, setLoadingState] = useState<AuthLoadingState>('idle')
   const [authError, setAuthError] = useState<AuthError | null>(null)
   const [mounted, setMounted] = useState(false)
+  const originalOverflowRef = useRef<string>('')
 
   const { signIn, signUp, signInWithGoogle, signInWithApple } = useAuth()
 
   // Handle mounting for portal
   useEffect(() => {
     setMounted(true)
-    return () => setMounted(false)
+    // Store original overflow style
+    originalOverflowRef.current = document.body.style.overflow || ''
+    return () => {
+      setMounted(false)
+      // Restore original overflow when component unmounts
+      if (originalOverflowRef.current !== undefined) {
+        document.body.style.overflow = originalOverflowRef.current
+      }
+    }
   }, [])
 
   // Legacy loading state for backward compatibility
@@ -173,7 +183,7 @@ export default function AuthModal({
     }
   }, [loading, handleClose])
 
-  // ESC key support
+  // ESC key support with proper cleanup
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
@@ -181,17 +191,23 @@ export default function AuthModal({
       }
     }
 
-    if (isOpen) {
+    if (isOpen && mounted) {
       document.addEventListener('keydown', handleEscape)
-      // Prevent body scroll when modal is open
-      document.body.style.overflow = 'hidden'
+      // Safely manage body overflow
+      if (document.body.style.overflow !== 'hidden') {
+        originalOverflowRef.current = document.body.style.overflow || ''
+        document.body.style.overflow = 'hidden'
+      }
     }
 
     return () => {
       document.removeEventListener('keydown', handleEscape)
-      document.body.style.overflow = 'unset'
+      // Only restore if we were the one who set it
+      if (isOpen && originalOverflowRef.current !== undefined) {
+        document.body.style.overflow = originalOverflowRef.current
+      }
     }
-  }, [isOpen, handleEscapeClose])
+  }, [isOpen, mounted, handleEscapeClose])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -328,16 +344,16 @@ export default function AuthModal({
 
   return createPortal(
     (
-        <>
+        <div className="fixed inset-0 z-[9999] pointer-events-auto">
           {/* Backdrop */}
           <div
-            className="fixed inset-0 z-[9998] bg-black/60 backdrop-blur-sm cursor-pointer animate-fade-in"
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm cursor-pointer animate-fade-in"
             onClick={handleBackdropClick}
             aria-label="Close modal"
           />
 
           {/* Modal Container */}
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 lg:p-8 overflow-y-auto pointer-events-none">
+          <div className="relative flex items-center justify-center min-h-full p-4 sm:p-6 lg:p-8 overflow-y-auto">
             {/* Modal */}
             <div
               className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden my-auto pointer-events-auto animate-modal-spring"
@@ -617,8 +633,8 @@ export default function AuthModal({
                 </button>
             </div>
           </div>
-        </>
+        </div>
     ),
-    document.body
+    getPortalRoot()
   )
 }

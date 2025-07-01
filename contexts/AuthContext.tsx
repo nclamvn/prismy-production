@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { User, Session } from '@supabase/supabase-js'
-import { createClientComponentClient } from '@/lib/supabase'
+import { getBrowserClient } from '@/lib/supabase-browser'
 import type { UserProfile } from '@/lib/supabase'
 
 // Import comprehensive auth types
@@ -61,8 +61,10 @@ export function useAuth(): AuthContextType {
   return context
 }
 
-// Use centralized singleton client
-const getSupabaseClient = () => createClientComponentClient()
+// Use true singleton client - getBrowserClient ensures only one instance
+const getSupabaseClient = () => {
+  return getBrowserClient()
+}
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)

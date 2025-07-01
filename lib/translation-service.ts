@@ -127,25 +127,33 @@ export class PrismyTranslationService {
     try {
       // Check cache based on A/B test variant (skip for auto-detect and cache-disabled variant)
       if (sourceLang !== 'auto' && abTestVariant === 'cache_enabled') {
-        const redisCached = await redisTranslationCache.get(text, sourceLang, targetLang, qualityTier)
-        if (redisCached) {
-          console.log('✅ Redis cache hit for translation')
-          return {
-            ...redisCached,
-            timestamp: new Date().toISOString(),
-            cached: true
+        try {
+          const redisCached = await redisTranslationCache.get(text, sourceLang, targetLang, qualityTier)
+          if (redisCached) {
+            console.log('✅ Redis cache hit for translation')
+            return {
+              ...redisCached,
+              timestamp: new Date().toISOString(),
+              cached: true
+            }
           }
+        } catch (error) {
+          console.warn('⚠️ Redis cache read error, falling back to memory cache:', error)
         }
 
-        // Fallback to in-memory cache
-        const memoryCached = translationCache.get(text, sourceLang, targetLang, qualityTier)
-        if (memoryCached) {
-          console.log('✅ Memory cache hit for translation')
-          return {
-            ...memoryCached,
-            timestamp: new Date().toISOString(),
-            cached: true
+        try {
+          // Fallback to in-memory cache
+          const memoryCached = translationCache.get(text, sourceLang, targetLang, qualityTier)
+          if (memoryCached) {
+            console.log('✅ Memory cache hit for translation')
+            return {
+              ...memoryCached,
+              timestamp: new Date().toISOString(),
+              cached: true
+            }
           }
+        } catch (error) {
+          console.warn('⚠️ Memory cache read error, proceeding without cache:', error)
         }
       }
 
@@ -193,11 +201,19 @@ export class PrismyTranslationService {
       // Only cache if the A/B test variant allows caching
       const cacheSourceLang = result.sourceLang || sourceLang
       if (cacheSourceLang !== 'auto' && abTestVariant === 'cache_enabled') {
-        // Store in Redis cache first
-        await redisTranslationCache.set(text, cacheSourceLang, targetLang, result, qualityTier)
+        try {
+          // Store in Redis cache first
+          await redisTranslationCache.set(text, cacheSourceLang, targetLang, result, qualityTier)
+        } catch (error) {
+          console.warn('⚠️ Redis cache write error:', error)
+        }
         
-        // Also store in memory cache as fallback
-        translationCache.set(text, cacheSourceLang, targetLang, qualityTier, result)
+        try {
+          // Also store in memory cache as fallback
+          translationCache.set(text, cacheSourceLang, targetLang, qualityTier, result)
+        } catch (error) {
+          console.warn('⚠️ Memory cache write error:', error)
+        }
         
         console.log(`🔄 Translation cached: ${text.substring(0, 50)}... (${cacheSourceLang} → ${targetLang})`)
       } else if (abTestVariant === 'cache_disabled') {

@@ -175,9 +175,10 @@ export default function DocumentViewer({
     const a = document.createElement('a')
     a.href = url
     a.download = file.name
-    document.body.appendChild(a)
+    a.style.display = 'none'
+    
+    // Use a more React-safe approach with immediate cleanup  
     a.click()
-    document.body.removeChild(a)
     URL.revokeObjectURL(url)
   }
 

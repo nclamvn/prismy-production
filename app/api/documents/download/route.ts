@@ -275,34 +275,30 @@ async function generateExcelOutput(
   translation: any
 ): Promise<Blob> {
   try {
-    const XLSX = await import('xlsx')
+    const ExcelJS = await import('exceljs')
 
-    const workbook = XLSX.utils.book_new()
+    const workbook = new ExcelJS.Workbook()
+    const worksheet = workbook.addWorksheet('Translation')
 
-    // Create metadata sheet
-    const metadataData = [
-      ['Translation Information'],
-      ['Original File', document.original_filename],
-      ['Source Language', translation.source_language || 'auto-detect'],
-      ['Target Language', translation.target_language],
-      ['Translation Date', new Date(translation.created_at).toLocaleString()],
-      ['Quality Score', translation.quality_score || 'N/A'],
-      ['Word Count', translatedText.split(/\s+/).length],
-      ['Character Count', translatedText.length],
-      [],
-      ['Translated Content:'],
-    ]
+    // Create metadata section
+    worksheet.addRow(['Translation Information'])
+    worksheet.addRow(['Original File', document.original_filename])
+    worksheet.addRow(['Source Language', translation.source_language || 'auto-detect'])
+    worksheet.addRow(['Target Language', translation.target_language])
+    worksheet.addRow(['Translation Date', new Date(translation.created_at).toLocaleString()])
+    worksheet.addRow(['Quality Score', translation.quality_score || 'N/A'])
+    worksheet.addRow(['Word Count', translatedText.split(/\s+/).length])
+    worksheet.addRow(['Character Count', translatedText.length])
+    worksheet.addRow([])
+    worksheet.addRow(['Translated Content:'])
 
     // Add translated content (split by lines)
     const contentLines = translatedText.split('\n')
     contentLines.forEach(line => {
-      metadataData.push([line])
+      worksheet.addRow([line])
     })
 
-    const worksheet = XLSX.utils.aoa_to_sheet(metadataData)
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Translation')
-
-    const buffer = XLSX.write(workbook, { type: 'array', bookType: 'xlsx' })
+    const buffer = await workbook.xlsx.writeBuffer()
     return new Blob([buffer], {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     })

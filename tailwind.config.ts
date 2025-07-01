@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss'
+import tokens from './tokens'
 
 const config: Config = {
   content: [
@@ -11,62 +12,100 @@ const config: Config = {
       fontFamily: {
         'inter': ['var(--font-inter)', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
         'sans': ['var(--font-inter)', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'], // Make Inter default
+        'vietnamese': tokens.flattenedTypography.fontFamily.vietnamese,
+        ...tokens.flattenedTypography.fontFamily,
       },
       colors: {
+        // Legacy CSS variables (keep for backward compatibility)
         black: 'var(--black)',
         white: 'var(--white)',
         main: 'var(--bg-main)',
         footer: 'var(--bg-footer)',
-        gray: {
-          50: 'var(--gray-50)',
-          100: 'var(--gray-100)',
-          200: 'var(--gray-200)',
-          300: 'var(--gray-300)',
-          400: 'var(--gray-400)',
-          500: 'var(--gray-500)',
-          600: 'var(--gray-600)',
-          700: 'var(--gray-700)',
-          800: 'var(--gray-800)',
-          900: 'var(--gray-900)',
-        },
+        
+        // New design system tokens
+        ...tokens.flattenedColors,
+        
+        // Vietnamese cultural colors
+        'vietnamese-red': tokens.vietnamese.culturalColors.vietnamese.red,
+        'vietnamese-gold': tokens.vietnamese.culturalColors.vietnamese.gold,
+        'tet-red': tokens.vietnamese.culturalColors.festive.tetRed,
+        'tet-gold': tokens.vietnamese.culturalColors.festive.tetGold,
       },
       backgroundImage: {
         'accent-rainbow': 'var(--accent-rainbow)',
       },
       borderRadius: {
-        sm: 'var(--radius-sm)',
-        md: 'var(--radius-md)',
-        lg: 'var(--radius-lg)',
+        // Design system radius tokens (0/4/8/16px scale)
+        none: '0px',
+        sm: '4px',      // buttons, badges
+        DEFAULT: '8px', // cards, inputs
+        lg: '16px',     // modals, panels
+        xl: '24px',
+        '2xl': '32px',
+        '3xl': '48px',
+        full: '9999px', // avatars, pills
+        
+        // Semantic radius from tokens
+        card: '8px',
+        button: '8px',
+        input: '8px',
+        badge: '4px',
+        modal: '16px',
+        tooltip: '4px',
+        avatar: '9999px',
       },
       boxShadow: {
-        sm: 'var(--shadow-sm)',
-        md: 'var(--shadow-md)',
-        lg: 'var(--shadow-lg)',
+        // Master Prompt: only shadow-sm and shadow-md allowed
+        none: '0 0 #0000',
+        sm: '0 1px 2px 0 rgb(0 0 0 / 0.05)',     // subtle elements
+        DEFAULT: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
+        md: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)', // cards, modals
+        // No other shadows allowed per Master Prompt
       },
       spacing: {
-        xs: 'var(--space-xs)',
-        sm: 'var(--space-sm)',
-        md: 'var(--space-md)',
-        lg: 'var(--space-lg)',
-        xl: 'var(--space-xl)',
-        '2xl': 'var(--space-2xl)',
-        '3xl': 'var(--space-3xl)',
+        // Legacy CSS variables (keep for backward compatibility)
+        // xs: 'var(--space-xs)',
+        // sm: 'var(--space-sm)',
+        // md: 'var(--space-md)',
+        // lg: 'var(--space-lg)',
+        // xl: 'var(--space-xl)',
+        // '2xl': 'var(--space-2xl)',
+        // '3xl': 'var(--space-3xl)',
+        
+        // New design system tokens
+        ...tokens.flattenedSpacing,
       },
       fontSize: {
-        xs: 'var(--text-xs)',
-        sm: 'var(--text-sm)',
-        base: 'var(--text-base)',
-        lg: 'var(--text-lg)',
-        xl: 'var(--text-xl)',
-        '2xl': 'var(--text-2xl)',
-        '3xl': 'var(--text-3xl)',
-        '4xl': 'var(--text-4xl)',
-        '5xl': 'var(--text-5xl)',
+        // Legacy CSS variables (keep for backward compatibility)
+        // xs: 'var(--text-xs)',
+        // sm: 'var(--text-sm)',
+        // base: 'var(--text-base)',
+        // lg: 'var(--text-lg)',
+        // xl: 'var(--text-xl)',
+        // '2xl': 'var(--text-2xl)',
+        // '3xl': 'var(--text-3xl)',
+        // '4xl': 'var(--text-4xl)',
+        // '5xl': 'var(--text-5xl)',
+        
+        // New design system tokens with line height
+        ...(tokens.flattenedTypography.fontSize as any),
       },
       lineHeight: {
+        // Legacy CSS variables (keep for backward compatibility)
         tight: 'var(--leading-tight)',
         normal: 'var(--leading-normal)',
         relaxed: 'var(--leading-relaxed)',
+        
+        // New design system tokens
+        ...tokens.flattenedTypography.lineHeight,
+      },
+      fontWeight: {
+        // New design system tokens
+        ...tokens.flattenedTypography.fontWeight,
+      },
+      letterSpacing: {
+        // New design system tokens
+        ...tokens.flattenedTypography.letterSpacing,
       },
       transitionDuration: {
         fast: 'var(--duration-fast)',

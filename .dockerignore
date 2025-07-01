@@ -1,0 +1,168 @@
+# ===============================================
+# Docker ignore file for Prismy production build
+# Optimized to reduce build context and image size
+# ===============================================
+
+# Dependencies
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Next.js build outputs
+.next/
+out/
+build/
+dist/
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.example
+
+# Runtime data
+logs/
+*.log
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Git files
+.git/
+.gitignore
+.gitattributes
+
+# Docker files
+Dockerfile*
+.dockerignore
+docker-compose*.yml
+
+# CI/CD files
+.github/
+.gitlab-ci.yml
+.travis.yml
+.circleci/
+
+# Documentation
+README.md
+CHANGELOG.md
+LICENSE
+docs/
+*.md
+
+# Test files
+__tests__/
+test/
+tests/
+*.test.js
+*.test.ts
+*.test.jsx
+*.test.tsx
+*.spec.js
+*.spec.ts
+jest.config.*
+cypress/
+cypress.json
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+
+# Cache directories
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+
+# Database files
+*.sqlite
+*.sqlite3
+*.db
+
+# Backup files
+*.backup
+*.bak
+*.old
+
+# Archive files
+*.tar.gz
+*.zip
+*.rar
+
+# Development tools
+.prettierrc*
+.eslintrc*
+.editorconfig
+.nvmrc
+
+# Package manager files
+yarn.lock
+pnpm-lock.yaml
+
+# TypeScript incremental build cache
+*.tsbuildinfo
+
+# Vercel deployment files
+.vercel/
+
+# Sentry files
+.sentryclirc
+
+# Local development scripts
+scripts/dev/
+scripts/local/
+
+# Configuration examples
+config/*.example.*
+*.example.json
+
+# SSL certificates (should be mounted as secrets)
+*.pem
+*.key
+*.crt
+*.cert
+
+# Large asset files that should be in CDN
+public/videos/
+public/large-assets/
+
+# Temporary uploads
+uploads/temp/
+
+# Local database dumps
+*.sql
+*.dump
+
+# Monitoring and profiling
+*.prof
+*.heap
+
+# Editor artifacts
+.history/
+.vscode-server/

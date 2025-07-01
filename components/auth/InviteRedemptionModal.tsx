@@ -1,9 +1,11 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Gift, CreditCard, Check, AlertCircle, Loader2 } from 'lucide-react'
 import { useSSRSafeLanguage } from '@/contexts/SSRSafeLanguageContext'
+import { getPortalRoot } from '@/components/ui/PortalRoot'
 
 interface InviteRedemptionModalProps {
   isOpen: boolean
@@ -237,7 +239,7 @@ export default function InviteRedemptionModal({
 
   if (!isOpen) return null
 
-  return (
+  return createPortal(
     <AnimatePresence>
       <motion.div
         initial={{ opacity: 0 }}
@@ -419,6 +421,7 @@ export default function InviteRedemptionModal({
           </div>
         </motion.div>
       </motion.div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    getPortalRoot()
   )
 }

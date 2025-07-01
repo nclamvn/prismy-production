@@ -23,9 +23,23 @@
   "ignorePatterns": ["node_modules/", ".next/", "build/", "dist/"],
   "overrides": [
     {
-      "files": ["jest.config.js", "jest.setup.js", "jest.polyfills.js"],
+      "files": [
+        "jest.config.js", 
+        "jest.setup.js", 
+        "jest.polyfills.js",
+        "scripts/**/*.js",
+        "config/**/*.js",
+        "tokens/**/*.ts",
+        "tests/**/*.js",
+        "stryker.conf.mjs",
+        ".storybook/**/*.ts",
+        "**/*.test.ts",
+        "**/*.test.js"
+      ],
       "rules": {
-        "@typescript-eslint/no-var-requires": "off"
+        "@typescript-eslint/no-var-requires": "off",
+        "@typescript-eslint/no-unused-vars": "off",
+        "import/no-anonymous-default-export": "off"
       }
     }
   ]

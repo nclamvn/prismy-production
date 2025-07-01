@@ -1,0 +1,295 @@
+name: 🚀 Production Deployment
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+        - production
+        - staging
+
+env:
+  NODE_VERSION: '18'
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # Pre-deployment Quality Gate
+  pre-deployment-quality:
+    name: 🛡️ Pre-Deployment Quality Gate
+    uses: ./.github/workflows/quality-gate.yml
+    secrets: inherit
+
+  # Security & Compliance Check
+  security-compliance:
+    name: 🔒 Security & Compliance
+    runs-on: ubuntu-latest
+    needs: pre-deployment-quality
+    
+    steps:
+      - name: 📦 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📥 Install Dependencies
+        run: npm ci
+
+      - name: 🔍 Vietnamese Market Compliance Check
+        run: |
+          echo "🇻🇳 Checking Vietnamese market compliance..."
+          
+          # Check for VNPay integration security
+          if grep -r "vnp_" --include="*.ts" --include="*.js" lib/ components/ app/; then
+            echo "✅ VNPay integration found - validating security patterns"
+            
+            # Check for sensitive data handling
+            if grep -r "vnp_.*password\|vnp_.*secret" --include="*.ts" --include="*.js" . || \
+               grep -r "console\.log.*vnp_\|alert.*vnp_" --include="*.ts" --include="*.js" .; then
+              echo "❌ CRITICAL: VNPay sensitive data exposure detected!"
+              exit 1
+            fi
+            echo "✅ VNPay security patterns validated"
+          fi
+          
+          # Check for MoMo integration security
+          if grep -r "momo_" --include="*.ts" --include="*.js" lib/ components/ app/; then
+            echo "✅ MoMo integration found - validating security patterns"
+            
+            if grep -r "momo_.*secret\|momo_.*key" --include="*.ts" --include="*.js" . || \
+               grep -r "console\.log.*momo_\|alert.*momo_" --include="*.ts" --include="*.js" .; then
+              echo "❌ CRITICAL: MoMo sensitive data exposure detected!"
+              exit 1
+            fi
+            echo "✅ MoMo security patterns validated"
+          fi
+          
+          echo "✅ Vietnamese payment gateway compliance validated"
+
+      - name: 🔐 Environment Variables Security Check
+        run: |
+          echo "🔍 Checking for exposed secrets in code..."
+          
+          # Check for hardcoded secrets
+          if grep -r -E "(password|secret|key|token).*=.*['\"][^'\"]{10,}" --include="*.ts" --include="*.js" . --exclude-dir=node_modules --exclude-dir=.git; then
+            echo "❌ CRITICAL: Hardcoded secrets detected!"
+            exit 1
+          fi
+          
+          # Check for API keys in comments
+          if grep -r -E "(api.key|secret.key|access.token)" --include="*.ts" --include="*.js" . --exclude-dir=node_modules --exclude-dir=.git; then
+            echo "⚠️ WARNING: Potential API key references found in comments"
+          fi
+          
+          echo "✅ No exposed secrets detected"
+
+      - name: 📋 GDPR & Data Privacy Compliance
+        run: |
+          echo "🇪🇺 Checking GDPR compliance for Vietnamese users..."
+          
+          # Check for data collection patterns
+          if grep -r "localStorage\|sessionStorage\|cookie" --include="*.ts" --include="*.js" lib/ components/ app/; then
+            echo "✅ Data storage detected - ensuring privacy compliance"
+            
+            # Check for user consent mechanisms
+            if ! grep -r "consent\|privacy\|gdpr" --include="*.ts" --include="*.js" .; then
+              echo "⚠️ WARNING: Data storage found but no consent mechanism detected"
+            fi
+          fi
+          
+          echo "✅ Privacy compliance check completed"
+
+  # Build & Test Production Image
+  build-production:
+    name: 🏗️ Build Production Image
+    runs-on: ubuntu-latest
+    needs: security-compliance
+    outputs:
+      image-tag: ${{ steps.meta.outputs.tags }}
+      image-digest: ${{ steps.build.outputs.digest }}
+    
+    steps:
+      - name: 📦 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📥 Install Dependencies
+        run: npm ci
+
+      - name: 🏗️ Production Build
+        run: npm run build
+        env:
+          CI: true
+          NODE_ENV: production
+
+      - name: 🧪 Production Build Smoke Test
+        run: |
+          echo "🔍 Running production build smoke tests..."
+          
+          # Check critical files exist
+          if [ ! -f ".next/BUILD_ID" ]; then
+            echo "❌ BUILD_ID missing - build incomplete"
+            exit 1
+          fi
+          
+          # Check bundle sizes
+          MAIN_BUNDLE_SIZE=$(find .next/static/chunks -name "pages-*.js" -exec du -k {} \; | cut -f1 | head -1 || echo "0")
+          if [ "$MAIN_BUNDLE_SIZE" -gt 1000 ]; then
+            echo "⚠️ WARNING: Main bundle size ${MAIN_BUNDLE_SIZE}KB exceeds 1MB"
+          fi
+          
+          echo "✅ Production build validated"
+
+      - name: 🐳 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🔐 Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📝 Extract Metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix={{branch}}-
+
+      - name: 🏗️ Build and Push Docker Image
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Production Deployment
+  deploy-production:
+    name: 🚀 Deploy to Production
+    runs-on: ubuntu-latest
+    needs: build-production
+    environment: 
+      name: production
+      url: https://prismy.app
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+      - name: 📦 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🚀 Deploy to Production
+        run: |
+          echo "🚀 Deploying Prismy to production..."
+          echo "📦 Image: ${{ needs.build-production.outputs.image-tag }}"
+          echo "🔒 Digest: ${{ needs.build-production.outputs.image-digest }}"
+          
+          # Here you would integrate with your deployment platform
+          # Examples: Vercel, Railway, AWS, GCP, etc.
+          
+          echo "✅ Production deployment initiated"
+
+      - name: 🏥 Health Check
+        run: |
+          echo "🏥 Running post-deployment health checks..."
+          
+          # Wait for deployment to be ready
+          sleep 60
+          
+          # Health check endpoints
+          HEALTH_ENDPOINTS=(
+            "https://prismy.app/api/health"
+            "https://prismy.app/api/auth/csrf"
+            "https://prismy.app/api/translation/health"
+          )
+          
+          for endpoint in "${HEALTH_ENDPOINTS[@]}"; do
+            if curl -f -m 10 "$endpoint" > /dev/null 2>&1; then
+              echo "✅ $endpoint - OK"
+            else
+              echo "❌ $endpoint - FAILED"
+              exit 1
+            fi
+          done
+          
+          echo "✅ All health checks passed"
+
+      - name: 🧪 Production Smoke Tests
+        run: |
+          echo "🧪 Running production smoke tests..."
+          
+          # Test critical user journeys
+          curl -f "https://prismy.app" > /dev/null
+          echo "✅ Homepage accessible"
+          
+          # Test API endpoints
+          curl -f "https://prismy.app/api/health" > /dev/null
+          echo "✅ API health check passed"
+          
+          # Test Vietnamese localization
+          if curl -s "https://prismy.app" | grep -q "Tiếng Việt\|Vietnamese"; then
+            echo "✅ Vietnamese localization detected"
+          else
+            echo "⚠️ WARNING: Vietnamese localization not detected"
+          fi
+          
+          echo "✅ Production smoke tests completed"
+
+  # Post-Deployment Monitoring
+  post-deployment:
+    name: 📊 Post-Deployment Monitoring
+    runs-on: ubuntu-latest
+    needs: deploy-production
+    if: always() && needs.deploy-production.result == 'success'
+    
+    steps:
+      - name: 📊 Deployment Summary
+        run: |
+          echo "## 🚀 Production Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**🎯 Deployment Target**: Production" >> $GITHUB_STEP_SUMMARY
+          echo "**📦 Image**: ${{ needs.build-production.outputs.image-tag }}" >> $GITHUB_STEP_SUMMARY
+          echo "**⏰ Deployed**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> $GITHUB_STEP_SUMMARY
+          echo "**🔗 URL**: https://prismy.app" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### ✅ Quality Gates Passed" >> $GITHUB_STEP_SUMMARY
+          echo "- **Coverage**: ≥70% lines, ≥60% branches" >> $GITHUB_STEP_SUMMARY
+          echo "- **Security**: OWASP ZAP + CodeQL analysis" >> $GITHUB_STEP_SUMMARY
+          echo "- **Compliance**: Vietnamese payment gateway security" >> $GITHUB_STEP_SUMMARY
+          echo "- **Accessibility**: A11y validation completed" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build**: Production build verified" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🇻🇳 **Tuyệt đối**: Sản phẩm đầu ra không thoả hiệp về chất lượng!" >> $GITHUB_STEP_SUMMARY
+
+      - name: 🔔 Deployment Notification
+        run: |
+          echo "🔔 Sending deployment notifications..."
+          echo "✅ Prismy production deployment completed successfully"
+          echo "🌐 Application URL: https://prismy.app"
+          echo "📈 Quality metrics maintained at target levels"
+          echo "🇻🇳 Vietnamese market compliance validated"

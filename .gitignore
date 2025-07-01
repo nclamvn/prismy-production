@@ -209,3 +209,5 @@ src/
 
 # Prettier cache
 .prettierignore
+*storybook.log
+storybook-static

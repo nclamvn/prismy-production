@@ -305,7 +305,15 @@ const AccessibilityEnhancer: React.FC<AccessibilityEnhancerProps> = ({
       document.head.appendChild(style)
 
       return () => {
-        document.head.removeChild(style)
+        // Safe DOM cleanup with defensive checks
+        try {
+          if (style && style.parentNode && style.parentNode.contains(style)) {
+            document.head.removeChild(style)
+          }
+        } catch (error) {
+          // Silently handle if style was already removed
+          console.debug('Style element already removed:', error)
+        }
         document.documentElement.style.removeProperty('--motion-reduce')
       }
     }

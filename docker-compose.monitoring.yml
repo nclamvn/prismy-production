@@ -1,0 +1,288 @@
+# ===============================================
+# Docker Compose - Monitoring Stack
+# Complete observability infrastructure
+# ===============================================
+
+version: '3.8'
+
+services:
+  # ===============================================
+  # Prometheus - Metrics Collection
+  # ===============================================
+  prometheus:
+    image: prom/prometheus:v2.45.0
+    container_name: prismy-prometheus
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+      - '--storage.tsdb.retention.time=30d'
+      - '--storage.tsdb.retention.size=10GB'
+    volumes:
+      - ./config/prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - prismy-network
+    depends_on:
+      - cadvisor
+      - node-exporter
+
+  # ===============================================
+  # Grafana - Visualization
+  # ===============================================
+  grafana:
+    image: grafana/grafana:10.0.0
+    container_name: prismy-grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=https://monitoring.prismy.com
+      - GF_SMTP_ENABLED=true
+      - GF_SMTP_HOST=smtp.resend.com:587
+      - GF_SMTP_USER=resend
+      - GF_SMTP_PASSWORD=${RESEND_API_KEY}
+      - GF_SMTP_FROM_ADDRESS=monitoring@prismy.com
+    volumes:
+      - ./config/grafana/provisioning:/etc/grafana/provisioning
+      - ./config/grafana/dashboards:/etc/grafana/dashboards
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "3001:3000"
+    networks:
+      - prismy-network
+    depends_on:
+      - prometheus
+      - loki
+      - tempo
+
+  # ===============================================
+  # Loki - Log Aggregation
+  # ===============================================
+  loki:
+    image: grafana/loki:2.9.0
+    container_name: prismy-loki
+    restart: unless-stopped
+    command: -config.file=/etc/loki/loki-config.yml
+    volumes:
+      - ./config/loki/loki-config.yml:/etc/loki/loki-config.yml
+      - loki_data:/loki
+    ports:
+      - "3100:3100"
+    networks:
+      - prismy-network
+
+  # ===============================================
+  # Promtail - Log Collection
+  # ===============================================
+  promtail:
+    image: grafana/promtail:2.9.0
+    container_name: prismy-promtail
+    restart: unless-stopped
+    command: -config.file=/etc/promtail/config.yml
+    volumes:
+      - ./config/promtail/promtail-config.yml:/etc/promtail/config.yml
+      - /var/log:/var/log:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - prismy-network
+    depends_on:
+      - loki
+
+  # ===============================================
+  # Tempo - Distributed Tracing
+  # ===============================================
+  tempo:
+    image: grafana/tempo:2.2.0
+    container_name: prismy-tempo
+    restart: unless-stopped
+    command: ["-config.file=/etc/tempo.yml"]
+    volumes:
+      - ./config/tempo/tempo-config.yml:/etc/tempo.yml
+      - tempo_data:/tmp/tempo
+    ports:
+      - "3200:3200"   # Tempo
+      - "14268:14268" # Jaeger ingest
+      - "9411:9411"   # Zipkin
+    networks:
+      - prismy-network
+
+  # ===============================================
+  # Alertmanager - Alert Management
+  # ===============================================
+  alertmanager:
+    image: prom/alertmanager:v0.26.0
+    container_name: prismy-alertmanager
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+      - '--web.external-url=https://alerts.prismy.com'
+    volumes:
+      - ./config/alertmanager:/etc/alertmanager
+      - alertmanager_data:/alertmanager
+    ports:
+      - "9093:9093"
+    networks:
+      - prismy-network
+
+  # ===============================================
+  # Node Exporter - System Metrics
+  # ===============================================
+  node-exporter:
+    image: prom/node-exporter:v1.6.0
+    container_name: prismy-node-exporter
+    restart: unless-stopped
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    ports:
+      - "9100:9100"
+    networks:
+      - prismy-network
+
+  # ===============================================
+  # cAdvisor - Container Metrics
+  # ===============================================
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.47.0
+    container_name: prismy-cadvisor
+    restart: unless-stopped
+    privileged: true
+    devices:
+      - /dev/kmsg:/dev/kmsg
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      - /cgroup:/cgroup:ro
+    ports:
+      - "8080:8080"
+    networks:
+      - prismy-network
+
+  # ===============================================
+  # Postgres Exporter - Database Metrics
+  # ===============================================
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.13.0
+    container_name: prismy-postgres-exporter
+    restart: unless-stopped
+    environment:
+      DATA_SOURCE_NAME: "postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/prismy?sslmode=disable"
+    ports:
+      - "9187:9187"
+    networks:
+      - prismy-network
+    depends_on:
+      - postgres
+
+  # ===============================================
+  # Redis Exporter - Cache Metrics
+  # ===============================================
+  redis-exporter:
+    image: oliver006/redis_exporter:v1.52.0
+    container_name: prismy-redis-exporter
+    restart: unless-stopped
+    environment:
+      REDIS_ADDR: "redis://redis:6379"
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    ports:
+      - "9121:9121"
+    networks:
+      - prismy-network
+    depends_on:
+      - redis
+
+  # ===============================================
+  # Blackbox Exporter - Endpoint Monitoring
+  # ===============================================
+  blackbox-exporter:
+    image: prom/blackbox-exporter:v0.24.0
+    container_name: prismy-blackbox-exporter
+    restart: unless-stopped
+    command:
+      - '--config.file=/config/blackbox.yml'
+    volumes:
+      - ./config/blackbox/blackbox.yml:/config/blackbox.yml
+    ports:
+      - "9115:9115"
+    networks:
+      - prismy-network
+
+  # ===============================================
+  # Jaeger - Distributed Tracing UI
+  # ===============================================
+  jaeger:
+    image: jaegertracing/all-in-one:1.47
+    container_name: prismy-jaeger
+    restart: unless-stopped
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+      - SPAN_STORAGE_TYPE=badger
+      - BADGER_EPHEMERAL=false
+      - BADGER_DIRECTORY_VALUE=/badger/data
+      - BADGER_DIRECTORY_KEY=/badger/key
+    volumes:
+      - jaeger_data:/badger
+    ports:
+      - "16686:16686" # Jaeger UI
+      - "4317:4317"   # OTLP gRPC
+      - "4318:4318"   # OTLP HTTP
+    networks:
+      - prismy-network
+
+  # ===============================================
+  # OpenTelemetry Collector
+  # ===============================================
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.82.0
+    container_name: prismy-otel-collector
+    restart: unless-stopped
+    command: ["--config=/etc/otel-collector-config.yml"]
+    volumes:
+      - ./config/otel/otel-collector-config.yml:/etc/otel-collector-config.yml
+    ports:
+      - "4320:4317"   # OTLP gRPC
+      - "4321:4318"   # OTLP HTTP
+      - "8888:8888"   # Prometheus metrics
+      - "8889:8889"   # Prometheus exporter
+      - "13133:13133" # Health check
+      - "55679:55679" # ZPages
+    networks:
+      - prismy-network
+    depends_on:
+      - tempo
+      - prometheus
+
+# ===============================================
+# Volumes
+# ===============================================
+volumes:
+  prometheus_data:
+  grafana_data:
+  loki_data:
+  tempo_data:
+  alertmanager_data:
+  jaeger_data:
+
+# ===============================================
+# Networks
+# ===============================================
+networks:
+  prismy-network:
+    external: true

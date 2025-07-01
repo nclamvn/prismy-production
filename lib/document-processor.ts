@@ -157,29 +157,27 @@ export class DocumentProcessor {
 
   private static async processExcelFile(file: File): Promise<string> {
     try {
-      // Use xlsx library to process Excel files
-      const XLSX = await import('xlsx')
+      // Use exceljs library to process Excel files (secure alternative to xlsx)
+      const ExcelJS = await import('exceljs')
       const arrayBuffer = await file.arrayBuffer()
 
-      const workbook = XLSX.read(arrayBuffer, { type: 'array' })
+      const workbook = new ExcelJS.Workbook()
+      await workbook.xlsx.load(arrayBuffer)
       let extractedText = ''
 
       // Process each worksheet
-      workbook.SheetNames.forEach((sheetName, index) => {
-        const worksheet = workbook.Sheets[sheetName]
-        const jsonData = XLSX.utils.sheet_to_json(worksheet, {
-          header: 1,
-          defval: '',
-        })
-
+      workbook.worksheets.forEach((worksheet, index) => {
         if (index > 0) extractedText += '\n\n'
-        extractedText += `=== ${sheetName} ===\n`
+        extractedText += `=== ${worksheet.name} ===\n`
 
         // Convert each row to text
-        jsonData.forEach((row: any[]) => {
-          if (Array.isArray(row) && row.some(cell => cell !== '')) {
-            extractedText +=
-              row.map(cell => String(cell || '')).join(' | ') + '\n'
+        worksheet.eachRow((row, rowNumber) => {
+          const values = row.values as any[]
+          if (values && values.length > 1) { // Skip empty rows, values[0] is undefined
+            const cellValues = values.slice(1).map(cell => String(cell || ''))
+            if (cellValues.some(cell => cell !== '')) {
+              extractedText += cellValues.join(' | ') + '\n'
+            }
           }
         })
       })
@@ -383,16 +381,19 @@ export class DocumentProcessor {
     originalFileName: string
   ): Promise<Blob> {
     try {
-      const XLSX = await import('xlsx')
+      const ExcelJS = await import('exceljs')
+
+      // Create new workbook with exceljs
+      const workbook = new ExcelJS.Workbook()
+      const worksheet = workbook.addWorksheet('Translated')
 
       // Convert text to rows (split by lines)
-      const rows = translatedText.split('\n').map(line => [line])
+      const lines = translatedText.split('\n')
+      lines.forEach((line, index) => {
+        worksheet.addRow([line])
+      })
 
-      const workbook = XLSX.utils.book_new()
-      const worksheet = XLSX.utils.aoa_to_sheet(rows)
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Translated')
-
-      const buffer = XLSX.write(workbook, { type: 'array', bookType: 'xlsx' })
+      const buffer = await workbook.xlsx.writeBuffer()
       return new Blob([buffer], {
         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       })
