@@ -18,7 +18,9 @@ interface Translation {
   translatedText: string
 }
 
-export default function WorkspacePage() {
+import { AuthGuard } from '@/components/auth/AuthGuard'
+
+function WorkspaceContent() {
   const [activeTab, setActiveTab] = useState<'upload' | 'translate' | 'chat'>('upload')
   const [currentDocument, setCurrentDocument] = useState<Document | null>(null)
   const [currentTranslation, setCurrentTranslation] = useState<Translation | null>(null)
@@ -244,5 +246,13 @@ function SidebarItem({
       </div>
       <span className="text-sm font-medium">{label}</span>
     </div>
+  )
+}
+
+export default function WorkspacePage() {
+  return (
+    <AuthGuard>
+      <WorkspaceContent />
+    </AuthGuard>
   )
 }
