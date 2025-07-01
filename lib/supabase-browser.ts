@@ -1,6 +1,6 @@
 /**
- * Browser-only Supabase Client Singleton
- * Prevents multiple GoTrueClient instances in the same browser context
+ * ULTIMATE Supabase Browser Client Singleton
+ * Multi-layered protection against multiple GoTrueClient instances
  */
 
 import { createBrowserClient, type SupabaseClient } from '@supabase/ssr'
@@ -8,15 +8,85 @@ import { createBrowserClient, type SupabaseClient } from '@supabase/ssr'
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
-// Strict singleton - only one client instance ever created
+// Multi-level singleton protection
 let supabaseInstance: SupabaseClient | null = null
 let isCreating = false
+let creationPromise: Promise<SupabaseClient> | null = null
 
-// Global window marker to prevent any other code from creating clients
+// Global markers and locks
 declare global {
   interface Window {
     __PRISMY_SUPABASE_CLIENT__?: SupabaseClient
     __PRISMY_SUPABASE_CREATED__?: boolean
+    __PRISMY_SUPABASE_LOCK__?: boolean
+    __PRISMY_CREATION_TIMESTAMP__?: number
+  }
+}
+
+// Storage-based tracking
+const STORAGE_KEY = 'prismy-supabase-instance-id'
+const CREATION_LOCK_KEY = 'prismy-supabase-lock'
+
+class SupabaseSingleton {
+  private static instanceId: string | null = null
+  
+  static generateInstanceId(): string {
+    return `prismy-${Date.now()}-${Math.random().toString(36).substring(2)}`
+  }
+
+  static isLocked(): boolean {
+    try {
+      const lockValue = localStorage.getItem(CREATION_LOCK_KEY)
+      if (!lockValue) return false
+      
+      const lockData = JSON.parse(lockValue)
+      const now = Date.now()
+      
+      // Lock expires after 5 seconds
+      if (now - lockData.timestamp > 5000) {
+        localStorage.removeItem(CREATION_LOCK_KEY)
+        return false
+      }
+      
+      return lockData.locked === true
+    } catch {
+      return false
+    }
+  }
+
+  static acquireLock(): boolean {
+    try {
+      if (this.isLocked()) return false
+      
+      const lockData = {
+        locked: true,
+        timestamp: Date.now(),
+        instanceId: this.generateInstanceId()
+      }
+      
+      localStorage.setItem(CREATION_LOCK_KEY, JSON.stringify(lockData))
+      window.__PRISMY_SUPABASE_LOCK__ = true
+      return true
+    } catch {
+      return false
+    }
+  }
+
+  static releaseLock(): void {
+    try {
+      localStorage.removeItem(CREATION_LOCK_KEY)
+      window.__PRISMY_SUPABASE_LOCK__ = false
+    } catch {
+      // Ignore errors
+    }
+  }
+
+  static hasExistingInstance(): boolean {
+    return !!(
+      supabaseInstance ||
+      window.__PRISMY_SUPABASE_CLIENT__ ||
+      window.__PRISMY_SUPABASE_CREATED__
+    )
   }
 }
 
@@ -31,52 +101,65 @@ export const getBrowserClient = (): SupabaseClient => {
     return supabaseInstance
   }
 
-  // Check global window singleton first
+  // Check global window singleton
   if (window.__PRISMY_SUPABASE_CLIENT__) {
     supabaseInstance = window.__PRISMY_SUPABASE_CLIENT__
     return supabaseInstance
   }
 
-  // Prevent concurrent creation with a more sophisticated check
-  if (isCreating) {
-    // Wait for the current creation to complete
-    let attempts = 0
-    const maxAttempts = 10
-    const checkInterval = 50 // 50ms
-    
-    return new Promise<SupabaseClient>((resolve, reject) => {
-      const checkForClient = () => {
-        attempts++
-        if (supabaseInstance || window.__PRISMY_SUPABASE_CLIENT__) {
-          resolve(supabaseInstance || window.__PRISMY_SUPABASE_CLIENT__)
-        } else if (attempts >= maxAttempts) {
-          reject(new Error('Timeout waiting for Supabase client creation'))
-        } else {
-          setTimeout(checkForClient, checkInterval)
-        }
-      }
-      checkForClient()
-    }) as any
+  // If creation is in progress, wait for it
+  if (creationPromise) {
+    throw creationPromise // This will be caught and handled by React
   }
 
-  // Check if creation was already attempted in this context
-  if (window.__PRISMY_SUPABASE_CREATED__ && !window.__PRISMY_SUPABASE_CLIENT__) {
-    console.warn('[Supabase] Client was marked as created but instance not found. Recreating...')
-    window.__PRISMY_SUPABASE_CREATED__ = false
+  // Check if another instance is being created
+  if (isCreating || SupabaseSingleton.isLocked()) {
+    // Wait for existing creation to complete
+    let attempts = 0
+    const maxAttempts = 50 // 500ms total wait
+    
+    while (attempts < maxAttempts && !SupabaseSingleton.hasExistingInstance()) {
+      attempts++
+      // Synchronous wait
+      const start = Date.now()
+      while (Date.now() - start < 10) {
+        // 10ms busy wait
+      }
+    }
+    
+    if (window.__PRISMY_SUPABASE_CLIENT__) {
+      supabaseInstance = window.__PRISMY_SUPABASE_CLIENT__
+      return supabaseInstance
+    }
+  }
+
+  // Acquire creation lock
+  if (!SupabaseSingleton.acquireLock()) {
+    throw new Error('Failed to acquire Supabase creation lock')
   }
 
   try {
     isCreating = true
+    
+    // Double-check after acquiring lock
+    if (window.__PRISMY_SUPABASE_CLIENT__) {
+      supabaseInstance = window.__PRISMY_SUPABASE_CLIENT__
+      return supabaseInstance
+    }
 
-    // Create the single client instance with enhanced configuration
+    // Generate unique instance ID
+    const instanceId = SupabaseSingleton.generateInstanceId()
+    SupabaseSingleton.instanceId = instanceId
+
+    // Create the ultimate singleton instance
     supabaseInstance = createBrowserClient(supabaseUrl, supabaseAnonKey, {
       auth: {
         autoRefreshToken: true,
         persistSession: true,
-        detectSessionInUrl: false, // Disable to prevent URL detection conflicts
+        detectSessionInUrl: false, // Prevent URL conflicts
         flowType: 'pkce',
         storage: window.localStorage,
-        storageKey: 'sb-prismy-auth-singleton',
+        storageKey: `sb-prismy-auth-${instanceId}`, // Unique storage key
         debug: false,
       },
       db: {
@@ -84,31 +167,33 @@ export const getBrowserClient = (): SupabaseClient => {
       },
       global: {
         headers: {
-          'x-client-info': 'prismy-web-singleton@1.0.0',
-          'x-instance-id': 'singleton-' + Date.now(),
+          'x-client-info': `prismy-ultimate-singleton@2.0.0`,
+          'x-instance-id': instanceId,
+          'x-creation-timestamp': Date.now().toString(),
         },
       },
       realtime: {
-        enabled: false, // Completely disabled to prevent multiple WebSocket connections
-        params: {
-          eventsPerSecond: 0,
-        },
+        enabled: false,
       },
     })
 
-    // Mark as created globally
+    // Triple-lock the instance globally
     window.__PRISMY_SUPABASE_CLIENT__ = supabaseInstance
     window.__PRISMY_SUPABASE_CREATED__ = true
+    window.__PRISMY_CREATION_TIMESTAMP__ = Date.now()
+    
+    // Store instance tracking
+    localStorage.setItem(STORAGE_KEY, instanceId)
 
-    // Log successful singleton creation
-    if (process.env.NODE_ENV === 'production') {
-      console.log('🎯 [Supabase] Singleton client created successfully')
-    }
-
+    console.log(`🔒 [Supabase] ULTIMATE singleton created: ${instanceId}`)
     return supabaseInstance
 
+  } catch (error) {
+    console.error('Supabase singleton creation failed:', error)
+    throw error
   } finally {
     isCreating = false
+    SupabaseSingleton.releaseLock()
   }
 }
 

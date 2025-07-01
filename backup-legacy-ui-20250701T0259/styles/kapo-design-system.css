@@ -1,0 +1,370 @@
+/**
+ * ===================================
+ * KAPO DESIGN SYSTEM - PIXEL PERFECT
+ * Sophisticated SaaS Template Aesthetics  
+ * Phase 1: Complete Design Token Revolution
+ * ===================================
+ */
+
+:root {
+  /* ==========================================================================
+     KAPO MASSIVE TYPOGRAPHY SYSTEM - Ultra Bold Scale
+     ========================================================================== */
+
+  /* Kapo Signature Typography Scale */
+  --kapo-hero-massive: clamp(
+    4rem,
+    12vw,
+    10rem
+  ); /* 160px max - Massive impact */
+  --kapo-hero-medium: clamp(3rem, 8vw, 6rem); /* 96px max - Secondary hero */
+  --kapo-section-title: clamp(
+    2.5rem,
+    6vw,
+    4rem
+  ); /* 64px max - Section titles */
+  --kapo-card-title: clamp(1.25rem, 3vw, 1.5rem); /* 24px max - Card titles */
+  --kapo-subtitle: clamp(1.25rem, 3vw, 2rem); /* 32px max - Subtitles */
+  --kapo-body-large: 1.25rem; /* 20px - Large body text */
+  --kapo-body-medium: 1rem; /* 16px - Standard body */
+  --kapo-label: 0.875rem; /* 14px - Labels */
+
+  /* Kapo Typography Weights - Professional Hierarchy */
+  --kapo-weight-ultra: 900; /* Ultra Bold - Heroes */
+  --kapo-weight-bold: 700; /* Bold - Emphasis */
+  --kapo-weight-semibold: 600; /* Semi Bold - Headings */
+  --kapo-weight-medium: 500; /* Medium - Subheadings */
+  --kapo-weight-regular: 400; /* Regular - Body */
+  --kapo-weight-light: 300; /* Light - Secondary */
+
+  /* Kapo Letter Spacing & Line Heights - Pixel Perfect */
+  --kapo-hero-tracking: -0.03em; /* Tight tracking for impact */
+  --kapo-title-tracking: -0.02em; /* Slightly tight */
+  --kapo-body-tracking: 0em; /* Normal tracking */
+  --kapo-hero-leading: 0.9; /* Ultra tight line height */
+  --kapo-title-leading: 1.1; /* Tight for headings */
+  --kapo-body-leading: 1.6; /* Relaxed for readability */
+
+  /* ==========================================================================
+     KAPO SOPHISTICATED GRADIENT SYSTEM - Multi-Layer Magic
+     ========================================================================== */
+
+  /* Kapo Primary Gradients - Signature Colors */
+  --kapo-primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --kapo-hero-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --kapo-cta-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  --kapo-success-gradient: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+  --kapo-warning-gradient: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+
+  /* Kapo Background Gradients - Subtle & Sophisticated */
+  --kapo-bg-hero: linear-gradient(
+    135deg,
+    #667eea 0%,
+    #764ba2 50%,
+    #f093fb 100%
+  );
+  --kapo-bg-section: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  --kapo-bg-footer: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+
+  /* Kapo Card Gradients - Glassmorphism Ready */
+  --kapo-card-gradient: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  --kapo-card-border: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.2) 0%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  --kapo-card-hover: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.15) 0%,
+    rgba(255, 255, 255, 0.08) 100%
+  );
+
+  /* ==========================================================================
+     KAPO PROFESSIONAL SPACING SYSTEM - 24-Point Grid
+     ========================================================================== */
+
+  /* Kapo Spacing Scale - Mathematical Progression */
+  --kapo-space-unit: 0.5rem; /* 8px - Base unit */
+  --kapo-space-xs: 0.75rem; /* 12px - Extra small */
+  --kapo-space-sm: 1.5rem; /* 24px - Small */
+  --kapo-space-md: 3rem; /* 48px - Medium */
+  --kapo-space-lg: 4.5rem; /* 72px - Large */
+  --kapo-space-xl: 6rem; /* 96px - Extra large */
+  --kapo-space-2xl: 9rem; /* 144px - 2X large */
+  --kapo-space-3xl: 12rem; /* 192px - 3X large */
+  --kapo-space-4xl: 18rem; /* 288px - 4X large */
+
+  /* Kapo Layout Containers */
+  --kapo-container-sm: 640px; /* Small container */
+  --kapo-container-md: 768px; /* Medium container */
+  --kapo-container-lg: 1024px; /* Large container */
+  --kapo-container-xl: 1280px; /* Extra large container */
+  --kapo-container-2xl: 1536px; /* 2X large container */
+
+  /* ==========================================================================
+     KAPO GLASSMORPHISM SYSTEM - Advanced Glass Effects
+     ========================================================================== */
+
+  /* Kapo Glass Properties */
+  --kapo-glass-blur: blur(24px) saturate(200%); /* Advanced blur */
+  --kapo-glass-bg: rgba(255, 255, 255, 0.1); /* Glass background */
+  --kapo-glass-border: rgba(255, 255, 255, 0.2); /* Glass border */
+  --kapo-glass-shadow: 0 8px 32px rgba(31, 38, 135, 0.37); /* Glass shadow */
+
+  /* Kapo Glass Variations */
+  --kapo-glass-light: rgba(255, 255, 255, 0.15); /* Lighter glass */
+  --kapo-glass-dark: rgba(0, 0, 0, 0.1); /* Dark glass */
+  --kapo-glass-colored: rgba(102, 126, 234, 0.1); /* Colored glass */
+
+  /* ==========================================================================
+     KAPO ADVANCED SHADOW SYSTEM - Sophisticated Elevation
+     ========================================================================== */
+
+  /* Kapo Shadow Levels - Professional Depth */
+  --kapo-shadow-none: none;
+  --kapo-shadow-small: 0 4px 16px rgba(0, 0, 0, 0.1);
+  --kapo-shadow-medium: 0 8px 32px rgba(0, 0, 0, 0.15);
+  --kapo-shadow-large: 0 16px 64px rgba(0, 0, 0, 0.2);
+  --kapo-shadow-floating: 0 24px 80px rgba(0, 0, 0, 0.25);
+  --kapo-shadow-massive: 0 32px 120px rgba(0, 0, 0, 0.3);
+
+  /* Kapo Colored Shadows - Brand Accent */
+  --kapo-shadow-blue: 0 8px 32px rgba(102, 126, 234, 0.3);
+  --kapo-shadow-purple: 0 8px 32px rgba(118, 75, 162, 0.3);
+  --kapo-shadow-pink: 0 8px 32px rgba(240, 147, 251, 0.3);
+
+  /* ==========================================================================
+     KAPO SOPHISTICATED BORDER RADIUS - Perfect Curves
+     ========================================================================== */
+
+  /* Kapo Border Radius Scale */
+  --kapo-radius-none: 0px;
+  --kapo-radius-small: 12px; /* Small elements */
+  --kapo-radius-medium: 20px; /* Standard cards */
+  --kapo-radius-large: 32px; /* Large components */
+  --kapo-radius-xl: 48px; /* Extra large */
+  --kapo-radius-2xl: 64px; /* Hero elements */
+  --kapo-radius-full: 9999px; /* Full rounded */
+
+  /* ==========================================================================
+     KAPO PROFESSIONAL MOTION SYSTEM - Smooth Animations
+     ========================================================================== */
+
+  /* Kapo Animation Durations */
+  --kapo-duration-instant: 100ms; /* Instant feedback */
+  --kapo-duration-fast: 200ms; /* Fast interactions */
+  --kapo-duration-normal: 400ms; /* Standard animations */
+  --kapo-duration-slow: 600ms; /* Slow reveals */
+  --kapo-duration-slower: 800ms; /* Very slow transitions */
+
+  /* Kapo Easing Curves - Professional Feel */
+  --kapo-easing-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --kapo-easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --kapo-easing-sharp: cubic-bezier(0.4, 0, 0.2, 1);
+  --kapo-easing-soft: cubic-bezier(0.25, 0.1, 0.25, 1);
+
+  /* ==========================================================================
+     KAPO COLOR PALETTE - Premium Brand Colors
+     ========================================================================== */
+
+  /* Kapo Primary Colors */
+  --kapo-primary-50: #f0f4ff;
+  --kapo-primary-100: #e0e7ff;
+  --kapo-primary-500: #667eea;
+  --kapo-primary-600: #5a67d8;
+  --kapo-primary-900: #2d3748;
+
+  /* Kapo Secondary Colors */
+  --kapo-secondary-50: #fdf2f8;
+  --kapo-secondary-100: #fce7f3;
+  --kapo-secondary-500: #f093fb;
+  --kapo-secondary-600: #e879f9;
+  --kapo-secondary-900: #581c87;
+
+  /* Kapo Neutral Colors - Professional Grays */
+  --kapo-neutral-50: #f8fafc;
+  --kapo-neutral-100: #f1f5f9;
+  --kapo-neutral-200: #e2e8f0;
+  --kapo-neutral-300: #cbd5e1;
+  --kapo-neutral-400: #94a3b8;
+  --kapo-neutral-500: #64748b;
+  --kapo-neutral-600: #475569;
+  --kapo-neutral-700: #334155;
+  --kapo-neutral-800: #1e293b;
+  --kapo-neutral-900: #0f172a;
+
+  /* ==========================================================================
+     KAPO COMPONENT TOKENS - Ready-to-Use Styles
+     ========================================================================== */
+
+  /* Kapo Button Styles */
+  --kapo-btn-primary-bg: var(--kapo-primary-gradient);
+  --kapo-btn-primary-shadow: var(--kapo-shadow-blue);
+  --kapo-btn-secondary-bg: var(--kapo-glass-bg);
+  --kapo-btn-secondary-border: var(--kapo-glass-border);
+
+  /* Kapo Card Styles */
+  --kapo-card-bg: var(--kapo-glass-bg);
+  --kapo-card-border: 1px solid var(--kapo-glass-border);
+  --kapo-card-shadow: var(--kapo-shadow-medium);
+  --kapo-card-radius: var(--kapo-radius-large);
+
+  /* Kapo Navigation Styles */
+  --kapo-nav-bg: rgba(255, 255, 255, 0.8);
+  --kapo-nav-blur: blur(20px) saturate(180%);
+  --kapo-nav-border: rgba(255, 255, 255, 0.2);
+  --kapo-nav-shadow: var(--kapo-shadow-small);
+}
+
+/* ==========================================================================
+   KAPO UTILITY CLASSES - Instant Styling
+   ========================================================================== */
+
+/* Kapo Typography Classes */
+.kapo-hero-massive {
+  font-size: var(--kapo-hero-massive);
+  font-weight: var(--kapo-weight-ultra);
+  line-height: var(--kapo-hero-leading);
+  letter-spacing: var(--kapo-hero-tracking);
+}
+
+.kapo-section-title {
+  font-size: var(--kapo-section-title);
+  font-weight: var(--kapo-weight-bold);
+  line-height: var(--kapo-title-leading);
+  letter-spacing: var(--kapo-title-tracking);
+}
+
+.kapo-subtitle {
+  font-size: var(--kapo-subtitle);
+  font-weight: var(--kapo-weight-medium);
+  line-height: var(--kapo-body-leading);
+}
+
+/* Kapo Glassmorphism Classes */
+.kapo-glass {
+  background: var(--kapo-glass-bg);
+  backdrop-filter: var(--kapo-glass-blur);
+  border: 1px solid var(--kapo-glass-border);
+  box-shadow: var(--kapo-glass-shadow);
+}
+
+.kapo-glass-light {
+  background: var(--kapo-glass-light);
+  backdrop-filter: var(--kapo-glass-blur);
+  border: 1px solid var(--kapo-glass-border);
+}
+
+/* Kapo Button Classes */
+.kapo-btn-primary {
+  background: var(--kapo-btn-primary-bg);
+  box-shadow: var(--kapo-btn-primary-shadow);
+  border-radius: var(--kapo-radius-medium);
+  font-weight: var(--kapo-weight-semibold);
+  transition: all var(--kapo-duration-fast) var(--kapo-easing-smooth);
+}
+
+.kapo-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--kapo-shadow-large);
+}
+
+.kapo-btn-secondary {
+  background: var(--kapo-glass-bg);
+  border: 1px solid var(--kapo-glass-border);
+  backdrop-filter: var(--kapo-glass-blur);
+  border-radius: var(--kapo-radius-medium);
+  font-weight: var(--kapo-weight-medium);
+  transition: all var(--kapo-duration-fast) var(--kapo-easing-smooth);
+}
+
+.kapo-btn-secondary:hover {
+  background: var(--kapo-glass-light);
+  transform: translateY(-1px);
+}
+
+/* Kapo Card Classes */
+.kapo-card {
+  background: var(--kapo-card-bg);
+  border: var(--kapo-card-border);
+  border-radius: var(--kapo-card-radius);
+  box-shadow: var(--kapo-card-shadow);
+  backdrop-filter: var(--kapo-glass-blur);
+  transition: all var(--kapo-duration-normal) var(--kapo-easing-smooth);
+}
+
+.kapo-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: var(--kapo-shadow-floating);
+  background: var(--kapo-card-hover);
+}
+
+/* Kapo Animation Classes */
+.kapo-animate-float {
+  animation: kapoFloat 6s ease-in-out infinite;
+}
+
+.kapo-animate-pulse {
+  animation: kapoPulse 2s ease-in-out infinite;
+}
+
+.kapo-animate-gradient {
+  background-size: 200% 200%;
+  animation: kapoGradient 3s ease infinite;
+}
+
+/* Kapo Animation Keyframes */
+@keyframes kapoFloat {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes kapoPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes kapoGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* ==========================================================================
+   KAPO RESPONSIVE SYSTEM - Mobile Excellence
+   ========================================================================== */
+
+/* Kapo Mobile Typography Adjustments */
+@media (max-width: 768px) {
+  :root {
+    --kapo-hero-massive: clamp(2.5rem, 8vw, 4rem);
+    --kapo-section-title: clamp(1.875rem, 5vw, 2.5rem);
+    --kapo-space-lg: 3rem;
+    --kapo-space-xl: 4rem;
+    --kapo-space-2xl: 6rem;
+  }
+
+  .kapo-card:hover {
+    transform: translateY(-2px) scale(1.01);
+  }
+}

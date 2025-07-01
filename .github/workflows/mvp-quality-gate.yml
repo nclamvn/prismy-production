@@ -1,0 +1,58 @@
+name: MVP Quality Gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  quality-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Lint
+        run: npm run lint
+      
+      - name: Type check
+        run: npx tsc --noEmit
+      
+      - name: Build
+        run: npm run build
+      
+      - name: Check build size
+        run: |
+          BUNDLE_SIZE=$(du -sk .next/static 2>/dev/null | cut -f1 || echo "0")
+          echo "Bundle size: ${BUNDLE_SIZE}KB"
+          if [ $BUNDLE_SIZE -gt 600 ]; then
+            echo "❌ Bundle size ${BUNDLE_SIZE}KB exceeds 600KB limit"
+            exit 1
+          else
+            echo "✅ Bundle size ${BUNDLE_SIZE}KB is acceptable"
+          fi
+
+  deploy-preview:
+    needs: quality-checks
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy Preview
+        run: echo "Preview deployment would happen here"
+
+  deploy-production:
+    needs: quality-checks
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy Production
+        run: echo "Production deployment would happen here"

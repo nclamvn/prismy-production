@@ -1,0 +1,168 @@
+/* ============================================================================ */
+/* GRADIENT ANIMATIONS - OPTIMIZED FOR PERFORMANCE */
+/* ============================================================================ */
+
+@keyframes gradientFlow {
+  0% {
+    background-position: -100% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* ============================================================================ */
+/* HERO ANIMATIONS - SYNCHRONIZED & HYDRATION-SAFE */
+/* ============================================================================ */
+
+@keyframes heroFadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroFadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* ============================================================================ */
+/* GRADIENT TEXT STYLES */
+/* ============================================================================ */
+
+.gradient-text {
+  background: linear-gradient(
+    90deg,
+    #6366f1 0%,
+    #3b82f6 20%,
+    #06b6d4 40%,
+    #10b981 60%,
+    #22c55e 80%,
+    #6366f1 100%
+  );
+  background-size: 200% 100%;
+  animation: gradientFlow 4s linear infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.animate-gradient {
+  background-size: 400% 400%;
+  animation: gradientMove 8s ease infinite;
+}
+
+.animate-gradient-text {
+  background-size: 200% 100%;
+  animation: gradientFlow 4s linear infinite;
+}
+
+/* ============================================================================ */
+/* HERO COMPONENT ANIMATIONS - NO JAVASCRIPT REQUIRED */
+/* ============================================================================ */
+
+.hero-animate-1 {
+  animation: heroFadeInUp 0.6s cubic-bezier(0.2, 0, 0, 1) 0.1s both;
+}
+
+.hero-animate-2 {
+  animation: heroFadeInUp 0.6s cubic-bezier(0.2, 0, 0, 1) 0.2s both;
+}
+
+.hero-animate-3 {
+  animation: heroFadeInUp 0.6s cubic-bezier(0.2, 0, 0, 1) 0.3s both;
+}
+
+.hero-animate-4 {
+  animation: heroFadeInUp 0.6s cubic-bezier(0.2, 0, 0, 1) 0.4s both;
+}
+
+.hero-animate-5 {
+  animation: heroFadeInUp 0.6s cubic-bezier(0.2, 0, 0, 1) 0.5s both;
+}
+
+.hero-animate-6 {
+  animation: heroFadeInUp 0.6s cubic-bezier(0.2, 0, 0, 1) 0.6s both;
+}
+
+/* ============================================================================ */
+/* PERFORMANCE OPTIMIZATIONS */
+/* ============================================================================ */
+
+.hero-animate-1,
+.hero-animate-2,
+.hero-animate-3,
+.hero-animate-4,
+.hero-animate-5,
+.hero-animate-6 {
+  /* Optimize animations for performance */
+  will-change: transform, opacity;
+  transform: translateZ(0); /* Force hardware acceleration */
+}
+
+/* ============================================================================ */
+/* FLOATING ANIMATIONS FOR BACKGROUND ELEMENTS */
+/* ============================================================================ */
+
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes float-medium {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+@keyframes float-fast {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-float-slow {
+  animation: float-slow 6s ease-in-out infinite;
+}
+
+.animate-float-medium {
+  animation: float-medium 4s ease-in-out infinite;
+}
+
+.animate-float-fast {
+  animation: float-fast 3s ease-in-out infinite;
+}
