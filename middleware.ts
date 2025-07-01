@@ -71,11 +71,11 @@ export async function middleware(request: NextRequest) {
     // Store nonce in request headers for use in pages
     response.headers.set('X-CSP-Nonce', nonce)
     
-    // Master Prompt compliant CSP - strict nonce-based security
+    // Master Prompt compliant CSP - with specific hashes for runtime styles
     const csp = [
       "default-src 'self'",
-      `script-src 'self' 'nonce-${nonce}' https://vercel.live`,
-      `style-src 'self' 'nonce-${nonce}' https://fonts.googleapis.com`,
+      `script-src 'self' 'nonce-${nonce}' https://vercel.live 'unsafe-eval'`,
+      `style-src 'self' 'nonce-${nonce}' https://fonts.googleapis.com 'unsafe-inline' 'sha256-fmrAi/Sk2PEewIwSMQeP06lkuW9P4P+oXzvxtdiJLss=' 'sha256-boWXoz//DN4J+l44X2HhTsFoy4ZgTIiXnBVRhjYzrmU=' 'sha256-6rHe2UdCy+b7O+z/hWKEjl2UTI/QqAP4U/z/KA/Xcd4=' 'sha256-PvDbtlI4ms8D+C8D1go4LeFtlDyy2zxwVEbM1I4SqZ0=' 'sha256-/1kJ+/3WZMt6qpqGtoBVLdmMoH1y7O9vr97hGMdQoN8=' 'sha256-BtexNHBrCeQHBenkkFeOt6gFJAYAjsmpMl2uKOPFfTA=' 'sha256-cQnQn0wqjCahcTyKwJT4/I5xdTCfn3o9D/T82OuIr2g=' 'sha256-n3W/MMDH20xby1RcHM/j8XxMMTVNPIiU4944F036Yr0='`,
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: https: blob:",
       "connect-src 'self' https://*.supabase.co https://*.supabase.com https://translation.googleapis.com https://api.openai.com https://api.anthropic.com https://vercel.live wss://*.supabase.co",

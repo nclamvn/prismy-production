@@ -22,6 +22,11 @@
    ========================================================================== */
 
 @layer base {
+  /* System font stack */
+  .font-system {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+
   /* Screen reader only class */
   .sr-only {
     position: absolute;

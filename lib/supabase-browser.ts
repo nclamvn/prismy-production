@@ -28,41 +28,55 @@ export const getBrowserClient = (): SupabaseClient => {
 
   // Return existing instance immediately
   if (supabaseInstance) {
-    // Log multiple access attempts in production for monitoring
-    if (process.env.NODE_ENV === 'production') {
-      console.debug('✅ [Supabase] Reusing singleton client instance')
-    }
     return supabaseInstance
   }
 
-  // Check global window singleton
+  // Check global window singleton first
   if (window.__PRISMY_SUPABASE_CLIENT__) {
     supabaseInstance = window.__PRISMY_SUPABASE_CLIENT__
     return supabaseInstance
   }
 
-  // Prevent concurrent creation
+  // Prevent concurrent creation with a more sophisticated check
   if (isCreating) {
-    throw new Error('Supabase client is already being created')
+    // Wait for the current creation to complete
+    let attempts = 0
+    const maxAttempts = 10
+    const checkInterval = 50 // 50ms
+    
+    return new Promise<SupabaseClient>((resolve, reject) => {
+      const checkForClient = () => {
+        attempts++
+        if (supabaseInstance || window.__PRISMY_SUPABASE_CLIENT__) {
+          resolve(supabaseInstance || window.__PRISMY_SUPABASE_CLIENT__)
+        } else if (attempts >= maxAttempts) {
+          reject(new Error('Timeout waiting for Supabase client creation'))
+        } else {
+          setTimeout(checkForClient, checkInterval)
+        }
+      }
+      checkForClient()
+    }) as any
   }
 
-  // Mark creation as blocked for other libraries
-  if (window.__PRISMY_SUPABASE_CREATED__) {
-    throw new Error('Supabase client already exists in this browser context')
+  // Check if creation was already attempted in this context
+  if (window.__PRISMY_SUPABASE_CREATED__ && !window.__PRISMY_SUPABASE_CLIENT__) {
+    console.warn('[Supabase] Client was marked as created but instance not found. Recreating...')
+    window.__PRISMY_SUPABASE_CREATED__ = false
   }
 
   try {
     isCreating = true
 
-    // Create the single client instance
+    // Create the single client instance with enhanced configuration
     supabaseInstance = createBrowserClient(supabaseUrl, supabaseAnonKey, {
       auth: {
         autoRefreshToken: true,
         persistSession: true,
-        detectSessionInUrl: true,
+        detectSessionInUrl: false, // Disable to prevent URL detection conflicts
         flowType: 'pkce',
         storage: window.localStorage,
-        storageKey: 'sb-prismy-auth',
+        storageKey: 'sb-prismy-auth-singleton',
         debug: false,
       },
       db: {
@@ -70,11 +84,12 @@ export const getBrowserClient = (): SupabaseClient => {
       },
       global: {
         headers: {
-          'x-client-info': 'prismy-web@1.0.0',
+          'x-client-info': 'prismy-web-singleton@1.0.0',
+          'x-instance-id': 'singleton-' + Date.now(),
         },
       },
       realtime: {
-        enabled: false, // Disabled to prevent WebSocket conflicts
+        enabled: false, // Completely disabled to prevent multiple WebSocket connections
         params: {
           eventsPerSecond: 0,
         },

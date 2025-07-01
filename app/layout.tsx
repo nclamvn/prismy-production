@@ -222,11 +222,13 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  // CSP nonce will be handled client-side in StyledComponentsCSP
-  const nonce = ''
+  // Use environment variable for CSP nonce in production, fixed value for development
+  const staticNonce = process.env.NODE_ENV === 'production' 
+    ? process.env.CSP_NONCE || 'prod-nonce-' + Math.random().toString(36).substring(2, 8)
+    : 'dev-nonce'
   
   return (
-    <html lang="vi" style={{ fontFamily: systemFontStack }}>
+    <html lang="vi" className="font-system">
       <head>
         <meta
           httpEquiv="Cache-Control"
@@ -248,14 +250,10 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="theme-color" content="#000000" />
         
-        {/* CSP Nonce Meta Tag */}
-        <meta name="csp-nonce" content={process.env.NODE_ENV === 'development' ? 'dev-nonce' : ''} />
-        
         {/* CSP-compliant Development Scripts */}
         {process.env.NODE_ENV === 'development' && (
           <>
             <script 
-              nonce={process.env.NODE_ENV === 'development' ? 'dev-nonce' : undefined}
               dangerouslySetInnerHTML={{
                 __html: `
                   // CSP Development Monitoring
@@ -271,20 +269,11 @@ export default function RootLayout({
                 `
               }}
             />
-            <script 
-              src="/scripts/diagnostic-script.js"
-              defer
-              nonce={process.env.NODE_ENV === 'development' ? 'dev-nonce' : undefined}
-            />
           </>
         )}
 
-        {/* 💣 PHASE 1.4 NUCLEAR: Removed all Google Fonts preconnect links */}
-        <link rel="preconnect" href="https://api.prismy.in" />
-
-        {/* 💣 PHASE 1.4 NUCLEAR: Removed font loading error handler - no Google Fonts to handle */}
-
         {/* DNS Prefetch */}
+        <link rel="preconnect" href="https://api.prismy.in" />
         <link rel="dns-prefetch" href="//prismy.in" />
         <link rel="dns-prefetch" href="//cdn.prismy.in" />
 
@@ -322,16 +311,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body
-        className="antialiased overflow-x-hidden"
-        style={{
-          fontFamily: systemFontStack,
-          fontSize: '18px',
-          lineHeight: '1.6',
-          backgroundColor: 'var(--surface-panel)',
-          color: 'var(--text-primary)',
-        }}
-      >
+      <body className="antialiased overflow-x-hidden font-system text-lg leading-relaxed bg-surface-panel text-text-primary">
             <CriticalCSS>
             <GlobalErrorBoundary>
               <ErrorBoundary>
