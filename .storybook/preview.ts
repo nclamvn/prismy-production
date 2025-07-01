@@ -5,28 +5,24 @@ const preview: Preview = {
   parameters: {
     controls: {
       matchers: {
-       color: /(background|color)$/i,
-       date: /Date$/i,
+        color: /(background|color)$/i,
+        date: /Date$/i,
       },
     },
     backgrounds: {
-      default: 'light',
+      default: 'default',
       values: [
         {
-          name: 'light',
-          value: '#ffffff',
+          name: 'default',
+          value: '#FAFAFA', // bg-default
         },
         {
-          name: 'dark', 
-          value: '#1f2937',
+          name: 'surface',
+          value: '#FFFFFF', // bg-surface
         },
         {
-          name: 'tet-theme',
-          value: '#fff8e1',
-        },
-        {
-          name: 'vietnamese-red',
-          value: '#da020e',
+          name: 'muted',
+          value: '#F5F5F5', // bg-muted
         },
       ],
     },
@@ -42,7 +38,7 @@ const preview: Preview = {
         tablet: {
           name: 'Tablet',
           styles: {
-            width: '768px', 
+            width: '768px',
             height: '1024px',
           },
         },
@@ -53,49 +49,12 @@ const preview: Preview = {
             height: '900px',
           },
         },
-        vietnameseMobile: {
-          name: 'Vietnamese Mobile',
-          styles: {
-            width: '375px',
-            height: '812px',
-          },
-        },
       },
     },
     docs: {
       toc: true,
     },
   },
-  globalTypes: {
-    culturalTheme: {
-      description: 'Vietnamese Cultural Theme',
-      defaultValue: 'default',
-      toolbar: {
-        title: 'Cultural Theme',
-        icon: 'globe',
-        items: [
-          { value: 'default', title: 'Default' },
-          { value: 'tet', title: 'Tết Theme' },
-          { value: 'traditional', title: 'Traditional' },
-        ],
-        dynamicTitle: true,
-      },
-    },
-    locale: {
-      description: 'Internationalization locale',
-      defaultValue: 'vi',
-      toolbar: {
-        title: 'Locale',
-        icon: 'globe',
-        items: [
-          { value: 'en', title: 'English' },
-          { value: 'vi', title: 'Tiếng Việt' },
-          { value: 'bilingual', title: 'Bilingual' },
-        ],
-        dynamicTitle: true,
-      },
-    },
-  },
-};
+}
 
-export default preview;
+export default preview
