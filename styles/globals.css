@@ -1,755 +1,90 @@
-/**
- * ===================================
- * PRISMY UNIFIED GLOBAL STYLES
- * Phase 0.2: CSS Architecture Consolidation
- * Consolidated from 6,666 lines to organized structure
- * ===================================
- */
-
-/* Import unified design system */
-@import './design-tokens.css';
-@import './components.css';
-@import './utilities.css';
-@import './kapo-design-system.css';
-
-/* Tailwind CSS */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ==========================================================================
-   ACCESSIBILITY ENHANCEMENTS - Master Prompt Compliance
-   ========================================================================== */
+/* Design Token CSS Variables */
+:root {
+  /* Fonts */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, Menlo, monospace;
+}
 
+/* Base styles for NotebookML-inspired design */
 @layer base {
-  /* System font stack */
-  .font-system {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  }
-
-  /* Screen reader only class */
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border-width: 0;
-  }
-
-  .sr-only.focus:not(.focus):not(:focus-visible) {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border-width: 0;
-  }
-
-  /* High contrast mode */
-  .high-contrast {
-    --accent: #0066cc;
-    --gray-900: #000000;
-    --gray-800: #1a1a1a;
-    --gray-700: #333333;
-    --gray-600: #4d4d4d;
-    --gray-500: #666666;
-    --gray-400: #808080;
-    --gray-300: #cccccc;
-    --gray-200: #e6e6e6;
-    --gray-100: #f3f3f3;
-    --gray-50: #ffffff;
-  }
-
-  /* Reduced motion */
-  .reduce-motion *,
-  .reduce-motion *::before,
-  .reduce-motion *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-
-  /* Keyboard navigation focus */
-  .keyboard-navigation *:focus {
-    outline: 2px solid #7F56D9;
-    outline-offset: 2px;
-  }
-
-  /* Skip links */
-  .skip-link {
-    position: absolute;
-    top: -40px;
-    left: 6px;
-    background: #7F56D9;
-    color: white;
-    padding: 8px;
-    text-decoration: none;
-    border-radius: 4px;
-    z-index: 1000;
-  }
-
-  .skip-link:focus {
-    top: 6px;
-  }
-
-  /* Ensure interactive elements are large enough (44px minimum) */
-  button,
-  [role="button"],
-  input[type="submit"],
-  input[type="button"] {
-    min-height: 44px;
-    min-width: 44px;
-  }
-
-  /* Improve focus visibility */
-  :focus-visible {
-    outline: 2px solid #7F56D9;
-    outline-offset: 2px;
-  }
-
-  /* Remove outline for mouse users */
-  :focus:not(:focus-visible) {
-    outline: none;
-  }
-}
-
-/* Responsive font sizes for accessibility */
-@media (prefers-reduced-motion: reduce) {
   html {
-    scroll-behavior: auto;
-  }
-  
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-@media (prefers-contrast: high) {
-  * {
-    --accent: #0066cc !important;
-  }
-}
-
-/* Print styles for accessibility */
-@media print {
-  .no-print {
-    display: none !important;
-  }
-  
-  * {
-    background: white !important;
-    color: black !important;
-  }
-  
-  a:after {
-    content: " (" attr(href) ")";
-  }
-}
-
-/* ==========================================================================
-   BASE STYLES - Global HTML Element Styles
-   ========================================================================== */
-
-html {
-  scroll-behavior: smooth;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-body {
-  font-family: var(--font-inter);
-  font-size: var(--sys-body-medium-size);
-  line-height: var(--sys-body-medium-line-height);
-  color: var(--text-primary);
-  background-color: var(--surface-panel);
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
-}
-
-/* ==========================================================================
-   GLASS EFFECTS - Modern UI Polish
-   ========================================================================== */
-
-.backdrop-blur {
-  backdrop-filter: blur(16px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
-}
-
-.glass-navbar {
-  background: rgba(251, 250, 249, 0.8) !important;
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-/* ==========================================================================
-   NAVBAR SYSTEM - Fixed Positioning & Z-Index
-   ========================================================================== */
-
-/* Primary navbar - fixed positioning */
-nav.prismy-navbar,
-.prismy-navbar {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  width: 100% !important;
-  z-index: 9999 !important;
-  transform: none !important;
-  -webkit-transform: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  background-attachment: scroll !important;
-}
-
-/* Dropdown menus - ensure visibility */
-.prismy-navbar .dropdown-menu,
-.prismy-navbar [role='menu'],
-.prismy-navbar .absolute {
-  position: absolute !important;
-  z-index: 10000 !important;
-  top: 100% !important;
-  transform: none !important;
-}
-
-/* Body padding to account for fixed navbar */
-body.has-fixed-navbar {
-  padding-top: 80px; /* Adjust based on navbar height */
-}
-
-/* ==========================================================================
-   HERO SECTION - NotebookLM Inspired
-   ========================================================================== */
-
-.hero-section {
-  background: var(--surface-panel);
-  padding: var(--space-3xl) 0;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.hero-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 var(--space-lg);
-  text-align: center;
-  z-index: 1;
-  position: relative;
-}
-
-.hero-title {
-  font-family: var(--sys-display-large-font);
-  font-size: var(--sys-display-large-size);
-  font-weight: var(--sys-display-large-weight);
-  line-height: var(--sys-display-large-line-height);
-  color: var(--text-primary);
-  margin-bottom: var(--space-lg);
-}
-
-.hero-subtitle {
-  font-family: var(--sys-body-large-font);
-  font-size: var(--sys-body-large-size);
-  line-height: var(--sys-body-large-line-height);
-  color: var(--text-secondary);
-  margin-bottom: var(--space-2xl);
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* ==========================================================================
-   MOBILE OPTIMIZATIONS - Responsive Design
-   ========================================================================== */
-
-/* Mobile-first approach */
-@media (max-width: 640px) {
-  .hero-title {
-    font-size: 2.5rem;
-    line-height: 1.2;
+    font-family: var(--font-sans);
   }
 
-  .hero-subtitle {
-    font-size: 1rem;
-    padding: 0 var(--space-md);
-  }
-
-  .hero-section {
-    padding: var(--space-2xl) 0;
-    min-height: 80vh;
-  }
-
-  /* Mobile navbar adjustments */
-  body.has-fixed-navbar {
-    padding-top: 60px;
-  }
-}
-
-@media (max-width: 768px) {
-  .workspace-container {
-    grid-template-columns: 1fr;
-  }
-
-  .workspace-sidebar,
-  .workspace-panel {
-    display: none;
-  }
-}
-
-/* ==========================================================================
-   ACCESSIBILITY ENHANCEMENTS
-   ========================================================================== */
-
-/* Focus management */
-*:focus {
-  outline: 2px solid var(--ai-primary-blue);
-  outline-offset: 2px;
-}
-
-/* Reduce motion for users who prefer it */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
-/* High contrast mode support */
-@media (prefers-contrast: high) {
-  :root {
-    --surface-outline: #000000;
-    --text-secondary: #000000;
-  }
-
-  .card-base,
-  .btn-base,
-  .form-input {
-    border-width: 2px;
-  }
-}
-
-/* Dark mode support (future enhancement) */
-@media (prefers-color-scheme: dark) {
-  /* Dark mode variables will be added here in future phases */
-}
-
-/* ==========================================================================
-   SCROLL ANIMATIONS - Smooth Performance
-   ========================================================================== */
-
-/* Smooth scrolling container */
-.smooth-scroll {
-  scroll-behavior: smooth;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* Hide scrollbar but maintain functionality */
-.hide-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-/* Custom scrollbar styling */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: var(--surface-filled);
-  border-radius: var(--shape-corner-small);
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: var(--gray-400);
-  border-radius: var(--shape-corner-small);
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: var(--gray-500);
-}
-
-/* ==========================================================================
-   PRINT STYLES - Document-Friendly Printing
-   ========================================================================== */
-
-@media print {
-  /* Hide interactive elements */
-  .navbar,
-  .nav,
-  .sidebar,
-  .btn,
-  .dropdown,
-  .modal {
-    display: none !important;
-  }
-
-  /* Optimize colors for print */
-  * {
-    color: #000 !important;
-    background: #fff !important;
-    box-shadow: none !important;
-  }
-
-  /* Ensure good typography */
   body {
-    font-size: 12pt;
-    line-height: 1.4;
+    @apply bg-default text-primary;
+    font-feature-settings:
+      'rlig' 1,
+      'calt' 1;
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    page-break-after: avoid;
-    color: #000 !important;
+  /* Focus styles */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-border-focus ring-offset-2 ring-offset-bg-default;
   }
 
-  /* Add page breaks */
-  .page-break {
-    page-break-before: always;
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
   }
 
-  .no-break {
-    page-break-inside: avoid;
+  ::-webkit-scrollbar-track {
+    @apply bg-bg-muted;
   }
-}
 
-/* ==========================================================================
-   PERFORMANCE OPTIMIZATIONS
-   ========================================================================== */
-
-/* Improve rendering performance */
-.gpu-accelerated {
-  transform: translateZ(0);
-  will-change: transform;
-}
-
-/* Optimize image loading */
-img {
-  max-width: 100%;
-  height: auto;
-  loading: lazy;
-}
-
-/* 💣 PHASE 1.5: Removed Google Fonts import - using system fonts only */
-/* This eliminates ALL font loading errors completely */
-
-/* ==========================================================================
-   LEGACY SUPPORT - Backward Compatibility
-   ========================================================================== */
-
-/* Support for older component classes */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 var(--space-lg);
-}
-
-.section {
-  padding: var(--space-3xl) 0;
-}
-
-.section-sm {
-  padding: var(--space-2xl) 0;
-}
-
-.section-lg {
-  padding: calc(var(--space-3xl) * 1.5) 0;
-}
-
-/* Button legacy classes */
-.btn {
-  @apply btn-base;
-}
-
-.btn-primary {
-  @apply btn-base;
-  background: var(--notebooklm-primary);
-  color: var(--white);
-}
-
-.btn-secondary {
-  @apply btn-base;
-  background: var(--surface-elevated);
-  color: var(--text-primary);
-  border: 1px solid var(--surface-outline);
-}
-
-/* ==========================================================================
-   VENDOR PREFIXES - Cross-Browser Support
-   ========================================================================== */
-
-/* Webkit specific optimizations */
-.webkit-optimize {
-  -webkit-transform: translateZ(0);
-  -webkit-font-smoothing: antialiased;
-  -webkit-text-size-adjust: 100%;
-}
-
-/* Firefox specific optimizations */
-.firefox-optimize {
-  -moz-osx-font-smoothing: grayscale;
-  -moz-text-size-adjust: 100%;
-}
-
-/* ==========================================================================
-   INTERNATIONALIZATION (i18n) STYLES
-   ========================================================================== */
-
-/* RTL Support */
-html[dir="rtl"] {
-  direction: rtl;
-}
-
-html[dir="ltr"] {
-  direction: ltr;
-}
-
-/* Language-specific font families */
-html[lang="ar"] {
-  font-family: 'Amiri', 'Noto Sans Arabic', var(--font-inter), system-ui, sans-serif;
-}
-
-html[lang="zh"] {
-  font-family: 'Noto Sans SC', var(--font-inter), system-ui, sans-serif;
-}
-
-html[lang="ja"] {
-  font-family: 'Noto Sans JP', var(--font-inter), system-ui, sans-serif;
-}
-
-html[lang="ko"] {
-  font-family: 'Noto Sans KR', var(--font-inter), system-ui, sans-serif;
-}
-
-/* RTL-specific utility classes */
-.rtl .text-left {
-  text-align: right;
-}
-
-.rtl .text-right {
-  text-align: left;
-}
-
-.rtl .ml-auto {
-  margin-left: 0;
-  margin-right: auto;
-}
-
-.rtl .mr-auto {
-  margin-right: 0;
-  margin-left: auto;
-}
-
-.rtl .float-left {
-  float: right;
-}
-
-.rtl .float-right {
-  float: left;
-}
-
-/* RTL flex direction adjustments */
-.rtl .flex-row {
-  flex-direction: row-reverse;
-}
-
-.rtl .flex-row-reverse {
-  flex-direction: row;
-}
-
-/* RTL border radius adjustments */
-.rtl .rounded-l-lg {
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-  border-top-right-radius: 0.5rem;
-  border-bottom-right-radius: 0.5rem;
-}
-
-.rtl .rounded-r-lg {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-  border-top-left-radius: 0.5rem;
-  border-bottom-left-radius: 0.5rem;
-}
-
-/* Custom scrollbar for language selector */
-.language-selector-dropdown::-webkit-scrollbar {
-  width: 6px;
-}
-
-.language-selector-dropdown::-webkit-scrollbar-track {
-  background: var(--surface-filled);
-  border-radius: var(--shape-corner-small);
-}
-
-.language-selector-dropdown::-webkit-scrollbar-thumb {
-  background: var(--gray-400);
-  border-radius: var(--shape-corner-small);
-}
-
-.language-selector-dropdown::-webkit-scrollbar-thumb:hover {
-  background: var(--gray-500);
-}
-
-/* Enhanced animation classes for i18n */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
+  ::-webkit-scrollbar-thumb {
+    @apply bg-border-default rounded-full;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-border-focus;
   }
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.2s ease-out;
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
+/* Component patterns */
+@layer components {
+  /* Content container */
+  .container-content {
+    @apply max-w-[1440px] mx-auto px-4;
   }
-  to {
-    opacity: 1;
-    transform: translateX(0);
+
+  /* Workspace grid layout */
+  .workspace-grid {
+    @apply grid h-screen;
+    grid-template-columns: 280px 1fr 320px;
   }
-}
 
-.animate-slide-in {
-  animation: slideIn 0.3s ease-out;
-}
-
-.rtl .animate-slide-in {
-  animation: slideInRTL 0.3s ease-out;
-}
-
-@keyframes slideInRTL {
-  from {
-    opacity: 0;
-    transform: translateX(20px);
+  /* Marketing grid */
+  .marketing-grid {
+    @apply grid gap-6;
+    grid-template-columns: repeat(12, 1fr);
   }
-  to {
-    opacity: 1;
-    transform: translateX(0);
+
+  /* Elevation utilities */
+  .elevation-sm {
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   }
-}
 
-/* Loading skeleton for language selector */
-.loading-skeleton {
-  background: linear-gradient(
-    90deg,
-    var(--surface-filled) 25%,
-    var(--surface-elevated) 50%,
-    var(--surface-filled) 75%
-  );
-  background-size: 200% 100%;
-  animation: loading 1.5s infinite;
-}
-
-@keyframes loading {
-  0% {
-    background-position: 200% 0;
+  .elevation-md {
+    box-shadow:
+      0 4px 6px -1px rgb(0 0 0 / 0.1),
+      0 2px 4px -2px rgb(0 0 0 / 0.1);
   }
-  100% {
-    background-position: -200% 0;
+
+  .elevation-lg {
+    box-shadow:
+      0 10px 15px -3px rgb(0 0 0 / 0.1),
+      0 4px 6px -4px rgb(0 0 0 / 0.1);
   }
-}
 
-/* Responsive typography for different languages */
-@media (max-width: 640px) {
-  .text-responsive {
-    font-size: 0.875rem;
-    line-height: 1.25rem;
+  .elevation-xl {
+    box-shadow:
+      0 20px 25px -5px rgb(0 0 0 / 0.1),
+      0 8px 10px -6px rgb(0 0 0 / 0.1);
   }
-  
-  /* Adjust for RTL languages on mobile */
-  .rtl .text-responsive {
-    letter-spacing: 0.025em;
-  }
-}
-
-@media (min-width: 641px) {
-  .text-responsive {
-    font-size: 1rem;
-    line-height: 1.5rem;
-  }
-}
-
-/* Language-specific adjustments */
-html[lang="ar"] .text-lg {
-  font-size: 1.25rem;
-  line-height: 1.8;
-}
-
-html[lang="zh"] .text-lg,
-html[lang="ja"] .text-lg,
-html[lang="ko"] .text-lg {
-  font-size: 1.125rem;
-  line-height: 1.6;
-}
-
-/* ==========================================================================
-   VIETNAMESE CULTURAL THEME SYSTEM - CSP Compliant
-   ========================================================================== */
-
-/* Theme Default */
-:root.theme-default {
-  --cultural-primary: var(--vn-cultural-red);
-  --cultural-accent: var(--vn-cultural-gold);
-  --cultural-gradient: linear-gradient(135deg, var(--vn-cultural-red) 0%, var(--vn-cultural-gold) 100%);
-}
-
-/* Theme Tet */
-:root.theme-tet {
-  --cultural-primary: #e31e24;  /* Tet red */
-  --cultural-accent: #ffd700;   /* Tet gold */
-  --cultural-gradient: linear-gradient(135deg, #e31e24 0%, #ffd700 100%);
-}
-
-/* Theme Traditional */
-:root.theme-traditional {
-  --cultural-primary: var(--vn-cultural-red);
-  --cultural-accent: var(--vn-cultural-gold);
-  --cultural-gradient: linear-gradient(135deg, var(--vn-cultural-red) 0%, var(--vn-cultural-gold) 100%);
-}
-
-/* ==========================================================================
-   CRITICAL CSS INLINING MARKERS
-   ========================================================================== */
-
-/* Mark critical styles for above-the-fold content */
-.critical-css {
-  /* Styles marked as critical will be inlined */
 }
