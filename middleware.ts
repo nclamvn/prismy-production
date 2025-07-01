@@ -12,7 +12,9 @@ export async function middleware(request: NextRequest) {
     pathname === '/robots.txt' ||
     pathname.startsWith('/icons/') ||
     pathname.startsWith('/images/') ||
-    pathname.startsWith('/auth/callback')
+    pathname.startsWith('/auth/callback') ||
+    pathname === '/workspace-direct' ||
+    pathname === '/oauth-test'
   ) {
     return NextResponse.next()
   }
@@ -85,6 +87,7 @@ export const config = {
     /*
      * Match all request paths except for the ones starting with:
      * - api (API routes)
+     * - auth/callback (OAuth callback)
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
@@ -92,6 +95,6 @@ export const config = {
      * - icons (icon files)
      * - images (image files)
      */
-    '/((?!api/|_next/static|_next/image|favicon.ico|robots.txt|icons/|images/).*)',
+    '/((?!api/|auth/callback|_next/static|_next/image|favicon.ico|robots.txt|icons/|images/).*)',
   ],
 }

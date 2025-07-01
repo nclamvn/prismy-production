@@ -1,0 +1,62 @@
+{
+  "auth": {
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "email": {
+      "title": "Continue with email",
+      "placeholder": "you@example.com",
+      "button": "Sign in with email",
+      "success": {
+        "title": "Check your email",
+        "description": "We sent a sign-in link to {email}"
+      },
+      "error": {
+        "invalid": "Please enter a valid email address",
+        "failed": "Failed to send magic link"
+      }
+    },
+    "phone": {
+      "title": "Continue with phone",
+      "placeholder": "090 123 4567",
+      "button": "Send OTP code",
+      "otp": {
+        "title": "Enter verification code",
+        "description": "Enter the 6-digit code sent to {phone}",
+        "placeholder": "000000",
+        "button": "Verify",
+        "resend": "Resend code",
+        "resendIn": "Resend in {seconds}s"
+      },
+      "error": {
+        "invalid": "Please enter a valid Vietnamese phone number",
+        "failed": "Failed to send OTP"
+      }
+    },
+    "google": {
+      "button": "Continue with Google",
+      "error": "Failed to sign in with Google"
+    },
+    "credits": {
+      "remaining": "{count} credits",
+      "outOf": "Out of Credits",
+      "lowOn": "Low on Credits",
+      "currentPlan": "Current Plan",
+      "creditsUsed": "Credits Used",
+      "creditsRemaining": "Credits Remaining",
+      "upgrade": {
+        "basic": "Upgrade to Basic - $9/month",
+        "buyCredits": "Buy 50 Credits - $5",
+        "benefits": {
+          "title": "Upgrade benefits:",
+          "unlimited": "Unlimited document translations",
+          "priority": "Priority AI processing",
+          "advanced": "Advanced chat features",
+          "export": "Export to multiple formats"
+        }
+      }
+    },
+    "signOut": "Sign out",
+    "settings": "Settings",
+    "help": "Help & Support"
+  }
+}

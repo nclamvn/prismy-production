@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimal OAuth Test - No Framework</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover { background: #0056b3; }
+        button:disabled { background: #6c757d; cursor: not-allowed; }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .user-info {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 MINIMAL OAUTH TEST</h1>
+        <p><strong>Purpose:</strong> Test Supabase OAuth without Next.js/framework interference</p>
+        
+        <div id="status" class="status info">
+            Status: Initializing...
+        </div>
+
+        <div>
+            <button id="loginBtn" onclick="testGoogleLogin()">🔑 Test Google Login</button>
+            <button id="logoutBtn" onclick="testLogout()" disabled>🚪 Logout</button>
+            <button onclick="clearLogs()">🧹 Clear Logs</button>
+        </div>
+
+        <div id="userInfo" class="user-info" style="display: none;">
+            <h3>✅ User Information:</h3>
+            <div id="userDetails"></div>
+        </div>
+
+        <div class="log" id="logs">
+            <strong>Debugging Logs:</strong><br>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import Supabase from CDN
+        import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js@2'
+
+        // Configuration - VERIFY THESE ARE CORRECT
+        const SUPABASE_URL = 'https://ziyereoasqiqhjvedgit.supabase.co'
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InppeWVyZW9hc3FpcWhqdmVkZ2l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA1OTE3ODUsImV4cCI6MjA2NjE2Nzc4NX0.fnoWBmvKf8L7dFe3sHHOQKvoGINwHmWdMvgpeli8vuk'
+
+        // Initialize Supabase client
+        window.supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString()
+            const logs = document.getElementById('logs')
+            const color = type === 'error' ? '#dc3545' : type === 'success' ? '#28a745' : '#007bff'
+            logs.innerHTML += `<div style="color: ${color}; margin: 5px 0;">[${timestamp}] ${message}</div>`
+            logs.scrollTop = logs.scrollHeight
+            console.log(`[${timestamp}] ${message}`)
+        }
+
+        function updateStatus(message, type = 'info') {
+            const status = document.getElementById('status')
+            status.textContent = message
+            status.className = `status ${type}`
+        }
+
+        function clearLogs() {
+            document.getElementById('logs').innerHTML = '<strong>Debugging Logs:</strong><br>'
+        }
+
+        // Test Google Login
+        window.testGoogleLogin = async function() {
+            log('🔄 Starting Google OAuth test...', 'info')
+            updateStatus('Testing Google OAuth...', 'info')
+            
+            try {
+                document.getElementById('loginBtn').disabled = true
+                
+                // Get current location for redirect
+                const redirectTo = window.location.origin + window.location.pathname + '?oauth=callback'
+                log(`📍 Redirect URL: ${redirectTo}`, 'info')
+
+                // Test Supabase connection first
+                log('🔍 Testing Supabase connection...', 'info')
+                const { data: authSettings, error: settingsError } = await supabase.auth.getSession()
+                
+                if (settingsError) {
+                    log(`❌ Supabase connection error: ${settingsError.message}`, 'error')
+                    updateStatus('Supabase connection failed', 'error')
+                    return
+                }
+                
+                log('✅ Supabase connection successful', 'success')
+
+                // Attempt OAuth login
+                log('🚀 Initiating Google OAuth...', 'info')
+                const { data, error } = await supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        redirectTo: redirectTo,
+                        queryParams: {
+                            access_type: 'offline',
+                            prompt: 'consent',
+                        }
+                    }
+                })
+
+                if (error) {
+                    log(`❌ OAuth initiation failed: ${error.message}`, 'error')
+                    updateStatus('OAuth initiation failed', 'error')
+                    return
+                }
+
+                log('✅ OAuth initiation successful - redirecting to Google...', 'success')
+                updateStatus('Redirecting to Google...', 'success')
+
+            } catch (err) {
+                log(`💥 Unexpected error: ${err.message}`, 'error')
+                updateStatus('Unexpected error occurred', 'error')
+            } finally {
+                document.getElementById('loginBtn').disabled = false
+            }
+        }
+
+        // Test Logout
+        window.testLogout = async function() {
+            log('🚪 Logging out...', 'info')
+            
+            try {
+                const { error } = await supabase.auth.signOut()
+                
+                if (error) {
+                    log(`❌ Logout failed: ${error.message}`, 'error')
+                    return
+                }
+                
+                log('✅ Logout successful', 'success')
+                updateStatus('Logged out', 'info')
+                
+                document.getElementById('userInfo').style.display = 'none'
+                document.getElementById('loginBtn').disabled = false
+                document.getElementById('logoutBtn').disabled = true
+                
+            } catch (err) {
+                log(`💥 Logout error: ${err.message}`, 'error')
+            }
+        }
+
+        // Handle OAuth callback
+        function handleOAuthCallback() {
+            const urlParams = new URLSearchParams(window.location.search)
+            
+            if (urlParams.get('oauth') === 'callback') {
+                log('🔄 Processing OAuth callback...', 'info')
+                
+                // Check for error parameters
+                const error = urlParams.get('error')
+                const errorDescription = urlParams.get('error_description')
+                
+                if (error) {
+                    log(`❌ OAuth callback error: ${error} - ${errorDescription}`, 'error')
+                    updateStatus(`OAuth failed: ${error}`, 'error')
+                    return
+                }
+                
+                // Check for success parameters
+                const accessToken = urlParams.get('access_token')
+                const refreshToken = urlParams.get('refresh_token')
+                
+                if (accessToken) {
+                    log('✅ OAuth callback successful - tokens received', 'success')
+                    updateStatus('OAuth successful', 'success')
+                    checkAuthStatus()
+                } else {
+                    log('⚠️ OAuth callback received but no tokens found', 'error')
+                    updateStatus('OAuth callback incomplete', 'error')
+                }
+                
+                // Clean URL
+                window.history.replaceState({}, document.title, window.location.pathname)
+            }
+        }
+
+        // Check current auth status
+        async function checkAuthStatus() {
+            try {
+                const { data: { session }, error } = await supabase.auth.getSession()
+                
+                if (error) {
+                    log(`❌ Auth status check failed: ${error.message}`, 'error')
+                    return
+                }
+                
+                if (session?.user) {
+                    log('✅ User is authenticated', 'success')
+                    updateStatus('Authenticated', 'success')
+                    
+                    // Display user info
+                    const userInfo = document.getElementById('userInfo')
+                    const userDetails = document.getElementById('userDetails')
+                    
+                    userDetails.innerHTML = `
+                        <p><strong>Email:</strong> ${session.user.email}</p>
+                        <p><strong>ID:</strong> ${session.user.id}</p>
+                        <p><strong>Provider:</strong> ${session.user.app_metadata?.provider || 'Unknown'}</p>
+                        <p><strong>Last Sign In:</strong> ${new Date(session.user.last_sign_in_at).toLocaleString()}</p>
+                    `
+                    
+                    userInfo.style.display = 'block'
+                    document.getElementById('loginBtn').disabled = true
+                    document.getElementById('logoutBtn').disabled = false
+                    
+                } else {
+                    log('ℹ️ No active session found', 'info')
+                    updateStatus('Not authenticated', 'info')
+                    
+                    document.getElementById('userInfo').style.display = 'none'
+                    document.getElementById('loginBtn').disabled = false
+                    document.getElementById('logoutBtn').disabled = true
+                }
+                
+            } catch (err) {
+                log(`💥 Auth status error: ${err.message}`, 'error')
+                updateStatus('Auth status check failed', 'error')
+            }
+        }
+
+        // Initialize
+        window.addEventListener('load', function() {
+            log('🚀 Minimal OAuth Test Initialized', 'success')
+            log(`🔧 Supabase URL: ${SUPABASE_URL}`, 'info')
+            log(`🔧 Current URL: ${window.location.href}`, 'info')
+            
+            // Handle OAuth callback if present
+            handleOAuthCallback()
+            
+            // Check current auth status
+            checkAuthStatus()
+            
+            updateStatus('Ready to test OAuth', 'info')
+        })
+
+        // Listen for auth state changes
+        supabase.auth.onAuthStateChange((event, session) => {
+            log(`🔄 Auth state changed: ${event}`, 'info')
+            
+            if (event === 'SIGNED_IN' && session) {
+                log('✅ Sign in detected', 'success')
+                checkAuthStatus()
+            } else if (event === 'SIGNED_OUT') {
+                log('ℹ️ Sign out detected', 'info')
+                checkAuthStatus()
+            }
+        })
+    </script>
+</body>
+</html>

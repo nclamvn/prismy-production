@@ -1,0 +1,62 @@
+{
+  "auth": {
+    "signIn": "Đăng nhập",
+    "signUp": "Đăng ký",
+    "email": {
+      "title": "Tiếp tục với email",
+      "placeholder": "ban@example.com",
+      "button": "Đăng nhập bằng email",
+      "success": {
+        "title": "Kiểm tra email của bạn",
+        "description": "Chúng tôi đã gửi liên kết đăng nhập đến {email}"
+      },
+      "error": {
+        "invalid": "Vui lòng nhập địa chỉ email hợp lệ",
+        "failed": "Không thể gửi liên kết đăng nhập"
+      }
+    },
+    "phone": {
+      "title": "Tiếp tục với số điện thoại",
+      "placeholder": "090 123 4567",
+      "button": "Gửi mã OTP",
+      "otp": {
+        "title": "Nhập mã xác thực",
+        "description": "Nhập mã 6 số được gửi đến {phone}",
+        "placeholder": "000000",
+        "button": "Xác thực",
+        "resend": "Gửi lại mã",
+        "resendIn": "Gửi lại sau {seconds}s"
+      },
+      "error": {
+        "invalid": "Vui lòng nhập số điện thoại Việt Nam hợp lệ",
+        "failed": "Không thể gửi mã OTP"
+      }
+    },
+    "google": {
+      "button": "Tiếp tục với Google",
+      "error": "Không thể đăng nhập bằng Google"
+    },
+    "credits": {
+      "remaining": "{count} tín dụng",
+      "outOf": "Hết tín dụng",
+      "lowOn": "Sắp hết tín dụng",
+      "currentPlan": "Gói hiện tại",
+      "creditsUsed": "Tín dụng đã dùng",
+      "creditsRemaining": "Tín dụng còn lại",
+      "upgrade": {
+        "basic": "Nâng cấp lên Basic - $9/tháng",
+        "buyCredits": "Mua 50 tín dụng - $5",
+        "benefits": {
+          "title": "Lợi ích nâng cấp:",
+          "unlimited": "Dịch tài liệu không giới hạn",
+          "priority": "Xử lý AI ưu tiên",
+          "advanced": "Tính năng chat nâng cao",
+          "export": "Xuất nhiều định dạng"
+        }
+      }
+    },
+    "signOut": "Đăng xuất",
+    "settings": "Cài đặt",
+    "help": "Trợ giúp & Hỗ trợ"
+  }
+}

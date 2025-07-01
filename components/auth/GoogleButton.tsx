@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { createClient } from '@/lib/supabase-browser'
@@ -12,36 +12,90 @@ export function GoogleButton() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const searchParams = useSearchParams()
+  const router = useRouter()
   const supabase = createClient()
 
+  // 🎯 Note: Auth code detection moved to AuthLayout to ensure it works regardless of active tab
+
   const handleGoogleSignIn = async () => {
+    console.log('🚨 [GOOGLE OAUTH] Button clicked, starting OAuth flow...')
     setIsLoading(true)
     setError(null)
+
+    // 🎯 SAFETY: Auto-reset loading after 10 seconds to prevent stuck state
+    const loadingTimeout = setTimeout(() => {
+      console.log('🚨 [GOOGLE OAUTH] Timeout reached, resetting loading state')
+      setIsLoading(false)
+      setError('OAuth timeout - please try again')
+    }, 10000)
 
     try {
       // Get the intended redirect URL from search params or default to /app
       const redirectTo = searchParams.get('next') || '/app'
       
-      console.log('🔑 GoogleButton: Initiating sign in with redirect to:', redirectTo)
+      // 🚨 ULTRA DEBUG: Log everything about OAuth initiation
+      console.log('🚨 [GOOGLE OAUTH] Initiating OAuth flow:', {
+        timestamp: new Date().toISOString(),
+        redirectTo,
+        windowOrigin: window.location.origin,
+        windowHref: window.location.href,
+        searchParams: Object.fromEntries(searchParams.entries()),
+        supabaseUrl: supabase.supabaseUrl,
+        supabaseKey: supabase.supabaseKey.substring(0, 20) + '...'
+      })
       
       // Build callback URL with intended redirect as query param
       const callbackUrl = new URL('/auth/callback', window.location.origin)
       callbackUrl.searchParams.set('redirectTo', redirectTo)
+      
+      console.log('🚨 [GOOGLE OAUTH] Built callback URL:', {
+        callbackUrl: callbackUrl.toString(),
+        origin: window.location.origin,
+        pathname: callbackUrl.pathname,
+        search: callbackUrl.search
+      })
 
-      const { error: authError } = await supabase.auth.signInWithOAuth({
+      console.log('🚨 [GOOGLE OAUTH] Calling supabase.auth.signInWithOAuth...')
+      
+      const oauthResult = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: callbackUrl.toString(),
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent'
+          }
         },
       })
 
-      if (authError) {
-        throw authError
+      console.log('🚨 [GOOGLE OAUTH] Supabase OAuth result:', {
+        hasData: !!oauthResult.data,
+        hasError: !!oauthResult.error,
+        error: oauthResult.error,
+        data: oauthResult.data
+      })
+
+      if (oauthResult.error) {
+        throw oauthResult.error
       }
 
-      // Note: User will be redirected to Google, so we don't need to handle success here
-      // Don't show toast as it might interfere with redirect
+      console.log('🚨 [GOOGLE OAUTH] OAuth initiated successfully, should redirect to Google...')
+      
+      // Clear timeout since OAuth call succeeded
+      clearTimeout(loadingTimeout)
+      
+      // Note: User should be redirected to Google at this point
+      // If we reach here without redirect, something is wrong
+      setTimeout(() => {
+        console.log('🚨 [GOOGLE OAUTH] WARNING: No redirect occurred after OAuth call')
+        setIsLoading(false)
+        setError('OAuth did not redirect - please try again')
+      }, 3000)
+      
     } catch (err) {
+      console.error('🚨 [GOOGLE OAUTH] Error during OAuth initiation:', err)
+      clearTimeout(loadingTimeout)
+      
       const errorMessage = err instanceof Error ? err.message : 'Failed to sign in with Google'
       setError(errorMessage)
       toast.error('Google sign-in failed', {

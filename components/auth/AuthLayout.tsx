@@ -22,7 +22,38 @@ export function AuthLayout() {
   const supabase = createClient()
 
   useEffect(() => {
-    // Check if user is already authenticated
+    // 🎯 CRITICAL: Handle auth code FIRST, before checking session
+    const code = searchParams.get('code')
+    const state = searchParams.get('state')
+    
+    if (code) {
+      console.log('🚨 [AUTH CODE DETECTED] Auth code found in AuthLayout:', {
+        code: code.substring(0, 20) + '...',
+        hasState: !!state,
+        currentUrl: window.location.href,
+        searchParams: Object.fromEntries(searchParams.entries())
+      })
+      
+      // Set loading and redirecting state
+      setIsLoading(true)
+      setIsRedirecting(true)
+      
+      // Manually redirect to callback route to process the auth code
+      const callbackUrl = new URL('/auth/callback', window.location.origin)
+      
+      // Preserve all current search params for callback processing
+      searchParams.forEach((value, key) => {
+        callbackUrl.searchParams.set(key, value)
+      })
+      
+      console.log('🚨 [AUTH CODE DETECTED] Redirecting to callback from AuthLayout:', callbackUrl.toString())
+      
+      // Use window.location for immediate redirect
+      window.location.href = callbackUrl.toString()
+      return // Exit early to prevent other auth checks
+    }
+
+    // Check if user is already authenticated (only if no auth code)
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession()
       if (session && !isRedirecting) {
@@ -34,7 +65,7 @@ export function AuthLayout() {
     }
 
     checkAuth()
-  }, []) // Remove dependencies to prevent re-running
+  }, [searchParams]) // Add searchParams dependency to detect auth code
 
   useEffect(() => {
     // Listen for auth state changes
