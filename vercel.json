@@ -3,14 +3,22 @@
   "github": {
     "silent": true
   },
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "installCommand": "npm ci",
+  "regions": ["sin1", "iad1"],
   "functions": {
     "app/api/**/*.ts": {
       "maxDuration": 30
+    },
+    "app/api/documents/process/route.ts": {
+      "maxDuration": 60
+    },
+    "app/api/translate/route.ts": {
+      "maxDuration": 45
     }
   },
-  "regions": [
-    "sin1"
-  ],
   "redirects": [
     {
       "source": "/docs",
@@ -53,12 +61,29 @@
           "value": "nosniff"
         },
         {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
           "key": "Referrer-Policy",
           "value": "strict-origin-when-cross-origin"
         },
         {
           "key": "Permissions-Policy",
           "value": "camera=(), microphone=(), geolocation=()"
+        },
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
+        }
+      ]
+    },
+    {
+      "source": "/_next/static/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
         }
       ]
     },
@@ -84,6 +109,20 @@
     {
       "source": "/storybook-static/(.*)",
       "destination": "/storybook-static/$1"
+    },
+    {
+      "source": "/robots.txt",
+      "destination": "/api/robots"
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "/api/sitemap"
     }
-  ]
+  ],
+  "env": {
+    "NEXT_PUBLIC_APP_URL": "https://prismy.in",
+    "NEXT_PUBLIC_APP_NAME": "Prismy",
+    "NEXT_PUBLIC_APP_VERSION": "2.0.0",
+    "NODE_ENV": "production"
+  }
 }
