@@ -4,7 +4,7 @@ import { cookies } from 'next/headers'
 
 export async function GET(_request: NextRequest) {
   try {
-    const cookieStore = cookies()
+    const cookieStore = await cookies()
 
     // Create Supabase client
     const supabase = createServerClient(
