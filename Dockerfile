@@ -4,7 +4,7 @@
 # ===============================================
 # Stage 1: Dependencies Installation
 # ===============================================
-FROM node:20-alpine AS deps
+FROM node:24-alpine AS deps
 LABEL stage=deps
 
 # Install system dependencies for native modules
@@ -27,7 +27,7 @@ RUN npm ci --only=production --no-audit --no-fund \
 # ===============================================
 # Stage 2: Build Stage
 # ===============================================
-FROM node:20-alpine AS builder
+FROM node:24-alpine AS builder
 LABEL stage=builder
 
 WORKDIR /app
@@ -54,7 +54,7 @@ RUN npm run build
 # ===============================================
 # Stage 3: Production Runtime
 # ===============================================
-FROM node:20-alpine AS runner
+FROM node:24-alpine AS runner
 LABEL stage=runner
 
 # Set production environment
