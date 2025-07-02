@@ -48,7 +48,7 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <head>
         <meta name="version" content="2.0.0-vNEXT" />
-        <meta name="theme-color" content={designTokens.color.surface.default} />
+        <meta name="theme-color" content={designTokens.color.bg.default} />
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <script dangerouslySetInnerHTML={{ __html: fontOptimizationScript }} />
         <link
