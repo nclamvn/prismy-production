@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Card } from '@/components/ui/Card'
+import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { ScrollArea } from '@/components/ui/ScrollArea'
@@ -20,7 +20,8 @@ export default function AgentChat() {
     {
       id: '1',
       role: 'assistant',
-      content: 'Hello! I\'m Prismy, your AI document assistant. Upload a document to get started, or ask me anything about document translation.',
+      content:
+        "Hello! I'm Prismy, your AI document assistant. Upload a document to get started, or ask me anything about document translation.",
       timestamp: new Date(),
     },
   ])
@@ -65,7 +66,9 @@ export default function AgentChat() {
           </div>
           <div>
             <h3 className="font-semibold text-primary">Prismy AI Assistant</h3>
-            <p className="text-xs text-muted">Ready to help with your documents</p>
+            <p className="text-xs text-muted">
+              Ready to help with your documents
+            </p>
           </div>
         </div>
       </div>
@@ -73,18 +76,18 @@ export default function AgentChat() {
       {/* Chat Messages */}
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-4">
-          {messages.map((message) => (
+          {messages.map(message => (
             <div
               key={message.id}
               className={`flex items-start space-x-3 ${
-                message.role === 'user' ? 'flex-row-reverse space-x-reverse' : ''
+                message.role === 'user'
+                  ? 'flex-row-reverse space-x-reverse'
+                  : ''
               }`}
             >
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                  message.role === 'user'
-                    ? 'bg-gray-200'
-                    : 'bg-accent-brand'
+                  message.role === 'user' ? 'bg-gray-200' : 'bg-accent-brand'
                 }`}
               >
                 {message.role === 'user' ? (
@@ -101,12 +104,16 @@ export default function AgentChat() {
                 }`}
               >
                 <p className="text-sm">{message.content}</p>
-                <p className={`text-xs mt-1 ${
-                  message.role === 'user' ? 'text-accent-brand-light' : 'text-muted'
-                }`}>
-                  {message.timestamp.toLocaleTimeString([], { 
-                    hour: '2-digit', 
-                    minute: '2-digit' 
+                <p
+                  className={`text-xs mt-1 ${
+                    message.role === 'user'
+                      ? 'text-accent-brand-light'
+                      : 'text-muted'
+                  }`}
+                >
+                  {message.timestamp.toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
                   })}
                 </p>
               </div>
@@ -120,8 +127,14 @@ export default function AgentChat() {
               <div className="bg-surface border border-muted rounded-lg p-3">
                 <div className="flex space-x-1">
                   <div className="w-2 h-2 bg-muted rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-muted rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                  <div className="w-2 h-2 bg-muted rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  <div
+                    className="w-2 h-2 bg-muted rounded-full animate-bounce"
+                    style={{ animationDelay: '0.1s' }}
+                  ></div>
+                  <div
+                    className="w-2 h-2 bg-muted rounded-full animate-bounce"
+                    style={{ animationDelay: '0.2s' }}
+                  ></div>
                 </div>
               </div>
             </div>
@@ -135,14 +148,14 @@ export default function AgentChat() {
       <form onSubmit={handleSubmit} className="p-3 flex gap-2">
         <Input
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={e => setInput(e.target.value)}
           placeholder="Ask Prismy…"
           disabled={isLoading}
           className="flex-1"
         />
-        <Button 
-          type="submit" 
-          size="sm" 
+        <Button
+          type="submit"
+          size="sm"
           disabled={!input.trim() || isLoading}
           className="px-3"
         >

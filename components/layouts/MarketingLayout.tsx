@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 import { UserMenu } from '@/components/auth/UserMenu'
 import { AuthModal } from '@/components/auth/AuthModal'
+import { Logo } from '@/components/ui/Logo'
 import { getBrowserClient } from '@/lib/supabase-browser'
 import { User } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
@@ -75,11 +76,8 @@ export function MarketingLayout({ children }: MarketingLayoutProps) {
       <header className="bg-surface border-b border-muted">
         <div className="container-content py-4">
           <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-accent-brand rounded-md flex items-center justify-center">
-                <span className="text-white font-semibold text-sm">P</span>
-              </div>
-              <span className="text-lg font-semibold text-primary">Prismy</span>
+            <Link href="/">
+              <Logo size={32} />
             </Link>
 
             <nav className="hidden md:flex items-center space-x-6">
@@ -136,9 +134,7 @@ export function MarketingLayout({ children }: MarketingLayoutProps) {
         <div className="container-content py-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <div className="w-6 h-6 bg-accent-brand rounded flex items-center justify-center">
-                <span className="text-white font-semibold text-xs">P</span>
-              </div>
+              <Logo size={24} showText={false} />
               <span className="text-sm text-muted">
                 © 2024 Prismy. Enterprise Document Processing.
               </span>

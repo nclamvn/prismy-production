@@ -1,4 +1,5 @@
 import React from 'react'
+import { Logo } from '@/components/ui/Logo'
 
 interface WorkspaceLayoutProps {
   children: React.ReactNode
@@ -38,11 +39,8 @@ export function WorkspaceLayout({
 function DefaultSidebar() {
   return (
     <div className="p-4">
-      <div className="flex items-center space-x-2 mb-6">
-        <div className="w-6 h-6 bg-accent-brand rounded flex items-center justify-center">
-          <span className="text-white font-semibold text-xs">P</span>
-        </div>
-        <span className="font-semibold text-primary">Prismy</span>
+      <div className="mb-6">
+        <Logo size={24} textSize="sm" />
       </div>
 
       <nav className="space-y-2">

@@ -22,6 +22,14 @@ export const metadata: Metadata = {
   description:
     'AI-powered document processing platform for enterprise-scale operations',
   metadataBase: new URL('https://prismy.in'),
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon-32.svg', sizes: '32x32', type: 'image/svg+xml' },
+      { url: '/favicon-48.svg', sizes: '48x48', type: 'image/svg+xml' },
+      { url: '/favicon-64.svg', sizes: '64x64', type: 'image/svg+xml' },
+    ],
+  },
   openGraph: {
     title: 'Prismy - Enterprise Document Processing',
     description:

@@ -31,7 +31,9 @@ export function useAuth() {
   })
 
   const router = useRouter()
-  const supabase = createClient()
+
+  // Only create client in browser environment
+  const supabase = typeof window !== 'undefined' ? createClient() : null
 
   // Fetch user credits
   const fetchCredits = async () => {
@@ -77,6 +79,8 @@ export function useAuth() {
 
   // Sign out function
   const signOut = async () => {
+    if (!supabase) return
+
     try {
       const { error } = await supabase.auth.signOut()
       if (error) throw error
@@ -107,6 +111,12 @@ export function useAuth() {
   }
 
   useEffect(() => {
+    if (!supabase) {
+      // If no supabase client (SSR), just set loading to false
+      setState(prev => ({ ...prev, loading: false }))
+      return
+    }
+
     // Get initial session
     const getSession = async () => {
       const {
@@ -155,7 +165,7 @@ export function useAuth() {
     )
 
     return () => subscription.unsubscribe()
-  }, [])
+  }, [supabase])
 
   // Fetch credits when user changes
   useEffect(() => {
