@@ -33,7 +33,7 @@ export const designTokens = {
 
     // Semantic aliases for better DX
     bg: {
-      default: '#FAFAFA', // gray.50
+      default: '#F9FAFB', // canvas color - minimalist background
       surface: '#FFFFFF', // white
       elevated: '#FFFFFF', // white
       muted: '#F5F5F5', // gray.100

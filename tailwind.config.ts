@@ -21,6 +21,9 @@ const config: Config = {
           'monospace',
         ],
       },
+      colors: {
+        canvas: '#F9FAFB', // Unified canvas background
+      },
     },
   },
 }

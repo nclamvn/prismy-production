@@ -57,7 +57,11 @@ export default function HomePage() {
           <div className="max-w-4xl mx-auto text-center space-y-8">
             <h1 className="text-5xl md:text-6xl font-bold text-primary">
               AI-Powered Document Translation
-              <span className="block text-accent-brand mt-2">Made Simple</span>
+              <span className="block mt-2">
+                <span className="prism-gradient bg-clip-text text-transparent animate-gradient">
+                  Made Simple
+                </span>
+              </span>
             </h1>
 
             <p className="text-xl text-secondary max-w-2xl mx-auto">

@@ -52,7 +52,7 @@ export function MarketingLayout({ children }: MarketingLayoutProps) {
 
   const handleGetStarted = () => {
     if (user) {
-      router.push('/workspace')
+      router.push('/app')
     } else {
       setAuthMode('signup')
       setShowAuthModal(true)
@@ -66,7 +66,7 @@ export function MarketingLayout({ children }: MarketingLayoutProps) {
 
   const handleAuthSuccess = () => {
     setShowAuthModal(false)
-    router.push('/workspace')
+    router.push('/app')
   }
 
   return (
@@ -106,7 +106,7 @@ export function MarketingLayout({ children }: MarketingLayoutProps) {
             <div className="flex items-center space-x-3">
               {user ? (
                 <>
-                  <Link href="/workspace">
+                  <Link href="/app">
                     <Button variant="outline" size="sm">
                       Workspace
                     </Button>
