@@ -5,16 +5,19 @@
 ### What's Been Implemented:
 
 1. **Google Translate API Integration**
+
    - Full Google Cloud Translate v2 API integration
    - Auto-language detection
    - Quality tier system (Free, Standard, Premium, Enterprise)
    - Translation confidence scoring
 
 2. **API Routes**
+
    - `POST /api/translate` - Translate text with quality metrics
    - `GET /api/translate` - Get supported languages
 
 3. **Performance Features**
+
    - In-memory translation caching (1 hour TTL)
    - Rate limiting (per IP, per quality tier)
    - Character limit validation (10,000 max)
@@ -28,6 +31,7 @@
 ### Setup Instructions:
 
 #### 1. Google Cloud Setup:
+
 ```bash
 # Create Google Cloud project
 gcloud projects create prismy-translation
@@ -44,6 +48,7 @@ gcloud iam service-accounts keys create key.json \
 ```
 
 #### 2. Environment Variables:
+
 ```bash
 # Copy example env file
 cp .env.example .env.local
@@ -56,14 +61,16 @@ GOOGLE_CLOUD_KEY_FILE=/path/to/key.json
 ```
 
 #### 3. Rate Limits by Tier:
+
 - **Free**: 10 translations/hour
-- **Standard**: 50 translations/hour  
+- **Standard**: 50 translations/hour
 - **Premium**: 200 translations/hour
 - **Enterprise**: 1000 translations/hour
 
 ### API Usage Examples:
 
 #### Translate Text:
+
 ```javascript
 fetch('/api/translate', {
   method: 'POST',
@@ -72,12 +79,13 @@ fetch('/api/translate', {
     text: 'Hello world',
     sourceLang: 'en',
     targetLang: 'vi',
-    qualityTier: 'premium'
-  })
+    qualityTier: 'premium',
+  }),
 })
 ```
 
 #### Response Format:
+
 ```json
 {
   "success": true,
@@ -97,11 +105,13 @@ fetch('/api/translate', {
 ```
 
 ### Next Phase Preview:
+
 - **Phase 5**: User Authentication & Accounts
 - **Phase 6**: File Upload & Document Processing
 - **Phase 7**: Database Integration & History
 
 ### Production Notes:
+
 - Translation results are cached for 1 hour
 - Rate limiting is IP-based (use Redis in production)
 - Google Translate API charges per character

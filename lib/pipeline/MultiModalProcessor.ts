@@ -59,7 +59,7 @@ export class MultiModalProcessor {
   private processors: Map<string, ProcessorPlugin> = new Map()
   private activeProcesses: Map<string, ProcessingContext> = new Map()
   private processingPipelines: Map<string, ProcessingPipeline> = new Map()
-  
+
   constructor() {
     this.initializeProcessors()
     this.setupProcessingPipelines()
@@ -75,14 +75,14 @@ export class MultiModalProcessor {
   ): Promise<ProcessingResult> {
     const startTime = Date.now()
     const processingId = `proc_${request.id}_${Date.now()}`
-    
+
     logger.info('[MultiModalProcessor] Starting processing', {
       processingId,
       mode: request.mode,
       type: request.type,
-      processor: route.processor
+      processor: route.processor,
     })
-    
+
     // Create processing context
     const processingContext = this.createProcessingContext(
       processingId,
@@ -90,25 +90,25 @@ export class MultiModalProcessor {
       context,
       route
     )
-    
+
     this.activeProcesses.set(processingId, processingContext)
-    
+
     try {
       // Pre-processing
       const preprocessed = await this.preProcess(request, processingContext)
-      
+
       // Main processing based on mode
       const processed = await this.executeProcessing(
         preprocessed,
         processingContext
       )
-      
+
       // Post-processing
       const postprocessed = await this.postProcess(processed, processingContext)
-      
+
       // Quality assessment
       const quality = await this.assessQuality(postprocessed, processingContext)
-      
+
       // Build result
       const result = this.buildResult(
         postprocessed,
@@ -116,19 +116,18 @@ export class MultiModalProcessor {
         quality,
         startTime
       )
-      
+
       logger.info('[MultiModalProcessor] Processing completed', {
         processingId,
         duration: Date.now() - startTime,
-        quality: quality.confidence
+        quality: quality.confidence,
       })
-      
+
       return result
-      
     } catch (error) {
       logger.error('[MultiModalProcessor] Processing failed', {
         processingId,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       })
       throw error
     } finally {
@@ -144,15 +143,15 @@ export class MultiModalProcessor {
     context: ProcessingContext
   ): Promise<any> {
     const step = this.startStep(context, 'pre-processing')
-    
+
     try {
       let content = request.input.content
-      
+
       // Content validation
       if (!this.validateContent(content, request.mode)) {
         throw new Error('Invalid content for processing mode')
       }
-      
+
       // Type-specific preprocessing
       switch (request.type) {
         case 'text':
@@ -168,15 +167,14 @@ export class MultiModalProcessor {
           content = await this.preprocessCommand(content, context)
           break
       }
-      
+
       // Apply optimizations if enabled
       if (context.route.optimizations.compressionLevel > 0) {
         content = await this.applyCompression(content, context)
       }
-      
+
       this.completeStep(step, 'success')
       return content
-      
     } catch (error) {
       this.completeStep(step, 'failed', error)
       throw error
@@ -191,66 +189,68 @@ export class MultiModalProcessor {
     context: ProcessingContext
   ): Promise<any> {
     const step = this.startStep(context, 'main-processing')
-    
+
     try {
       // Get processing pipeline for mode
       const pipeline = this.processingPipelines.get(context.request.mode)
       if (!pipeline) {
         throw new Error(`No pipeline found for mode: ${context.request.mode}`)
       }
-      
+
       // Execute pipeline stages
       let result = content
       for (const stage of pipeline.stages) {
         const stageStep = this.startStep(context, `stage-${stage.name}`)
-        
+
         try {
           // Check if stage should be skipped
           if (stage.condition && !stage.condition(result, context)) {
             this.completeStep(stageStep, 'skipped')
             continue
           }
-          
+
           // Execute stage processor
           const processor = this.processors.get(stage.processor)
           if (!processor) {
             throw new Error(`Processor not found: ${stage.processor}`)
           }
-          
+
           // Process with timeout
           const timeout = stage.timeout || 30000
           result = await this.processWithTimeout(
             processor.process(result, stage.options),
             timeout
           )
-          
+
           // Apply stage transformations
           if (stage.transformations) {
             for (const transform of stage.transformations) {
-              result = await this.applyTransformation(result, transform, context)
+              result = await this.applyTransformation(
+                result,
+                transform,
+                context
+              )
             }
           }
-          
+
           this.completeStep(stageStep, 'success')
-          
         } catch (error) {
           this.completeStep(stageStep, 'failed', error)
-          
+
           // Check if stage is critical
           if (stage.critical !== false) {
             throw error
           }
-          
+
           logger.warn('[MultiModalProcessor] Non-critical stage failed', {
             stage: stage.name,
-            error: error instanceof Error ? error.message : 'Unknown error'
+            error: error instanceof Error ? error.message : 'Unknown error',
           })
         }
       }
-      
+
       this.completeStep(step, 'success')
       return result
-      
     } catch (error) {
       this.completeStep(step, 'failed', error)
       throw error
@@ -265,29 +265,28 @@ export class MultiModalProcessor {
     context: ProcessingContext
   ): Promise<any> {
     const step = this.startStep(context, 'post-processing')
-    
+
     try {
       // Format result based on output requirements
       let formatted = await this.formatOutput(result, context)
-      
+
       // Apply enhancements based on user tier
       if (context.userContext.tier !== 'free') {
         formatted = await this.applyEnhancements(formatted, context)
       }
-      
+
       // Validate output
       if (!this.validateOutput(formatted, context)) {
         throw new Error('Output validation failed')
       }
-      
+
       // Cache if enabled
       if (context.route.cacheStrategy.enabled) {
         await this.cacheResult(formatted, context)
       }
-      
+
       this.completeStep(step, 'success')
       return formatted
-      
     } catch (error) {
       this.completeStep(step, 'failed', error)
       throw error
@@ -302,28 +301,40 @@ export class MultiModalProcessor {
     context: ProcessingContext
   ): Promise<QualityMetrics> {
     const step = this.startStep(context, 'quality-assessment')
-    
+
     try {
       const metrics: QualityMetrics = {
         accuracy: 0,
         completeness: 0,
         confidence: 0,
-        validationScore: 0
+        validationScore: 0,
       }
-      
+
       // Mode-specific quality assessment
       switch (context.request.mode) {
         case 'translation':
-          Object.assign(metrics, await this.assessTranslationQuality(result, context))
+          Object.assign(
+            metrics,
+            await this.assessTranslationQuality(result, context)
+          )
           break
         case 'documents':
-          Object.assign(metrics, await this.assessDocumentQuality(result, context))
+          Object.assign(
+            metrics,
+            await this.assessDocumentQuality(result, context)
+          )
           break
         case 'intelligence':
-          Object.assign(metrics, await this.assessIntelligenceQuality(result, context))
+          Object.assign(
+            metrics,
+            await this.assessIntelligenceQuality(result, context)
+          )
           break
         case 'analytics':
-          Object.assign(metrics, await this.assessAnalyticsQuality(result, context))
+          Object.assign(
+            metrics,
+            await this.assessAnalyticsQuality(result, context)
+          )
           break
         default:
           // Basic quality assessment
@@ -332,10 +343,9 @@ export class MultiModalProcessor {
           metrics.confidence = 0.87
           metrics.validationScore = 0.88
       }
-      
+
       this.completeStep(step, 'success')
       return metrics
-      
     } catch (error) {
       this.completeStep(step, 'failed', error)
       // Return default metrics on error
@@ -343,7 +353,7 @@ export class MultiModalProcessor {
         accuracy: 0.7,
         completeness: 0.7,
         confidence: 0.7,
-        validationScore: 0.7
+        validationScore: 0.7,
       }
     }
   }
@@ -359,7 +369,7 @@ export class MultiModalProcessor {
   ): ProcessingResult {
     const endTime = Date.now()
     const totalTime = endTime - startTime
-    
+
     return {
       data,
       metadata: {
@@ -369,44 +379,50 @@ export class MultiModalProcessor {
         startTime: new Date(startTime),
         endTime: new Date(endTime),
         processingSteps: context.steps,
-        transformations: context.transformations
+        transformations: context.transformations,
       },
       performance: {
         totalTime,
         cpuUsage: this.estimateCpuUsage(context),
         memoryUsage: this.estimateMemoryUsage(context),
-        throughput: this.calculateThroughput(data, totalTime)
+        throughput: this.calculateThroughput(data, totalTime),
       },
-      quality
+      quality,
     }
   }
 
   // Preprocessing methods
-  private async preprocessText(content: string, context: ProcessingContext): Promise<string> {
+  private async preprocessText(
+    content: string,
+    context: ProcessingContext
+  ): Promise<string> {
     // Text normalization
     let normalized = content.trim()
-    
+
     // Remove excessive whitespace
     normalized = normalized.replace(/\s+/g, ' ')
-    
+
     // Handle special characters based on mode
     if (context.request.mode === 'translation') {
       // Preserve formatting for translation
       normalized = this.preserveFormattingMarkers(normalized)
     }
-    
+
     return normalized
   }
 
-  private async preprocessDocument(content: File, context: ProcessingContext): Promise<any> {
+  private async preprocessDocument(
+    content: File,
+    context: ProcessingContext
+  ): Promise<any> {
     // Document preprocessing
     const metadata = {
       name: content.name,
       type: content.type,
       size: content.size,
-      lastModified: content.lastModified
+      lastModified: content.lastModified,
     }
-    
+
     // Extract content based on type
     if (content.type.includes('text')) {
       const text = await content.text()
@@ -418,109 +434,129 @@ export class MultiModalProcessor {
       // Image processing for OCR
       return { metadata, content, type: 'image' }
     }
-    
+
     return { metadata, content, type: 'binary' }
   }
 
-  private async preprocessQuery(content: string, context: ProcessingContext): Promise<any> {
+  private async preprocessQuery(
+    content: string,
+    context: ProcessingContext
+  ): Promise<any> {
     // Query preprocessing
     return {
       original: content,
       normalized: content.toLowerCase().trim(),
       tokens: content.split(/\s+/),
-      language: await this.detectLanguage(content)
+      language: await this.detectLanguage(content),
     }
   }
 
-  private async preprocessCommand(content: string, context: ProcessingContext): Promise<any> {
+  private async preprocessCommand(
+    content: string,
+    context: ProcessingContext
+  ): Promise<any> {
     // Command preprocessing
     const parts = content.trim().split(/\s+/)
     return {
       command: parts[0],
       args: parts.slice(1),
-      raw: content
+      raw: content,
     }
   }
 
   // Quality assessment methods
-  private async assessTranslationQuality(result: any, context: ProcessingContext): Promise<Partial<QualityMetrics>> {
+  private async assessTranslationQuality(
+    result: any,
+    context: ProcessingContext
+  ): Promise<Partial<QualityMetrics>> {
     // Simplified translation quality assessment
     const hasTranslation = result && result.translatedText
-    const lengthRatio = hasTranslation ? 
-      result.translatedText.length / context.request.input.content.length : 0
-    
+    const lengthRatio = hasTranslation
+      ? result.translatedText.length / context.request.input.content.length
+      : 0
+
     return {
       accuracy: hasTranslation ? 0.92 : 0,
       completeness: Math.min(lengthRatio * 1.2, 1),
       confidence: hasTranslation ? 0.88 : 0,
-      validationScore: hasTranslation ? 0.9 : 0
+      validationScore: hasTranslation ? 0.9 : 0,
     }
   }
 
-  private async assessDocumentQuality(result: any, context: ProcessingContext): Promise<Partial<QualityMetrics>> {
+  private async assessDocumentQuality(
+    result: any,
+    context: ProcessingContext
+  ): Promise<Partial<QualityMetrics>> {
     // Document processing quality assessment
     const hasContent = result && result.extractedContent
     const hasInsights = result && result.insights && result.insights.length > 0
     const hasValidMetadata = result && result.fileName && result.fileType
-    
+
     let accuracy = 0.7 // Base accuracy
     let completeness = 0.7 // Base completeness
     let confidence = 0.7 // Base confidence
-    
+
     // Adjust based on processing results
     if (hasContent) {
       accuracy += 0.15
       completeness += 0.15
       confidence += 0.1
     }
-    
+
     if (hasInsights) {
       accuracy += 0.1
       completeness += 0.1
       confidence += 0.15
     }
-    
+
     if (hasValidMetadata) {
       accuracy += 0.05
       completeness += 0.05
       confidence += 0.05
     }
-    
+
     // Cap at 1.0
     accuracy = Math.min(accuracy, 1.0)
     completeness = Math.min(completeness, 1.0)
     confidence = Math.min(confidence, 1.0)
-    
+
     return {
       accuracy,
       completeness,
       confidence,
-      validationScore: (accuracy + completeness + confidence) / 3
+      validationScore: (accuracy + completeness + confidence) / 3,
     }
   }
 
-  private async assessIntelligenceQuality(result: any, context: ProcessingContext): Promise<Partial<QualityMetrics>> {
+  private async assessIntelligenceQuality(
+    result: any,
+    context: ProcessingContext
+  ): Promise<Partial<QualityMetrics>> {
     // Intelligence query quality
     const hasResponse = result && result.synthesis
-    const hasMultiplePerspectives = result && result.perspectives && result.perspectives.length > 1
-    
+    const hasMultiplePerspectives =
+      result && result.perspectives && result.perspectives.length > 1
+
     return {
       accuracy: hasResponse ? 0.87 : 0,
       completeness: hasMultiplePerspectives ? 0.95 : 0.7,
       confidence: hasResponse ? 0.85 : 0,
-      validationScore: hasResponse ? 0.88 : 0
+      validationScore: hasResponse ? 0.88 : 0,
     }
   }
 
-  private async assessAnalyticsQuality(result: any, context: ProcessingContext): Promise<Partial<QualityMetrics>> {
+  private async assessAnalyticsQuality(
+    result: any,
+    context: ProcessingContext
+  ): Promise<Partial<QualityMetrics>> {
     // Analytics quality
     const hasData = result && Object.keys(result).length > 0
-    
+
     return {
       accuracy: hasData ? 0.95 : 0,
       completeness: hasData ? 0.98 : 0,
       confidence: hasData ? 0.96 : 0,
-      validationScore: hasData ? 0.97 : 0
+      validationScore: hasData ? 0.97 : 0,
     }
   }
 
@@ -538,7 +574,7 @@ export class MultiModalProcessor {
       route,
       steps: [],
       transformations: [],
-      startTime: Date.now()
+      startTime: Date.now(),
     }
   }
 
@@ -547,33 +583,45 @@ export class MultiModalProcessor {
       name,
       duration: 0,
       status: 'success',
-      details: { startTime: Date.now() }
+      details: { startTime: Date.now() },
     }
-    
+
     context.steps.push(step)
     return step
   }
 
-  private completeStep(step: ProcessingStep, status: 'success' | 'skipped' | 'failed', error?: any): void {
+  private completeStep(
+    step: ProcessingStep,
+    status: 'success' | 'skipped' | 'failed',
+    error?: any
+  ): void {
     step.status = status
     step.duration = Date.now() - step.details.startTime
-    
+
     if (error) {
-      step.details.error = error instanceof Error ? error.message : String(error)
+      step.details.error =
+        error instanceof Error ? error.message : String(error)
     }
   }
 
-  private async processWithTimeout<T>(promise: Promise<T>, timeout: number): Promise<T> {
+  private async processWithTimeout<T>(
+    promise: Promise<T>,
+    timeout: number
+  ): Promise<T> {
     const timeoutPromise = new Promise<never>((_, reject) => {
       setTimeout(() => reject(new Error('Processing timeout')), timeout)
     })
-    
+
     return Promise.race([promise, timeoutPromise])
   }
 
-  private async applyTransformation(data: any, transformation: string, context: ProcessingContext): Promise<any> {
+  private async applyTransformation(
+    data: any,
+    transformation: string,
+    context: ProcessingContext
+  ): Promise<any> {
     context.transformations.push(transformation)
-    
+
     // Apply transformation based on type
     switch (transformation) {
       case 'lowercase':
@@ -593,7 +641,7 @@ export class MultiModalProcessor {
 
   private validateContent(content: any, mode: string): boolean {
     if (!content) return false
-    
+
     switch (mode) {
       case 'translation':
         return typeof content === 'string' && content.length > 0
@@ -612,22 +660,31 @@ export class MultiModalProcessor {
     return output !== null && output !== undefined
   }
 
-  private async formatOutput(result: any, context: ProcessingContext): Promise<any> {
+  private async formatOutput(
+    result: any,
+    context: ProcessingContext
+  ): Promise<any> {
     // Format based on expected output type
     if (context.request.options.async) {
       return {
         taskId: context.id,
         status: 'completed',
-        result
+        result,
       }
     }
-    
+
     return result
   }
 
-  private async applyEnhancements(data: any, context: ProcessingContext): Promise<any> {
+  private async applyEnhancements(
+    data: any,
+    context: ProcessingContext
+  ): Promise<any> {
     // Apply tier-based enhancements
-    if (context.userContext.tier === 'enterprise' || context.userContext.tier === 'premium') {
+    if (
+      context.userContext.tier === 'enterprise' ||
+      context.userContext.tier === 'premium'
+    ) {
       // Add metadata enrichment
       if (typeof data === 'object' && data !== null) {
         data._enhanced = true
@@ -635,47 +692,58 @@ export class MultiModalProcessor {
         data._timestamp = new Date().toISOString()
       }
     }
-    
+
     return data
   }
 
-  private async applyCompression(content: any, context: ProcessingContext): Promise<any> {
+  private async applyCompression(
+    content: any,
+    context: ProcessingContext
+  ): Promise<any> {
     // Simplified compression (would use actual compression library)
     if (typeof content === 'string' && content.length > 1024) {
       logger.debug('[MultiModalProcessor] Compression applied', {
         originalSize: content.length,
-        compressionLevel: context.route.optimizations.compressionLevel
+        compressionLevel: context.route.optimizations.compressionLevel,
       })
     }
-    
+
     return content
   }
 
-  private async cacheResult(result: any, context: ProcessingContext): Promise<void> {
+  private async cacheResult(
+    result: any,
+    context: ProcessingContext
+  ): Promise<void> {
     // Cache implementation would go here
     logger.debug('[MultiModalProcessor] Result cached', {
       key: context.route.cacheStrategy.key,
-      ttl: context.route.cacheStrategy.ttl
+      ttl: context.route.cacheStrategy.ttl,
     })
   }
 
   private preserveFormattingMarkers(text: string): string {
     // Preserve newlines and formatting
-    return text.replace(/\n/g, '{{NEWLINE}}')
-               .replace(/\t/g, '{{TAB}}')
+    return text.replace(/\n/g, '{{NEWLINE}}').replace(/\t/g, '{{TAB}}')
   }
 
   private async detectLanguage(text: string): Promise<string> {
     // Simplified language detection
-    const hasVietnamese = /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i.test(text)
+    const hasVietnamese =
+      /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i.test(
+        text
+      )
     return hasVietnamese ? 'vi' : 'en'
   }
 
   private estimateCpuUsage(context: ProcessingContext): number {
     // Estimate based on processing steps
-    const totalStepTime = context.steps.reduce((sum, step) => sum + step.duration, 0)
+    const totalStepTime = context.steps.reduce(
+      (sum, step) => sum + step.duration,
+      0
+    )
     const totalTime = Date.now() - context.startTime
-    
+
     return Math.min((totalStepTime / totalTime) * 100, 100)
   }
 
@@ -683,7 +751,7 @@ export class MultiModalProcessor {
     // Simplified memory estimation
     const contentSize = JSON.stringify(context.request.input.content).length
     const baseMemory = 10 * 1024 * 1024 // 10MB base
-    
+
     return ((contentSize + baseMemory) / (100 * 1024 * 1024)) * 100 // Percentage of 100MB
   }
 
@@ -702,11 +770,11 @@ export class MultiModalProcessor {
       process: async (content: any, options: any) => {
         // Basic text processing
         return { processedText: content, options }
-      }
+      },
     })
-    
+
     this.processors.set('document_processor', {
-      name: 'Document Processor', 
+      name: 'Document Processor',
       version: '1.0.0',
       supports: ['document', 'pdf', 'image'],
       process: async (content: any, options: any) => {
@@ -714,7 +782,7 @@ export class MultiModalProcessor {
         if (content && content.metadata && content.content instanceof File) {
           const file = content.content
           const metadata = content.metadata
-          
+
           // Extract basic information
           const extractedData = {
             fileName: file.name,
@@ -723,9 +791,9 @@ export class MultiModalProcessor {
             extractedContent: null,
             insights: [],
             pageCount: 1,
-            wordCount: 0
+            wordCount: 0,
           }
-          
+
           // Handle different file types
           if (file.type.includes('text')) {
             try {
@@ -735,19 +803,20 @@ export class MultiModalProcessor {
               extractedData.insights = [
                 `Text document processed: ${file.name}`,
                 `Content length: ${text.length} characters`,
-                `Word count: ${extractedData.wordCount}`
+                `Word count: ${extractedData.wordCount}`,
               ]
             } catch (error) {
               extractedData.insights = [`Failed to extract text: ${error}`]
             }
           } else if (file.type.includes('pdf')) {
             // PDF processing placeholder
-            extractedData.extractedContent = 'PDF content extraction not implemented'
+            extractedData.extractedContent =
+              'PDF content extraction not implemented'
             extractedData.pageCount = Math.ceil(file.size / 100000) // Rough estimate
             extractedData.insights = [
               `PDF document detected: ${file.name}`,
               `Estimated pages: ${extractedData.pageCount}`,
-              `File size: ${(file.size / 1024).toFixed(1)} KB`
+              `File size: ${(file.size / 1024).toFixed(1)} KB`,
             ]
           } else if (file.type.includes('image')) {
             // Image/OCR processing placeholder
@@ -755,32 +824,32 @@ export class MultiModalProcessor {
             extractedData.insights = [
               `Image document detected: ${file.name}`,
               `File size: ${(file.size / 1024).toFixed(1)} KB`,
-              'OCR text extraction would be performed here'
+              'OCR text extraction would be performed here',
             ]
           } else {
             extractedData.insights = [
               `Document processed: ${file.name}`,
               `File type: ${file.type}`,
-              `Size: ${(file.size / 1024).toFixed(1)} KB`
+              `Size: ${(file.size / 1024).toFixed(1)} KB`,
             ]
           }
-          
+
           return extractedData
         }
-        
+
         // Fallback for other content types
         return { extractedContent: content, options }
-      }
+      },
     })
-    
+
     this.processors.set('query_processor', {
       name: 'Query Processor',
-      version: '1.0.0', 
+      version: '1.0.0',
       supports: ['query'],
       process: async (content: any, options: any) => {
         // Query processing logic
         return { queryResult: content, options }
-      }
+      },
     })
   }
 
@@ -793,23 +862,23 @@ export class MultiModalProcessor {
           name: 'language-detection',
           processor: 'text_processor',
           options: { detectLanguage: true },
-          critical: true
+          critical: true,
         },
         {
           name: 'translation',
           processor: 'text_processor',
           options: { translate: true },
-          critical: true
+          critical: true,
         },
         {
           name: 'quality-check',
           processor: 'text_processor',
           options: { qualityCheck: true },
-          critical: false
-        }
-      ]
+          critical: false,
+        },
+      ],
     })
-    
+
     // Document pipeline
     this.processingPipelines.set('documents', {
       name: 'Document Pipeline',
@@ -818,13 +887,13 @@ export class MultiModalProcessor {
           name: 'extraction',
           processor: 'document_processor',
           options: { extract: true, analyzeContent: true },
-          critical: true
+          critical: true,
         },
         {
           name: 'analysis',
           processor: 'document_processor',
           options: { analyze: true, generateInsights: true },
-          critical: false
+          critical: false,
         },
         {
           name: 'metadata-enrichment',
@@ -833,11 +902,11 @@ export class MultiModalProcessor {
           critical: false,
           condition: (data: any, context: any) => {
             return context.userContext.tier !== 'free'
-          }
-        }
-      ]
+          },
+        },
+      ],
     })
-    
+
     // Intelligence pipeline
     this.processingPipelines.set('intelligence', {
       name: 'Intelligence Pipeline',
@@ -846,15 +915,15 @@ export class MultiModalProcessor {
           name: 'query-analysis',
           processor: 'query_processor',
           options: { analyze: true },
-          critical: true
+          critical: true,
         },
         {
           name: 'synthesis',
           processor: 'query_processor',
           options: { synthesize: true },
-          critical: true
-        }
-      ]
+          critical: true,
+        },
+      ],
     })
   }
 }

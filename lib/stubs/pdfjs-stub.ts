@@ -1,6 +1,6 @@
 // Stub for PDF.js in serverless environments
 export const GlobalWorkerOptions = {
-  workerSrc: ''
+  workerSrc: '',
 }
 
 export const getDocument = () => {
@@ -9,5 +9,5 @@ export const getDocument = () => {
 
 export default {
   GlobalWorkerOptions,
-  getDocument
+  getDocument,
 }

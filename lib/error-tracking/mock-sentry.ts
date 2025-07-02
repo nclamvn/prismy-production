@@ -17,8 +17,8 @@ export const errorTracker = {
     initialized: false,
     environment: 'production',
     sampleRate: 0,
-    dsn: 'not configured'
-  })
+    dsn: 'not configured',
+  }),
 }
 
 export const captureError = errorTracker.captureError

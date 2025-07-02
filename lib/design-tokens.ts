@@ -116,11 +116,11 @@ export const designTokens = {
   },
 
   fontWeight: {
-    light: '300',    // doctrine: 300-700 range
+    light: '300', // doctrine: 300-700 range
     normal: '400',
     medium: '500',
     semibold: '600',
-    bold: '700',     // doctrine: max 700
+    bold: '700', // doctrine: max 700
   },
 
   // Elevation - Subtle shadows for depth

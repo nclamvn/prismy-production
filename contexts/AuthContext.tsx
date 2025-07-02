@@ -12,10 +12,15 @@ import type {
   AuthError,
   LoginRequest,
   RegisterRequest,
-  User as PrismyUser
+  User as PrismyUser,
 } from '../types/auth'
 import type { SupportedLanguage } from '../types'
-import { isUser, isAuthTokens, validateEmail, validatePassword } from '../lib/type-guards'
+import {
+  isUser,
+  isAuthTokens,
+  validateEmail,
+  validatePassword,
+} from '../lib/type-guards'
 
 // Enhanced AuthContext with strict typing
 interface AuthContextType extends Omit<AuthContextValue, 'state' | 'actions'> {
@@ -25,25 +30,32 @@ interface AuthContextType extends Omit<AuthContextValue, 'state' | 'actions'> {
   profile: UserProfile | null
   loading: boolean
   sessionRestored: boolean
-  
+
   // Enhanced typed methods
-  signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>
+  signIn: (
+    email: string,
+    password: string
+  ) => Promise<{ error: AuthError | null }>
   signUp: (
     email: string,
     password: string,
     fullName: string,
     language?: SupportedLanguage
   ) => Promise<{ error: AuthError | null }>
-  signInWithGoogle: (redirectTo?: string) => Promise<{ error: AuthError | null }>
+  signInWithGoogle: (
+    redirectTo?: string
+  ) => Promise<{ error: AuthError | null }>
   signInWithApple: (redirectTo?: string) => Promise<{ error: AuthError | null }>
   signOut: () => Promise<void>
-  updateProfile: (updates: Partial<UserProfile>) => Promise<{ error: AuthError | null }>
+  updateProfile: (
+    updates: Partial<UserProfile>
+  ) => Promise<{ error: AuthError | null }>
   refreshProfile: () => Promise<void>
-  
+
   // New typed methods
   login: (credentials: LoginRequest) => Promise<{ error: AuthError | null }>
   register: (data: RegisterRequest) => Promise<{ error: AuthError | null }>
-  
+
   // State management
   state: AuthState
   isAuthenticated: boolean
@@ -301,7 +313,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const register = async (data: RegisterRequest) => {
-    return await signUp(data.email, data.password, `${data.firstName} ${data.lastName}`, data.language)
+    return await signUp(
+      data.email,
+      data.password,
+      `${data.firstName} ${data.lastName}`,
+      data.language
+    )
   }
 
   // Computed state values
@@ -314,7 +331,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isInitialized: sessionRestored,
     error,
     session: session as any, // Cast to match type definition
-    tokens: null // Implement tokens as needed
+    tokens: null, // Implement tokens as needed
   }
 
   return (

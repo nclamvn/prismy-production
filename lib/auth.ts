@@ -4,10 +4,13 @@ import { cookies } from 'next/headers'
 export async function checkAdmin() {
   try {
     const supabase = createServerComponentClient({ cookies })
-    
+
     // Get current session
-    const { data: { session }, error: authError } = await supabase.auth.getSession()
-    
+    const {
+      data: { session },
+      error: authError,
+    } = await supabase.auth.getSession()
+
     if (authError || !session) {
       return { isAdmin: false, userId: null }
     }
@@ -22,7 +25,7 @@ export async function checkAdmin() {
 
     return {
       isAdmin,
-      userId: session.user.id
+      userId: session.user.id,
     }
   } catch (error) {
     console.error('Error checking admin status:', error)

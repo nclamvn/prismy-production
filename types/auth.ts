@@ -160,7 +160,14 @@ export interface Permission {
 
 export interface PermissionCondition {
   field: string
-  operator: 'equals' | 'not_equals' | 'in' | 'not_in' | 'contains' | 'starts_with' | 'ends_with'
+  operator:
+    | 'equals'
+    | 'not_equals'
+    | 'in'
+    | 'not_in'
+    | 'contains'
+    | 'starts_with'
+    | 'ends_with'
   value: any
 }
 
@@ -344,7 +351,14 @@ export interface PersonalAccessToken {
 export interface SecurityEvent {
   id: string
   userId: string
-  type: 'login' | 'logout' | 'password_change' | 'email_change' | 'two_factor_enabled' | 'two_factor_disabled' | 'suspicious_activity'
+  type:
+    | 'login'
+    | 'logout'
+    | 'password_change'
+    | 'email_change'
+    | 'two_factor_enabled'
+    | 'two_factor_disabled'
+    | 'suspicious_activity'
   description: string
   ipAddress: string
   userAgent: string
@@ -416,7 +430,9 @@ export interface AuthContextValue {
     resendVerification: (data: ResendVerificationRequest) => Promise<void>
     updateProfile: (data: Partial<UserProfile>) => Promise<User>
     updatePreferences: (preferences: Partial<UserPreferences>) => Promise<User>
-    enableTwoFactor: (data: TwoFactorSetupRequest) => Promise<TwoFactorSetupResponse>
+    enableTwoFactor: (
+      data: TwoFactorSetupRequest
+    ) => Promise<TwoFactorSetupResponse>
     verifyTwoFactor: (data: TwoFactorVerifyRequest) => Promise<void>
     disableTwoFactor: (code: string) => Promise<void>
     createApiKey: (data: CreateApiKeyRequest) => Promise<ApiKey>
@@ -509,5 +525,5 @@ export enum AuthErrorCode {
   INSUFFICIENT_PERMISSIONS = 'INSUFFICIENT_PERMISSIONS',
   SESSION_EXPIRED = 'SESSION_EXPIRED',
   DEVICE_NOT_TRUSTED = 'DEVICE_NOT_TRUSTED',
-  SUSPICIOUS_ACTIVITY = 'SUSPICIOUS_ACTIVITY'
+  SUSPICIOUS_ACTIVITY = 'SUSPICIOUS_ACTIVITY',
 }

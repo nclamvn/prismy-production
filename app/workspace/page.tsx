@@ -21,15 +21,18 @@ interface Translation {
 import { AuthGuard } from '@/components/auth/AuthGuard'
 
 function WorkspaceContent() {
-  const [activeTab, setActiveTab] = useState<'upload' | 'translate' | 'chat'>('upload')
+  const [activeTab, setActiveTab] = useState<'upload' | 'translate' | 'chat'>(
+    'upload'
+  )
   const [currentDocument, setCurrentDocument] = useState<Document | null>(null)
-  const [currentTranslation, setCurrentTranslation] = useState<Translation | null>(null)
+  const [currentTranslation, setCurrentTranslation] =
+    useState<Translation | null>(null)
 
   const handleDocumentUploaded = (document: any) => {
     setCurrentDocument({
       id: document.id,
       name: document.name,
-      content: `Sample content from ${document.name}...` // In real app, extract actual content
+      content: `Sample content from ${document.name}...`, // In real app, extract actual content
     })
     // Auto-switch to translate tab
     setActiveTab('translate')
@@ -39,7 +42,7 @@ function WorkspaceContent() {
     setCurrentTranslation({
       id: job.id,
       documentName: job.documentName,
-      translatedText: job.translatedText
+      translatedText: job.translatedText,
     })
     // Auto-switch to chat tab
     setActiveTab('chat')
@@ -61,7 +64,9 @@ function WorkspaceContent() {
         return (
           <ChatInterface
             documentName={currentDocument?.name}
-            documentContent={currentTranslation?.translatedText || currentDocument?.content}
+            documentContent={
+              currentTranslation?.translatedText || currentDocument?.content
+            }
           />
         )
       default:
@@ -118,9 +123,7 @@ function WorkspaceContent() {
                 <div className="text-sm font-medium text-accent-brand">
                   {currentDocument.name}
                 </div>
-                <div className="text-xs text-muted">
-                  Ready for processing
-                </div>
+                <div className="text-xs text-muted">Ready for processing</div>
               </div>
             </div>
           </div>
@@ -134,21 +137,29 @@ function WorkspaceContent() {
         </div>
         <div className="space-y-2">
           <div className="flex items-center space-x-2">
-            <div className={`w-2 h-2 rounded-full ${
-              currentDocument ? 'bg-green-500' : 'bg-gray-300'
-            }`} />
+            <div
+              className={`w-2 h-2 rounded-full ${
+                currentDocument ? 'bg-green-500' : 'bg-gray-300'
+              }`}
+            />
             <span className="text-xs text-muted">Document uploaded</span>
           </div>
           <div className="flex items-center space-x-2">
-            <div className={`w-2 h-2 rounded-full ${
-              currentTranslation ? 'bg-green-500' : 'bg-gray-300'
-            }`} />
+            <div
+              className={`w-2 h-2 rounded-full ${
+                currentTranslation ? 'bg-green-500' : 'bg-gray-300'
+              }`}
+            />
             <span className="text-xs text-muted">Translation completed</span>
           </div>
           <div className="flex items-center space-x-2">
-            <div className={`w-2 h-2 rounded-full ${
-              activeTab === 'chat' && currentDocument ? 'bg-blue-500' : 'bg-gray-300'
-            }`} />
+            <div
+              className={`w-2 h-2 rounded-full ${
+                activeTab === 'chat' && currentDocument
+                  ? 'bg-blue-500'
+                  : 'bg-gray-300'
+              }`}
+            />
             <span className="text-xs text-muted">AI chat active</span>
           </div>
         </div>
@@ -161,11 +172,13 @@ function WorkspaceContent() {
       return (
         <ChatInterface
           documentName={currentDocument.name}
-          documentContent={currentTranslation?.translatedText || currentDocument.content}
+          documentContent={
+            currentTranslation?.translatedText || currentDocument.content
+          }
         />
       )
     }
-    
+
     return (
       <div className="p-6">
         <div className="space-y-4">
@@ -197,13 +210,11 @@ function WorkspaceContent() {
   }
 
   return (
-    <WorkspaceLayout 
+    <WorkspaceLayout
       sidebar={renderSidebar()}
       chatPanel={activeTab !== 'chat' ? renderChatPanel() : undefined}
     >
-      <div className="p-6">
-        {renderMainContent()}
-      </div>
+      <div className="p-6">{renderMainContent()}</div>
     </WorkspaceLayout>
   )
 }
@@ -217,22 +228,22 @@ interface SidebarItemProps {
   completed?: boolean
 }
 
-function SidebarItem({ 
-  icon, 
-  label, 
-  active = false, 
-  onClick, 
+function SidebarItem({
+  icon,
+  label,
+  active = false,
+  onClick,
   disabled = false,
-  completed = false 
+  completed = false,
 }: SidebarItemProps) {
   return (
     <div
       className={`flex items-center space-x-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
-        disabled 
-          ? 'text-muted cursor-not-allowed' 
+        disabled
+          ? 'text-muted cursor-not-allowed'
           : active
-          ? 'bg-accent-brand-light text-accent-brand'
-          : 'text-secondary hover:text-primary hover:bg-bg-muted'
+            ? 'bg-accent-brand-light text-accent-brand'
+            : 'text-secondary hover:text-primary hover:bg-bg-muted'
       }`}
       onClick={disabled ? undefined : onClick}
     >

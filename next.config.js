@@ -55,7 +55,7 @@ const nextConfig = {
       transform: 'lucide-react/dist/esm/icons/{{member}}',
       skipDefaultConversion: true,
     },
-    'recharts': {
+    recharts: {
       transform: 'recharts/lib/{{member}}',
       skipDefaultConversion: true,
     },
@@ -155,8 +155,9 @@ const nextConfig = {
           // Relaxed CSP for Next.js compatibility
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self'; connect-src 'self' https://*.supabase.co https://*.supabase.com wss://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';"
-          }
+            value:
+              "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self'; connect-src 'self' https://*.supabase.co https://*.supabase.com wss://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';",
+          },
         ],
       },
     ]

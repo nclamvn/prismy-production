@@ -15,6 +15,7 @@ Based on the comprehensive security audit, this document outlines a prioritized 
 **Implementation**:
 
 Create `/middleware.ts`:
+
 ```typescript
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
@@ -27,8 +28,11 @@ export function middleware(request: NextRequest) {
   response.headers.set('X-Content-Type-Options', 'nosniff')
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
   response.headers.set('X-XSS-Protection', '1; mode=block')
-  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
-  
+  response.headers.set(
+    'Permissions-Policy',
+    'camera=(), microphone=(), geolocation=()'
+  )
+
   // Content Security Policy
   const csp = [
     "default-src 'self'",
@@ -37,9 +41,9 @@ export function middleware(request: NextRequest) {
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: https:",
     "connect-src 'self' https://*.supabase.co https://api.stripe.com https://*.vnpayment.vn https://*.momo.vn",
-    "frame-src 'self' https://js.stripe.com"
+    "frame-src 'self' https://js.stripe.com",
   ].join('; ')
-  
+
   response.headers.set('Content-Security-Policy', csp)
 
   return response
@@ -59,6 +63,7 @@ export const config = {
 **Implementation**:
 
 Update `/lib/rate-limiter.ts`:
+
 ```typescript
 import { Redis } from '@upstash/redis'
 
@@ -71,14 +76,19 @@ export async function checkRateLimit(
   identifier: string,
   limit: number,
   windowMs: number
-): Promise<{ success: boolean; limit: number; remaining: number; resetTime: number }> {
+): Promise<{
+  success: boolean
+  limit: number
+  remaining: number
+  resetTime: number
+}> {
   const key = `rate_limit:${identifier}`
   const now = Date.now()
   const window = Math.floor(now / windowMs)
   const windowKey = `${key}:${window}`
 
   const current = await redis.incr(windowKey)
-  
+
   if (current === 1) {
     await redis.expire(windowKey, Math.ceil(windowMs / 1000))
   }
@@ -104,6 +114,7 @@ export async function checkRateLimit(
 **Implementation**:
 
 Create CSRF middleware and add tokens to all forms:
+
 ```typescript
 // lib/csrf.ts
 import { randomBytes } from 'crypto'
@@ -112,7 +123,10 @@ export function generateCSRFToken(): string {
   return randomBytes(32).toString('hex')
 }
 
-export function validateCSRFToken(token: string, sessionToken: string): boolean {
+export function validateCSRFToken(
+  token: string,
+  sessionToken: string
+): boolean {
   return token === sessionToken
 }
 ```
@@ -126,13 +140,15 @@ export function validateCSRFToken(token: string, sessionToken: string): boolean 
 **Implementation**:
 
 Create validation middleware:
+
 ```typescript
 // lib/validation.ts
 import { z } from 'zod'
 import DOMPurify from 'isomorphic-dompurify'
 
 export const translationSchema = z.object({
-  text: z.string()
+  text: z
+    .string()
     .min(1, 'Text cannot be empty')
     .max(10000, 'Text too long')
     .transform(text => DOMPurify.sanitize(text)),
@@ -158,9 +174,13 @@ export const paymentSchema = z.object({
 **Implementation**:
 
 Add timestamp validation to webhook handlers:
+
 ```typescript
 // lib/webhook-security.ts
-export function validateWebhookTimestamp(timestamp: number, tolerance: number = 300): boolean {
+export function validateWebhookTimestamp(
+  timestamp: number,
+  tolerance: number = 300
+): boolean {
   const now = Math.floor(Date.now() / 1000)
   return Math.abs(now - timestamp) <= tolerance
 }
@@ -179,6 +199,7 @@ export function preventReplayAttack(webhookId: string): Promise<boolean> {
 **Implementation**:
 
 Create reusable auth middleware:
+
 ```typescript
 // lib/auth-middleware.ts
 import { createRouteHandlerClient } from '@/lib/supabase'
@@ -187,12 +208,14 @@ import { cookies } from 'next/headers'
 export async function withAuth(handler: Function) {
   return async (request: Request) => {
     const supabase = createRouteHandlerClient({ cookies })
-    const { data: { session } } = await supabase.auth.getSession()
-    
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
+
     if (!session?.user) {
       return new Response('Unauthorized', { status: 401 })
     }
-    
+
     return handler(request, { user: session.user, supabase })
   }
 }
@@ -206,6 +229,7 @@ export async function withAuth(handler: Function) {
 **Implementation**:
 
 Create secure error handler:
+
 ```typescript
 // lib/error-handler.ts
 export class SecureError extends Error {
@@ -222,15 +246,15 @@ export function handleSecureError(error: unknown) {
   if (error instanceof SecureError) {
     return {
       message: error.userMessage,
-      statusCode: error.statusCode
+      statusCode: error.statusCode,
     }
   }
-  
+
   // Log full error details but return generic message
   console.error('Unexpected error:', error)
   return {
     message: 'An unexpected error occurred',
-    statusCode: 500
+    statusCode: 500,
   }
 }
 ```
@@ -242,6 +266,7 @@ export function handleSecureError(error: unknown) {
 **Timeline**: 1-2 weeks
 
 **Implementation**:
+
 - Add structured logging for security events
 - Implement failed login attempt monitoring
 - Set up alerts for suspicious activity
@@ -252,6 +277,7 @@ export function handleSecureError(error: unknown) {
 **Timeline**: 1 week
 
 **Implementation**:
+
 - Log all API requests with user context
 - Monitor for unusual patterns
 - Add request rate analytics
@@ -262,6 +288,7 @@ export function handleSecureError(error: unknown) {
 **Timeline**: 2-3 weeks
 
 **Implementation**:
+
 - Add security tests to CI/CD pipeline
 - Implement dependency vulnerability scanning
 - Add OWASP ZAP integration
@@ -270,6 +297,7 @@ export function handleSecureError(error: unknown) {
 ## Implementation Checklist
 
 ### Week 1: Critical Fixes
+
 - [ ] Create security headers middleware
 - [ ] Set up Redis for rate limiting
 - [ ] Implement CSRF protection
@@ -277,6 +305,7 @@ export function handleSecureError(error: unknown) {
 - [ ] Test all security fixes
 
 ### Week 2: High Priority Fixes
+
 - [ ] Implement webhook replay protection
 - [ ] Create API authentication middleware
 - [ ] Add secure error handling
@@ -284,6 +313,7 @@ export function handleSecureError(error: unknown) {
 - [ ] Security testing and validation
 
 ### Week 3-4: Medium Priority Improvements
+
 - [ ] Set up security monitoring
 - [ ] Implement request logging
 - [ ] Add security alerts
@@ -318,12 +348,14 @@ SECURITY_LOG_LEVEL=warn
 ## Testing Strategy
 
 ### Security Testing
+
 1. **Penetration Testing**: Conduct before production
 2. **Vulnerability Scanning**: Weekly automated scans
 3. **Code Security Review**: Peer review for all security-related code
 4. **Dependency Auditing**: Daily dependency checks
 
 ### Monitoring
+
 1. **Security Events**: Log all auth failures, suspicious requests
 2. **Performance Impact**: Monitor security middleware performance
 3. **Error Rates**: Track security-related errors
@@ -332,6 +364,7 @@ SECURITY_LOG_LEVEL=warn
 ## Post-Implementation Validation
 
 ### Security Verification
+
 - [ ] Run security scanner (OWASP ZAP)
 - [ ] Verify CSRF protection works
 - [ ] Test rate limiting under load
@@ -339,6 +372,7 @@ SECURITY_LOG_LEVEL=warn
 - [ ] Check error handling doesn't leak info
 
 ### Performance Testing
+
 - [ ] Measure middleware performance impact
 - [ ] Test Redis connection reliability
 - [ ] Validate rate limiting performance
@@ -347,12 +381,14 @@ SECURITY_LOG_LEVEL=warn
 ## Maintenance Plan
 
 ### Regular Security Tasks
+
 - **Weekly**: Dependency updates and vulnerability scans
 - **Monthly**: Security configuration review
 - **Quarterly**: Penetration testing and security audit
 - **Annually**: Complete security architecture review
 
 ### Monitoring and Alerts
+
 - Set up alerts for failed authentication attempts
 - Monitor for unusual API usage patterns
 - Track security header compliance

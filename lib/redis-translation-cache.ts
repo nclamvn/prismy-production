@@ -7,7 +7,9 @@ const redis = new Redis({
   token: process.env.UPSTASH_REDIS_REST_TOKEN || '',
 })
 
-const useRedis = !!(process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN)
+const useRedis = !!(
+  process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+)
 
 // Cache key prefixes for organization
 const CACHE_PREFIXES = {
@@ -70,7 +72,10 @@ export class RedisTranslationCache {
     qualityTier: string = 'standard'
   ): string {
     const content = `${text}|${sourceLang}|${targetLang}|${qualityTier}`
-    const hash = createHash('sha256').update(content).digest('hex').substring(0, 16)
+    const hash = createHash('sha256')
+      .update(content)
+      .digest('hex')
+      .substring(0, 16)
     return `${CACHE_PREFIXES.TRANSLATION}${hash}`
   }
 
@@ -80,13 +85,19 @@ export class RedisTranslationCache {
   private categorizeText(text: string): { category: string; ttl: number } {
     const length = text.length
     const hasNumbers = /\d/.test(text)
-    const hasTechnicalTerms = /\b(API|JSON|HTTP|SQL|database|server|application|system|protocol|algorithm|framework|library|function|variable|parameter|configuration|deployment|authentication|authorization|encryption|security|performance|optimization|integration|architecture|infrastructure|microservice|container|kubernetes|docker|cloud|AWS|Azure|GCP)\b/i.test(text)
-    const hasBusinessTerms = /\b(contract|agreement|policy|terms|conditions|invoice|payment|transaction|revenue|profit|budget|cost|expense|finance|accounting|legal|compliance|regulation|audit|report|analysis|strategy|management|operation|business|company|corporation|enterprise|organization|department|team|project|meeting|presentation|proposal|requirement|specification|documentation|procedure|process|workflow|timeline|deadline|milestone|deliverable|stakeholder|client|customer|vendor|supplier|partner)\b/i.test(text)
+    const hasTechnicalTerms =
+      /\b(API|JSON|HTTP|SQL|database|server|application|system|protocol|algorithm|framework|library|function|variable|parameter|configuration|deployment|authentication|authorization|encryption|security|performance|optimization|integration|architecture|infrastructure|microservice|container|kubernetes|docker|cloud|AWS|Azure|GCP)\b/i.test(
+        text
+      )
+    const hasBusinessTerms =
+      /\b(contract|agreement|policy|terms|conditions|invoice|payment|transaction|revenue|profit|budget|cost|expense|finance|accounting|legal|compliance|regulation|audit|report|analysis|strategy|management|operation|business|company|corporation|enterprise|organization|department|team|project|meeting|presentation|proposal|requirement|specification|documentation|procedure|process|workflow|timeline|deadline|milestone|deliverable|stakeholder|client|customer|vendor|supplier|partner)\b/i.test(
+        text
+      )
 
     if (hasTechnicalTerms) {
       return { category: 'technical', ttl: TTL_CONFIG.TRANSLATION.TECHNICAL }
     }
-    
+
     if (hasBusinessTerms) {
       return { category: 'business', ttl: TTL_CONFIG.TRANSLATION.BUSINESS }
     }
@@ -110,18 +121,23 @@ export class RedisTranslationCache {
     qualityTier: string = 'standard'
   ): Promise<CachedTranslation | null> {
     try {
-      const key = this.generateCacheKey(text, sourceLang, targetLang, qualityTier)
+      const key = this.generateCacheKey(
+        text,
+        sourceLang,
+        targetLang,
+        qualityTier
+      )
 
       if (this.enabled) {
         // Try Redis first
         const cached = await redis.get(key)
         if (cached) {
           const translation = cached as CachedTranslation
-          
+
           // Increment hit count
           await this.incrementHitCount(key, translation)
           await this.updateStats('hit')
-          
+
           return translation
         }
       } else {
@@ -156,9 +172,14 @@ export class RedisTranslationCache {
     qualityTier: string = 'standard'
   ): Promise<void> {
     try {
-      const key = this.generateCacheKey(text, sourceLang, targetLang, qualityTier)
+      const key = this.generateCacheKey(
+        text,
+        sourceLang,
+        targetLang,
+        qualityTier
+      )
       const { category, ttl } = this.categorizeText(text)
-      
+
       const cacheEntry: CachedTranslation = {
         ...translation,
         hitCount: 0,
@@ -173,7 +194,7 @@ export class RedisTranslationCache {
         // Fallback to in-memory cache
         fallbackCache.set(key, {
           data: cacheEntry,
-          expiresAt: Date.now() + (ttl * 1000)
+          expiresAt: Date.now() + ttl * 1000,
         })
       }
 
@@ -187,17 +208,21 @@ export class RedisTranslationCache {
   /**
    * Increment hit count for popular translations
    */
-  private async incrementHitCount(key: string, translation: CachedTranslation): Promise<void> {
+  private async incrementHitCount(
+    key: string,
+    translation: CachedTranslation
+  ): Promise<void> {
     try {
       if (this.enabled) {
         translation.hitCount += 1
-        
+
         // Extend TTL for frequently accessed translations
         if (translation.hitCount >= 5) {
-          const extendedTTL = translation.hitCount >= 10 ? 
-            TTL_CONFIG.TRANSLATION.BUSINESS : 
-            TTL_CONFIG.TRANSLATION.MEDIUM_TEXT
-          
+          const extendedTTL =
+            translation.hitCount >= 10
+              ? TTL_CONFIG.TRANSLATION.BUSINESS
+              : TTL_CONFIG.TRANSLATION.MEDIUM_TEXT
+
           await redis.setex(key, extendedTTL, JSON.stringify(translation))
         } else {
           await redis.set(key, JSON.stringify(translation))
@@ -211,16 +236,22 @@ export class RedisTranslationCache {
   /**
    * Cache language list
    */
-  async cacheLanguages(languages: Array<{ code: string; name: string }>): Promise<void> {
+  async cacheLanguages(
+    languages: Array<{ code: string; name: string }>
+  ): Promise<void> {
     try {
       const key = `${CACHE_PREFIXES.LANGUAGE_LIST}supported`
-      
+
       if (this.enabled) {
-        await redis.setex(key, TTL_CONFIG.LANGUAGE_LIST, JSON.stringify(languages))
+        await redis.setex(
+          key,
+          TTL_CONFIG.LANGUAGE_LIST,
+          JSON.stringify(languages)
+        )
       } else {
         fallbackCache.set(key, {
           data: languages,
-          expiresAt: Date.now() + (TTL_CONFIG.LANGUAGE_LIST * 1000)
+          expiresAt: Date.now() + TTL_CONFIG.LANGUAGE_LIST * 1000,
         })
       }
     } catch (error) {
@@ -231,13 +262,16 @@ export class RedisTranslationCache {
   /**
    * Get cached language list
    */
-  async getCachedLanguages(): Promise<Array<{ code: string; name: string }> | null> {
+  async getCachedLanguages(): Promise<Array<{
+    code: string
+    name: string
+  }> | null> {
     try {
       const key = `${CACHE_PREFIXES.LANGUAGE_LIST}supported`
-      
+
       if (this.enabled) {
         const cached = await redis.get(key)
-        return cached ? cached as Array<{ code: string; name: string }> : null
+        return cached ? (cached as Array<{ code: string; name: string }>) : null
       } else {
         const cached = fallbackCache.get(key)
         if (cached && Date.now() < cached.expiresAt) {
@@ -247,7 +281,7 @@ export class RedisTranslationCache {
           fallbackCache.delete(key)
         }
       }
-      
+
       return null
     } catch (error) {
       console.error('Error getting cached languages:', error)
@@ -265,13 +299,13 @@ export class RedisTranslationCache {
   ): Promise<void> {
     try {
       const key = `${CACHE_PREFIXES.USER_HISTORY}${userId}:${queryHash}`
-      
+
       if (this.enabled) {
         await redis.setex(key, TTL_CONFIG.USER_HISTORY, JSON.stringify(results))
       } else {
         fallbackCache.set(key, {
           data: results,
-          expiresAt: Date.now() + (TTL_CONFIG.USER_HISTORY * 1000)
+          expiresAt: Date.now() + TTL_CONFIG.USER_HISTORY * 1000,
         })
       }
     } catch (error) {
@@ -282,13 +316,16 @@ export class RedisTranslationCache {
   /**
    * Get cached user history
    */
-  async getCachedUserHistory(userId: string, queryHash: string): Promise<any[] | null> {
+  async getCachedUserHistory(
+    userId: string,
+    queryHash: string
+  ): Promise<any[] | null> {
     try {
       const key = `${CACHE_PREFIXES.USER_HISTORY}${userId}:${queryHash}`
-      
+
       if (this.enabled) {
         const cached = await redis.get(key)
-        return cached ? cached as any[] : null
+        return cached ? (cached as any[]) : null
       } else {
         const cached = fallbackCache.get(key)
         if (cached && Date.now() < cached.expiresAt) {
@@ -298,7 +335,7 @@ export class RedisTranslationCache {
           fallbackCache.delete(key)
         }
       }
-      
+
       return null
     } catch (error) {
       console.error('Error getting cached user history:', error)
@@ -333,15 +370,19 @@ export class RedisTranslationCache {
   /**
    * Warm cache with popular translations
    */
-  async warmCache(popularTranslations: Array<{
-    text: string
-    sourceLang: string
-    targetLang: string
-    translation: Omit<CachedTranslation, 'hitCount' | 'textCategory'>
-  }>): Promise<void> {
+  async warmCache(
+    popularTranslations: Array<{
+      text: string
+      sourceLang: string
+      targetLang: string
+      translation: Omit<CachedTranslation, 'hitCount' | 'textCategory'>
+    }>
+  ): Promise<void> {
     try {
-      console.log(`Warming cache with ${popularTranslations.length} popular translations...`)
-      
+      console.log(
+        `Warming cache with ${popularTranslations.length} popular translations...`
+      )
+
       for (const item of popularTranslations) {
         await this.set(
           item.text,
@@ -350,7 +391,7 @@ export class RedisTranslationCache {
           item.translation
         )
       }
-      
+
       console.log('Cache warming completed')
     } catch (error) {
       console.error('Error warming cache:', error)
@@ -364,24 +405,24 @@ export class RedisTranslationCache {
     try {
       if (this.enabled) {
         const statsKey = `${CACHE_PREFIXES.STATS}translation`
-        const current = await redis.get(statsKey) as CacheStats | null
-        
+        const current = (await redis.get(statsKey)) as CacheStats | null
+
         const stats: CacheStats = current || {
           hits: 0,
           misses: 0,
           hitRate: 0,
-          lastUpdated: new Date().toISOString()
+          lastUpdated: new Date().toISOString(),
         }
-        
+
         if (type === 'hit') {
           stats.hits += 1
         } else {
           stats.misses += 1
         }
-        
+
         stats.hitRate = stats.hits / (stats.hits + stats.misses)
         stats.lastUpdated = new Date().toISOString()
-        
+
         await redis.setex(statsKey, TTL_CONFIG.METADATA, JSON.stringify(stats))
       }
     } catch (error) {
@@ -440,7 +481,7 @@ export class RedisTranslationCache {
     fallbackCacheSize: number
   }> {
     let connected = false
-    
+
     try {
       if (this.enabled) {
         await redis.ping()
@@ -451,12 +492,12 @@ export class RedisTranslationCache {
     }
 
     const stats = await this.getStats()
-    
+
     return {
       enabled: this.enabled,
       connected,
       stats,
-      fallbackCacheSize: fallbackCache.size
+      fallbackCacheSize: fallbackCache.size,
     }
   }
 }

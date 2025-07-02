@@ -40,8 +40,8 @@ const MAX_POOL_SIZE = 10
 const CONNECTION_TIMEOUT = 300000 // 5 minutes for connection pool cleanup
 
 // 💣 NUCLEAR SINGLETON VARIABLES - Critical for preventing multiple GoTrueClient instances
-let NUCLEAR_SUPABASE_CLIENT: any = null
-let CLIENT_CREATION_BLOCKED = false
+const NUCLEAR_SUPABASE_CLIENT: any = null
+const CLIENT_CREATION_BLOCKED = false
 
 const getSupabaseClient = () => {
   // Always use singleton on client-side
@@ -50,32 +50,41 @@ const getSupabaseClient = () => {
   }
 
   // Server-side should not use this function
-  throw new Error('getSupabaseClient should not be called on server-side. Use createServerClient instead.')
+  throw new Error(
+    'getSupabaseClient should not be called on server-side. Use createServerClient instead.'
+  )
 }
 
 export const createClientComponentClient = () => {
   // Only works on client-side
   if (typeof window === 'undefined') {
     // During SSR/build, return a safe fallback to prevent errors
-    console.warn('createClientComponentClient() called during SSR - returning fallback')
+    console.warn(
+      'createClientComponentClient() called during SSR - returning fallback'
+    )
     return {
-      auth: { 
-        getSession: () => Promise.resolve({ data: { session: null }, error: null }),
+      auth: {
+        getSession: () =>
+          Promise.resolve({ data: { session: null }, error: null }),
         getUser: () => Promise.resolve({ data: { user: null }, error: null }),
-        onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } })
+        onAuthStateChange: () => ({
+          data: { subscription: { unsubscribe: () => {} } },
+        }),
       },
-      from: () => ({ 
-        select: () => ({ 
-          eq: () => ({ 
+      from: () => ({
+        select: () => ({
+          eq: () => ({
             single: () => Promise.resolve({ data: null, error: null }),
-            order: () => ({ limit: () => Promise.resolve({ data: [], error: null }) })
-          })
+            order: () => ({
+              limit: () => Promise.resolve({ data: [], error: null }),
+            }),
+          }),
         }),
         insert: () => Promise.resolve({ data: null, error: null }),
         update: () => Promise.resolve({ data: null, error: null }),
-        delete: () => Promise.resolve({ data: null, error: null })
+        delete: () => Promise.resolve({ data: null, error: null }),
       }),
-      rpc: () => Promise.resolve({ data: null, error: null })
+      rpc: () => Promise.resolve({ data: null, error: null }),
     } as any
   }
   return getBrowserClient()
@@ -402,8 +411,20 @@ export interface Database {
 
 // Main supabase client export for backwards compatibility
 // Use createClientComponentClient() instead of this export
-export const supabase = typeof window !== 'undefined' ? getBrowserClient() : {
-  // Fallback object for server-side to prevent build errors
-  auth: { getSession: () => Promise.resolve({ data: { session: null }, error: null }) },
-  from: () => ({ select: () => ({ eq: () => ({ single: () => Promise.resolve({ data: null, error: null }) }) }) })
-} as any
+export const supabase =
+  typeof window !== 'undefined'
+    ? getBrowserClient()
+    : ({
+        // Fallback object for server-side to prevent build errors
+        auth: {
+          getSession: () =>
+            Promise.resolve({ data: { session: null }, error: null }),
+        },
+        from: () => ({
+          select: () => ({
+            eq: () => ({
+              single: () => Promise.resolve({ data: null, error: null }),
+            }),
+          }),
+        }),
+      } as any)

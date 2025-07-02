@@ -19,7 +19,9 @@ export interface JobQueueConfig {
   expireCheckInterval?: number
 }
 
-export async function initializePgBoss(config?: Partial<JobQueueConfig>): Promise<PgBoss> {
+export async function initializePgBoss(
+  config?: Partial<JobQueueConfig>
+): Promise<PgBoss> {
   if (bossInstance && isInitialized) {
     return bossInstance
   }
@@ -56,11 +58,11 @@ export async function initializePgBoss(config?: Partial<JobQueueConfig>): Promis
     })
 
     // Event handlers for monitoring
-    bossInstance.on('error', (error) => {
+    bossInstance.on('error', error => {
       logger.error('PG-Boss error', { error })
     })
 
-    bossInstance.on('monitor-states', (states) => {
+    bossInstance.on('monitor-states', states => {
       logger.debug('PG-Boss monitor states', { states })
     })
 
@@ -71,11 +73,10 @@ export async function initializePgBoss(config?: Partial<JobQueueConfig>): Promis
     logger.info('PG-Boss initialized successfully', {
       schema: finalConfig.schema,
       poolSize: finalConfig.poolSize,
-      retentionDays: finalConfig.retentionDays
+      retentionDays: finalConfig.retentionDays,
     })
 
     return bossInstance
-
   } catch (error) {
     logger.error('Failed to initialize PG-Boss', { error })
     throw error
@@ -118,21 +119,20 @@ export async function checkPgBossHealth(): Promise<{
     // Try to get queue stats as a health check
     const queueStats = await Promise.race([
       bossInstance.getQueueSize(),
-      new Promise((_, reject) => 
+      new Promise((_, reject) =>
         setTimeout(() => reject(new Error('Health check timeout')), 5000)
-      )
+      ),
     ])
 
     return {
       isHealthy: true,
-      queueStats
+      queueStats,
     }
-
   } catch (error) {
     logger.error('PG-Boss health check failed', { error })
     return {
       isHealthy: false,
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : 'Unknown error',
     }
   }
 }

@@ -23,7 +23,7 @@ export interface AnalyticsEvent extends WithId, WithTimestamps {
   processed: boolean
 }
 
-export type EventCategory = 
+export type EventCategory =
   | 'user_interaction'
   | 'translation'
   | 'document'
@@ -58,7 +58,7 @@ export interface PerformanceMetric extends WithId, WithTimestamps {
   threshold?: MetricThreshold
 }
 
-export type MetricType = 
+export type MetricType =
   | 'counter'
   | 'gauge'
   | 'histogram'
@@ -77,7 +77,7 @@ export interface MetricContext {
   operation?: string
 }
 
-export type AggregationType = 
+export type AggregationType =
   | 'sum'
   | 'average'
   | 'median'
@@ -140,11 +140,14 @@ export interface UserBehavior {
       usage_count: number
       last_used: Date
     }>
-    feature_adoption: Record<string, {
-      adopted: boolean
-      first_use: Date
-      usage_frequency: 'daily' | 'weekly' | 'monthly' | 'rarely'
-    }>
+    feature_adoption: Record<
+      string,
+      {
+        adopted: boolean
+        first_use: Date
+        usage_frequency: 'daily' | 'weekly' | 'monthly' | 'rarely'
+      }
+    >
   }
   content_interaction: {
     translations: {
@@ -306,11 +309,14 @@ export interface UsageMetrics {
     weekly: number
     monthly: number
   }
-  feature_adoption: Record<string, {
-    total_users: number
-    active_users: number
-    adoption_rate: number
-  }>
+  feature_adoption: Record<
+    string,
+    {
+      total_users: number
+      active_users: number
+      adoption_rate: number
+    }
+  >
   api_usage: {
     total_calls: number
     successful_calls: number
@@ -451,7 +457,14 @@ export interface AnalyticsQuery {
   dimensions?: string[]
   filters?: QueryFilter[]
   date_range: DateRange
-  granularity?: 'minute' | 'hour' | 'day' | 'week' | 'month' | 'quarter' | 'year'
+  granularity?:
+    | 'minute'
+    | 'hour'
+    | 'day'
+    | 'week'
+    | 'month'
+    | 'quarter'
+    | 'year'
   sort?: QuerySort[]
   limit?: number
   offset?: number
@@ -460,7 +473,14 @@ export interface AnalyticsQuery {
 
 export interface QueryFilter {
   field: string
-  operator: 'equals' | 'not_equals' | 'greater_than' | 'less_than' | 'contains' | 'in' | 'not_in'
+  operator:
+    | 'equals'
+    | 'not_equals'
+    | 'greater_than'
+    | 'less_than'
+    | 'contains'
+    | 'in'
+    | 'not_in'
   value: any
 }
 
@@ -498,14 +518,17 @@ export interface ResponseMetadata {
 export interface SummaryStatistics {
   total_records: number
   unique_dimensions: Record<string, number>
-  metric_summaries: Record<string, {
-    sum: number
-    average: number
-    min: number
-    max: number
-    median: number
-    std_deviation: number
-  }>
+  metric_summaries: Record<
+    string,
+    {
+      sum: number
+      average: number
+      min: number
+      max: number
+      median: number
+      std_deviation: number
+    }
+  >
 }
 
 // Dashboard and Visualization Types
@@ -538,7 +561,7 @@ export interface DashboardWidget {
   alerts?: WidgetAlert[]
 }
 
-export type WidgetType = 
+export type WidgetType =
   | 'line_chart'
   | 'bar_chart'
   | 'pie_chart'
@@ -692,9 +715,15 @@ export interface AnalyticsContextValue {
     recordMetric: (metric: Partial<PerformanceMetric>) => Promise<void>
     queryAnalytics: (query: AnalyticsQuery) => Promise<AnalyticsResponse>
     createDashboard: (dashboard: Partial<Dashboard>) => Promise<Dashboard>
-    updateDashboard: (id: string, updates: Partial<Dashboard>) => Promise<Dashboard>
+    updateDashboard: (
+      id: string,
+      updates: Partial<Dashboard>
+    ) => Promise<Dashboard>
     deleteDashboard: (id: string) => Promise<void>
-    exportData: (query: AnalyticsQuery, format: 'csv' | 'json' | 'excel') => Promise<Blob>
+    exportData: (
+      query: AnalyticsQuery,
+      format: 'csv' | 'json' | 'excel'
+    ) => Promise<Blob>
   }
 }
 

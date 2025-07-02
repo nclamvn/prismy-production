@@ -25,16 +25,16 @@ export interface Translation extends WithId, WithTimestamps {
   notes?: string
 }
 
-export type TranslationStatus = 
-  | 'pending' 
-  | 'processing' 
-  | 'completed' 
-  | 'failed' 
-  | 'reviewed' 
-  | 'approved' 
+export type TranslationStatus =
+  | 'pending'
+  | 'processing'
+  | 'completed'
+  | 'failed'
+  | 'reviewed'
+  | 'approved'
   | 'rejected'
 
-export type TranslationDomain = 
+export type TranslationDomain =
   | 'general'
   | 'technical'
   | 'medical'
@@ -62,7 +62,7 @@ export interface TranslationMetadata {
   revisions: TranslationRevision[]
 }
 
-export type TranslationFlag = 
+export type TranslationFlag =
   | 'potential_error'
   | 'low_confidence'
   | 'context_missing'
@@ -137,7 +137,11 @@ export interface TranslationResponse {
 }
 
 export interface TranslationWarning {
-  type: 'low_confidence' | 'context_missing' | 'potential_error' | 'cultural_note'
+  type:
+    | 'low_confidence'
+    | 'context_missing'
+    | 'potential_error'
+    | 'cultural_note'
   message: string
   severity: 'low' | 'medium' | 'high'
   suggestion?: string
@@ -294,7 +298,13 @@ export interface QualityAssessment {
 }
 
 export interface QualityIssue {
-  type: 'grammar' | 'spelling' | 'terminology' | 'style' | 'accuracy' | 'coherence'
+  type:
+    | 'grammar'
+    | 'spelling'
+    | 'terminology'
+    | 'style'
+    | 'accuracy'
+    | 'coherence'
   severity: 'minor' | 'major' | 'critical'
   position: {
     start: number
@@ -435,12 +445,18 @@ export interface TranslationContextValue {
   preferences: TranslationPreferences
   actions: {
     translate: (request: TranslationRequest) => Promise<TranslationResponse>
-    batchTranslate: (request: BatchTranslationRequest) => Promise<BatchTranslationResponse>
+    batchTranslate: (
+      request: BatchTranslationRequest
+    ) => Promise<BatchTranslationResponse>
     saveTranslation: (translation: Partial<Translation>) => Promise<Translation>
     deleteTranslation: (id: string) => Promise<void>
-    updatePreferences: (preferences: Partial<TranslationPreferences>) => Promise<void>
+    updatePreferences: (
+      preferences: Partial<TranslationPreferences>
+    ) => Promise<void>
     detectLanguage: (text: string) => Promise<LanguageDetectionResponse>
-    searchTranslations: (query: TranslationSearchQuery) => Promise<Translation[]>
+    searchTranslations: (
+      query: TranslationSearchQuery
+    ) => Promise<Translation[]>
   }
 }
 
@@ -504,8 +520,15 @@ export interface UseGlossary {
 
 export interface UseTranslationMemory {
   memories: TranslationMemory[]
-  findMatches: (text: string, sourceLanguage: SupportedLanguage, targetLanguage: SupportedLanguage) => Promise<TranslationMemoryMatch[]>
-  addSegment: (memoryId: string, segment: Omit<TranslationMemorySegment, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>
+  findMatches: (
+    text: string,
+    sourceLanguage: SupportedLanguage,
+    targetLanguage: SupportedLanguage
+  ) => Promise<TranslationMemoryMatch[]>
+  addSegment: (
+    memoryId: string,
+    segment: Omit<TranslationMemorySegment, 'id' | 'createdAt' | 'updatedAt'>
+  ) => Promise<void>
   isLoading: boolean
   error: Error | null
 }

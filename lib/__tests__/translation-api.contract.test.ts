@@ -9,73 +9,88 @@ import { server } from './mocks/server'
 
 // Mock Google Translate API responses
 const googleTranslateHandlers = [
-  http.post('https://translation.googleapis.com/language/translate/v2', async ({ request }) => {
-    const url = new URL(request.url)
-    const body = await request.text()
-    
-    // Parse the form data (Google Translate uses form encoding)
-    const params = new URLSearchParams(body)
-    const q = params.get('q')
-    const target = params.get('target')
-    const source = params.get('source')
+  http.post(
+    'https://translation.googleapis.com/language/translate/v2',
+    async ({ request }) => {
+      const url = new URL(request.url)
+      const body = await request.text()
 
-    if (!q || !target) {
-      return HttpResponse.json(
-        { error: { message: 'Missing required parameters' } },
-        { status: 400 }
-      )
+      // Parse the form data (Google Translate uses form encoding)
+      const params = new URLSearchParams(body)
+      const q = params.get('q')
+      const target = params.get('target')
+      const source = params.get('source')
+
+      if (!q || !target) {
+        return HttpResponse.json(
+          { error: { message: 'Missing required parameters' } },
+          { status: 400 }
+        )
+      }
+
+      // Mock translation response
+      return HttpResponse.json({
+        data: {
+          translations: [
+            {
+              translatedText: `[${target}] ${q}`,
+              detectedSourceLanguage: source || 'en',
+            },
+          ],
+        },
+      })
     }
+  ),
 
-    // Mock translation response
-    return HttpResponse.json({
-      data: {
-        translations: [{
-          translatedText: `[${target}] ${q}`,
-          detectedSourceLanguage: source || 'en'
-        }]
+  http.post(
+    'https://translation.googleapis.com/language/translate/v2/detect',
+    async ({ request }) => {
+      const body = await request.text()
+      const params = new URLSearchParams(body)
+      const q = params.get('q')
+
+      if (!q) {
+        return HttpResponse.json(
+          { error: { message: 'Missing text parameter' } },
+          { status: 400 }
+        )
       }
-    })
-  }),
 
-  http.post('https://translation.googleapis.com/language/translate/v2/detect', async ({ request }) => {
-    const body = await request.text()
-    const params = new URLSearchParams(body)
-    const q = params.get('q')
-
-    if (!q) {
-      return HttpResponse.json(
-        { error: { message: 'Missing text parameter' } },
-        { status: 400 }
-      )
+      return HttpResponse.json({
+        data: {
+          detections: [
+            [
+              {
+                language: 'en',
+                confidence: 0.98,
+                isReliable: true,
+              },
+            ],
+          ],
+        },
+      })
     }
+  ),
 
-    return HttpResponse.json({
-      data: {
-        detections: [[{
-          language: 'en',
-          confidence: 0.98,
-          isReliable: true
-        }]]
-      }
-    })
-  }),
-
-  http.get('https://translation.googleapis.com/language/translate/v2/languages', () => {
-    return HttpResponse.json({
-      data: {
-        languages: [
-          { language: 'en', name: 'English' },
-          { language: 'vi', name: 'Vietnamese' },
-          { language: 'fr', name: 'French' },
-          { language: 'es', name: 'Spanish' },
-          { language: 'de', name: 'German' },
-          { language: 'ja', name: 'Japanese' },
-          { language: 'ko', name: 'Korean' },
-          { language: 'zh', name: 'Chinese' }
-        ]
-      }
-    })
-  })
+  http.get(
+    'https://translation.googleapis.com/language/translate/v2/languages',
+    () => {
+      return HttpResponse.json({
+        data: {
+          languages: [
+            { language: 'en', name: 'English' },
+            { language: 'vi', name: 'Vietnamese' },
+            { language: 'fr', name: 'French' },
+            { language: 'es', name: 'Spanish' },
+            { language: 'de', name: 'German' },
+            { language: 'ja', name: 'Japanese' },
+            { language: 'ko', name: 'Korean' },
+            { language: 'zh', name: 'Chinese' },
+          ],
+        },
+      })
+    }
+  ),
 ]
 
 describe('Translation Service API Contract Tests', () => {
@@ -90,7 +105,7 @@ describe('Translation Service API Contract Tests', () => {
         text: 'Hello world',
         sourceLang: 'en',
         targetLang: 'vi',
-        qualityTier: 'standard'
+        qualityTier: 'standard',
       })
 
       // Validate response contract
@@ -100,8 +115,10 @@ describe('Translation Service API Contract Tests', () => {
         targetLang: 'vi',
         confidence: expect.any(Number),
         qualityScore: expect.any(Number),
-        timestamp: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/),
-        cached: expect.any(Boolean)
+        timestamp: expect.stringMatching(
+          /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/
+        ),
+        cached: expect.any(Boolean),
       })
 
       // Validate value ranges
@@ -116,7 +133,7 @@ describe('Translation Service API Contract Tests', () => {
         text: 'Bonjour le monde',
         sourceLang: 'auto',
         targetLang: 'en',
-        qualityTier: 'standard'
+        qualityTier: 'standard',
       })
 
       expect(result).toHaveProperty('detectedSourceLanguage')
@@ -128,35 +145,40 @@ describe('Translation Service API Contract Tests', () => {
         text: 'Test',
         sourceLang: 'en',
         targetLang: 'vi',
-        qualityTier: 'premium'
+        qualityTier: 'premium',
       })
 
       const freeResult = await translationService.translateText({
         text: 'Test',
         sourceLang: 'en',
         targetLang: 'vi',
-        qualityTier: 'free'
+        qualityTier: 'free',
       })
 
       // Premium should have higher quality score
-      expect(premiumResult.qualityScore).toBeGreaterThan(freeResult.qualityScore)
+      expect(premiumResult.qualityScore).toBeGreaterThan(
+        freeResult.qualityScore
+      )
     })
 
     it('should handle translation API errors gracefully', async () => {
       server.use(
-        http.post('https://translation.googleapis.com/language/translate/v2', () => {
-          return HttpResponse.json(
-            { error: { message: 'API quota exceeded' } },
-            { status: 403 }
-          )
-        })
+        http.post(
+          'https://translation.googleapis.com/language/translate/v2',
+          () => {
+            return HttpResponse.json(
+              { error: { message: 'API quota exceeded' } },
+              { status: 403 }
+            )
+          }
+        )
       )
 
       await expect(
         translationService.translateText({
           text: 'Hello',
           sourceLang: 'en',
-          targetLang: 'vi'
+          targetLang: 'vi',
         })
       ).rejects.toThrow('Translation failed')
     })
@@ -167,7 +189,7 @@ describe('Translation Service API Contract Tests', () => {
         text: 'Cache test',
         sourceLang: 'en',
         targetLang: 'vi',
-        abTestVariant: 'cache_disabled'
+        abTestVariant: 'cache_disabled',
       })
 
       expect(noCacheResult.cached).toBe(false)
@@ -177,7 +199,7 @@ describe('Translation Service API Contract Tests', () => {
         text: 'Cache test',
         sourceLang: 'en',
         targetLang: 'vi',
-        abTestVariant: 'cache_enabled'
+        abTestVariant: 'cache_enabled',
       })
 
       expect(cacheEnabledResult.cached).toBe(false)
@@ -193,12 +215,15 @@ describe('Translation Service API Contract Tests', () => {
 
     it('should handle detection errors', async () => {
       server.use(
-        http.post('https://translation.googleapis.com/language/translate/v2/detect', () => {
-          return HttpResponse.json(
-            { error: { message: 'Invalid request' } },
-            { status: 400 }
-          )
-        })
+        http.post(
+          'https://translation.googleapis.com/language/translate/v2/detect',
+          () => {
+            return HttpResponse.json(
+              { error: { message: 'Invalid request' } },
+              { status: 400 }
+            )
+          }
+        )
       )
 
       const result = await translationService.detectLanguage('Test')
@@ -217,7 +242,7 @@ describe('Translation Service API Contract Tests', () => {
       languages.forEach(lang => {
         expect(lang).toMatchObject({
           code: expect.stringMatching(/^[a-z]{2}(-[A-Z]{2})?$/),
-          name: expect.any(String)
+          name: expect.any(String),
         })
       })
 
@@ -229,12 +254,15 @@ describe('Translation Service API Contract Tests', () => {
 
     it('should return fallback languages on API error', async () => {
       server.use(
-        http.get('https://translation.googleapis.com/language/translate/v2/languages', () => {
-          return HttpResponse.json(
-            { error: { message: 'Service unavailable' } },
-            { status: 503 }
-          )
-        })
+        http.get(
+          'https://translation.googleapis.com/language/translate/v2/languages',
+          () => {
+            return HttpResponse.json(
+              { error: { message: 'Service unavailable' } },
+              { status: 503 }
+            )
+          }
+        )
       )
 
       const languages = await translationService.getSupportedLanguages()
@@ -251,13 +279,13 @@ describe('Translation Service API Contract Tests', () => {
       const simpleResult = await translationService.translateText({
         text: 'Hello',
         sourceLang: 'en',
-        targetLang: 'vi'
+        targetLang: 'vi',
       })
 
       const complexResult = await translationService.translateText({
         text: 'The quick brown fox jumps over the lazy dog while contemplating quantum physics.',
         sourceLang: 'en',
-        targetLang: 'vi'
+        targetLang: 'vi',
       })
 
       // Simple text should have higher confidence
@@ -268,19 +296,21 @@ describe('Translation Service API Contract Tests', () => {
     it('should apply quality tier multipliers correctly', async () => {
       const tiers = ['free', 'standard', 'premium', 'enterprise'] as const
       const results = await Promise.all(
-        tiers.map(tier => 
+        tiers.map(tier =>
           translationService.translateText({
             text: 'Test',
             sourceLang: 'en',
             targetLang: 'vi',
-            qualityTier: tier
+            qualityTier: tier,
           })
         )
       )
 
       // Quality scores should increase with tier
       for (let i = 1; i < results.length; i++) {
-        expect(results[i].qualityScore).toBeGreaterThanOrEqual(results[i-1].qualityScore)
+        expect(results[i].qualityScore).toBeGreaterThanOrEqual(
+          results[i - 1].qualityScore
+        )
       }
     })
   })
@@ -288,40 +318,46 @@ describe('Translation Service API Contract Tests', () => {
   describe('Rate Limiting and Error Recovery', () => {
     it('should handle rate limit errors', async () => {
       server.use(
-        http.post('https://translation.googleapis.com/language/translate/v2', () => {
-          return HttpResponse.json(
-            { 
-              error: { 
-                message: 'Rate limit exceeded',
-                code: 429
-              } 
-            },
-            { status: 429 }
-          )
-        })
+        http.post(
+          'https://translation.googleapis.com/language/translate/v2',
+          () => {
+            return HttpResponse.json(
+              {
+                error: {
+                  message: 'Rate limit exceeded',
+                  code: 429,
+                },
+              },
+              { status: 429 }
+            )
+          }
+        )
       )
 
       await expect(
         translationService.translateText({
           text: 'Test',
           sourceLang: 'en',
-          targetLang: 'vi'
+          targetLang: 'vi',
         })
       ).rejects.toThrow()
     })
 
     it('should handle network errors', async () => {
       server.use(
-        http.post('https://translation.googleapis.com/language/translate/v2', () => {
-          return HttpResponse.error()
-        })
+        http.post(
+          'https://translation.googleapis.com/language/translate/v2',
+          () => {
+            return HttpResponse.error()
+          }
+        )
       )
 
       await expect(
         translationService.translateText({
           text: 'Test',
           sourceLang: 'en',
-          targetLang: 'vi'
+          targetLang: 'vi',
         })
       ).rejects.toThrow()
     })

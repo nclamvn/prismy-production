@@ -17,14 +17,14 @@ export function useHydrationSafeAnimation() {
   return {
     isHydrated,
     // Safe initial state for SSR - visible by default
-    getInitialState: (animatedState: any) => 
+    getInitialState: (animatedState: any) =>
       isHydrated ? animatedState : { opacity: 1, y: 0, scale: 1 },
     // Safe animate state
-    getAnimateState: (animatedState: any) => 
+    getAnimateState: (animatedState: any) =>
       isHydrated ? animatedState : { opacity: 1, y: 0, scale: 1 },
     // Safe transition
-    getTransition: (transition: any) => 
-      isHydrated ? transition : { duration: 0 }
+    getTransition: (transition: any) =>
+      isHydrated ? transition : { duration: 0 },
   }
 }
 
@@ -33,10 +33,10 @@ export function useHydrationSafeAnimation() {
  */
 export function useIsHydrated() {
   const [isHydrated, setIsHydrated] = useState(false)
-  
+
   useEffect(() => {
     setIsHydrated(true)
   }, [])
-  
+
   return isHydrated
 }

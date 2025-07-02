@@ -24,7 +24,7 @@ const SUPPORTED_LANGUAGES = [
   { code: 'ko', name: 'Korean' },
   { code: 'fr', name: 'French' },
   { code: 'de', name: 'German' },
-  { code: 'es', name: 'Spanish' }
+  { code: 'es', name: 'Spanish' },
 ]
 
 interface TranslationInterfaceProps {
@@ -33,10 +33,10 @@ interface TranslationInterfaceProps {
   onTranslationComplete?: (job: TranslationJob) => void
 }
 
-export function TranslationInterface({ 
+export function TranslationInterface({
   documentName = 'Untitled Document',
   initialText = '',
-  onTranslationComplete 
+  onTranslationComplete,
 }: TranslationInterfaceProps) {
   const [sourceText, setSourceText] = useState(initialText)
   const [translatedText, setTranslatedText] = useState('')
@@ -61,7 +61,7 @@ export function TranslationInterface({
       toLanguage,
       status: 'translating',
       progress: 0,
-      createdAt: new Date()
+      createdAt: new Date(),
     }
 
     setJobs(prev => [job, ...prev])
@@ -75,28 +75,33 @@ export function TranslationInterface({
     }, 200)
 
     // Simulate translation API call
-    setTimeout(() => {
-      clearInterval(progressInterval)
-      
-      const mockTranslation = `[AI Translation from ${SUPPORTED_LANGUAGES.find(l => l.code === fromLanguage)?.name} to ${SUPPORTED_LANGUAGES.find(l => l.code === toLanguage)?.name}]\n\n` +
-        sourceText.split('\n').map(line => 
-          line.trim() ? `• ${line}` : ''
-        ).join('\n')
+    setTimeout(
+      () => {
+        clearInterval(progressInterval)
 
-      const completedJob = {
-        ...job,
-        translatedText: mockTranslation,
-        status: 'completed' as const,
-        progress: 100
-      }
+        const mockTranslation =
+          `[AI Translation from ${SUPPORTED_LANGUAGES.find(l => l.code === fromLanguage)?.name} to ${SUPPORTED_LANGUAGES.find(l => l.code === toLanguage)?.name}]\n\n` +
+          sourceText
+            .split('\n')
+            .map(line => (line.trim() ? `• ${line}` : ''))
+            .join('\n')
 
-      setTranslatedText(mockTranslation)
-      setJobs(prev => prev.map(j => j.id === job.id ? completedJob : j))
-      setIsTranslating(false)
-      setProgress(100)
-      
-      onTranslationComplete?.(completedJob)
-    }, 3000 + Math.random() * 2000)
+        const completedJob = {
+          ...job,
+          translatedText: mockTranslation,
+          status: 'completed' as const,
+          progress: 100,
+        }
+
+        setTranslatedText(mockTranslation)
+        setJobs(prev => prev.map(j => (j.id === job.id ? completedJob : j)))
+        setIsTranslating(false)
+        setProgress(100)
+
+        onTranslationComplete?.(completedJob)
+      },
+      3000 + Math.random() * 2000
+    )
   }
 
   const handleSwapLanguages = () => {
@@ -122,7 +127,7 @@ export function TranslationInterface({
           </label>
           <select
             value={fromLanguage}
-            onChange={(e) => setFromLanguage(e.target.value)}
+            onChange={e => setFromLanguage(e.target.value)}
             className="w-full px-3 py-2 border border-border-default rounded-md bg-surface text-primary focus:outline-none focus:ring-2 focus:ring-accent-brand focus:border-transparent"
           >
             {SUPPORTED_LANGUAGES.map(lang => (
@@ -150,7 +155,7 @@ export function TranslationInterface({
           </label>
           <select
             value={toLanguage}
-            onChange={(e) => setToLanguage(e.target.value)}
+            onChange={e => setToLanguage(e.target.value)}
             className="w-full px-3 py-2 border border-border-default rounded-md bg-surface text-primary focus:outline-none focus:ring-2 focus:ring-accent-brand focus:border-transparent"
           >
             {SUPPORTED_LANGUAGES.map(lang => (
@@ -171,7 +176,7 @@ export function TranslationInterface({
           </label>
           <textarea
             value={sourceText}
-            onChange={(e) => setSourceText(e.target.value)}
+            onChange={e => setSourceText(e.target.value)}
             placeholder="Enter text to translate..."
             className="w-full h-64 px-3 py-2 border border-border-default rounded-md bg-surface text-primary placeholder-muted resize-none focus:outline-none focus:ring-2 focus:ring-accent-brand focus:border-transparent"
             disabled={isTranslating}
@@ -198,7 +203,7 @@ export function TranslationInterface({
                     AI Translation in Progress
                   </div>
                   <div className="w-32 bg-bg-muted rounded-full h-2 mb-2">
-                    <div 
+                    <div
                       className="bg-accent-brand h-2 rounded-full transition-all duration-300"
                       style={{ width: `${progress}%` }}
                     />
@@ -215,9 +220,7 @@ export function TranslationInterface({
 
       {/* Actions */}
       <div className="flex justify-between items-center">
-        <div className="text-sm text-muted">
-          {sourceText.length} characters
-        </div>
+        <div className="text-sm text-muted">{sourceText.length} characters</div>
         <div className="flex space-x-3">
           <Button
             variant="outline"
@@ -253,17 +256,30 @@ export function TranslationInterface({
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center space-x-2">
                     <span className="text-sm font-medium text-primary">
-                      {SUPPORTED_LANGUAGES.find(l => l.code === job.fromLanguage)?.flag} → {SUPPORTED_LANGUAGES.find(l => l.code === job.toLanguage)?.flag}
+                      {
+                        SUPPORTED_LANGUAGES.find(
+                          l => l.code === job.fromLanguage
+                        )?.flag
+                      }{' '}
+                      →{' '}
+                      {
+                        SUPPORTED_LANGUAGES.find(l => l.code === job.toLanguage)
+                          ?.flag
+                      }
                     </span>
                     <span className="text-sm text-muted">
                       {job.createdAt.toLocaleTimeString()}
                     </span>
                   </div>
-                  <div className={`text-xs px-2 py-1 rounded ${
-                    job.status === 'completed' ? 'bg-green-100 text-green-800' :
-                    job.status === 'translating' ? 'bg-blue-100 text-blue-800' :
-                    'bg-gray-100 text-gray-800'
-                  }`}>
+                  <div
+                    className={`text-xs px-2 py-1 rounded ${
+                      job.status === 'completed'
+                        ? 'bg-green-100 text-green-800'
+                        : job.status === 'translating'
+                          ? 'bg-blue-100 text-blue-800'
+                          : 'bg-gray-100 text-gray-800'
+                    }`}
+                  >
                     {job.status}
                   </div>
                 </div>

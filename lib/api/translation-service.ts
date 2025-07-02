@@ -1,8 +1,10 @@
 import { createServerClient, createServiceClient } from '@/lib/supabase-client'
 import type { Database } from '@/lib/supabase-client'
 
-type TranslationHistory = Database['public']['Tables']['translation_history']['Row']
-type TranslationHistoryInsert = Database['public']['Tables']['translation_history']['Insert']
+type TranslationHistory =
+  Database['public']['Tables']['translation_history']['Row']
+type TranslationHistoryInsert =
+  Database['public']['Tables']['translation_history']['Insert']
 
 interface TranslationRequest {
   text: string
@@ -46,7 +48,8 @@ export class TranslationService {
           },
           body: JSON.stringify({
             q: request.text,
-            source: request.sourceLang === 'auto' ? undefined : request.sourceLang,
+            source:
+              request.sourceLang === 'auto' ? undefined : request.sourceLang,
             target: request.targetLang,
             format: 'text',
           }),
@@ -91,11 +94,15 @@ export class TranslationService {
       return result
     } catch (error) {
       console.error('Translation error:', error)
-      throw new Error(error instanceof Error ? error.message : 'Translation failed')
+      throw new Error(
+        error instanceof Error ? error.message : 'Translation failed'
+      )
     }
   }
 
-  async translateLongText(request: TranslationRequest): Promise<TranslationResult> {
+  async translateLongText(
+    request: TranslationRequest
+  ): Promise<TranslationResult> {
     const MAX_CHUNK_SIZE = 5000 // Google Translate limit
     const text = request.text
 
@@ -168,7 +175,7 @@ export class TranslationService {
         // If paragraph is still too long, split by sentences
         if (paragraph.length > maxSize) {
           const sentences = paragraph.split(/(?<=[.!?])\s+/)
-          
+
           for (const sentence of sentences) {
             if (currentChunk.length + sentence.length <= maxSize) {
               currentChunk += (currentChunk ? ' ' : '') + sentence
@@ -177,7 +184,7 @@ export class TranslationService {
                 chunks.push(currentChunk)
                 currentChunk = ''
               }
-              
+
               // If sentence is still too long, split by words
               if (sentence.length > maxSize) {
                 const words = sentence.split(' ')
@@ -225,7 +232,9 @@ export class TranslationService {
     }
   }
 
-  async saveTranslationHistory(history: TranslationHistoryInsert): Promise<TranslationHistory> {
+  async saveTranslationHistory(
+    history: TranslationHistoryInsert
+  ): Promise<TranslationHistory> {
     if (!this.client) {
       throw new Error('Database client not available')
     }
@@ -266,7 +275,10 @@ export class TranslationService {
     return data
   }
 
-  async deleteTranslationHistory(userId: string, historyId: string): Promise<void> {
+  async deleteTranslationHistory(
+    userId: string,
+    historyId: string
+  ): Promise<void> {
     if (!this.client) {
       throw new Error('Database client not available')
     }
@@ -302,19 +314,26 @@ export class TranslationService {
     }
 
     const totalTranslations = data.length
-    const totalCharacters = data.reduce((sum, item) => sum + item.character_count, 0)
-    const averageQuality = data.length > 0 
-      ? data.reduce((sum, item) => sum + item.quality_score, 0) / data.length 
-      : 0
-    const lastTranslation = data.length > 0 
-      ? Math.max(...data.map(item => new Date(item.created_at).getTime()))
-      : null
+    const totalCharacters = data.reduce(
+      (sum, item) => sum + item.character_count,
+      0
+    )
+    const averageQuality =
+      data.length > 0
+        ? data.reduce((sum, item) => sum + item.quality_score, 0) / data.length
+        : 0
+    const lastTranslation =
+      data.length > 0
+        ? Math.max(...data.map(item => new Date(item.created_at).getTime()))
+        : null
 
     return {
       totalTranslations,
       totalCharacters,
       averageQuality: Math.round(averageQuality * 100) / 100,
-      lastTranslation: lastTranslation ? new Date(lastTranslation).toISOString() : null,
+      lastTranslation: lastTranslation
+        ? new Date(lastTranslation).toISOString()
+        : null,
     }
   }
 }

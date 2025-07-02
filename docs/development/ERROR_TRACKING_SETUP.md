@@ -7,6 +7,7 @@ This guide covers the comprehensive error tracking and alerting system for Prism
 ## Architecture
 
 ### Error Tracking Flow
+
 1. **Client/Server Errors** → Sentry SDK → Sentry Dashboard
 2. **Critical Errors** → Alert Manager → Multiple Channels (Slack, Email, PagerDuty)
 3. **User Reports** → Error Report Dialog → Sentry + Local Logging
@@ -17,6 +18,7 @@ This guide covers the comprehensive error tracking and alerting system for Prism
 ### 1. Sentry Configuration (`lib/error-tracking/sentry-config.ts`)
 
 **Features:**
+
 - Automatic error capture and reporting
 - Performance monitoring and profiling
 - User context tracking
@@ -25,6 +27,7 @@ This guide covers the comprehensive error tracking and alerting system for Prism
 - Source map uploading
 
 **Key Methods:**
+
 ```typescript
 // Track different types of errors
 errorTracker.captureError(error, context)
@@ -36,6 +39,7 @@ errorTracker.trackPaymentError(error, paymentContext)
 ### 2. Error Boundary (`lib/error-tracking/error-boundary.tsx`)
 
 **Features:**
+
 - React error boundary with Sentry integration
 - Graceful error handling and recovery
 - User-friendly error displays
@@ -43,21 +47,23 @@ errorTracker.trackPaymentError(error, paymentContext)
 - Component-level error isolation
 
 **Usage:**
+
 ```tsx
-<ErrorBoundary level="page" name="HomePage">
+;<ErrorBoundary level="page" name="HomePage">
   <HomePage />
 </ErrorBoundary>
 
 // Or with HOC
-export default withErrorBoundary(MyComponent, { 
+export default withErrorBoundary(MyComponent, {
   level: 'component',
-  name: 'MyComponent' 
+  name: 'MyComponent',
 })
 ```
 
 ### 3. Alert Manager (`lib/error-tracking/alert-manager.ts`)
 
 **Features:**
+
 - Multi-channel alerting (Slack, Email, PagerDuty, Webhooks)
 - Alert rule engine with conditions
 - Escalation framework
@@ -65,6 +71,7 @@ export default withErrorBoundary(MyComponent, {
 - Real-time alert resolution
 
 **Alert Types:**
+
 - **Low:** Minor issues, info notifications
 - **Medium:** Performance degradation, warnings
 - **High:** Major functionality broken
@@ -73,6 +80,7 @@ export default withErrorBoundary(MyComponent, {
 ### 4. Error Report Dialog (`components/error-tracking/ErrorReportDialog.tsx`)
 
 **Features:**
+
 - User-friendly error reporting interface
 - System information collection
 - Severity and category classification
@@ -114,11 +122,13 @@ npm install @sentry/nextjs @sentry/profiling-node
 ### 3. Sentry Project Setup
 
 1. **Create Sentry Project**
+
    - Go to Sentry.io
    - Create new project (Next.js)
    - Copy DSN and configuration
 
 2. **Configure Source Maps**
+
    - Set `SENTRY_AUTH_TOKEN` for uploading source maps
    - Configure `sentry.properties` file
 
@@ -130,16 +140,19 @@ npm install @sentry/nextjs @sentry/profiling-node
 ### 4. Alert Channel Setup
 
 #### Slack Integration
+
 1. Create Slack app with incoming webhooks
 2. Add webhook URL to environment variables
 3. Configure channel permissions
 
 #### Email Alerts
+
 1. Set up email service (SendGrid, Mailgun, etc.)
 2. Configure SMTP or API credentials
 3. Set recipient addresses
 
 #### PagerDuty Integration
+
 1. Create PagerDuty service
 2. Generate routing key
 3. Configure escalation policies
@@ -268,7 +281,7 @@ function handleAPIError(error: Error) {
     endpoint: '/api/translate',
     method: 'POST',
     statusCode: 500,
-    userId: currentUser.id
+    userId: currentUser.id,
   })
 }
 ```
@@ -280,11 +293,11 @@ import { useErrorReportDialog } from '@/components/error-tracking/ErrorReportDia
 
 function MyComponent() {
   const { showReportDialog, ErrorReportDialog } = useErrorReportDialog()
-  
+
   const handleError = (error: Error) => {
     showReportDialog(error, 'error-id', { context: 'user-action' })
   }
-  
+
   return (
     <>
       <button onClick={handleError}>Report Issue</button>
@@ -297,6 +310,7 @@ function MyComponent() {
 ## Monitoring & Dashboards
 
 ### Sentry Dashboard Features
+
 - Real-time error tracking
 - Performance monitoring
 - Release health tracking
@@ -304,6 +318,7 @@ function MyComponent() {
 - Custom dashboards
 
 ### Alert Management Dashboard
+
 - Active alerts overview
 - Alert rule configuration
 - Channel status monitoring
@@ -313,24 +328,28 @@ function MyComponent() {
 ## Best Practices
 
 ### 1. Error Classification
+
 - Use appropriate severity levels
 - Categorize errors by domain
 - Include relevant context
 - Filter out noise
 
 ### 2. Alert Management
+
 - Set appropriate cooldowns
 - Configure escalation policies
 - Use suppression for known issues
 - Regular rule maintenance
 
 ### 3. Performance Monitoring
+
 - Monitor core web vitals
 - Track API response times
 - Alert on performance degradation
 - Use sampling for high-traffic sites
 
 ### 4. Security Considerations
+
 - Don't log sensitive data
 - Sanitize error messages
 - Use secure webhook endpoints
@@ -341,12 +360,14 @@ function MyComponent() {
 ### Common Issues
 
 1. **Sentry Not Capturing Errors**
+
    - Check DSN configuration
    - Verify environment setup
    - Check sample rates
    - Review beforeSend filters
 
 2. **Alerts Not Sending**
+
    - Verify webhook URLs
    - Check channel configurations
    - Review alert rule conditions
@@ -378,6 +399,7 @@ curl /api/alerts/rules | jq .
 ## Maintenance
 
 ### Regular Tasks
+
 - Review and update alert rules
 - Clean up resolved alerts
 - Monitor channel health
@@ -385,6 +407,7 @@ curl /api/alerts/rules | jq .
 - Review error trends
 
 ### Performance Optimization
+
 - Adjust sample rates based on volume
 - Configure appropriate retention periods
 - Optimize error filtering

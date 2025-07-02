@@ -1,4 +1,8 @@
-import { createClient, createServerClient, createServiceClient } from '@/lib/supabase-client'
+import {
+  createClient,
+  createServerClient,
+  createServiceClient,
+} from '@/lib/supabase-client'
 import type { Database } from '@/lib/supabase-client'
 
 type UserProfile = Database['public']['Tables']['user_profiles']['Row']
@@ -162,7 +166,10 @@ export class ServerAuthService {
     return data
   }
 
-  async updateUserProfile(userId: string, updates: UserProfileUpdate): Promise<UserProfile> {
+  async updateUserProfile(
+    userId: string,
+    updates: UserProfileUpdate
+  ): Promise<UserProfile> {
     const { data, error } = await this.client
       .from('user_profiles')
       .update(updates)
@@ -194,7 +201,9 @@ export class ServerAuthService {
     return data
   }
 
-  async checkUsageLimit(userId: string): Promise<{ allowed: boolean; usage: UserProfile }> {
+  async checkUsageLimit(
+    userId: string
+  ): Promise<{ allowed: boolean; usage: UserProfile }> {
     const profile = await this.getUserProfile(userId)
 
     if (!profile) {
@@ -261,7 +270,7 @@ export class AdminAuthService {
   }
 
   async updateUserSubscription(
-    userId: string, 
+    userId: string,
     subscription: {
       tier: 'free' | 'standard' | 'premium' | 'enterprise'
       limit: number
@@ -301,5 +310,6 @@ export class AdminAuthService {
 
 // Singleton instances
 export const authService = new AuthService()
-export const createServerAuthService = (cookieStore: () => any) => new ServerAuthService(cookieStore)
+export const createServerAuthService = (cookieStore: () => any) =>
+  new ServerAuthService(cookieStore)
 export const adminAuthService = new AdminAuthService()

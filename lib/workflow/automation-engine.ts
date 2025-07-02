@@ -9,14 +9,27 @@ import { EventEmitter } from 'events'
 
 export interface WorkflowTrigger {
   id: string
-  type: 'document_upload' | 'translation_complete' | 'schedule' | 'webhook' | 'manual' | 'ai_condition'
+  type:
+    | 'document_upload'
+    | 'translation_complete'
+    | 'schedule'
+    | 'webhook'
+    | 'manual'
+    | 'ai_condition'
   conditions: Record<string, any>
   enabled: boolean
 }
 
 export interface WorkflowAction {
   id: string
-  type: 'translate' | 'analyze' | 'notify' | 'export' | 'webhook' | 'ai_process' | 'approval'
+  type:
+    | 'translate'
+    | 'analyze'
+    | 'notify'
+    | 'export'
+    | 'webhook'
+    | 'ai_process'
+    | 'approval'
   config: Record<string, any>
   order: number
   conditional?: {
@@ -73,10 +86,10 @@ export class WorkflowAutomationEngine extends EventEmitter {
     try {
       // Load and schedule all active workflows
       await this.loadActiveWorkflows()
-      
+
       // Set up event listeners for real-time triggers
       this.setupEventListeners()
-      
+
       logger.info('Workflow automation engine initialized')
     } catch (error) {
       logger.error('Failed to initialize workflow engine', { error })
@@ -86,7 +99,9 @@ export class WorkflowAutomationEngine extends EventEmitter {
   /**
    * Create a new workflow rule
    */
-  async createWorkflow(workflow: Omit<WorkflowRule, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
+  async createWorkflow(
+    workflow: Omit<WorkflowRule, 'id' | 'createdAt' | 'updatedAt'>
+  ): Promise<string> {
     try {
       const { data, error } = await supabase
         .from('workflow_rules')
@@ -100,7 +115,7 @@ export class WorkflowAutomationEngine extends EventEmitter {
           enabled: workflow.enabled,
           priority: workflow.priority,
           created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .select('id')
         .single()
@@ -114,7 +129,6 @@ export class WorkflowAutomationEngine extends EventEmitter {
 
       logger.info('Workflow created', { workflowId, name: workflow.name })
       return workflowId
-
     } catch (error) {
       logger.error('Failed to create workflow', { error, workflow })
       throw error
@@ -125,8 +139,8 @@ export class WorkflowAutomationEngine extends EventEmitter {
    * Execute a workflow manually
    */
   async executeWorkflow(
-    workflowId: string, 
-    context: Record<string, any>, 
+    workflowId: string,
+    context: Record<string, any>,
     triggeredBy: string = 'manual'
   ): Promise<string> {
     try {
@@ -150,7 +164,7 @@ export class WorkflowAutomationEngine extends EventEmitter {
         status: 'pending',
         context,
         results: {},
-        startedAt: new Date()
+        startedAt: new Date(),
       }
 
       // Store execution
@@ -161,7 +175,7 @@ export class WorkflowAutomationEngine extends EventEmitter {
         status: execution.status,
         context: execution.context,
         results: execution.results,
-        started_at: execution.startedAt.toISOString()
+        started_at: execution.startedAt.toISOString(),
       })
 
       // Track active execution
@@ -170,9 +184,11 @@ export class WorkflowAutomationEngine extends EventEmitter {
       // Execute workflow asynchronously
       this.processWorkflowExecution(execution, workflow)
 
-      logger.info('Workflow execution started', { executionId: execution.id, workflowId })
+      logger.info('Workflow execution started', {
+        executionId: execution.id,
+        workflowId,
+      })
       return execution.id
-
     } catch (error) {
       logger.error('Failed to execute workflow', { error, workflowId })
       throw error
@@ -182,21 +198,29 @@ export class WorkflowAutomationEngine extends EventEmitter {
   /**
    * Process workflow execution
    */
-  private async processWorkflowExecution(execution: WorkflowExecution, workflow: any) {
+  private async processWorkflowExecution(
+    execution: WorkflowExecution,
+    workflow: any
+  ) {
     try {
       execution.status = 'running'
       await this.updateExecutionStatus(execution)
 
       // Sort actions by order
-      const sortedActions = workflow.actions.sort((a: WorkflowAction, b: WorkflowAction) => a.order - b.order)
+      const sortedActions = workflow.actions.sort(
+        (a: WorkflowAction, b: WorkflowAction) => a.order - b.order
+      )
 
       // Execute actions sequentially
       for (const action of sortedActions) {
         // Check conditional logic
-        if (action.conditional && !this.evaluateCondition(action.conditional, execution.context)) {
-          logger.info('Skipping action due to condition', { 
-            executionId: execution.id, 
-            actionId: action.id 
+        if (
+          action.conditional &&
+          !this.evaluateCondition(action.conditional, execution.context)
+        ) {
+          logger.info('Skipping action due to condition', {
+            executionId: execution.id,
+            actionId: action.id,
           })
           continue
         }
@@ -217,7 +241,6 @@ export class WorkflowAutomationEngine extends EventEmitter {
 
       this.emit('workflow:completed', execution)
       logger.info('Workflow execution completed', { executionId: execution.id })
-
     } catch (error) {
       execution.status = 'failed'
       execution.error = error instanceof Error ? error.message : 'Unknown error'
@@ -227,9 +250,9 @@ export class WorkflowAutomationEngine extends EventEmitter {
       this.activeExecutions.delete(execution.id)
 
       this.emit('workflow:failed', execution, error)
-      logger.error('Workflow execution failed', { 
-        executionId: execution.id, 
-        error 
+      logger.error('Workflow execution failed', {
+        executionId: execution.id,
+        error,
       })
     }
   }
@@ -237,31 +260,37 @@ export class WorkflowAutomationEngine extends EventEmitter {
   /**
    * Execute individual action
    */
-  private async executeAction(action: WorkflowAction, context: Record<string, any>): Promise<Record<string, any>> {
-    logger.info('Executing workflow action', { actionType: action.type, actionId: action.id })
+  private async executeAction(
+    action: WorkflowAction,
+    context: Record<string, any>
+  ): Promise<Record<string, any>> {
+    logger.info('Executing workflow action', {
+      actionType: action.type,
+      actionId: action.id,
+    })
 
     switch (action.type) {
       case 'translate':
         return await this.executeTranslateAction(action, context)
-      
+
       case 'analyze':
         return await this.executeAnalyzeAction(action, context)
-      
+
       case 'notify':
         return await this.executeNotifyAction(action, context)
-      
+
       case 'export':
         return await this.executeExportAction(action, context)
-      
+
       case 'webhook':
         return await this.executeWebhookAction(action, context)
-      
+
       case 'ai_process':
         return await this.executeAIProcessAction(action, context)
-      
+
       case 'approval':
         return await this.executeApprovalAction(action, context)
-      
+
       default:
         throw new Error(`Unknown action type: ${action.type}`)
     }
@@ -270,7 +299,10 @@ export class WorkflowAutomationEngine extends EventEmitter {
   /**
    * Translation action
    */
-  private async executeTranslateAction(action: WorkflowAction, context: Record<string, any>): Promise<Record<string, any>> {
+  private async executeTranslateAction(
+    action: WorkflowAction,
+    context: Record<string, any>
+  ): Promise<Record<string, any>> {
     const { documentId, targetLanguages, translationService } = action.config
     const docId = documentId || context.documentId
 
@@ -286,7 +318,7 @@ export class WorkflowAutomationEngine extends EventEmitter {
         const { data, error } = await supabase.rpc('start_translation_job', {
           p_document_id: docId,
           p_target_language: language,
-          p_service: translationService || 'openai'
+          p_service: translationService || 'openai',
         })
 
         if (error) throw error
@@ -294,13 +326,12 @@ export class WorkflowAutomationEngine extends EventEmitter {
         results.push({
           language,
           translationId: data.translation_id,
-          status: 'started'
+          status: 'started',
         })
-
       } catch (error) {
         results.push({
           language,
-          error: error instanceof Error ? error.message : 'Translation failed'
+          error: error instanceof Error ? error.message : 'Translation failed',
         })
       }
     }
@@ -311,7 +342,10 @@ export class WorkflowAutomationEngine extends EventEmitter {
   /**
    * AI Analysis action
    */
-  private async executeAnalyzeAction(action: WorkflowAction, context: Record<string, any>): Promise<Record<string, any>> {
+  private async executeAnalyzeAction(
+    action: WorkflowAction,
+    context: Record<string, any>
+  ): Promise<Record<string, any>> {
     const { documentId, analysisType, prompt, model } = action.config
     const docId = documentId || context.documentId
 
@@ -343,7 +377,7 @@ export class WorkflowAutomationEngine extends EventEmitter {
       document_id: docId,
       analysis_type: analysisType,
       result: analysisResult,
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
     })
 
     return { analysis: analysisResult }
@@ -352,19 +386,26 @@ export class WorkflowAutomationEngine extends EventEmitter {
   /**
    * Notification action
    */
-  private async executeNotifyAction(action: WorkflowAction, context: Record<string, any>): Promise<Record<string, any>> {
+  private async executeNotifyAction(
+    action: WorkflowAction,
+    context: Record<string, any>
+  ): Promise<Record<string, any>> {
     const { recipients, message, channels, template } = action.config
 
     const notification = {
       message: this.interpolateTemplate(message || template, context),
       recipients: recipients || [context.userId],
-      channels: channels || ['email']
+      channels: channels || ['email'],
     }
 
     // Send notifications
     for (const channel of notification.channels) {
       try {
-        await this.sendNotification(notification.message, notification.recipients, channel)
+        await this.sendNotification(
+          notification.message,
+          notification.recipients,
+          channel
+        )
       } catch (error) {
         logger.error('Failed to send notification', { error, channel })
       }
@@ -376,7 +417,10 @@ export class WorkflowAutomationEngine extends EventEmitter {
   /**
    * Export action
    */
-  private async executeExportAction(action: WorkflowAction, context: Record<string, any>): Promise<Record<string, any>> {
+  private async executeExportAction(
+    action: WorkflowAction,
+    context: Record<string, any>
+  ): Promise<Record<string, any>> {
     const { documentId, format, destination, options } = action.config
     const docId = documentId || context.documentId
 
@@ -389,7 +433,7 @@ export class WorkflowAutomationEngine extends EventEmitter {
       p_document_id: docId,
       p_format: format,
       p_destination: destination,
-      p_options: options || {}
+      p_options: options || {},
     })
 
     if (error) throw error
@@ -400,19 +444,25 @@ export class WorkflowAutomationEngine extends EventEmitter {
   /**
    * Webhook action
    */
-  private async executeWebhookAction(action: WorkflowAction, context: Record<string, any>): Promise<Record<string, any>> {
+  private async executeWebhookAction(
+    action: WorkflowAction,
+    context: Record<string, any>
+  ): Promise<Record<string, any>> {
     const { url, method, headers, payload } = action.config
 
-    const requestPayload = this.interpolateTemplate(JSON.stringify(payload || {}), context)
+    const requestPayload = this.interpolateTemplate(
+      JSON.stringify(payload || {}),
+      context
+    )
 
     try {
       const response = await fetch(url, {
         method: method || 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...headers
+          ...headers,
         },
-        body: requestPayload
+        body: requestPayload,
       })
 
       const responseData = await response.text()
@@ -420,18 +470,22 @@ export class WorkflowAutomationEngine extends EventEmitter {
       return {
         webhookCalled: true,
         status: response.status,
-        response: responseData
+        response: responseData,
       }
-
     } catch (error) {
-      throw new Error(`Webhook failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      throw new Error(
+        `Webhook failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      )
     }
   }
 
   /**
    * AI Processing action
    */
-  private async executeAIProcessAction(action: WorkflowAction, context: Record<string, any>): Promise<Record<string, any>> {
+  private async executeAIProcessAction(
+    action: WorkflowAction,
+    context: Record<string, any>
+  ): Promise<Record<string, any>> {
     const { prompt, model, inputField, outputField } = action.config
     const input = context[inputField] || context.content
 
@@ -439,7 +493,11 @@ export class WorkflowAutomationEngine extends EventEmitter {
       throw new Error(`Input field '${inputField}' not found in context`)
     }
 
-    const result = await this.performAIProcessing(input, prompt, model || 'gpt-4')
+    const result = await this.performAIProcessing(
+      input,
+      prompt,
+      model || 'gpt-4'
+    )
 
     return { [outputField || 'aiResult']: result }
   }
@@ -447,18 +505,27 @@ export class WorkflowAutomationEngine extends EventEmitter {
   /**
    * Approval action
    */
-  private async executeApprovalAction(action: WorkflowAction, context: Record<string, any>): Promise<Record<string, any>> {
+  private async executeApprovalAction(
+    action: WorkflowAction,
+    context: Record<string, any>
+  ): Promise<Record<string, any>> {
     const { approvers, message, timeout } = action.config
 
     // Create approval request
-    const { data, error } = await supabase.from('approval_requests').insert({
-      workflow_execution_id: context.executionId,
-      approvers,
-      message: this.interpolateTemplate(message, context),
-      timeout_at: timeout ? new Date(Date.now() + timeout * 1000).toISOString() : null,
-      status: 'pending',
-      created_at: new Date().toISOString()
-    }).select('id').single()
+    const { data, error } = await supabase
+      .from('approval_requests')
+      .insert({
+        workflow_execution_id: context.executionId,
+        approvers,
+        message: this.interpolateTemplate(message, context),
+        timeout_at: timeout
+          ? new Date(Date.now() + timeout * 1000).toISOString()
+          : null,
+        status: 'pending',
+        created_at: new Date().toISOString(),
+      })
+      .select('id')
+      .single()
 
     if (error) throw error
 
@@ -471,7 +538,10 @@ export class WorkflowAutomationEngine extends EventEmitter {
   /**
    * Helper methods
    */
-  private evaluateCondition(condition: any, context: Record<string, any>): boolean {
+  private evaluateCondition(
+    condition: any,
+    context: Record<string, any>
+  ): boolean {
     const { field, operator, value } = condition
     const fieldValue = context[field]
 
@@ -491,51 +561,73 @@ export class WorkflowAutomationEngine extends EventEmitter {
     }
   }
 
-  private interpolateTemplate(template: string, context: Record<string, any>): string {
+  private interpolateTemplate(
+    template: string,
+    context: Record<string, any>
+  ): string {
     return template.replace(/\{\{(\w+)\}\}/g, (match, key) => {
       return context[key] || match
     })
   }
 
-  private async performAIAnalysis(content: string, type: string, prompt: string, model: string): Promise<any> {
+  private async performAIAnalysis(
+    content: string,
+    type: string,
+    prompt: string,
+    model: string
+  ): Promise<any> {
     // Implement AI analysis using OpenAI or similar
     // This is a placeholder implementation
     return {
       type,
       summary: 'AI analysis completed',
       confidence: 0.95,
-      extractedData: {}
+      extractedData: {},
     }
   }
 
-  private async performAIProcessing(input: string, prompt: string, model: string): Promise<any> {
+  private async performAIProcessing(
+    input: string,
+    prompt: string,
+    model: string
+  ): Promise<any> {
     // Implement AI processing using OpenAI or similar
     // This is a placeholder implementation
     return {
       processed: true,
       result: 'AI processing completed',
-      model
+      model,
     }
   }
 
-  private async sendNotification(message: string, recipients: string[], channel: string): Promise<void> {
+  private async sendNotification(
+    message: string,
+    recipients: string[],
+    channel: string
+  ): Promise<void> {
     // Implement notification sending
     logger.info('Sending notification', { message, recipients, channel })
   }
 
-  private async notifyApprovers(approvalId: string, approvers: string[], message: string): Promise<void> {
+  private async notifyApprovers(
+    approvalId: string,
+    approvers: string[],
+    message: string
+  ): Promise<void> {
     // Implement approver notification
     logger.info('Notifying approvers', { approvalId, approvers })
   }
 
-  private async updateExecutionStatus(execution: WorkflowExecution): Promise<void> {
+  private async updateExecutionStatus(
+    execution: WorkflowExecution
+  ): Promise<void> {
     await supabase
       .from('workflow_executions')
       .update({
         status: execution.status,
         results: execution.results,
         completed_at: execution.completedAt?.toISOString(),
-        error: execution.error
+        error: execution.error,
       })
       .eq('id', execution.id)
   }
@@ -553,13 +645,19 @@ export class WorkflowAutomationEngine extends EventEmitter {
     }
   }
 
-  private async scheduleWorkflowTriggers(workflowId: string, triggers: WorkflowTrigger[]): Promise<void> {
+  private async scheduleWorkflowTriggers(
+    workflowId: string,
+    triggers: WorkflowTrigger[]
+  ): Promise<void> {
     for (const trigger of triggers) {
       if (trigger.type === 'schedule' && trigger.enabled) {
         // Implement cron-like scheduling
         const { interval, cron } = trigger.conditions
         // This would use a proper scheduler in production
-        logger.info('Scheduling workflow trigger', { workflowId, trigger: trigger.id })
+        logger.info('Scheduling workflow trigger', {
+          workflowId,
+          trigger: trigger.id,
+        })
       }
     }
   }
@@ -578,7 +676,10 @@ export class WorkflowAutomationEngine extends EventEmitter {
     await this.triggerWorkflows('translation_complete', event)
   }
 
-  private async triggerWorkflows(triggerType: string, context: Record<string, any>): Promise<void> {
+  private async triggerWorkflows(
+    triggerType: string,
+    context: Record<string, any>
+  ): Promise<void> {
     const { data: workflows } = await supabase
       .from('workflow_rules')
       .select('*')
@@ -592,14 +693,21 @@ export class WorkflowAutomationEngine extends EventEmitter {
 
         for (const trigger of matchingTriggers) {
           if (this.matchesTriggerConditions(trigger, context)) {
-            await this.executeWorkflow(workflow.id, context, `trigger:${trigger.id}`)
+            await this.executeWorkflow(
+              workflow.id,
+              context,
+              `trigger:${trigger.id}`
+            )
           }
         }
       }
     }
   }
 
-  private matchesTriggerConditions(trigger: WorkflowTrigger, context: Record<string, any>): boolean {
+  private matchesTriggerConditions(
+    trigger: WorkflowTrigger,
+    context: Record<string, any>
+  ): boolean {
     // Implement trigger condition matching
     return true // Simplified for now
   }

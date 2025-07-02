@@ -1,17 +1,21 @@
 # 📋 HANDOVER DOCUMENT - PRISMY PRODUCTION
-*Last Updated: June 25, 2025*
+
+_Last Updated: June 25, 2025_
 
 ## 🚨 CRITICAL ISSUE: Bash Tool Error
+
 ```
 Error: zsh:source:1: no such file or directory: /var/folders/z2/sjvly0fs1dd_dqmf2mz8mpb00000gn/T/claude-shell-snapshot-4918
 ```
 
 ### Root Cause:
+
 - Shell environment snapshot file is missing/corrupted
 - Cannot execute any Bash commands directly
 - Affects all terminal operations (git, npm, vercel, etc.)
 
 ### To Fix This Issue:
+
 1. **Start a new conversation** with Claude
 2. **Provide this context**: "Continue from HANDOVER_DOCUMENT.md in /Users/mac/prismy/prismy-production"
 3. **Test Bash tool**: Ask Claude to run `pwd` command
@@ -21,17 +25,20 @@ Error: zsh:source:1: no such file or directory: /var/folders/z2/sjvly0fs1dd_dqmf
 ## 📁 PROJECT STATUS
 
 ### Current Directory:
+
 ```
 /Users/mac/prismy/prismy-production
 ```
 
 ### Git Status:
+
 - Branch: `main`
 - Latest commit: `0038434 fix: SSR deployment fixes for prismy.in`
 - Remote: https://github.com/nclamvn/prismy-production.git
 - All changes pushed to GitHub
 
 ### Deployment Status:
+
 - **Domain**: prismy.in (configured on Vercel)
 - **Last deployment**: Failed due to build errors
 - **Error**: TypeScript compilation errors preventing build
@@ -41,6 +48,7 @@ Error: zsh:source:1: no such file or directory: /var/folders/z2/sjvly0fs1dd_dqmf
 ## 🔧 COMPLETED FIXES
 
 ### 1. SSR Issues Fixed:
+
 - ✅ Replaced simplified next.config.js with production version
 - ✅ Added stubs for PDF.js and Tesseract.js at:
   - `/lib/stubs/pdfjs-stub.ts`
@@ -51,6 +59,7 @@ Error: zsh:source:1: no such file or directory: /var/folders/z2/sjvly0fs1dd_dqmf
   - All enterprise component files
 
 ### 2. Files Modified:
+
 ```
 - next.config.js (production-ready with webpack configs)
 - lib/stubs/tesseract-stub.ts (new)
@@ -68,12 +77,14 @@ Error: zsh:source:1: no such file or directory: /var/folders/z2/sjvly0fs1dd_dqmf
 ## 🚫 REMAINING ISSUES
 
 ### TypeScript Errors (147 total):
+
 - Missing type declarations
 - Incorrect prop types
 - Import conflicts
 - These prevent `npm run build` from succeeding
 
 ### Deployment Failures:
+
 ```bash
 Error: Command "npm run build" exited with 1
 ```
@@ -83,6 +94,7 @@ Error: Command "npm run build" exited with 1
 ## 🛠️ IMMEDIATE ACTIONS NEEDED
 
 ### 1. Fix Build for Deployment:
+
 ```bash
 # Option A: Skip all checks temporarily
 npm run build:prod
@@ -105,6 +117,7 @@ npm run build:prod
 ```
 
 ### 2. Deploy Commands:
+
 ```bash
 # Deploy with Vercel CLI
 vercel --prod --yes
@@ -117,7 +130,9 @@ vercel --prod --build-env SKIP_ENV_VALIDATION=true
 ```
 
 ### 3. Environment Variables on Vercel:
+
 Must be set in Vercel Dashboard:
+
 - NEXT_PUBLIC_SUPABASE_URL
 - NEXT_PUBLIC_SUPABASE_ANON_KEY
 - SUPABASE_SERVICE_KEY
@@ -131,14 +146,17 @@ Must be set in Vercel Dashboard:
 ## 📝 SCRIPTS CREATED
 
 ### 1. `/deploy-root-cause-fix.sh`
+
 - Comprehensive deployment script with all fixes
 - Includes git commit and push
 
 ### 2. `/deploy-now.sh`
+
 - Quick Vercel CLI deployment
 - Direct production deployment
 
 ### 3. `/build-vercel.sh`
+
 - Fixes build issues temporarily
 - Modifies configs for successful build
 - Restores after deployment
@@ -148,17 +166,21 @@ Must be set in Vercel Dashboard:
 ## 🎯 NEXT STEPS
 
 ### For New Claude Session:
+
 1. **Read this document first**:
+
    ```
    Read /Users/mac/prismy/prismy-production/HANDOVER_DOCUMENT.md
    ```
 
 2. **Check Bash tool status**:
+
    ```bash
    pwd
    ```
 
 3. **If Bash works, continue deployment**:
+
    ```bash
    cd /Users/mac/prismy/prismy-production
    ./build-vercel.sh
@@ -170,13 +192,15 @@ Must be set in Vercel Dashboard:
    - Consider using Node.js scripts instead
 
 ### Alternative Deployment Path:
+
 1. **Create Node.js deployment script**:
+
    ```javascript
    // deploy.js
-   const { exec } = require('child_process');
+   const { exec } = require('child_process')
    exec('vercel --prod --yes', (error, stdout, stderr) => {
-     console.log(stdout);
-   });
+     console.log(stdout)
+   })
    ```
 
 2. **Run with**: `node deploy.js`
@@ -215,6 +239,7 @@ npm run build
 ## ⚡ QUICK FIX SUMMARY
 
 If you need to deploy immediately:
+
 1. Skip all TypeScript/ESLint checks
 2. Use simplified next.config.js
 3. Deploy with `vercel --prod --force`
@@ -224,4 +249,4 @@ If you need to deploy immediately:
 
 ---
 
-*End of Handover Document*
+_End of Handover Document_

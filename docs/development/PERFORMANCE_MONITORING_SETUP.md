@@ -7,6 +7,7 @@ This guide covers the comprehensive performance monitoring system for Prismy pro
 ## Architecture
 
 ### Performance Monitoring Flow
+
 1. **Client Metrics** → Production Metrics Service → Metrics API → Dashboard
 2. **Server Metrics** → Logging System → Alert Manager → Notifications
 3. **Business Events** → Analytics Tracking → Business Intelligence
@@ -17,6 +18,7 @@ This guide covers the comprehensive performance monitoring system for Prismy pro
 ### 1. Production Metrics (`lib/performance/production-metrics.ts`)
 
 **Features:**
+
 - Core Web Vitals monitoring (CLS, FCP, FID, LCP, TTFB, INP)
 - Resource timing and navigation performance
 - Memory usage and connection quality tracking
@@ -24,18 +26,24 @@ This guide covers the comprehensive performance monitoring system for Prismy pro
 - Real-time alert generation
 
 **Key Methods:**
+
 ```typescript
 // Record custom metrics
 productionMetrics.recordMetric(name, value, unit, metadata)
 
 // Track API performance
 productionMetrics.recordAPIMetric({
-  endpoint, method, statusCode, responseTime
+  endpoint,
+  method,
+  statusCode,
+  responseTime,
 })
 
 // Track business events
 productionMetrics.recordBusinessMetric({
-  event, value, properties
+  event,
+  value,
+  properties,
 })
 
 // Start performance transactions
@@ -47,6 +55,7 @@ transaction.finish()
 ### 2. Metrics API (`app/api/metrics/route.ts`)
 
 **Endpoints:**
+
 - `POST /api/metrics` - Collect metrics batch from clients
 - `GET /api/metrics?type=summary` - Get aggregated metrics summary
 - `GET /api/metrics?type=webvitals` - Get Web Vitals data
@@ -54,6 +63,7 @@ transaction.finish()
 - `HEAD /api/metrics` - Health check for metrics system
 
 **Features:**
+
 - Metrics batching and aggregation
 - Percentile calculations (P75, P95)
 - Error rate tracking
@@ -62,6 +72,7 @@ transaction.finish()
 ### 3. Performance Dashboard (`components/performance/PerformanceDashboard.tsx`)
 
 **Features:**
+
 - Real-time metrics visualization
 - Core Web Vitals monitoring
 - API performance analysis
@@ -72,12 +83,14 @@ transaction.finish()
 ### 4. Performance Tracking Hook (`hooks/usePerformanceTracking.ts`)
 
 **Hook Variants:**
+
 - `usePerformanceTracking()` - General performance tracking
 - `useAPIPerformanceTracking()` - API call monitoring
 - `useFeatureTracking()` - User feature usage
 - `useBusinessMetrics()` - Business event tracking
 
 **Features:**
+
 - Component mount/unmount tracking
 - User interaction monitoring
 - Custom timing measurements
@@ -120,6 +133,7 @@ npm install chart.js react-chartjs-2
 ### 3. Integration with Components
 
 #### Basic Component Tracking
+
 ```tsx
 import { usePerformanceTracking } from '@/hooks/usePerformanceTracking'
 
@@ -127,7 +141,7 @@ function MyComponent() {
   const { startTiming, endTiming, trackFeatureUsage } = usePerformanceTracking({
     componentName: 'MyComponent',
     trackComponentMount: true,
-    trackUserInteractions: true
+    trackUserInteractions: true,
   })
 
   const handleExpensiveOperation = async () => {
@@ -145,6 +159,7 @@ function MyComponent() {
 ```
 
 #### API Call Tracking
+
 ```tsx
 import { useAPIPerformanceTracking } from '@/hooks/usePerformanceTracking'
 
@@ -163,13 +178,14 @@ function DataComponent() {
 ```
 
 #### Business Metrics Tracking
+
 ```tsx
 import { useBusinessMetrics } from '@/hooks/usePerformanceTracking'
 
 function TranslationComponent() {
   const { trackTranslation } = useBusinessMetrics()
 
-  const handleTranslationComplete = (result) => {
+  const handleTranslationComplete = result => {
     trackTranslation(
       result.sourceLanguage,
       result.targetLanguage,
@@ -192,52 +208,53 @@ const MyComponent = () => <div>...</div>
 export default withPerformanceTracking(MyComponent, {
   trackComponentMount: true,
   trackUserInteractions: true,
-  customMetrics: ['custom_metric_1', 'custom_metric_2']
+  customMetrics: ['custom_metric_1', 'custom_metric_2'],
 })
 ```
 
 ## Performance Thresholds
 
 ### Core Web Vitals Thresholds
+
 ```typescript
 const thresholds = {
-  CLS: { good: 0.1, poor: 0.25 },      // Cumulative Layout Shift
-  FCP: { good: 1800, poor: 3000 },     // First Contentful Paint (ms)
-  FID: { good: 100, poor: 300 },       // First Input Delay (ms)
-  LCP: { good: 2500, poor: 4000 },     // Largest Contentful Paint (ms)
-  TTFB: { good: 800, poor: 1800 },     // Time to First Byte (ms)
-  INP: { good: 200, poor: 500 }        // Interaction to Next Paint (ms)
+  CLS: { good: 0.1, poor: 0.25 }, // Cumulative Layout Shift
+  FCP: { good: 1800, poor: 3000 }, // First Contentful Paint (ms)
+  FID: { good: 100, poor: 300 }, // First Input Delay (ms)
+  LCP: { good: 2500, poor: 4000 }, // Largest Contentful Paint (ms)
+  TTFB: { good: 800, poor: 1800 }, // Time to First Byte (ms)
+  INP: { good: 200, poor: 500 }, // Interaction to Next Paint (ms)
 }
 ```
 
 ### API Performance Thresholds
+
 ```typescript
 const apiThresholds = {
-  responseTime: { good: 1000, poor: 5000 },  // API response time (ms)
-  errorRate: { good: 0.01, poor: 0.05 },     // Error rate (%)
-  memoryUsage: { good: 0.7, poor: 0.9 }      // Memory usage (ratio)
+  responseTime: { good: 1000, poor: 5000 }, // API response time (ms)
+  errorRate: { good: 0.01, poor: 0.05 }, // Error rate (%)
+  memoryUsage: { good: 0.7, poor: 0.9 }, // Memory usage (ratio)
 }
 ```
 
 ## Monitoring Dashboard
 
 ### Accessing the Dashboard
+
 ```tsx
 import PerformanceDashboard from '@/components/performance/PerformanceDashboard'
 
 function AdminPanel() {
   return (
     <div>
-      <PerformanceDashboard 
-        autoRefresh={true}
-        refreshInterval={30000}
-      />
+      <PerformanceDashboard autoRefresh={true} refreshInterval={30000} />
     </div>
   )
 }
 ```
 
 ### Dashboard Features
+
 - **Real-time metrics** with auto-refresh
 - **Period filtering** (1h, 6h, 24h, all time)
 - **Core Web Vitals** visualization with color-coded ratings
@@ -248,20 +265,21 @@ function AdminPanel() {
 ## Custom Metrics
 
 ### Creating Custom Metrics
+
 ```typescript
 import { productionMetrics } from '@/lib/performance/production-metrics'
 
 // Record custom performance metric
 productionMetrics.recordMetric('CUSTOM_OPERATION_TIME', duration, 'ms', {
   operation: 'data_processing',
-  recordCount: 1000
+  recordCount: 1000,
 })
 
 // Track feature usage
 productionMetrics.markFeatureUsage('advanced_search', {
   query: 'user query',
   filters: ['date', 'category'],
-  resultCount: 42
+  resultCount: 42,
 })
 
 // Record business metric
@@ -273,12 +291,13 @@ productionMetrics.recordBusinessMetric({
   properties: {
     fromPlan: 'free',
     toPlan: 'premium',
-    userId: 'user123'
-  }
+    userId: 'user123',
+  },
 })
 ```
 
 ### Performance Transactions
+
 ```typescript
 // Start a performance transaction
 const transaction = productionMetrics.startTransaction('complex_workflow')
@@ -297,7 +316,9 @@ transaction.finish()
 ## Alert Integration
 
 ### Automatic Performance Alerts
+
 The system automatically creates alerts for:
+
 - **Poor Core Web Vitals** (LCP > 4s, FID > 300ms, CLS > 0.25)
 - **Slow API responses** (> 5 seconds)
 - **High error rates** (> 5%)
@@ -305,6 +326,7 @@ The system automatically creates alerts for:
 - **Large resources** (> 1MB)
 
 ### Custom Alert Rules
+
 ```typescript
 import { alertManager } from '@/lib/error-tracking/alert-manager'
 
@@ -319,6 +341,7 @@ alertManager.createPerformanceAlert(
 ## Data Export and Analysis
 
 ### Export Metrics Data
+
 ```bash
 # Get metrics summary
 curl "/api/metrics?type=summary&since=2024-01-01T00:00:00Z" | jq .
@@ -333,25 +356,27 @@ curl "/api/metrics?type=api&since=2024-01-01T00:00:00Z" | jq .
 ### Integration with External Tools
 
 #### Google Analytics 4
+
 ```typescript
 // Automatic GA4 integration
 if (typeof gtag !== 'undefined') {
   gtag('event', 'web_vital', {
     metric_name: metric.name,
     metric_value: Math.round(metric.value),
-    metric_rating: metric.rating
+    metric_rating: metric.rating,
   })
 }
 ```
 
 #### Custom Analytics Endpoint
+
 ```typescript
 // Send to custom analytics service
 if (process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT) {
   fetch(process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(metricsData)
+    body: JSON.stringify(metricsData),
   })
 }
 ```
@@ -359,26 +384,31 @@ if (process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT) {
 ## Best Practices
 
 ### 1. Sampling Strategy
+
 - Use sampling for high-traffic applications
 - Sample 100% for critical user journeys
 - Implement intelligent sampling based on user segments
 
 ### 2. Performance Budget
+
 - Set performance budgets for each page/component
 - Monitor bundle size changes
 - Alert on performance regression
 
 ### 3. Continuous Monitoring
+
 - Monitor Core Web Vitals daily
 - Track performance trends over time
 - Set up alerts for performance degradation
 
 ### 4. User-Centric Metrics
+
 - Focus on user-perceived performance
 - Track business-critical user journeys
 - Correlate performance with business metrics
 
 ### 5. Mobile Performance
+
 - Monitor mobile-specific metrics
 - Track connection quality impact
 - Test on various devices and networks
@@ -388,12 +418,14 @@ if (process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT) {
 ### Common Issues
 
 1. **High LCP (Largest Contentful Paint)**
+
    - Optimize images and fonts
    - Implement lazy loading
    - Use CDN for static assets
    - Check server response times
 
 2. **Poor CLS (Cumulative Layout Shift)**
+
    - Set size attributes for images
    - Avoid injecting content above existing content
    - Use CSS aspect-ratio for responsive images
@@ -411,7 +443,7 @@ if (process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT) {
 productionMetrics.recordMetric('DEBUG_MODE', 1, 'flag', {
   userAgent: navigator.userAgent,
   connection: (navigator as any).connection?.effectiveType,
-  memory: (performance as any).memory?.usedJSHeapSize
+  memory: (performance as any).memory?.usedJSHeapSize,
 })
 
 // Log detailed timing
@@ -436,6 +468,7 @@ curl "/api/metrics?type=summary" | jq '.summary.counts'
 ## Integration Examples
 
 ### React App Integration
+
 ```tsx
 // app/layout.tsx
 import { productionMetrics } from '@/lib/performance/production-metrics'
@@ -455,6 +488,7 @@ export default function RootLayout({ children }) {
 ```
 
 ### API Route Monitoring
+
 ```typescript
 // app/api/example/route.ts
 import { productionMetrics } from '@/lib/performance/production-metrics'
@@ -475,7 +509,7 @@ export async function POST(request: NextRequest) {
       method: 'POST',
       statusCode: status,
       responseTime: performance.now() - startTime,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     })
   }
 }

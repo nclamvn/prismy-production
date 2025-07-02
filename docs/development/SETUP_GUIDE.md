@@ -14,6 +14,7 @@ This guide walks you through setting up the complete Prismy translation platform
 ## Project Overview
 
 Prismy is a comprehensive translation platform featuring:
+
 - **AI-Powered Translation**: Google Cloud Translate API integration
 - **User Authentication**: Supabase with OAuth support (Google, Apple)
 - **Multi-Payment Support**: Stripe (international) + VNPay/MoMo (Vietnamese)
@@ -43,12 +44,14 @@ cp .env.example .env.local
 **📖 Detailed Guide**: [API_SETUP.md](./API_SETUP.md)
 
 **Quick Steps**:
+
 1. Create Google Cloud Project
 2. Enable Cloud Translate API
 3. Create service account and download credentials
 4. Configure environment variables
 
 **Environment Variables**:
+
 ```env
 GOOGLE_CLOUD_PROJECT_ID=your-project-id
 GOOGLE_TRANSLATE_API_KEY=your-api-key
@@ -59,12 +62,14 @@ GOOGLE_TRANSLATE_API_KEY=your-api-key
 **📖 Detailed Guide**: [AUTHENTICATION_SETUP.md](./AUTHENTICATION_SETUP.md)
 
 **Quick Steps**:
+
 1. Create Supabase project
 2. Run database migration (`supabase-setup.sql`)
 3. Configure OAuth providers (Google, Apple)
 4. Set up authentication environment variables
 
 **Environment Variables**:
+
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
@@ -76,12 +81,14 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 **📖 Detailed Guide**: [PAYMENTS_SETUP.md](./PAYMENTS_SETUP.md)
 
 **Quick Steps**:
+
 1. Set up Stripe for international payments
 2. Configure VNPay for Vietnamese domestic cards
 3. Set up MoMo for Vietnamese mobile wallet
 4. Configure webhooks and pricing
 
 **Environment Variables**:
+
 ```env
 # Stripe (International)
 STRIPE_SECRET_KEY=sk_test_your_secret_key
@@ -101,6 +108,7 @@ MOMO_SECRET_KEY=your_secret_key
 **📖 Detailed Guide**: [VIETNAMESE_PAYMENT_SETUP.md](./VIETNAMESE_PAYMENT_SETUP.md)
 
 This comprehensive guide covers:
+
 - VNPay merchant registration and integration
 - MoMo business account setup and API integration
 - Vietnamese pricing strategy and market considerations
@@ -137,12 +145,14 @@ npm start
 ## Production Deployment
 
 ### Environment Setup
+
 1. Update all environment variables with production values
 2. Switch API endpoints from sandbox to production
 3. Configure production webhook URLs
 4. Test all payment flows
 
 ### Deployment Checklist
+
 - [ ] Google Cloud Translate API configured
 - [ ] Supabase authentication working
 - [ ] OAuth providers configured for production domain
@@ -172,6 +182,7 @@ npm start
 ## Feature Modules
 
 ### Core Features
+
 - **Translation Engine**: AI-powered text and document translation
 - **User Authentication**: Secure login with multiple providers
 - **Subscription Management**: Tiered billing with usage tracking
@@ -179,6 +190,7 @@ npm start
 - **Analytics Dashboard**: Usage statistics and insights
 
 ### Vietnamese Market Features
+
 - **Local Payment Methods**: VNPay and MoMo integration
 - **VND Pricing**: Optimized for Vietnamese purchasing power
 - **Vietnamese Localization**: Full UI translation
@@ -189,11 +201,13 @@ npm start
 ### Common Issues
 
 1. **Translation API Errors**
+
    - Verify Google Cloud credentials
    - Check API quotas and billing
    - Ensure proper service account permissions
 
 2. **Authentication Issues**
+
    - Verify Supabase project configuration
    - Check OAuth provider settings
    - Ensure redirect URLs are correct

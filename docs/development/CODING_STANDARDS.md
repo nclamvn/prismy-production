@@ -5,6 +5,7 @@ This document outlines coding standards and best practices for the Prismy codeba
 ## 🎯 Code Quality Principles
 
 ### Core Values
+
 - **Readability**: Code should be self-documenting
 - **Consistency**: Follow established patterns
 - **Performance**: Write efficient, optimized code
@@ -16,6 +17,7 @@ This document outlines coding standards and best practices for the Prismy codeba
 ## 🔧 TypeScript Standards
 
 ### Type Definitions
+
 ```typescript
 // ✅ Good: Explicit interface definitions
 interface UserProfile {
@@ -31,6 +33,7 @@ const user: any = getData()
 ```
 
 ### Function Signatures
+
 ```typescript
 // ✅ Good: Clear parameter and return types
 async function translateDocument(
@@ -47,6 +50,7 @@ async function translateDocument(document, targetLanguage) {
 ```
 
 ### Error Handling
+
 ```typescript
 // ✅ Good: Proper error handling
 try {
@@ -71,6 +75,7 @@ try {
 ## ⚛️ React Component Standards
 
 ### Component Structure
+
 ```typescript
 // ✅ Good: Well-structured component
 interface DocumentViewerProps {
@@ -103,23 +108,30 @@ export default function DocumentViewer({
 ```
 
 ### Hooks Usage
+
 ```typescript
 // ✅ Good: Custom hooks for logic
 function useDocumentTranslation(documentId: string) {
   const [isTranslating, setIsTranslating] = useState(false)
   const [result, setResult] = useState<TranslationResult | null>(null)
 
-  const translateDocument = useCallback(async (targetLang: string) => {
-    setIsTranslating(true)
-    try {
-      const translation = await translationService.translate(documentId, targetLang)
-      setResult(translation)
-    } catch (error) {
-      // Handle error
-    } finally {
-      setIsTranslating(false)
-    }
-  }, [documentId])
+  const translateDocument = useCallback(
+    async (targetLang: string) => {
+      setIsTranslating(true)
+      try {
+        const translation = await translationService.translate(
+          documentId,
+          targetLang
+        )
+        setResult(translation)
+      } catch (error) {
+        // Handle error
+      } finally {
+        setIsTranslating(false)
+      }
+    },
+    [documentId]
+  )
 
   return { translateDocument, isTranslating, result }
 }
@@ -136,11 +148,12 @@ function DocumentComponent() {
 ## 🎨 Styling Standards
 
 ### Tailwind CSS Usage
+
 ```typescript
 // ✅ Good: Semantic class organization
 <button className={`
   inline-flex items-center justify-center
-  px-4 py-2 
+  px-4 py-2
   text-sm font-medium text-white
   bg-blue-600 hover:bg-blue-700
   border border-transparent rounded-md
@@ -158,6 +171,7 @@ function DocumentComponent() {
 ```
 
 ### Component Variants
+
 ```typescript
 // ✅ Good: Variant-based styling
 const buttonVariants = {
@@ -173,7 +187,7 @@ interface ButtonProps {
 
 function Button({ variant = 'primary', children, ...props }: ButtonProps) {
   return (
-    <button 
+    <button
       className={`base-button-classes ${buttonVariants[variant]}`}
       {...props}
     >
@@ -188,6 +202,7 @@ function Button({ variant = 'primary', children, ...props }: ButtonProps) {
 ## 🛡️ Security Standards
 
 ### Input Validation
+
 ```typescript
 // ✅ Good: Validate and sanitize inputs
 import { z } from 'zod'
@@ -196,16 +211,16 @@ import DOMPurify from 'isomorphic-dompurify'
 const documentSchema = z.object({
   title: z.string().min(1).max(200),
   content: z.string().max(10000),
-  tags: z.array(z.string()).max(10)
+  tags: z.array(z.string()).max(10),
 })
 
 export async function createDocument(input: unknown) {
   const validated = documentSchema.parse(input)
   const sanitized = {
     ...validated,
-    content: DOMPurify.sanitize(validated.content)
+    content: DOMPurify.sanitize(validated.content),
   }
-  
+
   return await database.documents.create(sanitized)
 }
 
@@ -216,12 +231,13 @@ export async function createDocument(input: any) {
 ```
 
 ### Environment Variables
+
 ```typescript
 // ✅ Good: Validate environment variables
 const config = {
   supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL!,
   supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  openaiKey: process.env.OPENAI_API_KEY!
+  openaiKey: process.env.OPENAI_API_KEY!,
 }
 
 // Validate required variables
@@ -243,11 +259,12 @@ const client = createClient(
 ## 📊 Performance Standards
 
 ### Efficient Rendering
+
 ```typescript
 // ✅ Good: Memoized components
-const DocumentItem = memo(function DocumentItem({ 
-  document, 
-  onSelect 
+const DocumentItem = memo(function DocumentItem({
+  document,
+  onSelect
 }: DocumentItemProps) {
   return (
     <div onClick={() => onSelect(document.id)}>
@@ -265,9 +282,9 @@ function DocumentList({ documents }: DocumentListProps) {
   return (
     <div>
       {documents.map(doc => (
-        <DocumentItem 
-          key={doc.id} 
-          document={doc} 
+        <DocumentItem
+          key={doc.id}
+          document={doc}
           onSelect={handleSelect}
         />
       ))}
@@ -277,6 +294,7 @@ function DocumentList({ documents }: DocumentListProps) {
 ```
 
 ### Lazy Loading
+
 ```typescript
 // ✅ Good: Lazy load heavy components
 const HeavyComponent = lazy(() => import('./HeavyComponent'))
@@ -295,30 +313,31 @@ function App() {
 ## 🔍 Testing Standards
 
 ### Unit Tests
+
 ```typescript
 // ✅ Good: Comprehensive test coverage
 describe('translateDocument', () => {
   it('should translate document successfully', async () => {
     const mockDocument = { id: '1', content: 'Hello' }
     const mockResult = { translatedText: 'Hola', confidence: 0.95 }
-    
+
     mockTranslationAPI.translate.mockResolvedValue(mockResult)
-    
+
     const result = await translateDocument(mockDocument, 'es')
-    
+
     expect(result.success).toBe(true)
     expect(result.data.translatedText).toBe('Hola')
     expect(mockTranslationAPI.translate).toHaveBeenCalledWith({
       text: 'Hello',
-      targetLanguage: 'es'
+      targetLanguage: 'es',
     })
   })
 
   it('should handle translation errors gracefully', async () => {
     mockTranslationAPI.translate.mockRejectedValue(new Error('API Error'))
-    
+
     const result = await translateDocument(mockDocument, 'es')
-    
+
     expect(result.success).toBe(false)
     expect(result.error).toBe('API Error')
   })
@@ -326,23 +345,24 @@ describe('translateDocument', () => {
 ```
 
 ### Integration Tests
+
 ```typescript
 // ✅ Good: E2E test scenarios
 test('user can upload and translate document', async ({ page }) => {
   await page.goto('/workspace')
-  
+
   // Upload document
   const fileInput = page.locator('input[type="file"]')
   await fileInput.setInputFiles('test-document.pdf')
-  
+
   // Wait for upload
   await page.waitForSelector('[data-testid="document-uploaded"]')
-  
+
   // Start translation
   await page.click('[data-testid="translate-button"]')
   await page.selectOption('[data-testid="target-language"]', 'es')
   await page.click('[data-testid="start-translation"]')
-  
+
   // Verify result
   await page.waitForSelector('[data-testid="translation-complete"]')
   const result = await page.textContent('[data-testid="translated-text"]')
@@ -355,27 +375,28 @@ test('user can upload and translate document', async ({ page }) => {
 ## 📝 Documentation Standards
 
 ### Code Comments
+
 ```typescript
 // ✅ Good: Meaningful comments
 /**
  * Processes uploaded documents using OCR and text extraction
- * 
+ *
  * @param file - The uploaded file (PDF, DOCX, or image)
  * @param options - Processing options including OCR settings
  * @returns Promise resolving to extracted text and metadata
- * 
+ *
  * @throws {ValidationError} When file format is not supported
  * @throws {ProcessingError} When OCR or extraction fails
  */
 async function processDocument(
-  file: File, 
+  file: File,
   options: ProcessingOptions = {}
 ): Promise<ProcessedDocument> {
   // Validate file format before processing
   if (!SUPPORTED_FORMATS.includes(file.type)) {
     throw new ValidationError(`Unsupported format: ${file.type}`)
   }
-  
+
   // Implementation...
 }
 
@@ -388,6 +409,7 @@ const result = hackyWorkaround()
 ```
 
 ### API Documentation
+
 ```typescript
 /**
  * @swagger
@@ -421,11 +443,12 @@ const result = hackyWorkaround()
 ## 🚫 Anti-Patterns to Avoid
 
 ### Performance Anti-Patterns
+
 ```typescript
 // ❌ Bad: Creating objects in render
 function Component() {
   return (
-    <SomeComponent 
+    <SomeComponent
       style={{ margin: 10 }} // Creates new object every render
       onClick={() => doSomething()} // Creates new function every render
     />
@@ -437,9 +460,9 @@ const styles = { margin: 10 }
 
 function Component() {
   const handleClick = useCallback(() => doSomething(), [])
-  
+
   return (
-    <SomeComponent 
+    <SomeComponent
       style={styles}
       onClick={handleClick}
     />
@@ -448,6 +471,7 @@ function Component() {
 ```
 
 ### Security Anti-Patterns
+
 ```typescript
 // ❌ Bad: XSS vulnerability
 function UserContent({ htmlContent }: { htmlContent: string }) {
@@ -466,6 +490,7 @@ function UserContent({ htmlContent }: { htmlContent: string }) {
 ## 🔄 Code Review Checklist
 
 ### For Authors
+
 - [ ] Code follows TypeScript standards
 - [ ] Components are properly typed
 - [ ] Error handling is comprehensive
@@ -475,6 +500,7 @@ function UserContent({ htmlContent }: { htmlContent: string }) {
 - [ ] Documentation updated
 
 ### For Reviewers
+
 - [ ] Logic is sound and efficient
 - [ ] Edge cases are handled
 - [ ] Code is readable and maintainable
@@ -488,12 +514,10 @@ function UserContent({ htmlContent }: { htmlContent: string }) {
 ## 🛠️ Tools and Automation
 
 ### ESLint Configuration
+
 ```json
 {
-  "extends": [
-    "next/core-web-vitals",
-    "@typescript-eslint/recommended"
-  ],
+  "extends": ["next/core-web-vitals", "@typescript-eslint/recommended"],
   "rules": {
     "@typescript-eslint/no-unused-vars": "error",
     "@typescript-eslint/no-explicit-any": "error",
@@ -504,6 +528,7 @@ function UserContent({ htmlContent }: { htmlContent: string }) {
 ```
 
 ### Prettier Configuration
+
 ```json
 {
   "semi": false,
@@ -515,20 +540,16 @@ function UserContent({ htmlContent }: { htmlContent: string }) {
 ```
 
 ### Pre-commit Hooks
+
 ```json
 {
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "*.{json,md,css}": [
-      "prettier --write"
-    ]
+    "*.{js,jsx,ts,tsx}": ["eslint --fix", "prettier --write"],
+    "*.{json,md,css}": ["prettier --write"]
   }
 }
 ```
 
 ---
 
-*These standards are living guidelines. Suggest improvements via PR!*
+_These standards are living guidelines. Suggest improvements via PR!_

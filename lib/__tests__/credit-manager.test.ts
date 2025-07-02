@@ -12,13 +12,13 @@ const mockSupabaseClient = {
     eq: jest.fn().mockReturnThis(),
     single: jest.fn(),
     order: jest.fn().mockReturnThis(),
-    limit: jest.fn().mockReturnThis()
+    limit: jest.fn().mockReturnThis(),
   })),
-  rpc: jest.fn()
+  rpc: jest.fn(),
 }
 
 jest.mock('@/lib/supabase', () => ({
-  createRouteHandlerClient: jest.fn(() => mockSupabaseClient)
+  createRouteHandlerClient: jest.fn(() => mockSupabaseClient),
 }))
 
 import {
@@ -28,7 +28,7 @@ import {
   deductCredits,
   checkAndDeductCredits,
   getUserCreditStatus,
-  requireCredits
+  requireCredits,
 } from '../credit-manager'
 
 describe('Credit Manager', () => {
@@ -54,7 +54,7 @@ describe('Credit Manager', () => {
       const credits = calculateCreditsNeeded({
         characters: 1000,
         operation_type: 'translate',
-        quality_tier: 'standard'
+        quality_tier: 'standard',
       })
       expect(credits).toBeGreaterThan(0)
     })
@@ -63,7 +63,7 @@ describe('Credit Manager', () => {
       const credits = calculateCreditsNeeded({
         pages: 5,
         operation_type: 'document_process',
-        quality_tier: 'premium'
+        quality_tier: 'premium',
       })
       expect(credits).toBeGreaterThan(0)
     })
@@ -76,11 +76,11 @@ describe('Credit Manager', () => {
     it('should apply operation multipliers', () => {
       const translateCredits = calculateCreditsNeeded({
         tokens: 1000,
-        operation_type: 'translate'
+        operation_type: 'translate',
       })
       const aiCredits = calculateCreditsNeeded({
         tokens: 1000,
-        operation_type: 'ai_analysis'
+        operation_type: 'ai_analysis',
       })
       expect(aiCredits).toBeGreaterThan(translateCredits)
     })
@@ -88,11 +88,11 @@ describe('Credit Manager', () => {
     it('should apply quality tier multipliers', () => {
       const standardCredits = calculateCreditsNeeded({
         tokens: 1000,
-        quality_tier: 'standard'
+        quality_tier: 'standard',
       })
       const premiumCredits = calculateCreditsNeeded({
         tokens: 1000,
-        quality_tier: 'premium'
+        quality_tier: 'premium',
       })
       expect(premiumCredits).toBeGreaterThan(standardCredits)
     })
@@ -102,24 +102,34 @@ describe('Credit Manager', () => {
     it('should check available credits successfully', async () => {
       mockSupabaseClient.rpc.mockResolvedValue({
         data: { success: true, credits_left: 1000 },
-        error: null
+        error: null,
       })
 
-      const result = await checkCreditsAvailable(mockSupabaseClient, 'user-123', 50)
+      const result = await checkCreditsAvailable(
+        mockSupabaseClient,
+        'user-123',
+        50
+      )
 
       expect(result.success).toBe(true)
       expect(result.credits_available).toBe(1000)
       expect(result.credits_needed).toBe(50)
-      expect(mockSupabaseClient.rpc).toHaveBeenCalledWith('get_user_credits', { _user_id: 'user-123' })
+      expect(mockSupabaseClient.rpc).toHaveBeenCalledWith('get_user_credits', {
+        _user_id: 'user-123',
+      })
     })
 
     it('should handle insufficient credits', async () => {
       mockSupabaseClient.rpc.mockResolvedValue({
         data: { success: true, credits_left: 10 },
-        error: null
+        error: null,
       })
 
-      const result = await checkCreditsAvailable(mockSupabaseClient, 'user-123', 50)
+      const result = await checkCreditsAvailable(
+        mockSupabaseClient,
+        'user-123',
+        50
+      )
 
       expect(result.success).toBe(false)
       expect(result.credits_available).toBe(10)
@@ -130,10 +140,14 @@ describe('Credit Manager', () => {
     it('should handle no credit account', async () => {
       mockSupabaseClient.rpc.mockResolvedValue({
         data: { success: false },
-        error: null
+        error: null,
       })
 
-      const result = await checkCreditsAvailable(mockSupabaseClient, 'user-123', 50)
+      const result = await checkCreditsAvailable(
+        mockSupabaseClient,
+        'user-123',
+        50
+      )
 
       expect(result.success).toBe(false)
       expect(result.error).toBe('NO_CREDIT_ACCOUNT')
@@ -142,10 +156,14 @@ describe('Credit Manager', () => {
     it('should handle database errors', async () => {
       mockSupabaseClient.rpc.mockResolvedValue({
         data: null,
-        error: new Error('Database error')
+        error: new Error('Database error'),
       })
 
-      const result = await checkCreditsAvailable(mockSupabaseClient, 'user-123', 50)
+      const result = await checkCreditsAvailable(
+        mockSupabaseClient,
+        'user-123',
+        50
+      )
 
       expect(result.success).toBe(false)
       expect(result.error).toBe('CREDIT_CHECK_FAILED')
@@ -154,7 +172,11 @@ describe('Credit Manager', () => {
     it('should handle system exceptions', async () => {
       mockSupabaseClient.rpc.mockRejectedValue(new Error('Network error'))
 
-      const result = await checkCreditsAvailable(mockSupabaseClient, 'user-123', 50)
+      const result = await checkCreditsAvailable(
+        mockSupabaseClient,
+        'user-123',
+        50
+      )
 
       expect(result.success).toBe(false)
       expect(result.error).toBe('SYSTEM_ERROR')
@@ -168,12 +190,17 @@ describe('Credit Manager', () => {
           success: true,
           credits_before: 1000,
           credits_after: 950,
-          credits_used: 50
+          credits_used: 50,
         },
-        error: null
+        error: null,
       })
 
-      const result = await deductCredits(mockSupabaseClient, 'user-123', 50, 'test operation')
+      const result = await deductCredits(
+        mockSupabaseClient,
+        'user-123',
+        50,
+        'test operation'
+      )
 
       expect(result.success).toBe(true)
       expect(result.credits_before).toBe(1000)
@@ -183,7 +210,7 @@ describe('Credit Manager', () => {
         _user_id: 'user-123',
         _credits_needed: 50,
         _operation: 'test operation',
-        _tokens_processed: undefined
+        _tokens_processed: undefined,
       })
     })
 
@@ -193,12 +220,17 @@ describe('Credit Manager', () => {
           success: false,
           error: 'INSUFFICIENT_CREDITS',
           message: 'Not enough credits',
-          credits_available: 10
+          credits_available: 10,
         },
-        error: null
+        error: null,
       })
 
-      const result = await deductCredits(mockSupabaseClient, 'user-123', 50, 'test operation')
+      const result = await deductCredits(
+        mockSupabaseClient,
+        'user-123',
+        50,
+        'test operation'
+      )
 
       expect(result.success).toBe(false)
       expect(result.error).toBe('INSUFFICIENT_CREDITS')
@@ -208,10 +240,15 @@ describe('Credit Manager', () => {
     it('should handle database errors', async () => {
       mockSupabaseClient.rpc.mockResolvedValue({
         data: null,
-        error: new Error('Database error')
+        error: new Error('Database error'),
       })
 
-      const result = await deductCredits(mockSupabaseClient, 'user-123', 50, 'test operation')
+      const result = await deductCredits(
+        mockSupabaseClient,
+        'user-123',
+        50,
+        'test operation'
+      )
 
       expect(result.success).toBe(false)
       expect(result.error).toBe('DEDUCTION_FAILED')
@@ -220,7 +257,12 @@ describe('Credit Manager', () => {
     it('should handle system exceptions', async () => {
       mockSupabaseClient.rpc.mockRejectedValue(new Error('Network error'))
 
-      const result = await deductCredits(mockSupabaseClient, 'user-123', 50, 'test operation')
+      const result = await deductCredits(
+        mockSupabaseClient,
+        'user-123',
+        50,
+        'test operation'
+      )
 
       expect(result.success).toBe(false)
       expect(result.error).toBe('SYSTEM_ERROR')
@@ -233,7 +275,7 @@ describe('Credit Manager', () => {
       mockSupabaseClient.rpc
         .mockResolvedValueOnce({
           data: { success: true, credits_left: 1000 },
-          error: null
+          error: null,
         })
         // Mock deduct credits call
         .mockResolvedValueOnce({
@@ -241,15 +283,20 @@ describe('Credit Manager', () => {
             success: true,
             credits_before: 1000,
             credits_after: 999,
-            credits_used: 1
+            credits_used: 1,
           },
-          error: null
+          error: null,
         })
 
-      const result = await checkAndDeductCredits(mockSupabaseClient, 'user-123', {
-        characters: 1000,
-        operation_type: 'translate'
-      }, 'test operation')
+      const result = await checkAndDeductCredits(
+        mockSupabaseClient,
+        'user-123',
+        {
+          characters: 1000,
+          operation_type: 'translate',
+        },
+        'test operation'
+      )
 
       expect(result.success).toBe(true)
       expect(result.calculation.characters).toBe(1000)
@@ -259,13 +306,18 @@ describe('Credit Manager', () => {
     it('should fail if insufficient credits during check', async () => {
       mockSupabaseClient.rpc.mockResolvedValue({
         data: { success: true, credits_left: 1 },
-        error: null
+        error: null,
       })
 
-      const result = await checkAndDeductCredits(mockSupabaseClient, 'user-123', {
-        tokens: 100000, // This will need 100 credits (100000/1000)
-        operation_type: 'translate'
-      }, 'test operation')
+      const result = await checkAndDeductCredits(
+        mockSupabaseClient,
+        'user-123',
+        {
+          tokens: 100000, // This will need 100 credits (100000/1000)
+          operation_type: 'translate',
+        },
+        'test operation'
+      )
 
       expect(result.success).toBe(false)
       expect(result.error).toBe('INSUFFICIENT_CREDITS')
@@ -283,9 +335,9 @@ describe('Credit Manager', () => {
           purchased_credits: 1000,
           trial_ends_at: null,
           total_earned: 1000,
-          total_spent: 0
+          total_spent: 0,
         },
-        error: null
+        error: null,
       })
 
       const status = await getUserCreditStatus(mockSupabaseClient, 'user-123')
@@ -306,9 +358,9 @@ describe('Credit Manager', () => {
           purchased_credits: 0,
           trial_ends_at: futureDate.toISOString(),
           total_earned: 100,
-          total_spent: 0
+          total_spent: 0,
         },
-        error: null
+        error: null,
       })
 
       const status = await getUserCreditStatus(mockSupabaseClient, 'user-123')
@@ -329,9 +381,9 @@ describe('Credit Manager', () => {
           purchased_credits: 0,
           trial_ends_at: pastDate.toISOString(),
           total_earned: 100,
-          total_spent: 100
+          total_spent: 100,
         },
-        error: null
+        error: null,
       })
 
       const status = await getUserCreditStatus(mockSupabaseClient, 'user-123')
@@ -344,7 +396,7 @@ describe('Credit Manager', () => {
     it('should handle new users with no account', async () => {
       mockSupabaseClient.rpc.mockResolvedValue({
         data: { success: false },
-        error: null
+        error: null,
       })
 
       const status = await getUserCreditStatus(mockSupabaseClient, 'user-123')
@@ -358,7 +410,7 @@ describe('Credit Manager', () => {
     it('should handle database errors', async () => {
       mockSupabaseClient.rpc.mockResolvedValue({
         data: null,
-        error: new Error('Database error')
+        error: new Error('Database error'),
       })
 
       const status = await getUserCreditStatus(mockSupabaseClient, 'user-123')
@@ -387,9 +439,9 @@ describe('Credit Manager', () => {
           credits_left: 1000,
           trial_credits: 0,
           purchased_credits: 1000,
-          trial_ends_at: null
+          trial_ends_at: null,
         },
-        error: null
+        error: null,
       })
 
       const result = await requireCredits(mockSupabaseClient, mockUser, 50)
@@ -406,9 +458,9 @@ describe('Credit Manager', () => {
           credits_left: 10,
           trial_credits: 0,
           purchased_credits: 10,
-          trial_ends_at: null
+          trial_ends_at: null,
         },
-        error: null
+        error: null,
       })
 
       const result = await requireCredits(mockSupabaseClient, mockUser, 50)
@@ -422,7 +474,7 @@ describe('Credit Manager', () => {
     it('should fail when user needs invite', async () => {
       mockSupabaseClient.rpc.mockResolvedValue({
         data: { success: false },
-        error: null
+        error: null,
       })
 
       const result = await requireCredits(mockSupabaseClient, mockUser, 50)
@@ -440,12 +492,17 @@ describe('Credit Manager', () => {
         data: {
           success: false,
           error: 'INVALID_AMOUNT',
-          message: 'Credits to deduct must be positive'
+          message: 'Credits to deduct must be positive',
         },
-        error: null
+        error: null,
       })
 
-      const result = await deductCredits(mockSupabaseClient, 'user-123', 0, 'test')
+      const result = await deductCredits(
+        mockSupabaseClient,
+        'user-123',
+        0,
+        'test'
+      )
 
       expect(result.success).toBe(false)
       expect(result.error).toBe('INVALID_AMOUNT')
@@ -456,12 +513,17 @@ describe('Credit Manager', () => {
         data: {
           success: false,
           error: 'INVALID_AMOUNT',
-          message: 'Credits to deduct must be positive'
+          message: 'Credits to deduct must be positive',
         },
-        error: null
+        error: null,
       })
 
-      const result = await deductCredits(mockSupabaseClient, 'user-123', -10, 'test')
+      const result = await deductCredits(
+        mockSupabaseClient,
+        'user-123',
+        -10,
+        'test'
+      )
 
       expect(result.success).toBe(false)
       expect(result.error).toBe('INVALID_AMOUNT')
@@ -472,9 +534,9 @@ describe('Credit Manager', () => {
         data: {
           success: false,
           error: 'INVALID_USER',
-          message: 'User ID is required'
+          message: 'User ID is required',
         },
-        error: null
+        error: null,
       })
 
       const result = await checkCreditsAvailable(mockSupabaseClient, '', 50)
@@ -488,9 +550,9 @@ describe('Credit Manager', () => {
         data: {
           success: false,
           error: 'INVALID_USER',
-          message: 'User ID is required'
+          message: 'User ID is required',
         },
-        error: null
+        error: null,
       })
 
       const result = await deductCredits(mockSupabaseClient, '', 50, 'test')
@@ -503,12 +565,16 @@ describe('Credit Manager', () => {
       mockSupabaseClient.rpc.mockResolvedValue({
         data: {
           success: true,
-          credits_left: 1000000
+          credits_left: 1000000,
         },
-        error: null
+        error: null,
       })
 
-      const result = await checkCreditsAvailable(mockSupabaseClient, 'user-123', 999999)
+      const result = await checkCreditsAvailable(
+        mockSupabaseClient,
+        'user-123',
+        999999
+      )
 
       expect(result.success).toBe(true)
       expect(result.credits_available).toBe(1000000)
@@ -517,7 +583,11 @@ describe('Credit Manager', () => {
     it('should handle network timeout gracefully', async () => {
       mockSupabaseClient.rpc.mockRejectedValue(new Error('Request timeout'))
 
-      const result = await checkCreditsAvailable(mockSupabaseClient, 'user-123', 50)
+      const result = await checkCreditsAvailable(
+        mockSupabaseClient,
+        'user-123',
+        50
+      )
 
       expect(result.success).toBe(false)
       expect(result.error).toBe('SYSTEM_ERROR')

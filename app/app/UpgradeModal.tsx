@@ -11,9 +11,15 @@ interface UpgradeModalProps {
   reason?: 'credits' | 'features'
 }
 
-export function UpgradeModal({ isOpen, onClose, reason = 'credits' }: UpgradeModalProps) {
+export function UpgradeModal({
+  isOpen,
+  onClose,
+  reason = 'credits',
+}: UpgradeModalProps) {
   const { credits, tier } = useWorkspaceStore()
-  const [selectedPlan, setSelectedPlan] = useState<'basic' | 'pro' | 'enterprise'>('basic')
+  const [selectedPlan, setSelectedPlan] = useState<
+    'basic' | 'pro' | 'enterprise'
+  >('basic')
 
   if (!isOpen) return null
 
@@ -30,9 +36,9 @@ export function UpgradeModal({ isOpen, onClose, reason = 'credits' }: UpgradeMod
         'Advanced document parsing',
         'Chat with unlimited documents',
         'Download translated files',
-        'Email support'
+        'Email support',
       ],
-      popular: false
+      popular: false,
     },
     {
       id: 'pro' as const,
@@ -47,9 +53,9 @@ export function UpgradeModal({ isOpen, onClose, reason = 'credits' }: UpgradeMod
         'Batch document processing',
         'Layout preservation for PDFs',
         'Priority support',
-        'API access'
+        'API access',
       ],
-      popular: true
+      popular: true,
     },
     {
       id: 'enterprise' as const,
@@ -64,19 +70,21 @@ export function UpgradeModal({ isOpen, onClose, reason = 'credits' }: UpgradeMod
         'On-premise deployment',
         'SSO integration',
         'Dedicated account manager',
-        'SLA guarantee'
+        'SLA guarantee',
       ],
-      popular: false
-    }
+      popular: false,
+    },
   ]
 
   const handleUpgrade = async (planId: string) => {
     // In production, integrate with Stripe or your payment processor
     console.log('Upgrading to plan:', planId)
-    
+
     // Mock upgrade success
-    alert(`Upgrade to ${planId} plan initiated! You would be redirected to Stripe checkout.`)
-    
+    alert(
+      `Upgrade to ${planId} plan initiated! You would be redirected to Stripe checkout.`
+    )
+
     // For demo purposes, just close the modal
     onClose()
   }
@@ -84,10 +92,7 @@ export function UpgradeModal({ isOpen, onClose, reason = 'credits' }: UpgradeMod
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div 
-        className="absolute inset-0 bg-bg-overlay"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 bg-bg-overlay" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative bg-surface border border-border-default rounded-lg elevation-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -98,13 +103,12 @@ export function UpgradeModal({ isOpen, onClose, reason = 'credits' }: UpgradeMod
               {reason === 'credits' ? 'Credits Exhausted' : 'Upgrade Your Plan'}
             </h2>
             <p className="text-secondary mt-1">
-              {reason === 'credits' 
+              {reason === 'credits'
                 ? `You have ${credits} credits remaining. Upgrade to continue using AI features.`
-                : 'Unlock more features with a premium plan'
-              }
+                : 'Unlock more features with a premium plan'}
             </p>
           </div>
-          
+
           <button
             onClick={onClose}
             className="p-2 hover:bg-bg-muted rounded-lg transition-colors"
@@ -119,12 +123,16 @@ export function UpgradeModal({ isOpen, onClose, reason = 'credits' }: UpgradeMod
           <div className="p-6 border-b border-border-default bg-bg-muted">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-semibold text-primary">Current Plan: {tier}</h3>
-                <p className="text-secondary text-sm">Credits remaining: {credits}/20</p>
+                <h3 className="font-semibold text-primary">
+                  Current Plan: {tier}
+                </h3>
+                <p className="text-secondary text-sm">
+                  Credits remaining: {credits}/20
+                </p>
               </div>
-              
+
               <div className="w-32 bg-border-default rounded-full h-3">
-                <div 
+                <div
                   className="bg-accent-brand h-3 rounded-full transition-all"
                   style={{ width: `${(credits / 20) * 100}%` }}
                 />
@@ -136,14 +144,15 @@ export function UpgradeModal({ isOpen, onClose, reason = 'credits' }: UpgradeMod
         {/* Pricing Plans */}
         <div className="p-6">
           <div className="grid md:grid-cols-3 gap-6">
-            {plans.map((plan) => (
+            {plans.map(plan => (
               <div
                 key={plan.id}
                 className={`
                   relative border rounded-lg p-6 cursor-pointer transition-all
-                  ${selectedPlan === plan.id 
-                    ? 'border-accent-brand bg-accent-brand-light' 
-                    : 'border-border-default hover:border-border-focus'
+                  ${
+                    selectedPlan === plan.id
+                      ? 'border-accent-brand bg-accent-brand-light'
+                      : 'border-border-default hover:border-border-focus'
                   }
                   ${plan.popular ? 'ring-2 ring-accent-brand' : ''}
                 `}
@@ -163,20 +172,31 @@ export function UpgradeModal({ isOpen, onClose, reason = 'credits' }: UpgradeMod
                   <div className="flex items-center justify-center mb-2">
                     <Crown size={24} className="text-accent-brand" />
                   </div>
-                  <h3 className="text-xl font-bold text-primary">{plan.name}</h3>
+                  <h3 className="text-xl font-bold text-primary">
+                    {plan.name}
+                  </h3>
                   <div className="mt-2">
-                    <span className="text-3xl font-bold text-primary">{plan.price}</span>
+                    <span className="text-3xl font-bold text-primary">
+                      {plan.price}
+                    </span>
                     <span className="text-secondary">{plan.period}</span>
                   </div>
-                  <p className="text-sm text-accent-brand font-medium mt-1">{plan.credits}</p>
-                  <p className="text-xs text-secondary mt-2">{plan.description}</p>
+                  <p className="text-sm text-accent-brand font-medium mt-1">
+                    {plan.credits}
+                  </p>
+                  <p className="text-xs text-secondary mt-2">
+                    {plan.description}
+                  </p>
                 </div>
 
                 {/* Features */}
                 <ul className="space-y-3 mb-6">
                   {plan.features.map((feature, index) => (
                     <li key={index} className="flex items-start space-x-2">
-                      <Check size={16} className="text-accent-brand flex-shrink-0 mt-0.5" />
+                      <Check
+                        size={16}
+                        className="text-accent-brand flex-shrink-0 mt-0.5"
+                      />
                       <span className="text-sm text-secondary">{feature}</span>
                     </li>
                   ))}
@@ -186,7 +206,7 @@ export function UpgradeModal({ isOpen, onClose, reason = 'credits' }: UpgradeMod
                 <Button
                   variant={selectedPlan === plan.id ? 'default' : 'outline'}
                   className="w-full"
-                  onClick={(e) => {
+                  onClick={e => {
                     e.stopPropagation()
                     handleUpgrade(plan.id)
                   }}
@@ -203,24 +223,36 @@ export function UpgradeModal({ isOpen, onClose, reason = 'credits' }: UpgradeMod
           <h3 className="font-semibold text-primary mb-4 text-center">
             Why upgrade from the free tier?
           </h3>
-          
+
           <div className="grid md:grid-cols-3 gap-6">
             <div className="text-center">
               <Zap size={32} className="text-accent-brand mx-auto mb-2" />
-              <h4 className="font-medium text-primary mb-1">Faster Processing</h4>
-              <p className="text-sm text-secondary">Premium AI models with better accuracy and speed</p>
+              <h4 className="font-medium text-primary mb-1">
+                Faster Processing
+              </h4>
+              <p className="text-sm text-secondary">
+                Premium AI models with better accuracy and speed
+              </p>
             </div>
-            
+
             <div className="text-center">
               <Shield size={32} className="text-accent-brand mx-auto mb-2" />
-              <h4 className="font-medium text-primary mb-1">Advanced Security</h4>
-              <p className="text-sm text-secondary">Enterprise-grade encryption and compliance</p>
+              <h4 className="font-medium text-primary mb-1">
+                Advanced Security
+              </h4>
+              <p className="text-sm text-secondary">
+                Enterprise-grade encryption and compliance
+              </p>
             </div>
-            
+
             <div className="text-center">
               <Bot size={32} className="text-accent-brand mx-auto mb-2" />
-              <h4 className="font-medium text-primary mb-1">Unlimited AI Chat</h4>
-              <p className="text-sm text-secondary">Ask unlimited questions about your documents</p>
+              <h4 className="font-medium text-primary mb-1">
+                Unlimited AI Chat
+              </h4>
+              <p className="text-sm text-secondary">
+                Ask unlimited questions about your documents
+              </p>
             </div>
           </div>
         </div>

@@ -38,13 +38,15 @@ export interface MobileExperienceState {
   memoryUsage: number
 }
 
-export const useMobileExperience = (config: Partial<MobileExperienceConfig> = {}) => {
+export const useMobileExperience = (
+  config: Partial<MobileExperienceConfig> = {}
+) => {
   const defaultConfig: MobileExperienceConfig = {
     enableInstallPrompts: true,
     enableGestures: true,
     enablePerformanceMonitoring: true,
     enableNativeFeatures: true,
-    autoOptimizePerformance: true
+    autoOptimizePerformance: true,
   }
 
   const finalConfig = { ...defaultConfig, ...config }
@@ -59,13 +61,13 @@ export const useMobileExperience = (config: Partial<MobileExperienceConfig> = {}
       supportsNotifications: false,
       supportsCamera: false,
       supportsGeolocation: false,
-      performanceScore: 0
+      performanceScore: 0,
     },
     installRecommendation: null,
     performanceMetrics: null,
     isOnline: typeof window !== 'undefined' ? navigator.onLine : true,
     connectionType: 'unknown',
-    memoryUsage: 0
+    memoryUsage: 0,
   })
 
   const [showInstallPrompt, setShowInstallPrompt] = useState(false)
@@ -81,7 +83,7 @@ export const useMobileExperience = (config: Partial<MobileExperienceConfig> = {}
       const deviceCapabilities = nativeAPIs.getCapabilities()
       const installCapabilities = {
         canInstall: installManager.canInstall(),
-        isInstalled: installManager.isInstalled()
+        isInstalled: installManager.isInstalled(),
       }
 
       setState(prev => ({
@@ -89,8 +91,8 @@ export const useMobileExperience = (config: Partial<MobileExperienceConfig> = {}
         capabilities: {
           ...deviceCapabilities,
           ...installCapabilities,
-          performanceScore: mobilePerformance.getPerformanceScore()
-        }
+          performanceScore: mobilePerformance.getPerformanceScore(),
+        },
       }))
 
       // Listen for install prompt availability
@@ -114,7 +116,10 @@ export const useMobileExperience = (config: Partial<MobileExperienceConfig> = {}
     initializeMobile()
 
     return () => {
-      window.removeEventListener('pwa-install-available', handleInstallAvailable)
+      window.removeEventListener(
+        'pwa-install-available',
+        handleInstallAvailable
+      )
       window.removeEventListener('online', handleOnlineStatusChange)
       window.removeEventListener('offline', handleOnlineStatusChange)
       gestureHandlers.current.forEach(unsubscribe => unsubscribe())
@@ -126,7 +131,7 @@ export const useMobileExperience = (config: Partial<MobileExperienceConfig> = {}
     const recommendation = event.detail
     setState(prev => ({
       ...prev,
-      installRecommendation: recommendation
+      installRecommendation: recommendation,
     }))
 
     if (recommendation.shouldPrompt && recommendation.confidence > 70) {
@@ -138,7 +143,7 @@ export const useMobileExperience = (config: Partial<MobileExperienceConfig> = {}
   const handleOnlineStatusChange = useCallback(() => {
     setState(prev => ({
       ...prev,
-      isOnline: navigator.onLine
+      isOnline: navigator.onLine,
     }))
   }, [])
 
@@ -153,9 +158,9 @@ export const useMobileExperience = (config: Partial<MobileExperienceConfig> = {}
         performanceMetrics: metrics,
         capabilities: {
           ...prev.capabilities,
-          performanceScore: score
+          performanceScore: score,
         },
-        memoryUsage: metrics?.memoryUsage || 0
+        memoryUsage: metrics?.memoryUsage || 0,
       }))
 
       // Show performance bar for poor performance
@@ -176,13 +181,13 @@ export const useMobileExperience = (config: Partial<MobileExperienceConfig> = {}
         const battery = await (navigator as any).getBattery()
         setState(prev => ({
           ...prev,
-          batteryLevel: battery.level * 100
+          batteryLevel: battery.level * 100,
         }))
 
         battery.addEventListener('levelchange', () => {
           setState(prev => ({
             ...prev,
-            batteryLevel: battery.level * 100
+            batteryLevel: battery.level * 100,
           }))
         })
       } catch (error) {
@@ -194,14 +199,14 @@ export const useMobileExperience = (config: Partial<MobileExperienceConfig> = {}
   // Install app
   const installApp = useCallback(async () => {
     const result = await installManager.showInstallPrompt()
-    
+
     if (result.outcome === 'accepted') {
       setState(prev => ({
         ...prev,
         capabilities: {
           ...prev.capabilities,
-          isInstalled: true
-        }
+          isInstalled: true,
+        },
       }))
       setShowInstallPrompt(false)
     }
@@ -210,38 +215,45 @@ export const useMobileExperience = (config: Partial<MobileExperienceConfig> = {}
   }, [])
 
   // Share content
-  const shareContent = useCallback(async (data: {
-    title?: string
-    text?: string
-    url?: string
-    files?: File[]
-  }) => {
-    return await nativeAPIs.share(data)
-  }, [])
+  const shareContent = useCallback(
+    async (data: {
+      title?: string
+      text?: string
+      url?: string
+      files?: File[]
+    }) => {
+      return await nativeAPIs.share(data)
+    },
+    []
+  )
 
   // Save file
-  const saveFile = useCallback(async (
-    content: string | Blob,
-    filename?: string
-  ) => {
-    return await nativeAPIs.saveFile(content, filename)
-  }, [])
+  const saveFile = useCallback(
+    async (content: string | Blob, filename?: string) => {
+      return await nativeAPIs.saveFile(content, filename)
+    },
+    []
+  )
 
   // Pick files
-  const pickFiles = useCallback(async (options?: {
-    multiple?: boolean
-    accept?: string[]
-  }) => {
-    const types = options?.accept ? [{
-      description: 'Selected files',
-      accept: { '*/*': options.accept }
-    }] : undefined
+  const pickFiles = useCallback(
+    async (options?: { multiple?: boolean; accept?: string[] }) => {
+      const types = options?.accept
+        ? [
+            {
+              description: 'Selected files',
+              accept: { '*/*': options.accept },
+            },
+          ]
+        : undefined
 
-    return await nativeAPIs.pickFile({
-      multiple: options?.multiple,
-      types
-    })
-  }, [])
+      return await nativeAPIs.pickFile({
+        multiple: options?.multiple,
+        types,
+      })
+    },
+    []
+  )
 
   // Request notifications
   const requestNotifications = useCallback(async () => {
@@ -249,13 +261,12 @@ export const useMobileExperience = (config: Partial<MobileExperienceConfig> = {}
   }, [])
 
   // Show notification
-  const showNotification = useCallback(async (config: {
-    title: string
-    body: string
-    icon?: string
-  }) => {
-    return await nativeAPIs.showNotification(config)
-  }, [])
+  const showNotification = useCallback(
+    async (config: { title: string; body: string; icon?: string }) => {
+      return await nativeAPIs.showNotification(config)
+    },
+    []
+  )
 
   // Get current location
   const getCurrentLocation = useCallback(async (options?: PositionOptions) => {
@@ -273,13 +284,16 @@ export const useMobileExperience = (config: Partial<MobileExperienceConfig> = {}
   }, [])
 
   // Add gesture handler
-  const addGestureHandler = useCallback((gestureType: string, handler: (gesture: any) => void) => {
-    if (!finalConfig.enableGestures) return () => {}
+  const addGestureHandler = useCallback(
+    (gestureType: string, handler: (gesture: any) => void) => {
+      if (!finalConfig.enableGestures) return () => {}
 
-    const unsubscribe = advancedGestures.on(gestureType, handler)
-    gestureHandlers.current.set(`${gestureType}-${Date.now()}`, unsubscribe)
-    return unsubscribe
-  }, [finalConfig.enableGestures])
+      const unsubscribe = advancedGestures.on(gestureType, handler)
+      gestureHandlers.current.set(`${gestureType}-${Date.now()}`, unsubscribe)
+      return unsubscribe
+    },
+    [finalConfig.enableGestures]
+  )
 
   // Optimize performance
   const optimizePerformance = useCallback(async () => {
@@ -295,9 +309,12 @@ export const useMobileExperience = (config: Partial<MobileExperienceConfig> = {}
   }, [])
 
   // Track engagement
-  const trackEngagement = useCallback((type: 'translation' | 'document' | 'interaction') => {
-    installManager.trackEngagement(type)
-  }, [])
+  const trackEngagement = useCallback(
+    (type: 'translation' | 'document' | 'interaction') => {
+      installManager.trackEngagement(type)
+    },
+    []
+  )
 
   // Dismiss install prompt
   const dismissInstallPrompt = useCallback(() => {
@@ -316,7 +333,9 @@ export const useMobileExperience = (config: Partial<MobileExperienceConfig> = {}
 
   // Check if device is mobile
   const isMobile = useCallback(() => {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    )
   }, [])
 
   // Check if device supports touch
@@ -330,7 +349,7 @@ export const useMobileExperience = (config: Partial<MobileExperienceConfig> = {}
       ...mobilePerformance.getDeviceInfo(),
       isMobile: isMobile(),
       supportsTouch: supportsTouch(),
-      ...getConnectionInfo()
+      ...getConnectionInfo(),
     }
   }, [isMobile, supportsTouch, getConnectionInfo])
 
@@ -343,19 +362,28 @@ export const useMobileExperience = (config: Partial<MobileExperienceConfig> = {}
         installApp()
         setShowInstallPrompt(false)
       },
-      onDismiss: dismissInstallPrompt
+      onDismiss: dismissInstallPrompt,
     })
-  }, [showInstallPrompt, state.capabilities.canInstall, installApp, dismissInstallPrompt])
+  }, [
+    showInstallPrompt,
+    state.capabilities.canInstall,
+    installApp,
+    dismissInstallPrompt,
+  ])
 
   // Create performance monitor component
   const PerformanceMonitor = useCallback(() => {
-    if (!showPerformanceBar || !finalConfig.enablePerformanceMonitoring) return null
+    if (!showPerformanceBar || !finalConfig.enablePerformanceMonitoring)
+      return null
 
     return mobilePerformance.createPerformanceMonitor()({
       showDetails: false,
-      onOptimizationApplied: (optimization) => {
-        console.log('[Mobile Experience] Applied optimization:', optimization.name)
-      }
+      onOptimizationApplied: optimization => {
+        console.log(
+          '[Mobile Experience] Applied optimization:',
+          optimization.name
+        )
+      },
     })
   }, [showPerformanceBar, finalConfig.enablePerformanceMonitoring])
 
@@ -389,7 +417,7 @@ export const useMobileExperience = (config: Partial<MobileExperienceConfig> = {}
 
     // Components
     InstallBanner,
-    PerformanceMonitor
+    PerformanceMonitor,
   }
 }
 

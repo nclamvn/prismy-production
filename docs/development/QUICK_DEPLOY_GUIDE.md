@@ -33,17 +33,20 @@ mv next.config.original.js next.config.js
 ```
 
 ## ✅ WHAT THIS DOES
+
 1. Disables TypeScript checking
-2. Disables ESLint checking  
+2. Disables ESLint checking
 3. Uses minimal config for build
 4. Deploys to prismy.in
 5. Restores original files
 
 ## 🔗 DEPLOYMENT URLS
+
 - **Primary**: https://prismy.in
 - **Vercel**: https://prismy-production.vercel.app
 
 ## 📊 CHECK STATUS
+
 ```bash
 # View deployment logs
 vercel ls
@@ -53,6 +56,7 @@ vercel inspect [url]
 ```
 
 ## 🆘 IF STILL FAILING
+
 ```bash
 # Force deployment with no build
 vercel --prod --prebuilt
@@ -62,4 +66,5 @@ git push origin main
 ```
 
 ---
-*Run the commands in order. Deployment takes 2-3 minutes.*
+
+_Run the commands in order. Deployment takes 2-3 minutes._

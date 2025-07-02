@@ -8,7 +8,7 @@ import { test, expect } from '@playwright/test'
 test.describe('Console Error Prevention', () => {
   test.beforeEach(async ({ page }) => {
     // Capture all console messages
-    page.on('console', (msg) => {
+    page.on('console', msg => {
       if (msg.type() === 'error') {
         console.error(`Console Error: ${msg.text()}`)
       }
@@ -20,7 +20,7 @@ test.describe('Console Error Prevention', () => {
     const warnings: string[] = []
 
     // Capture console errors and warnings
-    page.on('console', (msg) => {
+    page.on('console', msg => {
       if (msg.type() === 'error') {
         errors.push(msg.text())
       } else if (msg.type() === 'warning') {
@@ -35,9 +35,10 @@ test.describe('Console Error Prevention', () => {
     await page.waitForTimeout(2000)
 
     // Check for critical errors
-    const criticalErrors = errors.filter(error => 
-      !error.includes('ResizeObserver loop limit exceeded') && // Ignore harmless ResizeObserver warnings
-      !error.includes('Non-passive event listener') // Ignore passive listener warnings
+    const criticalErrors = errors.filter(
+      error =>
+        !error.includes('ResizeObserver loop limit exceeded') && // Ignore harmless ResizeObserver warnings
+        !error.includes('Non-passive event listener') // Ignore passive listener warnings
     )
 
     // Log captured errors for debugging
@@ -52,10 +53,12 @@ test.describe('Console Error Prevention', () => {
     expect(criticalErrors).toEqual([])
   })
 
-  test('Vietnamese locale page should have zero console errors', async ({ page }) => {
+  test('Vietnamese locale page should have zero console errors', async ({
+    page,
+  }) => {
     const errors: string[] = []
 
-    page.on('console', (msg) => {
+    page.on('console', msg => {
       if (msg.type() === 'error') {
         errors.push(msg.text())
       }
@@ -64,8 +67,8 @@ test.describe('Console Error Prevention', () => {
     await page.goto('/vi', { waitUntil: 'networkidle' })
     await page.waitForTimeout(2000)
 
-    const criticalErrors = errors.filter(error => 
-      !error.includes('ResizeObserver loop limit exceeded')
+    const criticalErrors = errors.filter(
+      error => !error.includes('ResizeObserver loop limit exceeded')
     )
 
     expect(criticalErrors).toEqual([])
@@ -74,7 +77,7 @@ test.describe('Console Error Prevention', () => {
   test('Pricing page should have zero console errors', async ({ page }) => {
     const errors: string[] = []
 
-    page.on('console', (msg) => {
+    page.on('console', msg => {
       if (msg.type() === 'error') {
         errors.push(msg.text())
       }
@@ -83,17 +86,19 @@ test.describe('Console Error Prevention', () => {
     await page.goto('/en/pricing', { waitUntil: 'networkidle' })
     await page.waitForTimeout(2000)
 
-    const criticalErrors = errors.filter(error => 
-      !error.includes('ResizeObserver loop limit exceeded')
+    const criticalErrors = errors.filter(
+      error => !error.includes('ResizeObserver loop limit exceeded')
     )
 
     expect(criticalErrors).toEqual([])
   })
 
-  test('Dashboard page should have zero console errors after navigation', async ({ page }) => {
+  test('Dashboard page should have zero console errors after navigation', async ({
+    page,
+  }) => {
     const errors: string[] = []
 
-    page.on('console', (msg) => {
+    page.on('console', msg => {
       if (msg.type() === 'error') {
         errors.push(msg.text())
       }
@@ -102,24 +107,26 @@ test.describe('Console Error Prevention', () => {
     // Test navigation sequence that might trigger portal/DOM issues
     await page.goto('/en', { waitUntil: 'networkidle' })
     await page.waitForTimeout(1000)
-    
+
     await page.goto('/en/pricing', { waitUntil: 'networkidle' })
     await page.waitForTimeout(1000)
-    
+
     await page.goto('/vi', { waitUntil: 'networkidle' })
     await page.waitForTimeout(2000)
 
-    const criticalErrors = errors.filter(error => 
-      !error.includes('ResizeObserver loop limit exceeded')
+    const criticalErrors = errors.filter(
+      error => !error.includes('ResizeObserver loop limit exceeded')
     )
 
     expect(criticalErrors).toEqual([])
   })
 
-  test('No Supabase GoTrueClient multiple instance warnings', async ({ page }) => {
+  test('No Supabase GoTrueClient multiple instance warnings', async ({
+    page,
+  }) => {
     const warnings: string[] = []
 
-    page.on('console', (msg) => {
+    page.on('console', msg => {
       if (msg.text().includes('Multiple GoTrueClient instances detected')) {
         warnings.push(msg.text())
       }
@@ -135,19 +142,22 @@ test.describe('Console Error Prevention', () => {
   test('No removeChild DOM errors', async ({ page }) => {
     const errors: string[] = []
 
-    page.on('console', (msg) => {
-      if (msg.text().includes('removeChild') || msg.text().includes('NotFoundError')) {
+    page.on('console', msg => {
+      if (
+        msg.text().includes('removeChild') ||
+        msg.text().includes('NotFoundError')
+      ) {
         errors.push(msg.text())
       }
     })
 
     // Test portal-heavy interactions that might trigger removeChild errors
     await page.goto('/', { waitUntil: 'networkidle' })
-    
+
     // Simulate rapid navigation that might trigger portal conflicts
     await page.goto('/en/pricing', { waitUntil: 'networkidle' })
     await page.goto('/vi', { waitUntil: 'networkidle' })
-    
+
     await page.waitForTimeout(2000)
 
     // Should have zero removeChild errors

@@ -1,7 +1,12 @@
 // Document Management TypeScript definitions
 // Comprehensive type system for document processing and AI analysis
 
-import type { SupportedLanguage, WithId, WithTimestamps, AsyncState } from './index'
+import type {
+  SupportedLanguage,
+  WithId,
+  WithTimestamps,
+  AsyncState,
+} from './index'
 import type { Translation, TranslationRequest } from './translation'
 
 // Core Document Types
@@ -33,7 +38,7 @@ export interface Document extends WithId, WithTimestamps {
   revisions: DocumentRevision[]
 }
 
-export type DocumentType = 
+export type DocumentType =
   | 'text'
   | 'presentation'
   | 'spreadsheet'
@@ -45,19 +50,49 @@ export type DocumentType =
   | 'ebook'
   | 'archive'
 
-export type DocumentFormat = 
-  | 'txt' | 'rtf' | 'md'
-  | 'pdf' | 'docx' | 'doc' | 'odt'
-  | 'pptx' | 'ppt' | 'odp'
-  | 'xlsx' | 'xls' | 'ods' | 'csv'
-  | 'jpg' | 'jpeg' | 'png' | 'gif' | 'webp' | 'svg'
-  | 'mp4' | 'avi' | 'mov' | 'wmv' | 'flv'
-  | 'mp3' | 'wav' | 'flac' | 'aac'
-  | 'html' | 'htm' | 'xml' | 'json'
-  | 'epub' | 'mobi' | 'azw'
-  | 'zip' | 'rar' | '7z' | 'tar'
+export type DocumentFormat =
+  | 'txt'
+  | 'rtf'
+  | 'md'
+  | 'pdf'
+  | 'docx'
+  | 'doc'
+  | 'odt'
+  | 'pptx'
+  | 'ppt'
+  | 'odp'
+  | 'xlsx'
+  | 'xls'
+  | 'ods'
+  | 'csv'
+  | 'jpg'
+  | 'jpeg'
+  | 'png'
+  | 'gif'
+  | 'webp'
+  | 'svg'
+  | 'mp4'
+  | 'avi'
+  | 'mov'
+  | 'wmv'
+  | 'flv'
+  | 'mp3'
+  | 'wav'
+  | 'flac'
+  | 'aac'
+  | 'html'
+  | 'htm'
+  | 'xml'
+  | 'json'
+  | 'epub'
+  | 'mobi'
+  | 'azw'
+  | 'zip'
+  | 'rar'
+  | '7z'
+  | 'tar'
 
-export type DocumentStatus = 
+export type DocumentStatus =
   | 'uploading'
   | 'processing'
   | 'extracting'
@@ -127,7 +162,16 @@ export interface FormattingInfo {
 
 export interface DocumentElement {
   id: string
-  type: 'text' | 'heading' | 'paragraph' | 'list' | 'table' | 'image' | 'chart' | 'footer' | 'header'
+  type:
+    | 'text'
+    | 'heading'
+    | 'paragraph'
+    | 'list'
+    | 'table'
+    | 'image'
+    | 'chart'
+    | 'footer'
+    | 'header'
   content: string
   position: ElementPosition
   formatting?: ElementFormatting
@@ -378,7 +422,7 @@ export interface DocumentAnalysis extends WithId, WithTimestamps {
   options: AnalysisOptions
 }
 
-export type AnalysisType = 
+export type AnalysisType =
   | 'summary'
   | 'sentiment'
   | 'entities'
@@ -424,7 +468,14 @@ export interface SentimentAnalysis {
 
 export interface EntityAnalysis {
   text: string
-  type: 'person' | 'organization' | 'location' | 'date' | 'money' | 'percentage' | 'misc'
+  type:
+    | 'person'
+    | 'organization'
+    | 'location'
+    | 'date'
+    | 'money'
+    | 'percentage'
+    | 'misc'
   confidence: number
   positions: Array<{
     start: number
@@ -675,10 +726,20 @@ export interface DocumentContextValue {
     uploadDocument: (request: DocumentUploadRequest) => Promise<Document>
     uploadBatch: (request: DocumentBatchRequest) => Promise<Document[]>
     getDocument: (id: string) => Promise<Document>
-    updateDocument: (id: string, updates: Partial<Document>) => Promise<Document>
+    updateDocument: (
+      id: string,
+      updates: Partial<Document>
+    ) => Promise<Document>
     deleteDocument: (id: string) => Promise<void>
-    translateDocument: (id: string, options: DocumentTranslationOptions) => Promise<DocumentTranslation>
-    analyzeDocument: (id: string, type: AnalysisType, options?: AnalysisOptions) => Promise<DocumentAnalysis>
+    translateDocument: (
+      id: string,
+      options: DocumentTranslationOptions
+    ) => Promise<DocumentTranslation>
+    analyzeDocument: (
+      id: string,
+      type: AnalysisType,
+      options?: AnalysisOptions
+    ) => Promise<DocumentAnalysis>
     searchDocuments: (query: DocumentSearchQuery) => Promise<Document[]>
     shareDocument: (id: string, settings: ShareSettings) => Promise<void>
   }
@@ -694,8 +755,15 @@ export interface UseDocuments {
 }
 
 export interface UseDocumentProcessing {
-  translateDocument: (id: string, options: DocumentTranslationOptions) => Promise<DocumentTranslation>
-  analyzeDocument: (id: string, type: AnalysisType, options?: AnalysisOptions) => Promise<DocumentAnalysis>
+  translateDocument: (
+    id: string,
+    options: DocumentTranslationOptions
+  ) => Promise<DocumentTranslation>
+  analyzeDocument: (
+    id: string,
+    type: AnalysisType,
+    options?: AnalysisOptions
+  ) => Promise<DocumentAnalysis>
   getProcessingStatus: (id: string) => Promise<ProcessingInfo>
   cancelProcessing: (id: string) => Promise<void>
   isProcessing: boolean

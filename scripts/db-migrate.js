@@ -13,19 +13,23 @@ const crypto = require('crypto')
 
 class DatabaseMigrator {
   constructor() {
-    this.supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL
-    this.supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY
+    this.supabaseUrl =
+      process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL
+    this.supabaseKey =
+      process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY
     this.migrationsPath = path.join(__dirname, '..', 'supabase', 'migrations')
     this.client = null
   }
 
   async init() {
     if (!this.supabaseUrl || !this.supabaseKey) {
-      throw new Error('Missing Supabase credentials. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY')
+      throw new Error(
+        'Missing Supabase credentials. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY'
+      )
     }
 
     this.client = createClient(this.supabaseUrl, this.supabaseKey)
-    
+
     // Create migrations table if it doesn't exist
     await this.createMigrationsTable()
   }
@@ -45,7 +49,7 @@ class DatabaseMigrator {
     `
 
     const { error } = await this.client.rpc('exec_sql', { sql: query })
-    
+
     if (error && !error.message.includes('already exists')) {
       console.error('Failed to create migrations table:', error)
       throw error
@@ -55,9 +59,7 @@ class DatabaseMigrator {
   async getMigrationFiles() {
     try {
       const files = await fs.readdir(this.migrationsPath)
-      return files
-        .filter(file => file.endsWith('.sql'))
-        .sort() // Ensures migrations run in order
+      return files.filter(file => file.endsWith('.sql')).sort() // Ensures migrations run in order
     } catch (error) {
       console.error('Failed to read migrations directory:', error)
       return []
@@ -79,10 +81,7 @@ class DatabaseMigrator {
   }
 
   async calculateChecksum(content) {
-    return crypto
-      .createHash('sha256')
-      .update(content)
-      .digest('hex')
+    return crypto.createHash('sha256').update(content).digest('hex')
   }
 
   async runMigration(filename) {
@@ -106,8 +105,8 @@ class DatabaseMigrator {
         // Skip comments and empty statements
         if (statement.startsWith('--') || !statement) continue
 
-        const { error } = await this.client.rpc('exec_sql', { 
-          sql: statement + ';' 
+        const { error } = await this.client.rpc('exec_sql', {
+          sql: statement + ';',
         })
 
         if (error) {
@@ -117,32 +116,50 @@ class DatabaseMigrator {
 
       // Record successful migration
       const executionTime = Date.now() - startTime
-      await this.recordMigration(version, filename, checksum, executionTime, true, null)
-      
+      await this.recordMigration(
+        version,
+        filename,
+        checksum,
+        executionTime,
+        true,
+        null
+      )
+
       console.log(`✅ Migration completed in ${executionTime}ms`)
       return true
-
     } catch (error) {
       // Record failed migration
       const executionTime = Date.now() - startTime
-      await this.recordMigration(version, filename, checksum, executionTime, false, error.message)
-      
+      await this.recordMigration(
+        version,
+        filename,
+        checksum,
+        executionTime,
+        false,
+        error.message
+      )
+
       console.error(`❌ Migration failed: ${error.message}`)
       throw error
     }
   }
 
-  async recordMigration(version, name, checksum, executionTime, success, errorMessage) {
-    const { error } = await this.client
-      .from('schema_migrations')
-      .insert({
-        version,
-        name,
-        checksum,
-        execution_time_ms: executionTime,
-        success,
-        error_message: errorMessage
-      })
+  async recordMigration(
+    version,
+    name,
+    checksum,
+    executionTime,
+    success,
+    errorMessage
+  ) {
+    const { error } = await this.client.from('schema_migrations').insert({
+      version,
+      name,
+      checksum,
+      execution_time_ms: executionTime,
+      success,
+      error_message: errorMessage,
+    })
 
     if (error) {
       console.error('Failed to record migration:', error)
@@ -151,50 +168,49 @@ class DatabaseMigrator {
 
   async migrate() {
     console.log('🚀 Starting database migration...')
-    
+
     try {
       await this.init()
-      
+
       const migrationFiles = await this.getMigrationFiles()
       const appliedMigrations = await this.getAppliedMigrations()
       const appliedVersions = new Set(appliedMigrations.map(m => m.version))
-      
+
       console.log(`📁 Found ${migrationFiles.length} migration files`)
       console.log(`✅ ${appliedMigrations.length} migrations already applied`)
-      
+
       let migrationsRun = 0
       let migrationsFailed = 0
-      
+
       for (const filename of migrationFiles) {
         const version = filename.split('_')[0]
-        
+
         if (appliedVersions.has(version)) {
           console.log(`⏭️  Skipping ${filename} (already applied)`)
           continue
         }
-        
+
         try {
           await this.runMigration(filename)
           migrationsRun++
         } catch (error) {
           migrationsFailed++
-          
+
           if (process.env.STOP_ON_ERROR === 'true') {
             throw error
           }
         }
       }
-      
+
       console.log('\n📊 Migration Summary:')
       console.log(`   Total files: ${migrationFiles.length}`)
       console.log(`   Already applied: ${appliedMigrations.length}`)
       console.log(`   Newly applied: ${migrationsRun}`)
       console.log(`   Failed: ${migrationsFailed}`)
-      
+
       if (migrationsFailed > 0) {
         process.exit(1)
       }
-      
     } catch (error) {
       console.error('\n❌ Migration failed:', error.message)
       process.exit(1)
@@ -203,10 +219,10 @@ class DatabaseMigrator {
 
   async rollback(steps = 1) {
     console.log(`🔄 Rolling back ${steps} migration(s)...`)
-    
+
     try {
       await this.init()
-      
+
       // Get recent successful migrations
       const { data: migrations, error } = await this.client
         .from('schema_migrations')
@@ -222,12 +238,15 @@ class DatabaseMigrator {
         return
       }
 
-      console.log(`📋 Migrations to rollback: ${migrations.map(m => m.name).join(', ')}`)
-      
+      console.log(
+        `📋 Migrations to rollback: ${migrations.map(m => m.name).join(', ')}`
+      )
+
       // Note: Actual rollback would require DOWN migrations
       // For now, we just mark them as rolled back
-      console.log('⚠️  Rollback not implemented. Please manually revert changes.')
-      
+      console.log(
+        '⚠️  Rollback not implemented. Please manually revert changes.'
+      )
     } catch (error) {
       console.error('❌ Rollback failed:', error.message)
       process.exit(1)
@@ -236,28 +255,30 @@ class DatabaseMigrator {
 
   async status() {
     console.log('📊 Migration Status\n')
-    
+
     try {
       await this.init()
-      
+
       const migrationFiles = await this.getMigrationFiles()
       const appliedMigrations = await this.getAppliedMigrations()
       const appliedVersions = new Set(appliedMigrations.map(m => m.version))
-      
+
       console.log('Applied Migrations:')
       if (appliedMigrations.length === 0) {
         console.log('  (none)')
       } else {
         for (const migration of appliedMigrations) {
-          console.log(`  ✅ ${migration.version} - ${migration.name || 'Unknown'}`)
+          console.log(
+            `  ✅ ${migration.version} - ${migration.name || 'Unknown'}`
+          )
         }
       }
-      
+
       console.log('\nPending Migrations:')
       const pendingMigrations = migrationFiles.filter(
         file => !appliedVersions.has(file.split('_')[0])
       )
-      
+
       if (pendingMigrations.length === 0) {
         console.log('  (none)')
       } else {
@@ -265,9 +286,10 @@ class DatabaseMigrator {
           console.log(`  ⏳ ${filename}`)
         }
       }
-      
-      console.log(`\nTotal: ${migrationFiles.length} files, ${appliedMigrations.length} applied, ${pendingMigrations.length} pending`)
-      
+
+      console.log(
+        `\nTotal: ${migrationFiles.length} files, ${appliedMigrations.length} applied, ${pendingMigrations.length} pending`
+      )
     } catch (error) {
       console.error('❌ Failed to get status:', error.message)
       process.exit(1)
@@ -276,21 +298,24 @@ class DatabaseMigrator {
 
   async seed() {
     console.log('🌱 Running database seed...')
-    
+
     try {
       await this.init()
-      
+
       const seedPath = path.join(__dirname, '..', 'supabase', 'seed.sql')
-      const seedExists = await fs.access(seedPath).then(() => true).catch(() => false)
-      
+      const seedExists = await fs
+        .access(seedPath)
+        .then(() => true)
+        .catch(() => false)
+
       if (!seedExists) {
         console.log('ℹ️  No seed file found')
         return
       }
-      
+
       const content = await fs.readFile(seedPath, 'utf8')
       console.log('📄 Running seed.sql...')
-      
+
       // Split and run statements
       const statements = content
         .split(';')
@@ -302,8 +327,8 @@ class DatabaseMigrator {
 
       for (const statement of statements) {
         try {
-          const { error } = await this.client.rpc('exec_sql', { 
-            sql: statement + ';' 
+          const { error } = await this.client.rpc('exec_sql', {
+            sql: statement + ';',
           })
 
           if (error) {
@@ -317,9 +342,10 @@ class DatabaseMigrator {
           failed++
         }
       }
-      
-      console.log(`\n✅ Seed completed: ${successful} successful, ${failed} failed`)
-      
+
+      console.log(
+        `\n✅ Seed completed: ${successful} successful, ${failed} failed`
+      )
     } catch (error) {
       console.error('❌ Seed failed:', error.message)
       process.exit(1)
@@ -331,43 +357,47 @@ class DatabaseMigrator {
 async function main() {
   const command = process.argv[2]
   const migrator = new DatabaseMigrator()
-  
+
   switch (command) {
     case 'migrate':
     case 'up':
       await migrator.migrate()
       break
-      
+
     case 'rollback':
     case 'down':
       const steps = parseInt(process.argv[3]) || 1
       await migrator.rollback(steps)
       break
-      
+
     case 'status':
       await migrator.status()
       break
-      
+
     case 'seed':
       await migrator.seed()
       break
-      
+
     case 'reset':
       console.log('⚠️  Reset command not implemented for safety')
       console.log('   Please manually drop and recreate the database')
       break
-      
+
     default:
       console.log('Prismy Database Migration Tool')
       console.log('\nUsage:')
       console.log('  node db-migrate.js migrate        Run pending migrations')
-      console.log('  node db-migrate.js rollback [n]   Rollback n migrations (default: 1)')
+      console.log(
+        '  node db-migrate.js rollback [n]   Rollback n migrations (default: 1)'
+      )
       console.log('  node db-migrate.js status         Show migration status')
       console.log('  node db-migrate.js seed           Run database seed')
       console.log('\nEnvironment variables:')
       console.log('  SUPABASE_URL                    Supabase project URL')
       console.log('  SUPABASE_SERVICE_ROLE_KEY       Supabase service role key')
-      console.log('  STOP_ON_ERROR                   Stop on first error (default: false)')
+      console.log(
+        '  STOP_ON_ERROR                   Stop on first error (default: false)'
+      )
       process.exit(1)
   }
 }

@@ -4,7 +4,7 @@ import { cookies } from 'next/headers'
 
 export async function GET() {
   const startTime = Date.now()
-  
+
   const health = {
     status: 'healthy',
     timestamp: new Date().toISOString(),
@@ -15,8 +15,8 @@ export async function GET() {
     checks: {
       api: 'operational',
       database: 'unknown',
-      auth: 'unknown'
-    }
+      auth: 'unknown',
+    },
   }
 
   try {
@@ -40,9 +40,12 @@ export async function GET() {
           },
         }
       )
-      
+
       // Simple database check
-      const { error } = await supabase.from('user_credits').select('count').limit(1)
+      const { error } = await supabase
+        .from('user_credits')
+        .select('count')
+        .limit(1)
       health.checks.database = error ? 'degraded' : 'operational'
       health.checks.auth = 'operational'
     }
@@ -56,13 +59,15 @@ export async function GET() {
   health.responseTime = `${responseTime}ms`
 
   // Overall health status
-  const hasIssues = Object.values(health.checks).some(status => status !== 'operational')
+  const hasIssues = Object.values(health.checks).some(
+    status => status !== 'operational'
+  )
   health.status = hasIssues ? 'degraded' : 'healthy'
 
   return NextResponse.json(health, {
     status: health.status === 'healthy' ? 200 : 503,
     headers: {
       'Cache-Control': 'no-cache, no-store, must-revalidate',
-    }
+    },
   })
 }

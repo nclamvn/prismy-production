@@ -6,18 +6,42 @@
 // Dynamic imports for heavy components
 export const LazyComponents = {
   // Dashboard components
-  DashboardAnalytics: () => import('@/app/dashboard/analytics/page').then(m => ({ default: m.default })),
-  EnterpriseAnalytics: () => import('@/app/dashboard/enterprise/analytics/page').then(m => ({ default: m.default })),
-  WorkflowsPage: () => import('@/app/dashboard/workflows/page').then(m => ({ default: m.default })),
-  
+  DashboardAnalytics: () =>
+    import('@/app/dashboard/analytics/page').then(m => ({
+      default: m.default,
+    })),
+  EnterpriseAnalytics: () =>
+    import('@/app/dashboard/enterprise/analytics/page').then(m => ({
+      default: m.default,
+    })),
+  WorkflowsPage: () =>
+    import('@/app/dashboard/workflows/page').then(m => ({
+      default: m.default,
+    })),
+
   // Heavy feature components
-  DocumentProcessor: () => import('@/components/workspace/DocumentProcessor').catch(() => ({ default: () => null })),
-  AdvancedEditor: () => import('@/components/workspace/AdvancedEditor').catch(() => ({ default: () => null })),
-  PredictiveInsights: () => import('@/components/workspace/dashboard/PredictiveInsights').catch(() => ({ default: () => null })),
-  
+  DocumentProcessor: () =>
+    import('@/components/workspace/DocumentProcessor').catch(() => ({
+      default: () => null,
+    })),
+  AdvancedEditor: () =>
+    import('@/components/workspace/AdvancedEditor').catch(() => ({
+      default: () => null,
+    })),
+  PredictiveInsights: () =>
+    import('@/components/workspace/dashboard/PredictiveInsights').catch(() => ({
+      default: () => null,
+    })),
+
   // PDF and OCR components (heavy libraries)
-  PDFViewer: () => import('@/components/document/PDFViewer').catch(() => ({ default: () => null })),
-  OCRProcessor: () => import('@/components/document/OCRProcessor').catch(() => ({ default: () => null })),
+  PDFViewer: () =>
+    import('@/components/document/PDFViewer').catch(() => ({
+      default: () => null,
+    })),
+  OCRProcessor: () =>
+    import('@/components/document/OCRProcessor').catch(() => ({
+      default: () => null,
+    })),
 }
 
 // Optimized icon loading
@@ -25,7 +49,12 @@ export const IconLoader = {
   // Load only required icons dynamically
   loadIcon: async (iconName: string) => {
     try {
-      const iconModule = await import(`lucide-react/dist/esm/icons/${iconName.toLowerCase().replace(/([A-Z])/g, '-$1').substring(1)}.js`)
+      const iconModule = await import(
+        `lucide-react/dist/esm/icons/${iconName
+          .toLowerCase()
+          .replace(/([A-Z])/g, '-$1')
+          .substring(1)}.js`
+      )
       return iconModule.default || iconModule[iconName]
     } catch {
       // Fallback to a default icon
@@ -37,14 +66,22 @@ export const IconLoader = {
   // Preload critical icons
   preloadCriticalIcons: async () => {
     const criticalIcons = [
-      'Menu', 'X', 'User', 'Settings', 'Search', 'Upload', 
-      'Download', 'Check', 'AlertTriangle', 'Home'
+      'Menu',
+      'X',
+      'User',
+      'Settings',
+      'Search',
+      'Upload',
+      'Download',
+      'Check',
+      'AlertTriangle',
+      'Home',
     ]
-    
+
     return Promise.allSettled(
       criticalIcons.map(icon => IconLoader.loadIcon(icon))
     )
-  }
+  },
 }
 
 // Code splitting utilities
@@ -56,25 +93,27 @@ export const CodeSplitting = {
   ) => {
     const { lazy, Suspense, createElement } = require('react')
     const LazyComponent = lazy(importFn)
-    
+
     return (props: React.ComponentProps<T>) =>
       createElement(
         Suspense,
         {
-          fallback: fallback 
+          fallback: fallback
             ? createElement(fallback, props)
             : createElement('div', {
-                className: 'animate-pulse bg-gray-200 rounded h-32 w-full'
-              })
+                className: 'animate-pulse bg-gray-200 rounded h-32 w-full',
+              }),
         },
         createElement(LazyComponent, props)
       )
   },
 
   // Route-level code splitting
-  createLazyRoute: (importFn: () => Promise<{ default: React.ComponentType }>) => {
+  createLazyRoute: (
+    importFn: () => Promise<{ default: React.ComponentType }>
+  ) => {
     return React.lazy(importFn)
-  }
+  },
 }
 
 // Bundle analysis utilities
@@ -106,7 +145,7 @@ export const BundleAnalyzer = {
         `bundle-${bundleName}-end`
       )
     }
-  }
+  },
 }
 
 // Tree shaking helpers
@@ -115,18 +154,23 @@ export const TreeShaking = {
   importOptimized: {
     // Framer Motion - import specific components
     motion: {
-      div: () => import('framer-motion').then(m => ({ motion: { div: m.motion.div } })),
-      span: () => import('framer-motion').then(m => ({ motion: { span: m.motion.span } })),
-      button: () => import('framer-motion').then(m => ({ motion: { button: m.motion.button } })),
+      div: () =>
+        import('framer-motion').then(m => ({ motion: { div: m.motion.div } })),
+      span: () =>
+        import('framer-motion').then(m => ({
+          motion: { span: m.motion.span },
+        })),
+      button: () =>
+        import('framer-motion').then(m => ({
+          motion: { button: m.motion.button },
+        })),
     },
-    
+
     // Lucide React - specific icons only
     icons: (iconNames: string[]) => {
-      return Promise.all(
-        iconNames.map(name => IconLoader.loadIcon(name))
-      )
-    }
-  }
+      return Promise.all(iconNames.map(name => IconLoader.loadIcon(name)))
+    },
+  },
 }
 
 // Critical resource hints
@@ -162,30 +206,33 @@ export const ResourceHints = {
         document.head.appendChild(link)
       })
     }
-  }
+  },
 }
 
 // Performance budget enforcement
 export const PerformanceBudget = {
   thresholds: {
     javascript: 500 * 1024, // 500KB
-    css: 50 * 1024,         // 50KB
-    images: 1024 * 1024,    // 1MB
-    fonts: 100 * 1024,      // 100KB
+    css: 50 * 1024, // 50KB
+    images: 1024 * 1024, // 1MB
+    fonts: 100 * 1024, // 100KB
   },
 
-  checkBudget: (resourceType: keyof typeof PerformanceBudget.thresholds, size: number) => {
+  checkBudget: (
+    resourceType: keyof typeof PerformanceBudget.thresholds,
+    size: number
+  ) => {
     const threshold = PerformanceBudget.thresholds[resourceType]
     const isWithinBudget = size <= threshold
-    
+
     if (!isWithinBudget && process.env.NODE_ENV === 'development') {
       console.warn(
         `⚠️ Performance Budget Exceeded: ${resourceType} (${Math.round(size / 1024)}KB > ${Math.round(threshold / 1024)}KB)`
       )
     }
-    
+
     return isWithinBudget
-  }
+  },
 }
 
 export default {
@@ -195,5 +242,5 @@ export default {
   BundleAnalyzer,
   TreeShaking,
   ResourceHints,
-  PerformanceBudget
+  PerformanceBudget,
 }

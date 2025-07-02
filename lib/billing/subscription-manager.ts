@@ -8,7 +8,7 @@ import { supabase } from '@/lib/supabase'
 import { logger } from '@/lib/logger'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-06-20'
+  apiVersion: '2024-06-20',
 })
 
 export interface SubscriptionTier {
@@ -53,7 +53,13 @@ export interface UsageMetrics {
 }
 
 export interface BillingEvent {
-  type: 'subscription_created' | 'subscription_updated' | 'subscription_cancelled' | 'payment_succeeded' | 'payment_failed' | 'usage_overage'
+  type:
+    | 'subscription_created'
+    | 'subscription_updated'
+    | 'subscription_cancelled'
+    | 'payment_succeeded'
+    | 'payment_failed'
+    | 'usage_overage'
   userId: string
   organizationId?: string
   subscriptionId: string
@@ -78,19 +84,19 @@ export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
       apiAccess: false,
       advancedAnalytics: false,
       ssoIntegration: false,
-      dedicatedManager: false
+      dedicatedManager: false,
     },
     usage: {
       documentsIncluded: 10,
       translationsIncluded: 50,
       overageRates: {
-        perDocument: 0.10,
+        perDocument: 0.1,
         perTranslation: 0.02,
-        perGB: 5.00
-      }
+        perGB: 5.0,
+      },
     },
     stripeProductId: '',
-    stripePriceId: ''
+    stripePriceId: '',
   },
   standard: {
     id: 'standard',
@@ -108,7 +114,7 @@ export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
       apiAccess: true,
       advancedAnalytics: true,
       ssoIntegration: false,
-      dedicatedManager: false
+      dedicatedManager: false,
     },
     usage: {
       documentsIncluded: 100,
@@ -116,11 +122,11 @@ export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
       overageRates: {
         perDocument: 0.08,
         perTranslation: 0.015,
-        perGB: 3.00
-      }
+        perGB: 3.0,
+      },
     },
     stripeProductId: process.env.STRIPE_PRODUCT_STANDARD!,
-    stripePriceId: process.env.STRIPE_PRICE_STANDARD!
+    stripePriceId: process.env.STRIPE_PRICE_STANDARD!,
   },
   premium: {
     id: 'premium',
@@ -138,7 +144,7 @@ export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
       apiAccess: true,
       advancedAnalytics: true,
       ssoIntegration: true,
-      dedicatedManager: false
+      dedicatedManager: false,
     },
     usage: {
       documentsIncluded: 500,
@@ -146,11 +152,11 @@ export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
       overageRates: {
         perDocument: 0.05,
         perTranslation: 0.01,
-        perGB: 2.00
-      }
+        perGB: 2.0,
+      },
     },
     stripeProductId: process.env.STRIPE_PRODUCT_PREMIUM!,
-    stripePriceId: process.env.STRIPE_PRICE_PREMIUM!
+    stripePriceId: process.env.STRIPE_PRICE_PREMIUM!,
   },
   enterprise: {
     id: 'enterprise',
@@ -168,7 +174,7 @@ export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
       apiAccess: true,
       advancedAnalytics: true,
       ssoIntegration: true,
-      dedicatedManager: true
+      dedicatedManager: true,
     },
     usage: {
       documentsIncluded: -1, // Unlimited
@@ -176,12 +182,12 @@ export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
       overageRates: {
         perDocument: 0.02,
         perTranslation: 0.005,
-        perGB: 1.00
-      }
+        perGB: 1.0,
+      },
     },
     stripeProductId: process.env.STRIPE_PRODUCT_ENTERPRISE!,
-    stripePriceId: process.env.STRIPE_PRICE_ENTERPRISE!
-  }
+    stripePriceId: process.env.STRIPE_PRICE_ENTERPRISE!,
+  },
 }
 
 export class SubscriptionManager {
@@ -212,37 +218,42 @@ export class SubscriptionManager {
       }
 
       // Get or create Stripe customer
-      const customerId = await this.getOrCreateStripeCustomer(userId, organizationId)
+      const customerId = await this.getOrCreateStripeCustomer(
+        userId,
+        organizationId
+      )
 
       // Attach payment method if provided
       if (paymentMethodId) {
         await stripe.paymentMethods.attach(paymentMethodId, {
-          customer: customerId
+          customer: customerId,
         })
 
         await stripe.customers.update(customerId, {
           invoice_settings: {
-            default_payment_method: paymentMethodId
-          }
+            default_payment_method: paymentMethodId,
+          },
         })
       }
 
       // Create Stripe subscription
       const subscription = await stripe.subscriptions.create({
         customer: customerId,
-        items: [{
-          price: tier.stripePriceId
-        }],
+        items: [
+          {
+            price: tier.stripePriceId,
+          },
+        ],
         payment_behavior: 'default_incomplete',
         payment_settings: {
-          save_default_payment_method: 'on_subscription'
+          save_default_payment_method: 'on_subscription',
         },
         expand: ['latest_invoice.payment_intent'],
         metadata: {
           userId,
           organizationId: organizationId || '',
-          tier: tierId
-        }
+          tier: tierId,
+        },
       })
 
       // Store subscription in database
@@ -255,24 +266,30 @@ export class SubscriptionManager {
         organizationId: organizationId || undefined,
         subscriptionId: subscription.id,
         amount: tier.price,
-        metadata: { tier: tierId }
+        metadata: { tier: tierId },
       })
 
       const result: { subscriptionId: string; clientSecret?: string } = {
-        subscriptionId: subscription.id
+        subscriptionId: subscription.id,
       }
 
       // If payment requires confirmation, return client secret
-      if (subscription.latest_invoice && 
-          typeof subscription.latest_invoice === 'object' &&
-          subscription.latest_invoice.payment_intent &&
-          typeof subscription.latest_invoice.payment_intent === 'object') {
-        result.clientSecret = subscription.latest_invoice.payment_intent.client_secret || undefined
+      if (
+        subscription.latest_invoice &&
+        typeof subscription.latest_invoice === 'object' &&
+        subscription.latest_invoice.payment_intent &&
+        typeof subscription.latest_invoice.payment_intent === 'object'
+      ) {
+        result.clientSecret =
+          subscription.latest_invoice.payment_intent.client_secret || undefined
       }
 
-      logger.info('Subscription created', { userId, organizationId, tier: tierId })
+      logger.info('Subscription created', {
+        userId,
+        organizationId,
+        tier: tierId,
+      })
       return result
-
     } catch (error) {
       logger.error('Failed to create subscription', { error, userId, tierId })
       throw error
@@ -294,11 +311,14 @@ export class SubscriptionManager {
 
       // Update Stripe subscription
       const subscription = await stripe.subscriptions.update(subscriptionId, {
-        items: [{
-          id: (await stripe.subscriptions.retrieve(subscriptionId)).items.data[0].id,
-          price: newTier.stripePriceId
-        }],
-        proration_behavior: 'create_prorations'
+        items: [
+          {
+            id: (await stripe.subscriptions.retrieve(subscriptionId)).items
+              .data[0].id,
+            price: newTier.stripePriceId,
+          },
+        ],
+        proration_behavior: 'create_prorations',
       })
 
       // Update database record
@@ -306,7 +326,7 @@ export class SubscriptionManager {
         .from('user_subscriptions')
         .update({
           subscription_tier: newTierId,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq('stripe_subscription_id', subscriptionId)
 
@@ -324,14 +344,20 @@ export class SubscriptionManager {
           organizationId: subData.organization_id,
           subscriptionId,
           amount: newTier.price,
-          metadata: { newTier: newTierId }
+          metadata: { newTier: newTierId },
         })
       }
 
-      logger.info('Subscription updated', { subscriptionId, newTier: newTierId })
-
+      logger.info('Subscription updated', {
+        subscriptionId,
+        newTier: newTierId,
+      })
     } catch (error) {
-      logger.error('Failed to update subscription', { error, subscriptionId, newTierId })
+      logger.error('Failed to update subscription', {
+        error,
+        subscriptionId,
+        newTierId,
+      })
       throw error
     }
   }
@@ -347,20 +373,20 @@ export class SubscriptionManager {
       if (immediately) {
         // Cancel immediately
         await stripe.subscriptions.cancel(subscriptionId)
-        
+
         // Update database
         await supabase
           .from('user_subscriptions')
           .update({
             status: 'cancelled',
             cancelled_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
           })
           .eq('stripe_subscription_id', subscriptionId)
       } else {
         // Cancel at period end
         await stripe.subscriptions.update(subscriptionId, {
-          cancel_at_period_end: true
+          cancel_at_period_end: true,
         })
 
         // Update database
@@ -368,7 +394,7 @@ export class SubscriptionManager {
           .from('user_subscriptions')
           .update({
             cancel_at_period_end: true,
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
           })
           .eq('stripe_subscription_id', subscriptionId)
       }
@@ -386,12 +412,11 @@ export class SubscriptionManager {
           userId: subData.user_id,
           organizationId: subData.organization_id,
           subscriptionId,
-          metadata: { immediately }
+          metadata: { immediately },
         })
       }
 
       logger.info('Subscription cancelled', { subscriptionId, immediately })
-
     } catch (error) {
       logger.error('Failed to cancel subscription', { error, subscriptionId })
       throw error
@@ -422,12 +447,21 @@ export class SubscriptionManager {
       const periodEnd = new Date(subscription.current_period_end)
 
       // Get usage data for current period
-      const [documentsCount, translationsCount, storageUsage, teamMembersCount, apiCallsCount] = await Promise.all([
+      const [
+        documentsCount,
+        translationsCount,
+        storageUsage,
+        teamMembersCount,
+        apiCallsCount,
+      ] = await Promise.all([
         // Documents count
         supabase
           .from('documents')
           .select('count')
-          .eq(organizationId ? 'organization_id' : 'user_id', organizationId || userId)
+          .eq(
+            organizationId ? 'organization_id' : 'user_id',
+            organizationId || userId
+          )
           .gte('created_at', periodStart.toISOString())
           .lte('created_at', periodEnd.toISOString()),
 
@@ -435,7 +469,10 @@ export class SubscriptionManager {
         supabase
           .from('translations')
           .select('count')
-          .eq(organizationId ? 'organization_id' : 'user_id', organizationId || userId)
+          .eq(
+            organizationId ? 'organization_id' : 'user_id',
+            organizationId || userId
+          )
           .gte('created_at', periodStart.toISOString())
           .lte('created_at', periodEnd.toISOString()),
 
@@ -443,25 +480,31 @@ export class SubscriptionManager {
         supabase
           .from('documents')
           .select('metadata')
-          .eq(organizationId ? 'organization_id' : 'user_id', organizationId || userId),
+          .eq(
+            organizationId ? 'organization_id' : 'user_id',
+            organizationId || userId
+          ),
 
         // Team members count
-        organizationId ? 
-          supabase
-            .from('organization_members')
-            .select('count')
-            .eq('organization_id', organizationId)
-            .eq('status', 'active') :
-          Promise.resolve({ data: [{ count: 1 }] }),
+        organizationId
+          ? supabase
+              .from('organization_members')
+              .select('count')
+              .eq('organization_id', organizationId)
+              .eq('status', 'active')
+          : Promise.resolve({ data: [{ count: 1 }] }),
 
         // API calls count
         supabase
           .from('usage_logs')
           .select('count')
-          .eq(organizationId ? 'organization_id' : 'user_id', organizationId || userId)
+          .eq(
+            organizationId ? 'organization_id' : 'user_id',
+            organizationId || userId
+          )
           .eq('event_type', 'api_call')
           .gte('created_at', periodStart.toISOString())
-          .lte('created_at', periodEnd.toISOString())
+          .lte('created_at', periodEnd.toISOString()),
       ])
 
       // Calculate storage usage in GB
@@ -469,7 +512,7 @@ export class SubscriptionManager {
       if (storageUsage.data) {
         storageUsedGB = storageUsage.data.reduce((total, doc) => {
           const size = doc.metadata?.size || 0
-          return total + (size / (1024 * 1024 * 1024)) // Convert bytes to GB
+          return total + size / (1024 * 1024 * 1024) // Convert bytes to GB
         }, 0)
       }
 
@@ -480,11 +523,14 @@ export class SubscriptionManager {
         teamMembers: teamMembersCount.data?.[0]?.count || 1,
         apiCallsUsed: apiCallsCount.data?.[0]?.count || 0,
         currentPeriodStart: periodStart,
-        currentPeriodEnd: periodEnd
+        currentPeriodEnd: periodEnd,
       }
-
     } catch (error) {
-      logger.error('Failed to get usage metrics', { error, userId, organizationId })
+      logger.error('Failed to get usage metrics', {
+        error,
+        userId,
+        organizationId,
+      })
       throw error
     }
   }
@@ -504,7 +550,7 @@ export class SubscriptionManager {
           .select('subscription_tier')
           .eq('user_id', userId)
           .eq('status', 'active')
-          .single()
+          .single(),
       ])
 
       if (!subscription) {
@@ -520,16 +566,23 @@ export class SubscriptionManager {
       let totalAmount = 0
 
       // Calculate document overage
-      if (tier.usage.documentsIncluded !== -1 && usage.documentsUsed > tier.usage.documentsIncluded) {
+      if (
+        tier.usage.documentsIncluded !== -1 &&
+        usage.documentsUsed > tier.usage.documentsIncluded
+      ) {
         const overage = usage.documentsUsed - tier.usage.documentsIncluded
         breakdown.documents = overage * tier.usage.overageRates.perDocument
         totalAmount += breakdown.documents
       }
 
       // Calculate translation overage
-      if (tier.usage.translationsIncluded !== -1 && usage.translationsUsed > tier.usage.translationsIncluded) {
+      if (
+        tier.usage.translationsIncluded !== -1 &&
+        usage.translationsUsed > tier.usage.translationsIncluded
+      ) {
         const overage = usage.translationsUsed - tier.usage.translationsIncluded
-        breakdown.translations = overage * tier.usage.overageRates.perTranslation
+        breakdown.translations =
+          overage * tier.usage.overageRates.perTranslation
         totalAmount += breakdown.translations
       }
 
@@ -541,9 +594,12 @@ export class SubscriptionManager {
       }
 
       return { amount: totalAmount, breakdown }
-
     } catch (error) {
-      logger.error('Failed to calculate overage charges', { error, userId, organizationId })
+      logger.error('Failed to calculate overage charges', {
+        error,
+        userId,
+        organizationId,
+      })
       throw error
     }
   }
@@ -556,8 +612,11 @@ export class SubscriptionManager {
     organizationId?: string
   ): Promise<void> {
     try {
-      const overageCharges = await this.calculateOverageCharges(userId, organizationId)
-      
+      const overageCharges = await this.calculateOverageCharges(
+        userId,
+        organizationId
+      )
+
       if (overageCharges.amount <= 0) {
         return // No overage charges
       }
@@ -583,8 +642,8 @@ export class SubscriptionManager {
         metadata: {
           userId,
           organizationId: organizationId || '',
-          breakdown: JSON.stringify(overageCharges.breakdown)
-        }
+          breakdown: JSON.stringify(overageCharges.breakdown),
+        },
       })
 
       // Log billing event
@@ -594,18 +653,21 @@ export class SubscriptionManager {
         organizationId,
         subscriptionId: subscription.stripe_subscription_id,
         amount: overageCharges.amount,
-        metadata: { breakdown: overageCharges.breakdown }
+        metadata: { breakdown: overageCharges.breakdown },
       })
 
-      logger.info('Overage billing processed', { 
-        userId, 
-        organizationId, 
+      logger.info('Overage billing processed', {
+        userId,
+        organizationId,
         amount: overageCharges.amount,
-        breakdown: overageCharges.breakdown
+        breakdown: overageCharges.breakdown,
       })
-
     } catch (error) {
-      logger.error('Failed to process overage billing', { error, userId, organizationId })
+      logger.error('Failed to process overage billing', {
+        error,
+        userId,
+        organizationId,
+      })
       throw error
     }
   }
@@ -641,12 +703,11 @@ export class SubscriptionManager {
         email: user.user.email,
         metadata: {
           userId,
-          organizationId: organizationId || ''
-        }
+          organizationId: organizationId || '',
+        },
       })
 
       return customer.id
-
     } catch (error) {
       logger.error('Failed to get or create Stripe customer', { error, userId })
       throw error
@@ -669,10 +730,14 @@ export class SubscriptionManager {
       stripe_customer_id: subscription.customer as string,
       subscription_tier: tierId,
       status: subscription.status,
-      current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-      current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+      current_period_start: new Date(
+        subscription.current_period_start * 1000
+      ).toISOString(),
+      current_period_end: new Date(
+        subscription.current_period_end * 1000
+      ).toISOString(),
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     })
   }
 
@@ -690,7 +755,7 @@ export class SubscriptionManager {
         currency: 'USD',
         status: 'completed',
         metadata: event.metadata,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       })
     } catch (error) {
       logger.error('Failed to log billing event', { error, event })

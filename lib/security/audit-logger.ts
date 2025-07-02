@@ -59,11 +59,11 @@ export class SecurityAuditLogger {
           ...event.metadata,
           severity: event.severity,
           outcome: event.outcome,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         },
         p_ip_address: event.ipAddress || null,
         p_user_agent: event.userAgent || null,
-        p_organization_id: event.organizationId || null
+        p_organization_id: event.organizationId || null,
       })
 
       if (error) throw error
@@ -76,14 +76,13 @@ export class SecurityAuditLogger {
         severity: event.severity,
         outcome: event.outcome,
         userId: event.userId,
-        organizationId: event.organizationId
+        organizationId: event.organizationId,
       })
 
       // Check for suspicious patterns
       if (event.outcome === 'suspicious' || event.severity === 'critical') {
         await this.checkSuspiciousPatterns(event)
       }
-
     } catch (error) {
       logger.error('Failed to log security audit event', { error, event })
     }
@@ -94,7 +93,12 @@ export class SecurityAuditLogger {
    */
   async logAuthentication(
     userId: string,
-    operation: 'login' | 'logout' | 'login_failed' | 'password_reset' | 'password_change',
+    operation:
+      | 'login'
+      | 'logout'
+      | 'login_failed'
+      | 'password_reset'
+      | 'password_change',
     ipAddress?: string,
     userAgent?: string,
     metadata?: Record<string, any>
@@ -110,7 +114,7 @@ export class SecurityAuditLogger {
       ipAddress,
       userAgent,
       severity,
-      outcome
+      outcome,
     })
   }
 
@@ -135,7 +139,7 @@ export class SecurityAuditLogger {
       organizationId,
       metadata,
       severity,
-      outcome: 'success'
+      outcome: 'success',
     })
   }
 
@@ -159,10 +163,10 @@ export class SecurityAuditLogger {
       metadata: {
         ...metadata,
         permission,
-        targetUserId
+        targetUserId,
       },
       severity: 'high',
-      outcome: 'success'
+      outcome: 'success',
     })
   }
 
@@ -184,7 +188,7 @@ export class SecurityAuditLogger {
       organizationId,
       metadata,
       severity: 'high',
-      outcome: 'success'
+      outcome: 'success',
     })
   }
 
@@ -206,12 +210,12 @@ export class SecurityAuditLogger {
       metadata: {
         ...metadata,
         reason,
-        detectionTimestamp: new Date().toISOString()
+        detectionTimestamp: new Date().toISOString(),
       },
       ipAddress,
       userAgent,
       severity: 'critical',
-      outcome: 'suspicious'
+      outcome: 'suspicious',
     })
   }
 
@@ -265,9 +269,12 @@ export class SecurityAuditLogger {
 
       // Calculate summary statistics
       const totalEvents = events?.length || 0
-      const successfulEvents = events?.filter(e => e.metadata?.outcome === 'success').length || 0
-      const failedEvents = events?.filter(e => e.metadata?.outcome === 'failure').length || 0
-      const suspiciousEvents = events?.filter(e => e.metadata?.outcome === 'suspicious').length || 0
+      const successfulEvents =
+        events?.filter(e => e.metadata?.outcome === 'success').length || 0
+      const failedEvents =
+        events?.filter(e => e.metadata?.outcome === 'failure').length || 0
+      const suspiciousEvents =
+        events?.filter(e => e.metadata?.outcome === 'suspicious').length || 0
 
       // Top operations
       const operationCounts = new Map<string, number>()
@@ -293,15 +300,21 @@ export class SecurityAuditLogger {
         .slice(0, 10)
 
       // Timeline trends (daily aggregation)
-      const timelineCounts = new Map<string, { count: number; severity: string }>()
+      const timelineCounts = new Map<
+        string,
+        { count: number; severity: string }
+      >()
       events?.forEach(event => {
         const date = new Date(event.created_at).toISOString().slice(0, 10)
         const severity = event.metadata?.severity || 'low'
-        const existing = timelineCounts.get(date) || { count: 0, severity: 'low' }
-        
+        const existing = timelineCounts.get(date) || {
+          count: 0,
+          severity: 'low',
+        }
+
         timelineCounts.set(date, {
           count: existing.count + 1,
-          severity: this.getHighestSeverity(existing.severity, severity)
+          severity: this.getHighestSeverity(existing.severity, severity),
         })
       })
       const timelineTrends = Array.from(timelineCounts.entries())
@@ -317,10 +330,9 @@ export class SecurityAuditLogger {
           suspiciousEvents,
           topOperations,
           topSources,
-          timelineTrends
-        }
+          timelineTrends,
+        },
       }
-
     } catch (error) {
       logger.error('Failed to get security analytics', { error, params })
       throw error
@@ -330,7 +342,9 @@ export class SecurityAuditLogger {
   /**
    * Check for suspicious patterns after logging an event
    */
-  private async checkSuspiciousPatterns(event: SecurityAuditEvent): Promise<void> {
+  private async checkSuspiciousPatterns(
+    event: SecurityAuditEvent
+  ): Promise<void> {
     try {
       const now = new Date()
       const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000)
@@ -351,9 +365,9 @@ export class SecurityAuditLogger {
             'Multiple failed login attempts from same IP',
             event.ipAddress,
             event.userAgent,
-            { 
+            {
               failureCount: recentFailures?.length,
-              timeWindow: '1 hour'
+              timeWindow: '1 hour',
             }
           )
         }
@@ -366,11 +380,16 @@ export class SecurityAuditLogger {
           .select('ip_address, metadata')
           .eq('user_id', event.userId)
           .eq('operation', 'login')
-          .gte('created_at', new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString())
+          .gte(
+            'created_at',
+            new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString()
+          )
           .limit(10)
 
-        const uniqueIPs = new Set(userSessions?.map(s => s.ip_address).filter(Boolean))
-        
+        const uniqueIPs = new Set(
+          userSessions?.map(s => s.ip_address).filter(Boolean)
+        )
+
         if (uniqueIPs.size >= 5 && !uniqueIPs.has(event.ipAddress)) {
           await this.logSuspiciousActivity(
             event.userId,
@@ -380,7 +399,7 @@ export class SecurityAuditLogger {
             event.userAgent,
             {
               uniqueIPsLast7Days: uniqueIPs.size,
-              isNewIP: true
+              isNewIP: true,
             }
           )
         }
@@ -392,7 +411,10 @@ export class SecurityAuditLogger {
           .from('security_audit_logs')
           .select('id, operation')
           .eq('user_id', event.userId)
-          .gte('created_at', new Date(now.getTime() - 5 * 60 * 1000).toISOString()) // Last 5 minutes
+          .gte(
+            'created_at',
+            new Date(now.getTime() - 5 * 60 * 1000).toISOString()
+          ) // Last 5 minutes
 
         if ((recentOps?.length || 0) >= 20) {
           await this.logSuspiciousActivity(
@@ -403,12 +425,11 @@ export class SecurityAuditLogger {
             event.userAgent,
             {
               operationCount: recentOps?.length,
-              timeWindow: '5 minutes'
+              timeWindow: '5 minutes',
             }
           )
         }
       }
-
     } catch (error) {
       logger.error('Failed to check suspicious patterns', { error, event })
     }
@@ -417,7 +438,10 @@ export class SecurityAuditLogger {
   /**
    * Get log level based on severity and outcome
    */
-  private getLogLevel(severity: string, outcome: string): 'info' | 'warn' | 'error' {
+  private getLogLevel(
+    severity: string,
+    outcome: string
+  ): 'info' | 'warn' | 'error' {
     if (outcome === 'suspicious' || severity === 'critical') {
       return 'error'
     }
@@ -434,11 +458,13 @@ export class SecurityAuditLogger {
     const severityOrder = { low: 1, medium: 2, high: 3, critical: 4 }
     const level1 = severityOrder[severity1 as keyof typeof severityOrder] || 1
     const level2 = severityOrder[severity2 as keyof typeof severityOrder] || 1
-    
+
     const highest = Math.max(level1, level2)
-    return Object.keys(severityOrder).find(
-      key => severityOrder[key as keyof typeof severityOrder] === highest
-    ) || 'low'
+    return (
+      Object.keys(severityOrder).find(
+        key => severityOrder[key as keyof typeof severityOrder] === highest
+      ) || 'low'
+    )
   }
 
   /**
@@ -450,7 +476,7 @@ export class SecurityAuditLogger {
   ): Promise<string> {
     try {
       const analytics = await this.getSecurityAnalytics(params)
-      
+
       if (format === 'json') {
         return JSON.stringify(analytics.events, null, 2)
       }
@@ -466,7 +492,7 @@ export class SecurityAuditLogger {
         'User Agent',
         'Severity',
         'Outcome',
-        'Organization ID'
+        'Organization ID',
       ]
 
       const csvRows = analytics.events.map(event => [
@@ -479,13 +505,12 @@ export class SecurityAuditLogger {
         event.user_agent || '',
         event.metadata?.severity || '',
         event.metadata?.outcome || '',
-        event.organization_id || ''
+        event.organization_id || '',
       ])
 
       return [headers, ...csvRows]
         .map(row => row.map(field => `"${field}"`).join(','))
         .join('\n')
-
     } catch (error) {
       logger.error('Failed to export audit logs', { error, params })
       throw error

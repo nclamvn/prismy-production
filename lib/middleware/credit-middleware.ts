@@ -28,28 +28,31 @@ export interface CreditMiddlewareResult {
  * Check if user has sufficient credits to access endpoint
  */
 export async function verifyCreditAccess(
-  request: NextRequest, 
+  request: NextRequest,
   options: CreditMiddlewareOptions = {}
 ): Promise<CreditMiddlewareResult> {
   const {
     minimumCredits = 1,
     bypassForAdmin = true,
-    requireActiveAccount = true
+    requireActiveAccount = true,
   } = options
 
   try {
     const supabase = createRouteHandlerClient({ cookies })
-    
+
     // Check authentication first
-    const { data: { session }, error: authError } = await supabase.auth.getSession()
-    
+    const {
+      data: { session },
+      error: authError,
+    } = await supabase.auth.getSession()
+
     if (authError || !session?.user) {
       return {
         allowed: false,
         status: 401,
         error: 'AUTHENTICATION_REQUIRED',
         message: 'Please sign in to access this feature',
-        redirect: '/auth/login'
+        redirect: '/auth/login',
       }
     }
 
@@ -66,7 +69,7 @@ export async function verifyCreditAccess(
         return {
           allowed: true,
           user: session.user,
-          credits: -1 // Unlimited for admins
+          credits: -1, // Unlimited for admins
         }
       }
     }
@@ -81,7 +84,7 @@ export async function verifyCreditAccess(
         status: 402,
         error: 'INVITE_REQUIRED',
         message: 'Please redeem an invite code to get started',
-        redirect: '/invite'
+        redirect: '/invite',
       }
     }
 
@@ -92,7 +95,7 @@ export async function verifyCreditAccess(
         status: 402,
         error: 'TRIAL_EXPIRED',
         message: 'Your trial has expired. Please purchase credits to continue.',
-        redirect: '/pricing'
+        redirect: '/pricing',
       }
     }
 
@@ -103,23 +106,22 @@ export async function verifyCreditAccess(
         status: 402,
         error: 'INSUFFICIENT_CREDITS',
         message: `You need at least ${minimumCredits} credits. You have ${creditStatus.creditsLeft}.`,
-        redirect: '/pricing'
+        redirect: '/pricing',
       }
     }
 
     return {
       allowed: true,
       user: session.user,
-      credits: creditStatus.creditsLeft
+      credits: creditStatus.creditsLeft,
     }
-
   } catch (error) {
     console.error('[Credit Middleware] Error:', error)
     return {
       allowed: false,
       status: 500,
       error: 'SYSTEM_ERROR',
-      message: 'System error checking access permissions'
+      message: 'System error checking access permissions',
     }
   }
 }
@@ -140,7 +142,7 @@ export function withCreditCheck(
           error: accessCheck.error,
           message: accessCheck.message,
           redirect: accessCheck.redirect,
-          status: accessCheck.status
+          status: accessCheck.status,
         },
         { status: accessCheck.status || 403 }
       )
@@ -150,7 +152,7 @@ export function withCreditCheck(
     const enhancedContext = {
       ...context,
       user: accessCheck.user,
-      credits: accessCheck.credits
+      credits: accessCheck.credits,
     }
 
     return handler(req, enhancedContext)
@@ -171,13 +173,15 @@ export async function checkPageAccess(
 }> {
   try {
     const supabase = createRouteHandlerClient({ cookies })
-    
-    const { data: { session } } = await supabase.auth.getSession()
-    
+
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
+
     if (!session?.user) {
       return {
         hasAccess: false,
-        redirectTo: '/auth/login'
+        redirectTo: '/auth/login',
       }
     }
 
@@ -187,7 +191,7 @@ export async function checkPageAccess(
       return {
         hasAccess: false,
         user: session.user,
-        redirectTo: '/invite'
+        redirectTo: '/invite',
       }
     }
 
@@ -195,7 +199,7 @@ export async function checkPageAccess(
       return {
         hasAccess: false,
         user: session.user,
-        redirectTo: '/pricing'
+        redirectTo: '/pricing',
       }
     }
 
@@ -204,21 +208,20 @@ export async function checkPageAccess(
         hasAccess: false,
         user: session.user,
         credits: creditStatus.creditsLeft,
-        redirectTo: redirectPath
+        redirectTo: redirectPath,
       }
     }
 
     return {
       hasAccess: true,
       user: session.user,
-      credits: creditStatus.creditsLeft
+      credits: creditStatus.creditsLeft,
     }
-
   } catch (error) {
     console.error('[Page Access Check] Error:', error)
     return {
       hasAccess: false,
-      redirectTo: '/error'
+      redirectTo: '/error',
     }
   }
 }
@@ -246,7 +249,7 @@ export class CreditGuard {
   }> {
     const cacheKey = `credits_${userId}`
     const cached = this.cache.get(cacheKey)
-    
+
     // Return cached result if fresh
     if (cached && Date.now() - cached.timestamp < this.CACHE_DURATION) {
       return cached.data
@@ -264,26 +267,27 @@ export class CreditGuard {
         hasCredits: data.credits.current > 0,
         creditsLeft: data.credits.current,
         needsAction: data.status.needsInvite || data.status.trialExpired,
-        actionRequired: data.status.needsInvite ? 'invite' as const : 
-                       data.status.trialExpired ? 'purchase' as const : 
-                       'none' as const
+        actionRequired: data.status.needsInvite
+          ? ('invite' as const)
+          : data.status.trialExpired
+            ? ('purchase' as const)
+            : ('none' as const),
       }
 
       // Cache result
       this.cache.set(cacheKey, {
         data: result,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       })
 
       return result
-
     } catch (error) {
       console.error('[CreditGuard] Check error:', error)
       return {
         hasCredits: false,
         creditsLeft: 0,
         needsAction: true,
-        actionRequired: 'invite'
+        actionRequired: 'invite',
       }
     }
   }

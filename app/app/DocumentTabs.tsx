@@ -1,16 +1,23 @@
 'use client'
 
 import { useWorkspaceStore } from './hooks/useWorkspaceStore'
-import { FileText, X, Loader, AlertCircle, CheckCircle, Plus } from 'lucide-react'
+import {
+  FileText,
+  X,
+  Loader,
+  AlertCircle,
+  CheckCircle,
+  Plus,
+} from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 
 export function DocumentTabs() {
-  const { 
-    documents, 
-    activeDocumentId, 
-    setActiveDocument, 
+  const {
+    documents,
+    activeDocumentId,
+    setActiveDocument,
     removeDocument,
-    upload 
+    upload,
   } = useWorkspaceStore()
 
   const handleTabClick = (docId: string) => {
@@ -28,7 +35,7 @@ export function DocumentTabs() {
     input.type = 'file'
     input.multiple = true
     input.accept = '.pdf,.docx,.txt'
-    input.onchange = async (e) => {
+    input.onchange = async e => {
       const files = Array.from((e.target as HTMLInputElement).files || [])
       if (files.length > 0) {
         try {
@@ -47,13 +54,13 @@ export function DocumentTabs() {
     <div className="bg-surface">
       <div className="flex items-center overflow-x-auto scrollbar-hide">
         {/* Document Tabs */}
-        {documents.map((doc) => (
+        {documents.map(doc => (
           <DocumentTab
             key={doc.id}
             document={doc}
             isActive={doc.id === activeDocumentId}
             onClick={() => handleTabClick(doc.id)}
-            onClose={(e) => handleCloseTab(e, doc.id)}
+            onClose={e => handleCloseTab(e, doc.id)}
           />
         ))}
 
@@ -77,7 +84,12 @@ interface DocumentTabProps {
   onClose: (e: React.MouseEvent) => void
 }
 
-function DocumentTab({ document, isActive, onClick, onClose }: DocumentTabProps) {
+function DocumentTab({
+  document,
+  isActive,
+  onClick,
+  onClose,
+}: DocumentTabProps) {
   const getStatusIcon = () => {
     switch (document.status) {
       case 'uploading':
@@ -107,20 +119,23 @@ function DocumentTab({ document, isActive, onClick, onClose }: DocumentTabProps)
     if (name.length <= maxLength) return name
     const ext = name.split('.').pop()
     const nameWithoutExt = name.substring(0, name.lastIndexOf('.'))
-    const truncated = nameWithoutExt.substring(0, maxLength - ext!.length - 4) + '...'
+    const truncated =
+      nameWithoutExt.substring(0, maxLength - ext!.length - 4) + '...'
     return `${truncated}.${ext}`
   }
 
-  const isProcessing = document.status === 'uploading' || document.status === 'processing'
+  const isProcessing =
+    document.status === 'uploading' || document.status === 'processing'
 
   return (
     <div
       onClick={onClick}
       className={`
         flex-shrink-0 flex items-center space-x-2 px-4 py-3 border-r border-border-default cursor-pointer transition-colors group relative
-        ${isActive 
-          ? 'bg-bg-default border-b-2 border-b-accent-brand text-primary' 
-          : 'hover:bg-bg-muted text-secondary hover:text-primary'
+        ${
+          isActive
+            ? 'bg-bg-default border-b-2 border-b-accent-brand text-primary'
+            : 'hover:bg-bg-muted text-secondary hover:text-primary'
         }
         ${isProcessing ? 'cursor-wait' : ''}
       `}
@@ -140,7 +155,7 @@ function DocumentTab({ document, isActive, onClick, onClose }: DocumentTabProps)
       {/* Progress Bar for Processing */}
       {isProcessing && (
         <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-bg-muted">
-          <div 
+          <div
             className="h-full bg-accent-brand transition-all duration-300"
             style={{ width: `${document.progress}%` }}
           />
@@ -152,9 +167,10 @@ function DocumentTab({ document, isActive, onClick, onClose }: DocumentTabProps)
         onClick={onClose}
         className={`
           flex-shrink-0 p-1 rounded-md transition-all
-          ${isActive 
-            ? 'opacity-100 hover:bg-bg-muted' 
-            : 'opacity-0 group-hover:opacity-100 hover:bg-border-default'
+          ${
+            isActive
+              ? 'opacity-100 hover:bg-bg-muted'
+              : 'opacity-0 group-hover:opacity-100 hover:bg-border-default'
           }
         `}
         title="Close document"

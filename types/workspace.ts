@@ -1,18 +1,23 @@
 // Workspace and Intelligence System TypeScript definitions
 // Comprehensive types for workspace functionality and AI intelligence
 
-import type { SupportedLanguage, WithId, WithTimestamps, AsyncState } from './index'
+import type {
+  SupportedLanguage,
+  WithId,
+  WithTimestamps,
+  AsyncState,
+} from './index'
 import type { User, Agent, Document } from './api'
 
 // Core Workspace Types
-export type WorkspaceMode = 
-  | 'translation' 
-  | 'documents' 
-  | 'intelligence' 
-  | 'analytics' 
-  | 'api' 
-  | 'enterprise' 
-  | 'billing' 
+export type WorkspaceMode =
+  | 'translation'
+  | 'documents'
+  | 'intelligence'
+  | 'analytics'
+  | 'api'
+  | 'enterprise'
+  | 'billing'
   | 'settings'
 
 export interface WorkspaceContext {
@@ -57,7 +62,12 @@ export interface WorkspaceIntelligenceState {
 
 export interface Activity {
   id: string
-  type: 'translation' | 'document_upload' | 'batch_process' | 'agent_interaction' | 'settings_change'
+  type:
+    | 'translation'
+    | 'document_upload'
+    | 'batch_process'
+    | 'agent_interaction'
+    | 'settings_change'
   timestamp: Date
   duration?: number
   status: 'started' | 'completed' | 'failed' | 'cancelled'
@@ -105,7 +115,12 @@ export interface UserPattern {
 
 export interface AIOperation {
   id: string
-  type: 'translation' | 'analysis' | 'optimization' | 'suggestion' | 'batch_process'
+  type:
+    | 'translation'
+    | 'analysis'
+    | 'optimization'
+    | 'suggestion'
+    | 'batch_process'
   status: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled'
   priority: 'low' | 'normal' | 'high' | 'urgent'
   agentId?: string
@@ -318,11 +333,15 @@ export interface WorkspaceIntelligenceContextValue {
     setMode: (mode: WorkspaceMode) => void
     updateContext: (context: Partial<WorkspaceContext>) => void
     addActivity: (activity: Omit<Activity, 'id' | 'timestamp'>) => void
-    startOperation: (operation: Omit<AIOperation, 'id' | 'createdAt' | 'progress'>) => string
+    startOperation: (
+      operation: Omit<AIOperation, 'id' | 'createdAt' | 'progress'>
+    ) => string
     updateOperation: (id: string, updates: Partial<AIOperation>) => void
     completeOperation: (id: string, output: OperationOutput) => void
     failOperation: (id: string, error: OperationError) => void
-    addSuggestion: (suggestion: Omit<SmartSuggestion, 'id' | 'createdAt'>) => void
+    addSuggestion: (
+      suggestion: Omit<SmartSuggestion, 'id' | 'createdAt'>
+    ) => void
     dismissSuggestion: (id: string) => void
     applySuggestion: (id: string) => void
     addInsight: (insight: Omit<WorkspaceInsight, 'id' | 'createdAt'>) => void
@@ -450,7 +469,9 @@ export interface UseWorkspaceIntelligence {
   updateContext: (context: Partial<WorkspaceContext>) => void
   addActivity: (activity: Omit<Activity, 'id' | 'timestamp'>) => void
   operations: {
-    start: (operation: Omit<AIOperation, 'id' | 'createdAt' | 'progress'>) => string
+    start: (
+      operation: Omit<AIOperation, 'id' | 'createdAt' | 'progress'>
+    ) => string
     update: (id: string, updates: Partial<AIOperation>) => void
     complete: (id: string, output: OperationOutput) => void
     fail: (id: string, error: OperationError) => void

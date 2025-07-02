@@ -3,20 +3,32 @@
 import { useState } from 'react'
 import { MarketingLayout } from '@/components/layouts/MarketingLayout'
 import { Button } from '@/components/ui/Button'
-import { Rocket, Globe, Zap, Shield, Bot, BarChart3, Plug, Star } from 'lucide-react'
+import {
+  Rocket,
+  Globe,
+  Zap,
+  Shield,
+  Bot,
+  BarChart3,
+  Plug,
+  Star,
+} from 'lucide-react'
 import dynamic from 'next/dynamic'
 
-const FileDropZone = dynamic(() => import('@/components/ui/FileDropZone').then(mod => mod.FileDropZone), {
-  loading: () => (
-    <div className="border-2 border-dashed border-border-default rounded-lg p-12 text-center">
-      <div className="animate-pulse">
-        <div className="w-16 h-16 bg-bg-muted rounded-lg mx-auto mb-4"></div>
-        <div className="h-4 bg-bg-muted rounded w-48 mx-auto mb-2"></div>
-        <div className="h-3 bg-bg-muted rounded w-32 mx-auto"></div>
+const FileDropZone = dynamic(
+  () => import('@/components/ui/FileDropZone').then(mod => mod.FileDropZone),
+  {
+    loading: () => (
+      <div className="border-2 border-dashed border-border-default rounded-lg p-12 text-center">
+        <div className="animate-pulse">
+          <div className="w-16 h-16 bg-bg-muted rounded-lg mx-auto mb-4"></div>
+          <div className="h-4 bg-bg-muted rounded w-48 mx-auto mb-2"></div>
+          <div className="h-3 bg-bg-muted rounded w-32 mx-auto"></div>
+        </div>
       </div>
-    </div>
-  )
-})
+    ),
+  }
+)
 import { useRouter } from 'next/navigation'
 
 export default function HomePage() {
@@ -37,7 +49,6 @@ export default function HomePage() {
     router.push('/login?next=/app')
   }
 
-
   return (
     <MarketingLayout>
       {/* Hero Section */}
@@ -48,9 +59,9 @@ export default function HomePage() {
               AI-Powered Document Translation
               <span className="block text-accent-brand mt-2">Made Simple</span>
             </h1>
-            
+
             <p className="text-xl text-secondary max-w-2xl mx-auto">
-              Transform your documents with enterprise-grade AI translation. 
+              Transform your documents with enterprise-grade AI translation.
               Upload, translate, and chat with your content in seconds.
             </p>
 
@@ -121,7 +132,8 @@ export default function HomePage() {
               Everything You Need for Document Intelligence
             </h2>
             <p className="text-lg text-secondary max-w-2xl mx-auto">
-              Powerful features designed for teams who work with multilingual content
+              Powerful features designed for teams who work with multilingual
+              content
             </p>
           </div>
 
@@ -206,14 +218,17 @@ export default function HomePage() {
               <Button size="lg" onClick={handleGetStarted}>
                 Workspace
               </Button>
-              <Button size="lg" variant="outline" onClick={() => router.push('/demo')}>
+              <Button
+                size="lg"
+                variant="outline"
+                onClick={() => router.push('/demo')}
+              >
                 View Live Demo
               </Button>
             </div>
           </div>
         </div>
       </section>
-
     </MarketingLayout>
   )
 }
@@ -243,7 +258,12 @@ interface TestimonialCardProps {
   rating: number
 }
 
-function TestimonialCard({ quote, author, role, rating }: TestimonialCardProps) {
+function TestimonialCard({
+  quote,
+  author,
+  role,
+  rating,
+}: TestimonialCardProps) {
   return (
     <div className="bg-surface border border-border-default rounded-lg p-6 space-y-4">
       <div className="flex space-x-1">

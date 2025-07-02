@@ -35,6 +35,7 @@ This guide covers the complete database setup for Prismy production deployment u
 ## Migration Files
 
 ### 001_initial_schema.sql
+
 - Creates all core tables
 - Sets up custom types (enums)
 - Adds indexes for performance
@@ -42,12 +43,14 @@ This guide covers the complete database setup for Prismy production deployment u
 - Creates triggers for timestamps
 
 ### 002_functions_and_views.sql
+
 - Utility functions for usage tracking
 - Views for common queries
 - Materialized views for analytics
 - Database functions for business logic
 
 ### 003_security_and_performance.sql
+
 - Audit logging system
 - Rate limiting implementation
 - IP blocking for security
@@ -88,6 +91,7 @@ node scripts/db-migrate.js seed
 ```
 
 Test accounts created by seed:
+
 - admin@prismy.ai (password: Admin123!)
 - demo@prismy.ai (password: Demo123!)
 - test@prismy.ai (password: Test123!)
@@ -96,32 +100,35 @@ Test accounts created by seed:
 
 ```sql
 -- Check tables
-SELECT table_name FROM information_schema.tables 
-WHERE table_schema = 'public' 
+SELECT table_name FROM information_schema.tables
+WHERE table_schema = 'public'
 ORDER BY table_name;
 
 -- Check user count
 SELECT COUNT(*) FROM public.users;
 
 -- Check migration history
-SELECT * FROM public.schema_migrations 
+SELECT * FROM public.schema_migrations
 ORDER BY version DESC;
 ```
 
 ## Database Features
 
 ### Row Level Security (RLS)
+
 - Users can only access their own data
 - Team members can access shared team resources
 - API keys provide programmatic access
 
 ### Performance Optimizations
+
 - Strategic indexes on foreign keys and frequently queried columns
 - Partial indexes for status-based queries
 - Materialized views for analytics
 - Full-text search on translations
 
 ### Security Features
+
 - Audit logging for sensitive operations
 - Rate limiting at database level
 - IP blocking capability
@@ -129,6 +136,7 @@ ORDER BY version DESC;
 - Data encryption at rest (Supabase feature)
 
 ### Automated Maintenance
+
 - Updated_at triggers on all tables
 - Data retention policies
 - Expired data cleanup
@@ -137,41 +145,48 @@ ORDER BY version DESC;
 ## Common Operations
 
 ### Check User Usage
+
 ```sql
 SELECT * FROM get_user_usage('user-uuid-here');
 ```
 
 ### Check Rate Limits
+
 ```sql
 SELECT check_rate_limit('user-id', '/api/translate', 100, 60);
 ```
 
 ### View Daily Statistics
+
 ```sql
-SELECT * FROM system_stats 
-ORDER BY stat_date DESC 
+SELECT * FROM system_stats
+ORDER BY stat_date DESC
 LIMIT 30;
 ```
 
 ### Monitor Active Translations
+
 ```sql
 SELECT COUNT(*) as active_count
-FROM translations 
+FROM translations
 WHERE status IN ('pending', 'in_progress');
 ```
 
 ## Backup and Recovery
 
 ### Automated Backups
+
 Supabase provides automated daily backups with point-in-time recovery.
 
 ### Manual Backup
+
 ```bash
 # Using pg_dump (requires database URL)
 pg_dump $DATABASE_URL > backup_$(date +%Y%m%d_%H%M%S).sql
 ```
 
 ### Restore from Backup
+
 ```bash
 # Restore using psql
 psql $DATABASE_URL < backup_file.sql
@@ -180,12 +195,15 @@ psql $DATABASE_URL < backup_file.sql
 ## Monitoring
 
 ### Health Checks
+
 The database includes a health_check table used by monitoring endpoints:
+
 - `/api/health/database` - Database connectivity
 - Database query performance
 - Table accessibility
 
 ### Performance Monitoring
+
 - Query performance via pg_stat_statements
 - Index usage statistics
 - Connection pool monitoring
@@ -196,11 +214,13 @@ The database includes a health_check table used by monitoring endpoints:
 ### Common Issues
 
 1. **Migration Fails**
+
    - Check Supabase credentials
    - Verify network connectivity
    - Review migration SQL for syntax errors
 
 2. **RLS Blocking Access**
+
    - Verify user authentication
    - Check RLS policies
    - Use service role key for admin operations
@@ -224,8 +244,8 @@ SELECT * FROM pg_stat_activity;
 SELECT * FROM pg_stat_user_indexes;
 
 -- Find slow queries
-SELECT * FROM pg_stat_statements 
-ORDER BY total_time DESC 
+SELECT * FROM pg_stat_statements
+ORDER BY total_time DESC
 LIMIT 10;
 ```
 
@@ -242,6 +262,7 @@ LIMIT 10;
 ## Support
 
 For database-related issues:
+
 1. Check Supabase dashboard for real-time metrics
 2. Review PostgreSQL logs
 3. Monitor application error logs

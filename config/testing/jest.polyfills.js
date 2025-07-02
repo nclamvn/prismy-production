@@ -28,15 +28,19 @@ if (!global.fetch) {
 }
 
 // Add minimal polyfills for Web APIs that MSW needs
-global.MessageChannel = global.MessageChannel || class MessageChannel {
-  port1 = { postMessage: () => {}, onmessage: null }
-  port2 = { postMessage: () => {}, onmessage: null }
-}
+global.MessageChannel =
+  global.MessageChannel ||
+  class MessageChannel {
+    port1 = { postMessage: () => {}, onmessage: null }
+    port2 = { postMessage: () => {}, onmessage: null }
+  }
 
-global.MessagePort = global.MessagePort || class MessagePort {
-  postMessage() {}
-  onmessage = null
-}
+global.MessagePort =
+  global.MessagePort ||
+  class MessagePort {
+    postMessage() {}
+    onmessage = null
+  }
 
 // Mock URL if not available
 if (!global.URL) {
@@ -47,6 +51,6 @@ if (!global.URL) {
 if (!global.crypto) {
   global.crypto = {
     randomUUID: () => require('crypto').randomUUID(),
-    getRandomValues: (arr) => require('crypto').getRandomValues(arr),
+    getRandomValues: arr => require('crypto').getRandomValues(arr),
   }
 }

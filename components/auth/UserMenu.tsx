@@ -21,7 +21,9 @@ export function UserMenu() {
     })
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
     })
 
@@ -59,7 +61,7 @@ export function UserMenu() {
       {showMenu && (
         <>
           {/* Backdrop */}
-          <div 
+          <div
             className="fixed inset-0 z-40"
             onClick={() => setShowMenu(false)}
           />
@@ -125,7 +127,12 @@ interface MenuItemProps {
   className?: string
 }
 
-function MenuItem({ children, onClick, disabled, className = '' }: MenuItemProps) {
+function MenuItem({
+  children,
+  onClick,
+  disabled,
+  className = '',
+}: MenuItemProps) {
   return (
     <button
       onClick={onClick}

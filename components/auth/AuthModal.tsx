@@ -13,7 +13,12 @@ interface AuthModalProps {
   mode?: 'signin' | 'signup'
 }
 
-export function AuthModal({ isOpen, onClose, onSuccess, mode = 'signin' }: AuthModalProps) {
+export function AuthModal({
+  isOpen,
+  onClose,
+  onSuccess,
+  mode = 'signin',
+}: AuthModalProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [authMode, setAuthMode] = useState(mode)
@@ -77,10 +82,7 @@ export function AuthModal({ isOpen, onClose, onSuccess, mode = 'signin' }: AuthM
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
-      <div 
-        className="absolute inset-0 bg-bg-overlay"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 bg-bg-overlay" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative bg-surface border border-border-default rounded-lg elevation-xl w-full max-w-md p-6 m-4">
@@ -98,8 +100,8 @@ export function AuthModal({ isOpen, onClose, onSuccess, mode = 'signin' }: AuthM
             {authMode === 'signin' ? 'Welcome Back' : 'Create Your Account'}
           </h2>
           <p className="text-secondary mt-2">
-            {authMode === 'signin' 
-              ? 'Sign in to access your workspace' 
+            {authMode === 'signin'
+              ? 'Sign in to access your workspace'
               : 'Start your 14-day free trial'}
           </p>
         </div>
@@ -113,7 +115,7 @@ export function AuthModal({ isOpen, onClose, onSuccess, mode = 'signin' }: AuthM
             <Input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
               placeholder="you@example.com"
               required
               disabled={loading}
@@ -127,7 +129,7 @@ export function AuthModal({ isOpen, onClose, onSuccess, mode = 'signin' }: AuthM
             <Input
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
               placeholder="••••••••"
               required
               disabled={loading}
@@ -141,25 +143,25 @@ export function AuthModal({ isOpen, onClose, onSuccess, mode = 'signin' }: AuthM
             </div>
           )}
 
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={loading}
-          >
-            {loading 
-              ? 'Processing...' 
-              : authMode === 'signin' 
-              ? 'Sign In' 
-              : 'Create Account'}
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading
+              ? 'Processing...'
+              : authMode === 'signin'
+                ? 'Sign In'
+                : 'Create Account'}
           </Button>
         </form>
 
         {/* Toggle mode */}
         <div className="mt-6 text-center">
           <p className="text-sm text-secondary">
-            {authMode === 'signin' ? "Don't have an account? " : "Already have an account? "}
+            {authMode === 'signin'
+              ? "Don't have an account? "
+              : 'Already have an account? '}
             <button
-              onClick={() => setAuthMode(authMode === 'signin' ? 'signup' : 'signin')}
+              onClick={() =>
+                setAuthMode(authMode === 'signin' ? 'signup' : 'signin')
+              }
               className="text-accent-brand hover:text-accent-brand-dark font-medium"
               disabled={loading}
             >
@@ -174,9 +176,16 @@ export function AuthModal({ isOpen, onClose, onSuccess, mode = 'signin' }: AuthM
             <div className="text-xs text-muted text-center space-y-1">
               <p>By creating an account, you agree to our</p>
               <p>
-                <a href="/terms" className="text-accent-brand hover:underline">Terms of Service</a>
+                <a href="/terms" className="text-accent-brand hover:underline">
+                  Terms of Service
+                </a>
                 {' and '}
-                <a href="/privacy" className="text-accent-brand hover:underline">Privacy Policy</a>
+                <a
+                  href="/privacy"
+                  className="text-accent-brand hover:underline"
+                >
+                  Privacy Policy
+                </a>
               </p>
             </div>
           </div>

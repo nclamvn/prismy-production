@@ -9,12 +9,12 @@ import { checkAdmin } from '../auth'
 const mockGetUser = jest.fn()
 const mockSupabase = {
   auth: {
-    getUser: mockGetUser
-  }
+    getUser: mockGetUser,
+  },
 }
 
 jest.mock('../supabase', () => ({
-  createClient: () => mockSupabase
+  createClient: () => mockSupabase,
 }))
 
 describe('Mutation-Resistant Auth Tests', () => {
@@ -31,10 +31,10 @@ describe('Mutation-Resistant Auth Tests', () => {
         data: {
           user: {
             id: 'user123',
-            email: 'regular@example.com'
-          }
+            email: 'regular@example.com',
+          },
         },
-        error: null
+        error: null,
       })
 
       const result = await checkAdmin()
@@ -53,10 +53,10 @@ describe('Mutation-Resistant Auth Tests', () => {
         data: {
           user: {
             id: 'admin123',
-            email: 'admin@example.com'
-          }
+            email: 'admin@example.com',
+          },
         },
-        error: null
+        error: null,
       })
 
       const result = await checkAdmin()
@@ -75,10 +75,10 @@ describe('Mutation-Resistant Auth Tests', () => {
         data: {
           user: {
             id: 'user123',
-            email: 'ADMIN@EXAMPLE.COM' // Different case
-          }
+            email: 'ADMIN@EXAMPLE.COM', // Different case
+          },
         },
-        error: null
+        error: null,
       })
 
       const result = await checkAdmin()
@@ -94,10 +94,10 @@ describe('Mutation-Resistant Auth Tests', () => {
         data: {
           user: {
             id: 'user123',
-            email: 'admin@example.com.fake' // Partial match
-          }
+            email: 'admin@example.com.fake', // Partial match
+          },
         },
-        error: null
+        error: null,
       })
 
       const result = await checkAdmin()
@@ -113,10 +113,10 @@ describe('Mutation-Resistant Auth Tests', () => {
         data: {
           user: {
             id: 'user123',
-            email: 'any@example.com'
-          }
+            email: 'any@example.com',
+          },
         },
-        error: null
+        error: null,
       })
 
       const result = await checkAdmin()
@@ -132,10 +132,10 @@ describe('Mutation-Resistant Auth Tests', () => {
         data: {
           user: {
             id: 'user123',
-            email: 'any@example.com'
-          }
+            email: 'any@example.com',
+          },
         },
-        error: null
+        error: null,
       })
 
       const result = await checkAdmin()
@@ -151,10 +151,10 @@ describe('Mutation-Resistant Auth Tests', () => {
         data: {
           user: {
             id: 'user123',
-            email: null // Null email
-          }
+            email: null, // Null email
+          },
         },
-        error: null
+        error: null,
       })
 
       const result = await checkAdmin()
@@ -169,11 +169,11 @@ describe('Mutation-Resistant Auth Tests', () => {
       mockGetUser.mockResolvedValue({
         data: {
           user: {
-            id: 'user123'
+            id: 'user123',
             // No email property
-          }
+          },
         },
-        error: null
+        error: null,
       })
 
       const result = await checkAdmin()
@@ -184,17 +184,18 @@ describe('Mutation-Resistant Auth Tests', () => {
     })
 
     it('should handle multiple admin emails correctly', async () => {
-      process.env.ADMIN_EMAILS = 'admin1@example.com,admin2@example.com,admin3@example.com'
-      
+      process.env.ADMIN_EMAILS =
+        'admin1@example.com,admin2@example.com,admin3@example.com'
+
       // Test first admin
       mockGetUser.mockResolvedValue({
         data: {
           user: {
             id: 'admin1',
-            email: 'admin1@example.com'
-          }
+            email: 'admin1@example.com',
+          },
         },
-        error: null
+        error: null,
       })
 
       let result = await checkAdmin()
@@ -205,10 +206,10 @@ describe('Mutation-Resistant Auth Tests', () => {
         data: {
           user: {
             id: 'admin2',
-            email: 'admin2@example.com'
-          }
+            email: 'admin2@example.com',
+          },
         },
-        error: null
+        error: null,
       })
 
       result = await checkAdmin()
@@ -219,10 +220,10 @@ describe('Mutation-Resistant Auth Tests', () => {
         data: {
           user: {
             id: 'admin3',
-            email: 'admin3@example.com'
-          }
+            email: 'admin3@example.com',
+          },
         },
-        error: null
+        error: null,
       })
 
       result = await checkAdmin()
@@ -235,10 +236,10 @@ describe('Mutation-Resistant Auth Tests', () => {
         data: {
           user: {
             id: 'admin123',
-            email: 'admin@example.com'
-          }
+            email: 'admin@example.com',
+          },
         },
-        error: null
+        error: null,
       })
 
       const result = await checkAdmin()
@@ -251,7 +252,7 @@ describe('Mutation-Resistant Auth Tests', () => {
       process.env.ADMIN_EMAILS = 'admin@example.com'
       mockGetUser.mockResolvedValue({
         data: { user: null },
-        error: { message: 'Auth error' }
+        error: { message: 'Auth error' },
       })
 
       // Should handle auth errors gracefully
@@ -264,10 +265,10 @@ describe('Mutation-Resistant Auth Tests', () => {
         data: {
           user: {
             id: 'user123',
-            email: '' // Empty string email
-          }
+            email: '', // Empty string email
+          },
         },
-        error: null
+        error: null,
       })
 
       const result = await checkAdmin()
@@ -281,20 +282,20 @@ describe('Mutation-Resistant Auth Tests', () => {
   describe('Boolean Logic Mutation Detection', () => {
     it('should catch AND/OR operator mutations', async () => {
       process.env.ADMIN_EMAILS = 'admin@example.com'
-      
+
       // Test case where user exists AND email matches
       mockGetUser.mockResolvedValue({
         data: {
           user: {
             id: 'admin123',
-            email: 'admin@example.com'
-          }
+            email: 'admin@example.com',
+          },
         },
-        error: null
+        error: null,
       })
 
       const result = await checkAdmin()
-      
+
       // If && becomes ||, this would still pass incorrectly
       // But our multi-assertion approach catches it
       expect(result.isAdmin && result.userId === 'admin123').toBe(true)
@@ -308,10 +309,10 @@ describe('Mutation-Resistant Auth Tests', () => {
         data: {
           user: {
             id: 'user123',
-            email: 'notadmin@example.com'
-          }
+            email: 'notadmin@example.com',
+          },
         },
-        error: null
+        error: null,
       })
 
       const result = await checkAdmin()

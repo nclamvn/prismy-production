@@ -51,7 +51,9 @@ describe('Validation System', () => {
 
     it('should throw error for non-string input', () => {
       expect(() => sanitizeHtml(null as any)).toThrow('Input must be a string')
-      expect(() => sanitizeHtml(undefined as any)).toThrow('Input must be a string')
+      expect(() => sanitizeHtml(undefined as any)).toThrow(
+        'Input must be a string'
+      )
       expect(() => sanitizeHtml(123 as any)).toThrow('Input must be a string')
     })
 
@@ -74,10 +76,10 @@ describe('Validation System', () => {
         name: '<script>alert("xss")</script>John',
         details: {
           bio: '<p>Hello <b>world</b></p>',
-          tags: ['<em>tag1</em>', 'tag2']
-        }
+          tags: ['<em>tag1</em>', 'tag2'],
+        },
       }
-      
+
       const result = sanitizeObject(input)
       expect(result.name).toBe('John')
       expect(result.details.bio).toBe('Hello world')
@@ -101,7 +103,7 @@ describe('Validation System', () => {
 
     it('should sanitize object keys', () => {
       const input = {
-        '<script>malicious</script>': 'value'
+        '<script>malicious</script>': 'value',
       }
       const result = sanitizeObject(input)
       expect(result['']).toBe('value') // Key becomes empty string after sanitization
@@ -115,7 +117,7 @@ describe('Validation System', () => {
       sourceLang: 'en',
       targetLang: 'vi',
       qualityTier: 'standard',
-      serviceType: 'google_translate'
+      serviceType: 'google_translate',
     }
 
     it('should validate correct translation data', async () => {
@@ -129,7 +131,7 @@ describe('Validation System', () => {
     it('should sanitize text input', async () => {
       const data = {
         ...validTranslationData,
-        text: '<script>alert("xss")</script>Hello world'
+        text: '<script>alert("xss")</script>Hello world',
       }
       const result = translationSchema.parse(data)
       expect(result.text).toBe('Hello world')
@@ -139,7 +141,7 @@ describe('Validation System', () => {
       await expect(
         translationSchema.parseAsync({
           ...validTranslationData,
-          text: 'a'.repeat(2000001)
+          text: 'a'.repeat(2000001),
         })
       ).rejects.toThrow('Text too long')
     })
@@ -148,7 +150,7 @@ describe('Validation System', () => {
       await expect(
         translationSchema.parseAsync({
           ...validTranslationData,
-          text: ''
+          text: '',
         })
       ).rejects.toThrow('Text cannot be empty')
     })
@@ -157,7 +159,7 @@ describe('Validation System', () => {
       await expect(
         translationSchema.parseAsync({
           ...validTranslationData,
-          text: '   \n\t   '
+          text: '   \n\t   ',
         })
       ).rejects.toThrow('Text cannot be only whitespace')
     })
@@ -166,7 +168,7 @@ describe('Validation System', () => {
       await expect(
         translationSchema.parseAsync({
           ...validTranslationData,
-          targetLang: 'xx'
+          targetLang: 'xx',
         })
       ).rejects.toThrow('Unsupported language code')
     })
@@ -175,7 +177,7 @@ describe('Validation System', () => {
       await expect(
         translationSchema.parseAsync({
           ...validTranslationData,
-          qualityTier: 'invalid' as any
+          qualityTier: 'invalid' as any,
         })
       ).rejects.toThrow('Invalid quality tier')
     })
@@ -190,7 +192,7 @@ describe('Validation System', () => {
     it('should handle optional fields', () => {
       const minimalData = {
         text: 'Hello',
-        targetLang: 'vi'
+        targetLang: 'vi',
       }
       const result = translationSchema.parse(minimalData)
       expect(result.text).toBe('Hello')
@@ -205,7 +207,7 @@ describe('Validation System', () => {
         email: 'test@example.com',
         password: 'SecurePass123!',
         fullName: 'John Doe',
-        csrf_token: 'valid-token'
+        csrf_token: 'valid-token',
       }
 
       it('should validate correct sign up data', () => {
@@ -217,7 +219,7 @@ describe('Validation System', () => {
       it('should normalize email addresses', () => {
         const data = {
           ...validSignUpData,
-          email: 'Test.User+tag@EXAMPLE.COM'
+          email: 'Test.User+tag@EXAMPLE.COM',
         }
         const result = signUpSchema.parse(data)
         // Email normalization may convert to lowercase but keep the format
@@ -228,7 +230,7 @@ describe('Validation System', () => {
         await expect(
           signUpSchema.parseAsync({
             ...validSignUpData,
-            password: 'weak'
+            password: 'weak',
           })
         ).rejects.toThrow('Password must contain at least one uppercase')
       })
@@ -237,7 +239,7 @@ describe('Validation System', () => {
         await expect(
           signUpSchema.parseAsync({
             ...validSignUpData,
-            email: 'invalid-email'
+            email: 'invalid-email',
           })
         ).rejects.toThrow('Invalid email format')
       })
@@ -245,7 +247,7 @@ describe('Validation System', () => {
       it('should sanitize full name with transform', () => {
         const data = {
           ...validSignUpData,
-          fullName: '  John Doe  ' // Test trimming and sanitization
+          fullName: '  John Doe  ', // Test trimming and sanitization
         }
         const result = signUpSchema.parse(data)
         expect(result.fullName).toBe('John Doe') // Should be trimmed
@@ -255,7 +257,7 @@ describe('Validation System', () => {
         await expect(
           signUpSchema.parseAsync({
             ...validSignUpData,
-            fullName: '<script>John</script>'
+            fullName: '<script>John</script>',
           })
         ).rejects.toThrow('Full name can only contain letters')
       })
@@ -265,7 +267,7 @@ describe('Validation System', () => {
       const validSignInData = {
         email: 'test@example.com',
         password: 'password123',
-        csrf_token: 'valid-token'
+        csrf_token: 'valid-token',
       }
 
       it('should validate correct sign in data', () => {
@@ -278,7 +280,7 @@ describe('Validation System', () => {
         await expect(
           signInSchema.parseAsync({
             ...validSignInData,
-            password: ''
+            password: '',
           })
         ).rejects.toThrow('Password is required')
       })
@@ -294,7 +296,9 @@ describe('Validation System', () => {
       })
 
       it('should validate IPv6 addresses', () => {
-        expect(validateIPAddress('2001:0db8:85a3:0000:0000:8a2e:0370:7334')).toBe(true)
+        expect(
+          validateIPAddress('2001:0db8:85a3:0000:0000:8a2e:0370:7334')
+        ).toBe(true)
         expect(validateIPAddress('::1')).toBe(true)
       })
 
@@ -347,7 +351,7 @@ describe('Validation System', () => {
         const result = await validator({
           email: 'test@example.com',
           password: 'password123',
-          csrf_token: 'token'
+          csrf_token: 'token',
         })
 
         expect(result.success).toBe(true)
@@ -358,7 +362,7 @@ describe('Validation System', () => {
         const validator = validateRequest(signInSchema)
         const result = await validator({
           email: 'invalid-email',
-          password: ''
+          password: '',
         })
 
         expect(result.success).toBe(false)
@@ -375,7 +379,10 @@ describe('Validation System', () => {
       })
 
       it('should create error result', () => {
-        const result = createValidationResult(false, undefined, ['Error 1', 'Error 2'])
+        const result = createValidationResult(false, undefined, [
+          'Error 1',
+          'Error 2',
+        ])
         expect(result.success).toBe(false)
         expect(result.data).toBeUndefined()
         expect(result.errors).toHaveLength(2)
@@ -389,7 +396,7 @@ describe('Validation System', () => {
           const result = validateLoginRequest({
             email: 'test@example.com',
             password: 'password123',
-            csrf_token: 'token'
+            csrf_token: 'token',
           })
 
           expect(result.success).toBe(true)
@@ -399,7 +406,7 @@ describe('Validation System', () => {
         it('should return errors for invalid data', () => {
           const result = validateLoginRequest({
             email: 'invalid',
-            password: ''
+            password: '',
           })
 
           expect(result.success).toBe(false)
@@ -413,7 +420,7 @@ describe('Validation System', () => {
             email: 'test@example.com',
             password: 'SecurePass123!',
             fullName: 'John Doe',
-            csrf_token: 'token'
+            csrf_token: 'token',
           })
 
           expect(result.success).toBe(true)
@@ -425,7 +432,7 @@ describe('Validation System', () => {
         it('should validate correct translation data', () => {
           const result = validateTranslationRequest({
             text: 'Hello world',
-            targetLang: 'vi'
+            targetLang: 'vi',
           })
 
           expect(result.success).toBe(true)

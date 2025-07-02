@@ -14,15 +14,17 @@ export async function detectServerLanguage(): Promise<string> {
     const authHeader = headers().get('authorization')
     if (authHeader) {
       const token = authHeader.replace('Bearer ', '')
-      const { data: { user } } = await supabase.auth.getUser(token)
-      
+      const {
+        data: { user },
+      } = await supabase.auth.getUser(token)
+
       if (user) {
         const { data: profile } = await supabase
           .from('user_profiles')
           .select('language')
           .eq('user_id', user.id)
           .single()
-        
+
         if (profile?.language && isValidLanguage(profile.language)) {
           return profile.language
         }
@@ -47,7 +49,6 @@ export async function detectServerLanguage(): Promise<string> {
 
     // 4. Default fallback
     return DEFAULT_LANGUAGE
-
   } catch (error) {
     console.error('Error detecting server language:', error)
     return DEFAULT_LANGUAGE
@@ -62,7 +63,7 @@ function parseBrowserLanguage(acceptLanguage: string): string | null {
       const [code, quality = '1'] = lang.trim().split(';q=')
       return {
         code: code.split('-')[0].toLowerCase(),
-        quality: parseFloat(quality)
+        quality: parseFloat(quality),
       }
     })
     .sort((a, b) => b.quality - a.quality)
@@ -124,7 +125,6 @@ export async function getServerTranslation(
 
     // Return provided fallback or key
     return fallback || key
-
   } catch (error) {
     console.error('Error getting server translation:', error)
     return fallback || key
@@ -134,8 +134,9 @@ export async function getServerTranslation(
 // Get user's language preference from database
 export async function getUserLanguage(userId: string): Promise<string> {
   try {
-    const { data } = await supabase
-      .rpc('get_user_language', { p_user_id: userId })
+    const { data } = await supabase.rpc('get_user_language', {
+      p_user_id: userId,
+    })
 
     return data || DEFAULT_LANGUAGE
   } catch (error) {
@@ -158,7 +159,7 @@ export async function setUserLanguage(
     await supabase.rpc('set_user_language', {
       p_user_id: userId,
       p_language: language,
-      p_timezone: timezone
+      p_timezone: timezone,
     })
   } catch (error) {
     console.error('Error setting user language:', error)
@@ -167,10 +168,13 @@ export async function setUserLanguage(
 }
 
 // Get organization's supported languages
-export async function getOrganizationLanguages(organizationId: string): Promise<string[]> {
+export async function getOrganizationLanguages(
+  organizationId: string
+): Promise<string[]> {
   try {
-    const { data } = await supabase
-      .rpc('get_organization_languages', { p_organization_id: organizationId })
+    const { data } = await supabase.rpc('get_organization_languages', {
+      p_organization_id: organizationId,
+    })
 
     if (Array.isArray(data)) {
       return data
@@ -189,23 +193,25 @@ export function generateLanguageAlternates(pathname: string): Array<{
   href: string
 }> {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://prismy.com'
-  
+
   return SUPPORTED_LANGUAGES.map(lang => ({
     hreflang: lang.code,
-    href: `${baseUrl}/${lang.code}${pathname}`
+    href: `${baseUrl}/${lang.code}${pathname}`,
   }))
 }
 
 // Server component wrapper for translations
 export async function ServerTranslation({
   children,
-  language
+  language,
 }: {
-  children: (t: (key: string, namespace?: string) => Promise<string>) => React.ReactNode
+  children: (
+    t: (key: string, namespace?: string) => Promise<string>
+  ) => React.ReactNode
   language?: string
 }) {
-  const lang = language || await detectServerLanguage()
-  
+  const lang = language || (await detectServerLanguage())
+
   const t = async (key: string, namespace: string = 'common') => {
     return await getServerTranslation(key, lang, namespace)
   }
@@ -218,7 +224,7 @@ export function getLanguageFromRequest(request: Request): string {
   // Extract language from URL path
   const url = new URL(request.url)
   const pathSegments = url.pathname.split('/').filter(Boolean)
-  
+
   if (pathSegments.length > 0) {
     const firstSegment = pathSegments[0]
     if (isValidLanguage(firstSegment)) {
@@ -239,22 +245,26 @@ export function getLanguageFromRequest(request: Request): string {
 }
 
 // Generate OpenGraph and meta tags with language
-export function generateLanguageMeta(language: string, title: string, description: string) {
+export function generateLanguageMeta(
+  language: string,
+  title: string,
+  description: string
+) {
   const lang = getLanguageByCode(language)
   const isRTL = lang?.rtl || false
-  
+
   return {
     lang: language,
     dir: isRTL ? 'rtl' : 'ltr',
     openGraph: {
       locale: lang?.locale || 'en_US',
       title,
-      description
+      description,
     },
     twitter: {
       title,
-      description
-    }
+      description,
+    },
   }
 }
 
@@ -267,13 +277,13 @@ export function formatServerDate(
   const lang = getLanguageByCode(language)
   const locale = lang?.locale || 'en-US'
   const dateObj = typeof date === 'string' ? new Date(date) : date
-  
+
   const defaultOptions: Intl.DateTimeFormatOptions = {
     year: 'numeric',
     month: 'long',
-    day: 'numeric'
+    day: 'numeric',
   }
-  
+
   return dateObj.toLocaleDateString(locale, options || defaultOptions)
 }
 
@@ -285,10 +295,10 @@ export function formatServerCurrency(
 ): string {
   const lang = getLanguageByCode(language)
   const locale = lang?.locale || 'en-US'
-  
+
   return new Intl.NumberFormat(locale, {
     style: 'currency',
-    currency
+    currency,
   }).format(amount)
 }
 
@@ -299,6 +309,6 @@ export function formatServerNumber(
 ): string {
   const lang = getLanguageByCode(language)
   const locale = lang?.locale || 'en-US'
-  
+
   return new Intl.NumberFormat(locale).format(number)
 }

@@ -14,17 +14,17 @@ ALTER TABLE chat_messages DISABLE ROW LEVEL SECURITY;
 
   return NextResponse.json({
     success: true,
-    message: "Quick RLS disable SQL (temporary fix)",
+    message: 'Quick RLS disable SQL (temporary fix)',
     sql: disableRLSSQL,
     instructions: [
-      "QUICK FIX - Run this SQL in Supabase Dashboard:",
-      "1. Go to Supabase Dashboard → SQL Editor",
-      "2. Paste the SQL above",
-      "3. Run it",
-      "4. Test upload at https://prismy.in/app",
-      "",
-      "WARNING: This disables security. Re-enable with proper policies later."
+      'QUICK FIX - Run this SQL in Supabase Dashboard:',
+      '1. Go to Supabase Dashboard → SQL Editor',
+      '2. Paste the SQL above',
+      '3. Run it',
+      '4. Test upload at https://prismy.in/app',
+      '',
+      'WARNING: This disables security. Re-enable with proper policies later.',
     ],
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   })
 }

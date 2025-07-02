@@ -217,13 +217,13 @@ COMMENT ON FUNCTION reserve_credits IS 'Atomically reserves credits for LLM usag
   return NextResponse.json({
     sql: migrationSQL,
     instructions: [
-      "1. Go to your Supabase Dashboard",
-      "2. Navigate to SQL Editor",
-      "3. Create a new query",
-      "4. Copy and paste the SQL above",
-      "5. Run the query to create all tables and functions",
-      "6. Test the upload functionality again"
+      '1. Go to your Supabase Dashboard',
+      '2. Navigate to SQL Editor',
+      '3. Create a new query',
+      '4. Copy and paste the SQL above',
+      '5. Run the query to create all tables and functions',
+      '6. Test the upload functionality again',
     ],
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   })
 }

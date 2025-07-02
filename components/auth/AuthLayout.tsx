@@ -3,7 +3,13 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { EmailForm } from './EmailForm'
 import { PhoneForm } from './PhoneForm'
 import { GoogleButton } from './GoogleButton'
@@ -25,29 +31,32 @@ export function AuthLayout() {
     // 🎯 CRITICAL: Handle auth code FIRST, before checking session
     const code = searchParams.get('code')
     const state = searchParams.get('state')
-    
+
     if (code) {
       console.log('🚨 [AUTH CODE DETECTED] Auth code found in AuthLayout:', {
         code: code.substring(0, 20) + '...',
         hasState: !!state,
         currentUrl: window.location.href,
-        searchParams: Object.fromEntries(searchParams.entries())
+        searchParams: Object.fromEntries(searchParams.entries()),
       })
-      
+
       // Set loading and redirecting state
       setIsLoading(true)
       setIsRedirecting(true)
-      
+
       // Manually redirect to callback route to process the auth code
       const callbackUrl = new URL('/auth/callback', window.location.origin)
-      
+
       // Preserve all current search params for callback processing
       searchParams.forEach((value, key) => {
         callbackUrl.searchParams.set(key, value)
       })
-      
-      console.log('🚨 [AUTH CODE DETECTED] Redirecting to callback from AuthLayout:', callbackUrl.toString())
-      
+
+      console.log(
+        '🚨 [AUTH CODE DETECTED] Redirecting to callback from AuthLayout:',
+        callbackUrl.toString()
+      )
+
       // Use window.location for immediate redirect
       window.location.href = callbackUrl.toString()
       return // Exit early to prevent other auth checks
@@ -55,7 +64,9 @@ export function AuthLayout() {
 
     // Check if user is already authenticated (only if no auth code)
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
       if (session && !isRedirecting) {
         setIsRedirecting(true)
         router.push(nextUrl)
@@ -69,19 +80,19 @@ export function AuthLayout() {
 
   useEffect(() => {
     // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (event === 'SIGNED_IN' && session && !isRedirecting) {
-          // Only redirect if we're still on the login page
-          if (window.location.pathname === '/login') {
-            setIsRedirecting(true)
-            console.log('User signed in:', session.user.email)
-            // Use replace instead of push to avoid history issues
-            router.replace(`${nextUrl}?welcome=1`)
-          }
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session && !isRedirecting) {
+        // Only redirect if we're still on the login page
+        if (window.location.pathname === '/login') {
+          setIsRedirecting(true)
+          console.log('User signed in:', session.user.email)
+          // Use replace instead of push to avoid history issues
+          router.replace(`${nextUrl}?welcome=1`)
         }
       }
-    )
+    })
 
     return () => subscription.unsubscribe()
   }, [router, nextUrl, supabase.auth, isRedirecting])
@@ -101,8 +112,8 @@ export function AuthLayout() {
         <div className="absolute inset-0 bg-black/20" />
         <div className="relative z-10 flex flex-col justify-between p-12 text-white">
           <div>
-            <Link 
-              href="/" 
+            <Link
+              href="/"
               className="inline-flex items-center text-white/80 hover:text-white transition-colors mb-8"
               aria-label="Back to homepage"
             >
@@ -113,14 +124,17 @@ export function AuthLayout() {
               Welcome to your AI workspace
             </h1>
             <p className="text-xl text-blue-100 mb-8">
-              Transform documents with intelligent translation and AI-powered insights
+              Transform documents with intelligent translation and AI-powered
+              insights
             </p>
           </div>
-          
+
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
               <Sparkles className="h-5 w-5 text-blue-300" />
-              <span className="text-blue-100">20 free AI credits to get started</span>
+              <span className="text-blue-100">
+                20 free AI credits to get started
+              </span>
             </div>
             <div className="flex items-center space-x-3">
               <Sparkles className="h-5 w-5 text-blue-300" />
@@ -132,7 +146,7 @@ export function AuthLayout() {
             </div>
           </div>
         </div>
-        
+
         {/* Abstract background pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-20 left-20 w-32 h-32 bg-white rounded-full blur-3xl" />
@@ -149,35 +163,39 @@ export function AuthLayout() {
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
               Sign in to Prismy
             </h1>
-            <p className="text-gray-600">
-              Access your AI-powered workspace
-            </p>
+            <p className="text-gray-600">Access your AI-powered workspace</p>
           </div>
 
           <Card className="border-0 shadow-lg">
             <CardHeader className="text-center space-y-2">
-              <CardTitle className="text-xl font-semibold">Sign in to continue</CardTitle>
+              <CardTitle className="text-xl font-semibold">
+                Sign in to continue
+              </CardTitle>
               <CardDescription>
                 Choose your preferred sign-in method below
               </CardDescription>
             </CardHeader>
-            
+
             <CardContent>
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <Tabs
+                value={activeTab}
+                onValueChange={setActiveTab}
+                className="w-full"
+              >
                 <TabsList className="grid w-full grid-cols-3 mb-6">
-                  <TabsTrigger 
+                  <TabsTrigger
                     value="email"
                     className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
                   >
                     Email
                   </TabsTrigger>
-                  <TabsTrigger 
+                  <TabsTrigger
                     value="phone"
                     className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
                   >
                     Phone (+84)
                   </TabsTrigger>
-                  <TabsTrigger 
+                  <TabsTrigger
                     value="google"
                     className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
                   >

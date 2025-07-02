@@ -71,7 +71,8 @@ class ExperimentEngine {
       {
         id: 'hero_design_test',
         name: 'Hero Section Design Test',
-        description: 'Test different hero section layouts with NotebookLM styling',
+        description:
+          'Test different hero section layouts with NotebookLM styling',
         status: 'active',
         variants: [
           {
@@ -80,29 +81,30 @@ class ExperimentEngine {
             description: 'Existing hero with standard layout',
             weight: 50,
             config: { layout: 'standard' },
-            isControl: true
+            isControl: true,
           },
           {
             id: 'enhanced',
             name: 'Enhanced NotebookLM',
-            description: 'Enhanced hero with stronger NotebookLM visual elements',
+            description:
+              'Enhanced hero with stronger NotebookLM visual elements',
             weight: 50,
-            config: { 
+            config: {
               layout: 'enhanced',
               showGradientBg: true,
-              enhancedAnimations: true
+              enhancedAnimations: true,
             },
-            isControl: false
-          }
+            isControl: false,
+          },
         ],
         targeting: {
           devices: ['desktop', 'tablet'],
-          newUsersOnly: true
+          newUsersOnly: true,
         },
         metrics: ['conversion_rate', 'bounce_rate', 'time_on_page'],
         startDate: '2025-06-26',
         trafficAllocation: 50,
-        notebookLMFeature: 'hero_design'
+        notebookLMFeature: 'hero_design',
       },
       {
         id: 'dark_mode_onboarding',
@@ -116,38 +118,38 @@ class ExperimentEngine {
             description: 'Users discover dark mode naturally',
             weight: 33,
             config: { showDarkModePrompt: false },
-            isControl: true
+            isControl: true,
           },
           {
             id: 'tooltip',
             name: 'Tooltip Hint',
             description: 'Show tooltip on theme toggle',
             weight: 33,
-            config: { 
+            config: {
               showDarkModePrompt: true,
-              promptType: 'tooltip'
+              promptType: 'tooltip',
             },
-            isControl: false
+            isControl: false,
           },
           {
             id: 'banner',
             name: 'Welcome Banner',
             description: 'Show welcome banner promoting dark mode',
             weight: 34,
-            config: { 
+            config: {
               showDarkModePrompt: true,
-              promptType: 'banner'
+              promptType: 'banner',
             },
-            isControl: false
-          }
+            isControl: false,
+          },
         ],
         targeting: {
-          newUsersOnly: true
+          newUsersOnly: true,
         },
         metrics: ['dark_mode_adoption', 'user_retention'],
         startDate: '2025-06-26',
         trafficAllocation: 30,
-        notebookLMFeature: 'dark_mode'
+        notebookLMFeature: 'dark_mode',
       },
       {
         id: 'animation_performance',
@@ -161,7 +163,7 @@ class ExperimentEngine {
             description: 'All framer-motion animations enabled',
             weight: 50,
             config: { animationLevel: 'full' },
-            isControl: true
+            isControl: true,
           },
           {
             id: 'reduced',
@@ -169,8 +171,8 @@ class ExperimentEngine {
             description: 'Simplified animations for better performance',
             weight: 50,
             config: { animationLevel: 'reduced' },
-            isControl: false
-          }
+            isControl: false,
+          },
         ],
         targeting: {
           devices: ['mobile'],
@@ -178,15 +180,15 @@ class ExperimentEngine {
             {
               property: 'connection',
               operator: 'in',
-              value: ['slow-2g', '2g', '3g']
-            }
-          ]
+              value: ['slow-2g', '2g', '3g'],
+            },
+          ],
         },
         metrics: ['page_load_time', 'interaction_delay', 'bounce_rate'],
         startDate: '2025-06-26',
         trafficAllocation: 25,
-        notebookLMFeature: 'animations'
-      }
+        notebookLMFeature: 'animations',
+      },
     ]
 
     notebookLMExperiments.forEach(exp => {
@@ -250,7 +252,7 @@ class ExperimentEngine {
     if (variant) {
       this.userVariants.set(experimentId, variant.id)
       this.saveUserVariants()
-      
+
       // Track assignment
       this.trackExperimentAssignment(experiment, variant, userId)
     }
@@ -296,7 +298,10 @@ class ExperimentEngine {
     return true
   }
 
-  private assignVariant(experiment: Experiment, userId?: string): Variant | null {
+  private assignVariant(
+    experiment: Experiment,
+    userId?: string
+  ): Variant | null {
     // Use deterministic assignment based on user ID for consistency
     const seed = userId || this.getAnonymousId()
     const hash = this.hashString(`${experiment.id}:${seed}`)
@@ -314,13 +319,17 @@ class ExperimentEngine {
     return experiment.variants.find(v => v.isControl) || experiment.variants[0]
   }
 
-  private trackExperimentAssignment(experiment: Experiment, variant: Variant, userId?: string) {
+  private trackExperimentAssignment(
+    experiment: Experiment,
+    variant: Variant,
+    userId?: string
+  ) {
     // Track assignment to analytics
     if (typeof window !== 'undefined' && (window as any).gtag) {
-      (window as any).gtag('event', 'experiment_assignment', {
+      ;(window as any).gtag('event', 'experiment_assignment', {
         experiment_id: experiment.id,
         variant_id: variant.id,
-        notebooklm_feature: experiment.notebookLMFeature
+        notebooklm_feature: experiment.notebookLMFeature,
       })
     }
 
@@ -335,15 +344,19 @@ class ExperimentEngine {
           variantId: variant.id,
           userId,
           timestamp: Date.now(),
-          notebookLMFeature: experiment.notebookLMFeature
-        })
+          notebookLMFeature: experiment.notebookLMFeature,
+        }),
       }).catch(() => {
         // Silently fail
       })
     }
   }
 
-  public trackConversion(experimentId: string, metric: string, value: number = 1) {
+  public trackConversion(
+    experimentId: string,
+    metric: string,
+    value: number = 1
+  ) {
     if (!this.isEnabled) return
 
     const variantId = this.userVariants.get(experimentId)
@@ -354,7 +367,7 @@ class ExperimentEngine {
       variantId,
       sessionId: this.getSessionId(),
       timestamp: Date.now(),
-      metrics: { [metric]: value }
+      metrics: { [metric]: value },
     }
 
     // Send to analytics
@@ -364,11 +377,11 @@ class ExperimentEngine {
   private sendResult(result: ExperimentResult) {
     // Track to analytics services
     if (typeof window !== 'undefined' && (window as any).gtag) {
-      (window as any).gtag('event', 'experiment_conversion', {
+      ;(window as any).gtag('event', 'experiment_conversion', {
         experiment_id: result.experimentId,
         variant_id: result.variantId,
         metric: Object.keys(result.metrics)[0],
-        value: Object.values(result.metrics)[0]
+        value: Object.values(result.metrics)[0],
       })
     }
 
@@ -379,8 +392,8 @@ class ExperimentEngine {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type: 'experiment_result',
-          ...result
-        })
+          ...result,
+        }),
       }).catch(() => {
         // Silently fail
       })
@@ -390,7 +403,7 @@ class ExperimentEngine {
   // Utility methods
   private getDeviceType(): 'mobile' | 'tablet' | 'desktop' {
     if (typeof window === 'undefined') return 'desktop'
-    
+
     const width = window.innerWidth
     if (width < 768) return 'mobile'
     if (width < 1024) return 'tablet'
@@ -404,7 +417,7 @@ class ExperimentEngine {
 
   private isNewUser(userId?: string): boolean {
     if (!userId) return true
-    
+
     // Check if user has visited before
     const visitCount = parseInt(localStorage.getItem('visit_count') || '0')
     return visitCount <= 1
@@ -418,7 +431,7 @@ class ExperimentEngine {
 
   private getAnonymousId(): string {
     if (typeof window === 'undefined') return 'anonymous'
-    
+
     let id = localStorage.getItem('anonymous_id')
     if (!id) {
       id = `anon_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
@@ -429,7 +442,7 @@ class ExperimentEngine {
 
   private getSessionId(): string {
     if (typeof window === 'undefined') return 'session'
-    
+
     let id = sessionStorage.getItem('session_id')
     if (!id) {
       id = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
@@ -442,7 +455,7 @@ class ExperimentEngine {
     let hash = 0
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i)
-      hash = ((hash << 5) - hash) + char
+      hash = (hash << 5) - hash + char
       hash = hash & hash // Convert to 32-bit integer
     }
     return Math.abs(hash)
@@ -450,7 +463,9 @@ class ExperimentEngine {
 
   // Public API
   public getActiveExperiments(): Experiment[] {
-    return Array.from(this.experiments.values()).filter(exp => exp.status === 'active')
+    return Array.from(this.experiments.values()).filter(
+      exp => exp.status === 'active'
+    )
   }
 
   public getUserVariants(): Record<string, string> {
@@ -482,15 +497,18 @@ export function useExperiment(experimentId: string, userId?: string) {
     setVariant(assignedVariant)
   }, [experimentId, userId])
 
-  const trackConversion = React.useCallback((metric: string, value: number = 1) => {
-    experimentEngine.trackConversion(experimentId, metric, value)
-  }, [experimentId])
+  const trackConversion = React.useCallback(
+    (metric: string, value: number = 1) => {
+      experimentEngine.trackConversion(experimentId, metric, value)
+    },
+    [experimentId]
+  )
 
   return {
     variant,
     isInExperiment: variant !== null,
     config: variant?.config || {},
-    trackConversion
+    trackConversion,
   }
 }
 
@@ -502,7 +520,12 @@ interface ExperimentProps {
   children: React.ReactNode
 }
 
-export function Experiment({ experimentId, variantId, fallback, children }: ExperimentProps) {
+export function Experiment({
+  experimentId,
+  variantId,
+  fallback,
+  children,
+}: ExperimentProps) {
   const { variant, isInExperiment } = useExperiment(experimentId)
 
   if (!isInExperiment) {

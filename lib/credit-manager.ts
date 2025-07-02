@@ -34,13 +34,15 @@ export interface CreditCalculationOptions {
 /**
  * Credit calculation based on operation type and content
  */
-export function calculateCreditsNeeded(options: CreditCalculationOptions): number {
+export function calculateCreditsNeeded(
+  options: CreditCalculationOptions
+): number {
   const {
     tokens = 0,
     characters = 0,
     pages = 0,
     operation_type = 'translate',
-    quality_tier = 'standard'
+    quality_tier = 'standard',
   } = options
 
   let baseCredits = 0
@@ -60,33 +62,34 @@ export function calculateCreditsNeeded(options: CreditCalculationOptions): numbe
     // Rough conversion: 1 page ≈ 500 words ≈ 750 tokens
     const estimatedTokens = pages * 750
     baseCredits = Math.ceil(estimatedTokens / 1000)
-  }
-  else {
+  } else {
     // Minimum charge for any operation
     baseCredits = 1
   }
 
   // Apply operation multipliers
   const operationMultipliers = {
-    translate: 1.0,      // Base rate
+    translate: 1.0, // Base rate
     document_process: 1.5, // More expensive due to processing
-    ai_analysis: 2.0,    // Most expensive for AI insights
-    ocr: 1.2            // Slightly more for OCR
+    ai_analysis: 2.0, // Most expensive for AI insights
+    ocr: 1.2, // Slightly more for OCR
   }
 
   // Apply quality tier multipliers
   const qualityMultipliers = {
-    free: 0.5,      // Cheaper but lower quality
-    standard: 1.0,  // Base rate
-    premium: 1.5,   // Higher quality
-    enterprise: 2.0 // Highest quality + priority
+    free: 0.5, // Cheaper but lower quality
+    standard: 1.0, // Base rate
+    premium: 1.5, // Higher quality
+    enterprise: 2.0, // Highest quality + priority
   }
 
   const operationMultiplier = operationMultipliers[operation_type] || 1.0
   const qualityMultiplier = qualityMultipliers[quality_tier] || 1.0
 
-  const finalCredits = Math.ceil(baseCredits * operationMultiplier * qualityMultiplier)
-  
+  const finalCredits = Math.ceil(
+    baseCredits * operationMultiplier * qualityMultiplier
+  )
+
   // Ensure minimum charge
   return Math.max(1, finalCredits)
 }
@@ -96,7 +99,7 @@ export function calculateCreditsNeeded(options: CreditCalculationOptions): numbe
  */
 export function estimateTokensFromText(text: string): number {
   if (!text || typeof text !== 'string') return 0
-  
+
   // Simple estimation: ~4 characters per token for most languages
   // This is a rough approximation - actual tokenization varies by model
   return Math.ceil(text.length / 4)
@@ -111,8 +114,9 @@ export async function checkCreditsAvailable(
   creditsNeeded: number
 ): Promise<CreditCheckResult> {
   try {
-    const { data: creditInfo, error } = await supabase
-      .rpc('get_user_credits', { _user_id: userId })
+    const { data: creditInfo, error } = await supabase.rpc('get_user_credits', {
+      _user_id: userId,
+    })
 
     if (error) {
       console.error('[Credit Manager] Check credits error:', error)
@@ -121,7 +125,7 @@ export async function checkCreditsAvailable(
         credits_available: 0,
         credits_needed: creditsNeeded,
         error: 'CREDIT_CHECK_FAILED',
-        message: 'Failed to check credit balance'
+        message: 'Failed to check credit balance',
       }
     }
 
@@ -131,7 +135,7 @@ export async function checkCreditsAvailable(
         credits_available: 0,
         credits_needed: creditsNeeded,
         error: 'NO_CREDIT_ACCOUNT',
-        message: 'No credit account found. Please redeem an invite code.'
+        message: 'No credit account found. Please redeem an invite code.',
       }
     }
 
@@ -143,16 +147,15 @@ export async function checkCreditsAvailable(
         credits_available: creditsAvailable,
         credits_needed: creditsNeeded,
         error: 'INSUFFICIENT_CREDITS',
-        message: `Insufficient credits. You have ${creditsAvailable} but need ${creditsNeeded}.`
+        message: `Insufficient credits. You have ${creditsAvailable} but need ${creditsNeeded}.`,
       }
     }
 
     return {
       success: true,
       credits_available: creditsAvailable,
-      credits_needed: creditsNeeded
+      credits_needed: creditsNeeded,
     }
-
   } catch (error) {
     console.error('[Credit Manager] Check credits exception:', error)
     return {
@@ -160,7 +163,7 @@ export async function checkCreditsAvailable(
       credits_available: 0,
       credits_needed: creditsNeeded,
       error: 'SYSTEM_ERROR',
-      message: 'System error checking credits'
+      message: 'System error checking credits',
     }
   }
 }
@@ -177,13 +180,12 @@ export async function deductCredits(
   metadata?: any
 ): Promise<CreditDeductionResult> {
   try {
-    const { data: result, error } = await supabase
-      .rpc('decrement_credits', {
-        _user_id: userId,
-        _credits_needed: creditsNeeded,
-        _operation: operation,
-        _tokens_processed: tokensProcessed
-      })
+    const { data: result, error } = await supabase.rpc('decrement_credits', {
+      _user_id: userId,
+      _credits_needed: creditsNeeded,
+      _operation: operation,
+      _tokens_processed: tokensProcessed,
+    })
 
     if (error) {
       console.error('[Credit Manager] Deduct credits error:', error)
@@ -193,7 +195,7 @@ export async function deductCredits(
         credits_after: 0,
         credits_used: 0,
         error: 'DEDUCTION_FAILED',
-        message: 'Failed to deduct credits'
+        message: 'Failed to deduct credits',
       }
     }
 
@@ -204,7 +206,7 @@ export async function deductCredits(
         credits_after: result?.credits_available || 0,
         credits_used: 0,
         error: result?.error || 'DEDUCTION_FAILED',
-        message: result?.message || 'Credit deduction failed'
+        message: result?.message || 'Credit deduction failed',
       }
     }
 
@@ -212,9 +214,8 @@ export async function deductCredits(
       success: true,
       credits_before: result.credits_before,
       credits_after: result.credits_after,
-      credits_used: result.credits_used
+      credits_used: result.credits_used,
     }
-
   } catch (error) {
     console.error('[Credit Manager] Deduct credits exception:', error)
     return {
@@ -223,7 +224,7 @@ export async function deductCredits(
       credits_after: 0,
       credits_used: 0,
       error: 'SYSTEM_ERROR',
-      message: 'System error deducting credits'
+      message: 'System error deducting credits',
     }
   }
 }
@@ -239,10 +240,14 @@ export async function checkAndDeductCredits(
   metadata?: any
 ): Promise<CreditDeductionResult & { calculation: CreditCalculationOptions }> {
   const creditsNeeded = calculateCreditsNeeded(options)
-  
+
   // Check if user has enough credits
-  const checkResult = await checkCreditsAvailable(supabase, userId, creditsNeeded)
-  
+  const checkResult = await checkCreditsAvailable(
+    supabase,
+    userId,
+    creditsNeeded
+  )
+
   if (!checkResult.success) {
     return {
       success: false,
@@ -251,7 +256,7 @@ export async function checkAndDeductCredits(
       credits_used: 0,
       error: checkResult.error,
       message: checkResult.message,
-      calculation: options
+      calculation: options,
     }
   }
 
@@ -267,7 +272,7 @@ export async function checkAndDeductCredits(
 
   return {
     ...deductResult,
-    calculation: options
+    calculation: options,
   }
 }
 
@@ -276,8 +281,9 @@ export async function checkAndDeductCredits(
  */
 export async function getUserCreditStatus(supabase: any, userId: string) {
   try {
-    const { data: creditInfo, error } = await supabase
-      .rpc('get_user_credits', { _user_id: userId })
+    const { data: creditInfo, error } = await supabase.rpc('get_user_credits', {
+      _user_id: userId,
+    })
 
     if (error || !creditInfo?.success) {
       return {
@@ -285,12 +291,14 @@ export async function getUserCreditStatus(supabase: any, userId: string) {
         creditsLeft: 0,
         needsInvite: true,
         trialExpired: false,
-        accountType: 'none'
+        accountType: 'none',
       }
     }
 
     const hasCredits = creditInfo.credits_left > 0
-    const trialExpired = creditInfo.trial_ends_at && new Date(creditInfo.trial_ends_at) < new Date()
+    const trialExpired =
+      creditInfo.trial_ends_at &&
+      new Date(creditInfo.trial_ends_at) < new Date()
     const isTrialUser = creditInfo.trial_credits > 0
     const isPaidUser = creditInfo.purchased_credits > 0
 
@@ -306,9 +314,8 @@ export async function getUserCreditStatus(supabase: any, userId: string) {
       accountType,
       trialEndsAt: creditInfo.trial_ends_at,
       totalEarned: creditInfo.total_earned,
-      totalSpent: creditInfo.total_spent
+      totalSpent: creditInfo.total_spent,
     }
-
   } catch (error) {
     console.error('[Credit Manager] Get status error:', error)
     return {
@@ -316,7 +323,7 @@ export async function getUserCreditStatus(supabase: any, userId: string) {
       creditsLeft: 0,
       needsInvite: true,
       trialExpired: false,
-      accountType: 'error'
+      accountType: 'error',
     }
   }
 }
@@ -330,15 +337,15 @@ export async function requireCredits(
   minCredits: number = 1
 ) {
   const status = await getUserCreditStatus(supabase, user.id)
-  
+
   if (!status.hasCredits) {
     return {
       allowed: false,
       status: 402, // Payment Required
       error: 'INSUFFICIENT_CREDITS',
-      message: status.needsInvite 
+      message: status.needsInvite
         ? 'Please redeem an invite code to get started'
-        : 'Your credit balance is insufficient'
+        : 'Your credit balance is insufficient',
     }
   }
 
@@ -347,13 +354,13 @@ export async function requireCredits(
       allowed: false,
       status: 402,
       error: 'INSUFFICIENT_CREDITS',
-      message: `Need ${minCredits} credits, but only ${status.creditsLeft} available`
+      message: `Need ${minCredits} credits, but only ${status.creditsLeft} available`,
     }
   }
 
   return {
     allowed: true,
     status: 200,
-    credits: status.creditsLeft
+    credits: status.creditsLeft,
   }
 }

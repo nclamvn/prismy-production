@@ -19,7 +19,10 @@ interface CreditsBadgeProps {
   className?: string
 }
 
-export function CreditsBadge({ showUpgradeModal = true, className }: CreditsBadgeProps) {
+export function CreditsBadge({
+  showUpgradeModal = true,
+  className,
+}: CreditsBadgeProps) {
   const { credits, creditsLoading, getUserTier } = useAuth()
   const [upgradeModalOpen, setUpgradeModalOpen] = useState(false)
 
@@ -45,15 +48,15 @@ export function CreditsBadge({ showUpgradeModal = true, className }: CreditsBadg
   const isLowCredits = credits.credits_left <= 2
   const isOutOfCredits = credits.credits_left === 0
 
-  const badgeVariant = isOutOfCredits 
-    ? 'destructive' 
-    : isLowCredits 
-    ? 'secondary' 
-    : 'default'
+  const badgeVariant = isOutOfCredits
+    ? 'destructive'
+    : isLowCredits
+      ? 'secondary'
+      : 'default'
 
   const BadgeContent = (
-    <Badge 
-      variant={badgeVariant} 
+    <Badge
+      variant={badgeVariant}
       className={`cursor-pointer hover:opacity-80 transition-opacity ${className}`}
     >
       <Coins className="h-3 w-3 mr-1" />
@@ -67,9 +70,7 @@ export function CreditsBadge({ showUpgradeModal = true, className }: CreditsBadg
 
   return (
     <Dialog open={upgradeModalOpen} onOpenChange={setUpgradeModalOpen}>
-      <DialogTrigger asChild>
-        {BadgeContent}
-      </DialogTrigger>
+      <DialogTrigger asChild>{BadgeContent}</DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center">
@@ -77,10 +78,9 @@ export function CreditsBadge({ showUpgradeModal = true, className }: CreditsBadg
             {isOutOfCredits ? 'Out of Credits' : 'Low on Credits'}
           </DialogTitle>
           <DialogDescription>
-            {isOutOfCredits 
-              ? 'You\'ve used all your free credits. Upgrade to continue using AI features.'
-              : `You have ${credits.credits_left} credits remaining. Upgrade to get more credits and unlock premium features.`
-            }
+            {isOutOfCredits
+              ? "You've used all your free credits. Upgrade to continue using AI features."
+              : `You have ${credits.credits_left} credits remaining. Upgrade to get more credits and unlock premium features.`}
           </DialogDescription>
         </DialogHeader>
 
@@ -88,16 +88,24 @@ export function CreditsBadge({ showUpgradeModal = true, className }: CreditsBadg
           {/* Current Usage */}
           <div className="bg-gray-50 p-4 rounded-lg">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-medium text-gray-700">Current Plan</span>
-              <Badge variant="outline" className="capitalize">{tier}</Badge>
+              <span className="text-sm font-medium text-gray-700">
+                Current Plan
+              </span>
+              <Badge variant="outline" className="capitalize">
+                {tier}
+              </Badge>
             </div>
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm text-gray-600">Credits Used</span>
-              <span className="text-sm font-medium">{credits.credits_used}</span>
+              <span className="text-sm font-medium">
+                {credits.credits_used}
+              </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">Credits Remaining</span>
-              <span className={`text-sm font-medium ${isOutOfCredits ? 'text-red-600' : 'text-green-600'}`}>
+              <span
+                className={`text-sm font-medium ${isOutOfCredits ? 'text-red-600' : 'text-green-600'}`}
+              >
                 {credits.credits_left}
               </span>
             </div>

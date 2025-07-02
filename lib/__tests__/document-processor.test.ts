@@ -7,24 +7,29 @@
 const mockFormData = {
   get: jest.fn(),
   has: jest.fn(),
-  append: jest.fn()
+  append: jest.fn(),
 }
 
 const mockFile = {
   name: 'test.pdf',
   type: 'application/pdf',
   size: 1024 * 1024, // 1MB
-  arrayBuffer: jest.fn().mockResolvedValue(new ArrayBuffer(1024))
+  arrayBuffer: jest.fn().mockResolvedValue(new ArrayBuffer(1024)),
 }
 
 const mockSupabase = {
   storage: {
     from: jest.fn(() => ({
-      upload: jest.fn().mockResolvedValue({ data: { path: 'documents/test.pdf' }, error: null }),
-      download: jest.fn().mockResolvedValue({ data: new Blob(['test content']), error: null }),
-      remove: jest.fn().mockResolvedValue({ error: null })
-    }))
-  }
+      upload: jest.fn().mockResolvedValue({
+        data: { path: 'documents/test.pdf' },
+        error: null,
+      }),
+      download: jest
+        .fn()
+        .mockResolvedValue({ data: new Blob(['test content']), error: null }),
+      remove: jest.fn().mockResolvedValue({ error: null }),
+    })),
+  },
 }
 
 jest.mock('@/lib/supabase', () => ({ createClient: () => mockSupabase }))
@@ -41,8 +46,12 @@ describe('Document Processor', () => {
         processDocument: async (file: any, options: any = {}) => {
           if (!file) throw new Error('File is required')
           if (file.size > 10 * 1024 * 1024) throw new Error('File too large')
-          
-          const supportedTypes = ['application/pdf', 'text/plain', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+
+          const supportedTypes = [
+            'application/pdf',
+            'text/plain',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          ]
           if (!supportedTypes.includes(file.type)) {
             throw new Error('Unsupported file type')
           }
@@ -58,19 +67,29 @@ describe('Document Processor', () => {
               title: 'Document Title',
               author: 'Document Author',
               createdAt: new Date().toISOString(),
-              language: options.language || 'en'
+              language: options.language || 'en',
             },
             chunks: [
-              { id: 'chunk_1', text: 'First chunk of text', startPage: 1, endPage: 2 },
-              { id: 'chunk_2', text: 'Second chunk of text', startPage: 3, endPage: 5 }
+              {
+                id: 'chunk_1',
+                text: 'First chunk of text',
+                startPage: 1,
+                endPage: 2,
+              },
+              {
+                id: 'chunk_2',
+                text: 'Second chunk of text',
+                startPage: 3,
+                endPage: 5,
+              },
             ],
-            status: 'completed'
+            status: 'completed',
           }
         },
 
         extractText: async (file: any) => {
           if (!file) throw new Error('File is required')
-          
+
           switch (file.type) {
             case 'application/pdf':
               return 'PDF text content extracted'
@@ -85,7 +104,7 @@ describe('Document Processor', () => {
 
         extractMetadata: async (file: any) => {
           if (!file) throw new Error('File is required')
-          
+
           return {
             title: file.name.replace(/\.[^/.]+$/, ''),
             author: 'Unknown',
@@ -94,17 +113,17 @@ describe('Document Processor', () => {
             pageCount: file.type === 'application/pdf' ? 5 : 1,
             language: 'en',
             fileSize: file.size,
-            mimeType: file.type
+            mimeType: file.type,
           }
         },
 
         chunkDocument: async (text: string, options: any = {}) => {
           if (!text) throw new Error('Text is required')
-          
+
           const chunkSize = options.chunkSize || 1000
           const overlap = options.overlap || 100
           const chunks = []
-          
+
           for (let i = 0; i < text.length; i += chunkSize - overlap) {
             const chunk = text.slice(i, i + chunkSize)
             chunks.push({
@@ -112,82 +131,82 @@ describe('Document Processor', () => {
               text: chunk,
               startIndex: i,
               endIndex: Math.min(i + chunkSize, text.length),
-              length: chunk.length
+              length: chunk.length,
             })
           }
-          
+
           return chunks
         },
 
         validateFile: (file: any) => {
           const errors = []
-          
+
           if (!file) {
             errors.push('File is required')
             return { valid: false, errors }
           }
-          
+
           if (file.size > 10 * 1024 * 1024) {
             errors.push('File size exceeds 10MB limit')
           }
-          
+
           const supportedTypes = [
             'application/pdf',
-            'text/plain', 
+            'text/plain',
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'application/msword'
+            'application/msword',
           ]
-          
+
           if (!supportedTypes.includes(file.type)) {
             errors.push('Unsupported file type')
           }
-          
+
           if (file.name.length > 255) {
             errors.push('Filename too long')
           }
-          
+
           return {
             valid: errors.length === 0,
-            errors
+            errors,
           }
         },
 
         uploadDocument: async (file: any, userId: string) => {
           if (!file) throw new Error('File is required')
           if (!userId) throw new Error('User ID is required')
-          
+
           const filename = `${userId}/${Date.now()}_${file.name}`
-          
+
           return {
             url: `https://storage.supabase.co/documents/${filename}`,
             path: filename,
             size: file.size,
-            uploadedAt: new Date().toISOString()
+            uploadedAt: new Date().toISOString(),
           }
         },
 
         downloadDocument: async (documentId: string) => {
           if (!documentId) throw new Error('Document ID is required')
-          
+
           return {
             blob: new Blob(['document content']),
             filename: 'document.pdf',
-            mimeType: 'application/pdf'
+            mimeType: 'application/pdf',
           }
         },
 
         deleteDocument: async (documentId: string) => {
           if (!documentId) throw new Error('Document ID is required')
-          
+
           return {
             success: true,
-            deletedAt: new Date().toISOString()
+            deletedAt: new Date().toISOString(),
           }
         },
 
         getDocumentStats: async (documentId: string) => {
           if (!documentId) throw new Error('Document ID is required')
-          
+
           return {
             id: documentId,
             wordCount: 1250,
@@ -196,25 +215,29 @@ describe('Document Processor', () => {
             chunkCount: 8,
             languages: ['en'],
             readingTime: 5, // minutes
-            complexity: 'medium'
+            complexity: 'medium',
           }
         },
 
-        optimizeForTranslation: async (text: string, sourceLanguage: string, targetLanguage: string) => {
+        optimizeForTranslation: async (
+          text: string,
+          sourceLanguage: string,
+          targetLanguage: string
+        ) => {
           if (!text) throw new Error('Text is required')
           if (!sourceLanguage) throw new Error('Source language is required')
           if (!targetLanguage) throw new Error('Target language is required')
-          
+
           return {
             optimizedText: text.trim(),
             suggestions: [
               'Consider breaking long sentences',
-              'Technical terms may need glossary'
+              'Technical terms may need glossary',
             ],
             complexity: 'medium',
-            estimatedTime: 10 // minutes
+            estimatedTime: 10, // minutes
           }
-        }
+        },
       }
     }
   })
@@ -244,14 +267,16 @@ describe('Document Processor', () => {
     })
 
     it('should process DOCX document', async () => {
-      const docxFile = { 
-        ...mockFile, 
+      const docxFile = {
+        ...mockFile,
         type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        name: 'test.docx'
+        name: 'test.docx',
       }
       const result = await DocumentProcessor.processDocument(docxFile)
 
-      expect(result.type).toBe('application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+      expect(result.type).toBe(
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      )
       expect(result.text).toBeDefined()
     })
 
@@ -263,17 +288,23 @@ describe('Document Processor', () => {
     })
 
     it('should reject missing file', async () => {
-      await expect(DocumentProcessor.processDocument(null)).rejects.toThrow('File is required')
+      await expect(DocumentProcessor.processDocument(null)).rejects.toThrow(
+        'File is required'
+      )
     })
 
     it('should reject oversized file', async () => {
       const largeFile = { ...mockFile, size: 15 * 1024 * 1024 }
-      await expect(DocumentProcessor.processDocument(largeFile)).rejects.toThrow('File too large')
+      await expect(
+        DocumentProcessor.processDocument(largeFile)
+      ).rejects.toThrow('File too large')
     })
 
     it('should reject unsupported file type', async () => {
       const unsupportedFile = { ...mockFile, type: 'image/jpeg' }
-      await expect(DocumentProcessor.processDocument(unsupportedFile)).rejects.toThrow('Unsupported file type')
+      await expect(
+        DocumentProcessor.processDocument(unsupportedFile)
+      ).rejects.toThrow('Unsupported file type')
     })
   })
 
@@ -292,9 +323,9 @@ describe('Document Processor', () => {
     })
 
     it('should extract text from DOCX', async () => {
-      const docxFile = { 
-        ...mockFile, 
-        type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      const docxFile = {
+        ...mockFile,
+        type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       }
       const result = await DocumentProcessor.extractText(docxFile)
 
@@ -303,11 +334,15 @@ describe('Document Processor', () => {
 
     it('should handle unsupported file type for extraction', async () => {
       const unsupportedFile = { ...mockFile, type: 'image/png' }
-      await expect(DocumentProcessor.extractText(unsupportedFile)).rejects.toThrow('Unsupported file type for text extraction')
+      await expect(
+        DocumentProcessor.extractText(unsupportedFile)
+      ).rejects.toThrow('Unsupported file type for text extraction')
     })
 
     it('should handle missing file for extraction', async () => {
-      await expect(DocumentProcessor.extractText(null)).rejects.toThrow('File is required')
+      await expect(DocumentProcessor.extractText(null)).rejects.toThrow(
+        'File is required'
+      )
     })
   })
 
@@ -331,7 +366,9 @@ describe('Document Processor', () => {
     })
 
     it('should handle missing file for metadata', async () => {
-      await expect(DocumentProcessor.extractMetadata(null)).rejects.toThrow('File is required')
+      await expect(DocumentProcessor.extractMetadata(null)).rejects.toThrow(
+        'File is required'
+      )
     })
   })
 
@@ -357,7 +394,9 @@ describe('Document Processor', () => {
     })
 
     it('should handle empty text', async () => {
-      await expect(DocumentProcessor.chunkDocument('')).rejects.toThrow('Text is required')
+      await expect(DocumentProcessor.chunkDocument('')).rejects.toThrow(
+        'Text is required'
+      )
     })
 
     it('should handle short text', async () => {
@@ -413,7 +452,7 @@ describe('Document Processor', () => {
         ...mockFile,
         size: 15 * 1024 * 1024,
         type: 'video/mp4',
-        name: 'A'.repeat(300) + '.mp4'
+        name: 'A'.repeat(300) + '.mp4',
       }
       const result = DocumentProcessor.validateFile(badFile)
 
@@ -432,15 +471,25 @@ describe('Document Processor', () => {
     })
 
     it('should generate unique filename', async () => {
-      const result1 = await DocumentProcessor.uploadDocument(mockFile, 'user123')
-      const result2 = await DocumentProcessor.uploadDocument(mockFile, 'user123')
+      const result1 = await DocumentProcessor.uploadDocument(
+        mockFile,
+        'user123'
+      )
+      const result2 = await DocumentProcessor.uploadDocument(
+        mockFile,
+        'user123'
+      )
 
       expect(result1.path).not.toBe(result2.path)
     })
 
     it('should validate upload parameters', async () => {
-      await expect(DocumentProcessor.uploadDocument(null, 'user123')).rejects.toThrow('File is required')
-      await expect(DocumentProcessor.uploadDocument(mockFile, '')).rejects.toThrow('User ID is required')
+      await expect(
+        DocumentProcessor.uploadDocument(null, 'user123')
+      ).rejects.toThrow('File is required')
+      await expect(
+        DocumentProcessor.uploadDocument(mockFile, '')
+      ).rejects.toThrow('User ID is required')
     })
   })
 
@@ -454,7 +503,9 @@ describe('Document Processor', () => {
     })
 
     it('should validate document ID for download', async () => {
-      await expect(DocumentProcessor.downloadDocument('')).rejects.toThrow('Document ID is required')
+      await expect(DocumentProcessor.downloadDocument('')).rejects.toThrow(
+        'Document ID is required'
+      )
     })
   })
 
@@ -467,7 +518,9 @@ describe('Document Processor', () => {
     })
 
     it('should validate document ID for deletion', async () => {
-      await expect(DocumentProcessor.deleteDocument('')).rejects.toThrow('Document ID is required')
+      await expect(DocumentProcessor.deleteDocument('')).rejects.toThrow(
+        'Document ID is required'
+      )
     })
   })
 
@@ -484,14 +537,20 @@ describe('Document Processor', () => {
     })
 
     it('should validate document ID for stats', async () => {
-      await expect(DocumentProcessor.getDocumentStats('')).rejects.toThrow('Document ID is required')
+      await expect(DocumentProcessor.getDocumentStats('')).rejects.toThrow(
+        'Document ID is required'
+      )
     })
   })
 
   describe('Translation Optimization', () => {
     it('should optimize text for translation', async () => {
       const text = 'This is a sample text for translation optimization.'
-      const result = await DocumentProcessor.optimizeForTranslation(text, 'en', 'vi')
+      const result = await DocumentProcessor.optimizeForTranslation(
+        text,
+        'en',
+        'vi'
+      )
 
       expect(result.optimizedText).toBeDefined()
       expect(result.suggestions).toBeInstanceOf(Array)
@@ -500,17 +559,23 @@ describe('Document Processor', () => {
     })
 
     it('should validate optimization parameters', async () => {
-      await expect(DocumentProcessor.optimizeForTranslation('', 'en', 'vi')).rejects.toThrow('Text is required')
-      await expect(DocumentProcessor.optimizeForTranslation('text', '', 'vi')).rejects.toThrow('Source language is required')
-      await expect(DocumentProcessor.optimizeForTranslation('text', 'en', '')).rejects.toThrow('Target language is required')
+      await expect(
+        DocumentProcessor.optimizeForTranslation('', 'en', 'vi')
+      ).rejects.toThrow('Text is required')
+      await expect(
+        DocumentProcessor.optimizeForTranslation('text', '', 'vi')
+      ).rejects.toThrow('Source language is required')
+      await expect(
+        DocumentProcessor.optimizeForTranslation('text', 'en', '')
+      ).rejects.toThrow('Target language is required')
     })
   })
 
   describe('Error Handling', () => {
     it('should handle file reading errors', async () => {
-      const corruptFile = { 
-        ...mockFile, 
-        arrayBuffer: jest.fn().mockRejectedValue(new Error('File corrupted'))
+      const corruptFile = {
+        ...mockFile,
+        arrayBuffer: jest.fn().mockRejectedValue(new Error('File corrupted')),
       }
 
       try {
@@ -523,7 +588,7 @@ describe('Document Processor', () => {
     it('should handle network errors during upload', async () => {
       mockSupabase.storage.from().upload.mockResolvedValueOnce({
         data: null,
-        error: { message: 'Network error' }
+        error: { message: 'Network error' },
       })
 
       // This would be handled in the actual implementation
@@ -540,10 +605,12 @@ describe('Document Processor', () => {
   describe('Performance', () => {
     it('should process multiple documents concurrently', async () => {
       const files = Array(5).fill(mockFile)
-      const promises = files.map(file => DocumentProcessor.processDocument(file))
-      
+      const promises = files.map(file =>
+        DocumentProcessor.processDocument(file)
+      )
+
       const results = await Promise.all(promises)
-      
+
       expect(results).toHaveLength(5)
       results.forEach(result => {
         expect(result.status).toBe('completed')
@@ -553,12 +620,12 @@ describe('Document Processor', () => {
     it('should handle large document chunking efficiently', async () => {
       const largeText = 'A'.repeat(100000) // 100KB text
       const startTime = performance.now()
-      
+
       const result = await DocumentProcessor.chunkDocument(largeText)
-      
+
       const endTime = performance.now()
       const duration = endTime - startTime
-      
+
       expect(duration).toBeLessThan(1000) // Should complete in less than 1 second
       expect(result.length).toBeGreaterThan(50)
     })
@@ -568,31 +635,31 @@ describe('Document Processor', () => {
     it('should support PDF files', () => {
       const pdfFile = { ...mockFile, type: 'application/pdf' }
       const result = DocumentProcessor.validateFile(pdfFile)
-      
+
       expect(result.valid).toBe(true)
     })
 
     it('should support DOCX files', () => {
-      const docxFile = { 
-        ...mockFile, 
-        type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      const docxFile = {
+        ...mockFile,
+        type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       }
       const result = DocumentProcessor.validateFile(docxFile)
-      
+
       expect(result.valid).toBe(true)
     })
 
     it('should support DOC files', () => {
       const docFile = { ...mockFile, type: 'application/msword' }
       const result = DocumentProcessor.validateFile(docFile)
-      
+
       expect(result.valid).toBe(true)
     })
 
     it('should support TXT files', () => {
       const txtFile = { ...mockFile, type: 'text/plain' }
       const result = DocumentProcessor.validateFile(txtFile)
-      
+
       expect(result.valid).toBe(true)
     })
   })

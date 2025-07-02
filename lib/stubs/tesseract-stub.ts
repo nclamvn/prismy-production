@@ -1,6 +1,8 @@
 // Stub for Tesseract.js in serverless environments
 export const createWorker = () => {
-  throw new Error('Tesseract.js OCR not available in serverless environment. Use Google Vision API instead.')
+  throw new Error(
+    'Tesseract.js OCR not available in serverless environment. Use Google Vision API instead.'
+  )
 }
 
 export const PSM = {
@@ -30,5 +32,5 @@ export const OEM = {
 export default {
   createWorker,
   PSM,
-  OEM
+  OEM,
 }

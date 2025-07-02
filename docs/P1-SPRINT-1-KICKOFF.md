@@ -1,6 +1,7 @@
 # 🚀 P1 Sprint 1 Kickoff: Bundle & Performance Optimization
 
 ## 📋 Sprint Overview
+
 **Duration**: 2 weeks (Tuần 1-2 of P1)  
 **Focus**: Bundle size optimization & Core Web Vitals improvement  
 **Target**: LCP mobile P95 < 3s, Main bundle < 400KB
@@ -8,9 +9,10 @@
 ## ✅ Immediate Setup (Completed Today)
 
 ### 1. Quality Gates Infrastructure
+
 - [x] **Size-limit configuration** (`.size-limit.json`)
   - Main bundle: 400KB limit
-  - CSS bundle: 120KB limit  
+  - CSS bundle: 120KB limit
   - Page-specific bundles: 150-200KB
 - [x] **Performance CI/CD pipeline** (`.github/workflows/performance-gates.yml`)
   - Bundle size checks on PRs
@@ -24,6 +26,7 @@
   - New scripts: `npm run size-limit`, `npm run lighthouse:ci`
 
 ### 2. Monitoring Setup
+
 - [x] **Lighthouse CI config** (`lighthouserc.json`)
   - Performance threshold: 75
   - LCP target: 3000ms
@@ -36,25 +39,29 @@
 ### Week 1: Dynamic Imports & Code Splitting
 
 #### Priority 1: Heavy Component Optimization
+
 - [ ] **DocumentEditor dynamic import**
   ```javascript
   const DocumentEditor = dynamic(() => import('./DocumentEditor'), {
     loading: () => <EditorSkeleton />,
-    ssr: false
+    ssr: false,
   })
   ```
 - [ ] **PrismJS syntax highlighter lazy loading**
   ```javascript
   const SyntaxHighlighter = dynamic(() => import('./SyntaxHighlighter'), {
-    loading: () => <pre>Loading syntax highlighter...</pre>
+    loading: () => <pre>Loading syntax highlighter...</pre>,
   })
   ```
 - [ ] **Chart components (Recharts) chunking**
   ```javascript
-  const Chart = dynamic(() => import('recharts').then(mod => ({ default: mod.LineChart })))
+  const Chart = dynamic(() =>
+    import('recharts').then(mod => ({ default: mod.LineChart }))
+  )
   ```
 
 #### Priority 2: Bundle Analysis Setup
+
 - [ ] **Enable @next/bundle-analyzer**
   ```bash
   npm run analyze
@@ -77,6 +84,7 @@
 ### Week 2: Route Optimization & Tree Shaking
 
 #### Priority 1: Route-based Code Splitting
+
 - [ ] **Dashboard route optimization**
   - Split analytics components
   - Lazy load charts and heavy widgets
@@ -87,6 +95,7 @@
   - Optimize OCR library loading
 
 #### Priority 2: Tree Shaking Enhancement
+
 - [ ] **Library optimization**
   - Replace `lodash` with tree-shakeable alternatives
   - Audit `framer-motion` usage
@@ -101,6 +110,7 @@
 ## 📊 Success Metrics & Monitoring
 
 ### Real-time Tracking
+
 ```bash
 # Bundle size monitoring
 npm run size-limit
@@ -113,15 +123,17 @@ npm run analyze
 ```
 
 ### Target Metrics
-| Metric | Current | Target | Status |
-|--------|---------|--------|--------|
-| Main bundle | ~500KB | <400KB | 🔴 |
-| CSS bundle | ~150KB | <120KB | 🔴 |
-| LCP (mobile) | ~4.2s | <3.0s | 🔴 |
-| FCP | ~2.8s | <2.0s | 🔴 |
-| Performance Score | 68 | 75+ | 🔴 |
+
+| Metric            | Current | Target | Status |
+| ----------------- | ------- | ------ | ------ |
+| Main bundle       | ~500KB  | <400KB | 🔴     |
+| CSS bundle        | ~150KB  | <120KB | 🔴     |
+| LCP (mobile)      | ~4.2s   | <3.0s  | 🔴     |
+| FCP               | ~2.8s   | <2.0s  | 🔴     |
+| Performance Score | 68      | 75+    | 🔴     |
 
 ### CI/CD Integration
+
 - **Pull Request Checks**: Bundle size validation
 - **Deployment Gates**: Performance thresholds
 - **Daily Reports**: Lighthouse CI trends
@@ -131,12 +143,14 @@ npm run analyze
 ## 🛠 Development Workflow
 
 ### Daily Routine
+
 1. **Morning**: Check overnight performance reports
 2. **Development**: Run `npm run size-limit` before commits
 3. **PR Review**: Validate bundle impact in CI
 4. **End of day**: Review Lighthouse CI results
 
 ### Tools & Commands
+
 ```bash
 # Development
 npm run dev              # Local development
@@ -156,6 +170,7 @@ npm run quality:dashboard  # Overall quality metrics
 ## 🚧 Risk Mitigation
 
 ### Potential Issues
+
 1. **Dynamic imports breaking SSR**
    - Solution: Proper loading states, SSR: false where needed
 2. **Bundle size regression**
@@ -164,6 +179,7 @@ npm run quality:dashboard  # Overall quality metrics
    - Solution: Progressive enhancement approach
 
 ### Rollback Plan
+
 - Feature flags for new optimizations
 - Bundle size monitoring with alerts
 - Performance regression detection
@@ -173,16 +189,19 @@ npm run quality:dashboard  # Overall quality metrics
 ## 📞 Support & Communication
 
 ### Daily Standups
+
 - Bundle size impact review
 - Performance metric trends
 - Blocker identification
 
 ### Escalation Path
+
 - **Bundle size blocker**: Architecture team review
 - **Performance regression**: Immediate rollback procedure
 - **CI/CD issues**: DevOps escalation
 
 ### Progress Tracking
+
 - **Daily**: Bundle size trends
 - **Weekly**: Performance scorecard
 - **Sprint end**: Comprehensive metrics review
@@ -192,10 +211,11 @@ npm run quality:dashboard  # Overall quality metrics
 ## 🎉 Definition of Done
 
 ### Sprint 1 Complete When:
+
 - [x] Bundle size CI gates implemented
 - [x] Performance monitoring active
 - [ ] Main bundle < 400KB achieved
-- [ ] LCP mobile < 3s achieved  
+- [ ] LCP mobile < 3s achieved
 - [ ] All dynamic imports implemented
 - [ ] Performance score ≥ 75
 
@@ -203,4 +223,4 @@ npm run quality:dashboard  # Overall quality metrics
 
 ---
 
-*P1 Sprint 1 positions Prismy for sub-3s load times and enterprise-grade performance. Let's ship it! 🚀*
+_P1 Sprint 1 positions Prismy for sub-3s load times and enterprise-grade performance. Let's ship it! 🚀_

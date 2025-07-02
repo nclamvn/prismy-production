@@ -7,8 +7,8 @@
 const mockTiktoken = {
   encoding_for_model: jest.fn(() => ({
     encode: jest.fn(),
-    decode: jest.fn()
-  }))
+    decode: jest.fn(),
+  })),
 }
 
 jest.mock('tiktoken', () => mockTiktoken)
@@ -24,7 +24,7 @@ describe('Intelligent Chunking', () => {
       IntelligentChunking = {
         chunkText: async (text: string, options: any = {}) => {
           if (!text) throw new Error('Text is required')
-          
+
           const maxChunkSize = options.maxChunkSize || 1000
           const overlap = options.overlap || 100
           const preserveStructure = options.preserveStructure ?? true
@@ -35,7 +35,10 @@ describe('Intelligent Chunking', () => {
           let currentPosition = 0
 
           while (currentPosition < text.length) {
-            const endPosition = Math.min(currentPosition + maxChunkSize, text.length)
+            const endPosition = Math.min(
+              currentPosition + maxChunkSize,
+              text.length
+            )
             let chunkText = text.slice(currentPosition, endPosition)
 
             // Try to break at sentence boundaries if preserveStructure is true
@@ -43,9 +46,13 @@ describe('Intelligent Chunking', () => {
               const sentenceEnd = chunkText.lastIndexOf('.')
               const questionEnd = chunkText.lastIndexOf('?')
               const exclamationEnd = chunkText.lastIndexOf('!')
-              
-              const lastSentenceEnd = Math.max(sentenceEnd, questionEnd, exclamationEnd)
-              
+
+              const lastSentenceEnd = Math.max(
+                sentenceEnd,
+                questionEnd,
+                exclamationEnd
+              )
+
               if (lastSentenceEnd > chunkText.length * 0.7) {
                 chunkText = chunkText.slice(0, lastSentenceEnd + 1)
                 endPosition = currentPosition + lastSentenceEnd + 1
@@ -62,8 +69,8 @@ describe('Intelligent Chunking', () => {
                 language,
                 hasCodeBlocks: chunkText.includes('```'),
                 hasList: /^\s*[-*+]\s/.test(chunkText),
-                hasHeaders: /^#+\s/.test(chunkText)
-              }
+                hasHeaders: /^#+\s/.test(chunkText),
+              },
             })
 
             currentPosition = endPosition - overlap
@@ -73,7 +80,11 @@ describe('Intelligent Chunking', () => {
           return chunks
         },
 
-        chunkByTokens: async (text: string, maxTokens: number = 500, model: string = 'gpt-3.5-turbo') => {
+        chunkByTokens: async (
+          text: string,
+          maxTokens: number = 500,
+          model: string = 'gpt-3.5-turbo'
+        ) => {
           if (!text) throw new Error('Text is required')
           if (maxTokens <= 0) throw new Error('Max tokens must be positive')
 
@@ -82,7 +93,10 @@ describe('Intelligent Chunking', () => {
           const chunks = []
 
           for (let i = 0; i < tokens.length; i += maxTokens) {
-            const chunkTokens = tokens.slice(i, Math.min(i + maxTokens, tokens.length))
+            const chunkTokens = tokens.slice(
+              i,
+              Math.min(i + maxTokens, tokens.length)
+            )
             const chunkText = encoding.decode(chunkTokens)
 
             chunks.push({
@@ -91,7 +105,7 @@ describe('Intelligent Chunking', () => {
               tokens: chunkTokens,
               tokenCount: chunkTokens.length,
               startToken: i,
-              endToken: Math.min(i + maxTokens, tokens.length)
+              endToken: Math.min(i + maxTokens, tokens.length),
             })
           }
 
@@ -100,7 +114,8 @@ describe('Intelligent Chunking', () => {
 
         chunkBySentences: async (text: string, maxSentences: number = 5) => {
           if (!text) throw new Error('Text is required')
-          if (maxSentences <= 0) throw new Error('Max sentences must be positive')
+          if (maxSentences <= 0)
+            throw new Error('Max sentences must be positive')
 
           const sentences = this.splitIntoSentences(text)
           const chunks = []
@@ -115,7 +130,7 @@ describe('Intelligent Chunking', () => {
               sentences: chunkSentences,
               sentenceCount: chunkSentences.length,
               startSentence: i,
-              endSentence: Math.min(i + maxSentences, sentences.length)
+              endSentence: Math.min(i + maxSentences, sentences.length),
             })
           }
 
@@ -124,7 +139,8 @@ describe('Intelligent Chunking', () => {
 
         chunkByParagraphs: async (text: string, maxParagraphs: number = 3) => {
           if (!text) throw new Error('Text is required')
-          if (maxParagraphs <= 0) throw new Error('Max paragraphs must be positive')
+          if (maxParagraphs <= 0)
+            throw new Error('Max paragraphs must be positive')
 
           const paragraphs = text.split(/\n\s*\n/).filter(p => p.trim())
           const chunks = []
@@ -139,16 +155,20 @@ describe('Intelligent Chunking', () => {
               paragraphs: chunkParagraphs,
               paragraphCount: chunkParagraphs.length,
               startParagraph: i,
-              endParagraph: Math.min(i + maxParagraphs, paragraphs.length)
+              endParagraph: Math.min(i + maxParagraphs, paragraphs.length),
             })
           }
 
           return chunks
         },
 
-        chunkBySemanticSimilarity: async (text: string, threshold: number = 0.7) => {
+        chunkBySemanticSimilarity: async (
+          text: string,
+          threshold: number = 0.7
+        ) => {
           if (!text) throw new Error('Text is required')
-          if (threshold < 0 || threshold > 1) throw new Error('Threshold must be between 0 and 1')
+          if (threshold < 0 || threshold > 1)
+            throw new Error('Threshold must be between 0 and 1')
 
           // Simplified semantic chunking simulation
           const sentences = this.splitIntoSentences(text)
@@ -157,17 +177,22 @@ describe('Intelligent Chunking', () => {
 
           for (let i = 0; i < sentences.length; i++) {
             currentChunk.push(sentences[i])
-            
+
             // Simulate semantic similarity check
             const similarity = Math.random()
-            
+
             if (similarity < threshold || i === sentences.length - 1) {
               chunks.push({
                 id: `semantic_chunk_${chunks.length + 1}`,
                 text: currentChunk.join(' '),
                 sentences: [...currentChunk],
                 semanticScore: similarity,
-                coherenceLevel: similarity > 0.8 ? 'high' : similarity > 0.5 ? 'medium' : 'low'
+                coherenceLevel:
+                  similarity > 0.8
+                    ? 'high'
+                    : similarity > 0.5
+                      ? 'medium'
+                      : 'low',
               })
               currentChunk = []
             }
@@ -180,7 +205,10 @@ describe('Intelligent Chunking', () => {
           if (!text) throw new Error('Text is required')
 
           const textLength = text.length
-          const hasCode = text.includes('```') || text.includes('function') || text.includes('class')
+          const hasCode =
+            text.includes('```') ||
+            text.includes('function') ||
+            text.includes('class')
           const hasLists = /^\s*[-*+]\s/m.test(text)
           const hasHeaders = /^#+\s/m.test(text)
 
@@ -213,11 +241,18 @@ describe('Intelligent Chunking', () => {
             case 'semantic':
               return this.chunkBySemanticSimilarity(text, 0.7)
             default:
-              return this.chunkText(text, { maxChunkSize: chunkSize, ...options })
+              return this.chunkText(text, {
+                maxChunkSize: chunkSize,
+                ...options,
+              })
           }
         },
 
-        optimizeForTranslation: async (text: string, sourceLang: string, targetLang: string) => {
+        optimizeForTranslation: async (
+          text: string,
+          sourceLang: string,
+          targetLang: string
+        ) => {
           if (!text) throw new Error('Text is required')
           if (!sourceLang) throw new Error('Source language is required')
           if (!targetLang) throw new Error('Target language is required')
@@ -225,7 +260,7 @@ describe('Intelligent Chunking', () => {
           const chunks = await this.chunkText(text, {
             maxChunkSize: 800, // Smaller chunks for better translation accuracy
             preserveStructure: true,
-            language: sourceLang
+            language: sourceLang,
           })
 
           // Add translation-specific metadata
@@ -237,15 +272,22 @@ describe('Intelligent Chunking', () => {
               complexity: this.assessTranslationComplexity(chunk.text),
               hasNamedEntities: /[A-Z][a-z]+ [A-Z][a-z]+/.test(chunk.text),
               hasNumbers: /\d/.test(chunk.text),
-              hasDates: /\d{1,2}\/\d{1,2}\/\d{4}|\d{4}-\d{2}-\d{2}/.test(chunk.text),
+              hasDates: /\d{1,2}\/\d{1,2}\/\d{4}|\d{4}-\d{2}-\d{2}/.test(
+                chunk.text
+              ),
               estimatedTokens: this.estimateTokens(chunk.text),
-              priority: index < 3 ? 'high' : index < 10 ? 'medium' : 'low'
-            }
+              priority: index < 3 ? 'high' : index < 10 ? 'medium' : 'low',
+            },
           }))
         },
 
         splitIntoSentences: (text: string) => {
-          return text.match(/[^\.!?]+[\.!?]+/g)?.map(s => s.trim()).filter(s => s) || [text]
+          return (
+            text
+              .match(/[^\.!?]+[\.!?]+/g)
+              ?.map(s => s.trim())
+              .filter(s => s) || [text]
+          )
         },
 
         estimateTokens: (text: string) => {
@@ -255,17 +297,18 @@ describe('Intelligent Chunking', () => {
 
         assessTranslationComplexity: (text: string) => {
           let score = 0
-          
+
           // Technical terms
           if (/\b(API|HTTP|JSON|XML|SQL)\b/i.test(text)) score += 2
-          
+
           // Long sentences
-          const avgSentenceLength = text.length / (text.split(/[.!?]/).length || 1)
+          const avgSentenceLength =
+            text.length / (text.split(/[.!?]/).length || 1)
           if (avgSentenceLength > 100) score += 1
-          
+
           // Complex punctuation
           if (/[;:—–]/.test(text)) score += 1
-          
+
           // Nested structures
           if (/\([^)]*\([^)]*\)[^)]*\)/.test(text)) score += 1
 
@@ -281,7 +324,10 @@ describe('Intelligent Chunking', () => {
           for (const chunk of chunks) {
             if (!currentMerged) {
               currentMerged = { ...chunk }
-            } else if (currentMerged.text.length + chunk.text.length <= targetSize) {
+            } else if (
+              currentMerged.text.length + chunk.text.length <=
+              targetSize
+            ) {
               currentMerged = {
                 id: `merged_${merged.length + 1}`,
                 text: currentMerged.text + ' ' + chunk.text,
@@ -290,8 +336,8 @@ describe('Intelligent Chunking', () => {
                 tokenCount: currentMerged.tokenCount + chunk.tokenCount,
                 mergedChunks: [
                   ...(currentMerged.mergedChunks || [currentMerged.id]),
-                  chunk.id
-                ]
+                  chunk.id,
+                ],
               }
             } else {
               merged.push(currentMerged)
@@ -315,15 +361,21 @@ describe('Intelligent Chunking', () => {
             }
 
             if (chunk.text.length > 2000) {
-              issues.push(`Chunk ${index + 1}: Exceeds recommended size (${chunk.text.length} chars)`)
+              issues.push(
+                `Chunk ${index + 1}: Exceeds recommended size (${chunk.text.length} chars)`
+              )
             }
 
             if (chunk.text.length < 10) {
-              issues.push(`Chunk ${index + 1}: Too small (${chunk.text.length} chars)`)
+              issues.push(
+                `Chunk ${index + 1}: Too small (${chunk.text.length} chars)`
+              )
             }
 
             if (!/[.!?]$/.test(chunk.text.trim())) {
-              issues.push(`Chunk ${index + 1}: Doesn't end with proper punctuation`)
+              issues.push(
+                `Chunk ${index + 1}: Doesn't end with proper punctuation`
+              )
             }
           })
 
@@ -332,28 +384,35 @@ describe('Intelligent Chunking', () => {
             issues,
             stats: {
               totalChunks: chunks.length,
-              avgChunkSize: chunks.reduce((sum, c) => sum + c.text.length, 0) / chunks.length,
+              avgChunkSize:
+                chunks.reduce((sum, c) => sum + c.text.length, 0) /
+                chunks.length,
               minChunkSize: Math.min(...chunks.map(c => c.text.length)),
-              maxChunkSize: Math.max(...chunks.map(c => c.text.length))
-            }
+              maxChunkSize: Math.max(...chunks.map(c => c.text.length)),
+            },
           }
-        }
+        },
       }
     }
   })
 
   beforeEach(() => {
     jest.clearAllMocks()
-    
+
     mockTiktoken.encoding_for_model.mockReturnValue({
-      encode: jest.fn((text: string) => Array.from({ length: Math.ceil(text.length / 4) }, (_, i) => i)),
-      decode: jest.fn((tokens: number[]) => 'decoded text '.repeat(tokens.length).trim())
+      encode: jest.fn((text: string) =>
+        Array.from({ length: Math.ceil(text.length / 4) }, (_, i) => i)
+      ),
+      decode: jest.fn((tokens: number[]) =>
+        'decoded text '.repeat(tokens.length).trim()
+      ),
     })
   })
 
   describe('Basic Text Chunking', () => {
     it('should chunk text with default options', async () => {
-      const text = 'This is a test sentence. This is another sentence. And this is the third one.'
+      const text =
+        'This is a test sentence. This is another sentence. And this is the third one.'
       const result = await IntelligentChunking.chunkText(text)
 
       expect(Array.isArray(result)).toBe(true)
@@ -366,7 +425,9 @@ describe('Intelligent Chunking', () => {
 
     it('should respect maxChunkSize option', async () => {
       const text = 'A'.repeat(2000)
-      const result = await IntelligentChunking.chunkText(text, { maxChunkSize: 500 })
+      const result = await IntelligentChunking.chunkText(text, {
+        maxChunkSize: 500,
+      })
 
       result.forEach(chunk => {
         expect(chunk.text.length).toBeLessThanOrEqual(500)
@@ -375,9 +436,9 @@ describe('Intelligent Chunking', () => {
 
     it('should apply overlap between chunks', async () => {
       const text = 'A'.repeat(1000)
-      const result = await IntelligentChunking.chunkText(text, { 
-        maxChunkSize: 400, 
-        overlap: 50 
+      const result = await IntelligentChunking.chunkText(text, {
+        maxChunkSize: 400,
+        overlap: 50,
       })
 
       expect(result.length).toBeGreaterThan(1)
@@ -390,10 +451,11 @@ describe('Intelligent Chunking', () => {
     })
 
     it('should preserve sentence structure when enabled', async () => {
-      const text = 'First sentence here. Second sentence here. Third sentence here.'
-      const result = await IntelligentChunking.chunkText(text, { 
+      const text =
+        'First sentence here. Second sentence here. Third sentence here.'
+      const result = await IntelligentChunking.chunkText(text, {
         maxChunkSize: 30,
-        preserveStructure: true 
+        preserveStructure: true,
       })
 
       // Should break at sentence boundaries
@@ -405,7 +467,9 @@ describe('Intelligent Chunking', () => {
     })
 
     it('should handle empty text', async () => {
-      await expect(IntelligentChunking.chunkText('')).rejects.toThrow('Text is required')
+      await expect(IntelligentChunking.chunkText('')).rejects.toThrow(
+        'Text is required'
+      )
     })
 
     it('should include metadata about content structure', async () => {
@@ -420,7 +484,8 @@ describe('Intelligent Chunking', () => {
 
   describe('Token-based Chunking', () => {
     it('should chunk by token count', async () => {
-      const text = 'This is a test sentence with multiple words that will be tokenized.'
+      const text =
+        'This is a test sentence with multiple words that will be tokenized.'
       const result = await IntelligentChunking.chunkByTokens(text, 10)
 
       expect(result.length).toBeGreaterThan(0)
@@ -441,15 +506,22 @@ describe('Intelligent Chunking', () => {
     })
 
     it('should validate token parameters', async () => {
-      await expect(IntelligentChunking.chunkByTokens('', 100)).rejects.toThrow('Text is required')
-      await expect(IntelligentChunking.chunkByTokens('text', 0)).rejects.toThrow('Max tokens must be positive')
-      await expect(IntelligentChunking.chunkByTokens('text', -5)).rejects.toThrow('Max tokens must be positive')
+      await expect(IntelligentChunking.chunkByTokens('', 100)).rejects.toThrow(
+        'Text is required'
+      )
+      await expect(
+        IntelligentChunking.chunkByTokens('text', 0)
+      ).rejects.toThrow('Max tokens must be positive')
+      await expect(
+        IntelligentChunking.chunkByTokens('text', -5)
+      ).rejects.toThrow('Max tokens must be positive')
     })
   })
 
   describe('Sentence-based Chunking', () => {
     it('should chunk by sentence count', async () => {
-      const text = 'First sentence. Second sentence. Third sentence. Fourth sentence. Fifth sentence.'
+      const text =
+        'First sentence. Second sentence. Third sentence. Fourth sentence. Fifth sentence.'
       const result = await IntelligentChunking.chunkBySentences(text, 2)
 
       expect(result.length).toBe(3) // 5 sentences / 2 per chunk = 3 chunks
@@ -468,8 +540,12 @@ describe('Intelligent Chunking', () => {
     })
 
     it('should validate sentence parameters', async () => {
-      await expect(IntelligentChunking.chunkBySentences('', 3)).rejects.toThrow('Text is required')
-      await expect(IntelligentChunking.chunkBySentences('text', 0)).rejects.toThrow('Max sentences must be positive')
+      await expect(IntelligentChunking.chunkBySentences('', 3)).rejects.toThrow(
+        'Text is required'
+      )
+      await expect(
+        IntelligentChunking.chunkBySentences('text', 0)
+      ).rejects.toThrow('Max sentences must be positive')
     })
   })
 
@@ -494,15 +570,23 @@ describe('Intelligent Chunking', () => {
     })
 
     it('should validate paragraph parameters', async () => {
-      await expect(IntelligentChunking.chunkByParagraphs('', 2)).rejects.toThrow('Text is required')
-      await expect(IntelligentChunking.chunkByParagraphs('text', -1)).rejects.toThrow('Max paragraphs must be positive')
+      await expect(
+        IntelligentChunking.chunkByParagraphs('', 2)
+      ).rejects.toThrow('Text is required')
+      await expect(
+        IntelligentChunking.chunkByParagraphs('text', -1)
+      ).rejects.toThrow('Max paragraphs must be positive')
     })
   })
 
   describe('Semantic Similarity Chunking', () => {
     it('should chunk based on semantic similarity', async () => {
-      const text = 'Related sentence one. Related sentence two. Different topic sentence.'
-      const result = await IntelligentChunking.chunkBySemanticSimilarity(text, 0.7)
+      const text =
+        'Related sentence one. Related sentence two. Different topic sentence.'
+      const result = await IntelligentChunking.chunkBySemanticSimilarity(
+        text,
+        0.7
+      )
 
       expect(result.length).toBeGreaterThan(0)
       result.forEach(chunk => {
@@ -513,14 +597,23 @@ describe('Intelligent Chunking', () => {
     })
 
     it('should validate similarity threshold', async () => {
-      await expect(IntelligentChunking.chunkBySemanticSimilarity('', 0.5)).rejects.toThrow('Text is required')
-      await expect(IntelligentChunking.chunkBySemanticSimilarity('text', -0.1)).rejects.toThrow('Threshold must be between 0 and 1')
-      await expect(IntelligentChunking.chunkBySemanticSimilarity('text', 1.5)).rejects.toThrow('Threshold must be between 0 and 1')
+      await expect(
+        IntelligentChunking.chunkBySemanticSimilarity('', 0.5)
+      ).rejects.toThrow('Text is required')
+      await expect(
+        IntelligentChunking.chunkBySemanticSimilarity('text', -0.1)
+      ).rejects.toThrow('Threshold must be between 0 and 1')
+      await expect(
+        IntelligentChunking.chunkBySemanticSimilarity('text', 1.5)
+      ).rejects.toThrow('Threshold must be between 0 and 1')
     })
 
     it('should provide coherence levels', async () => {
       const text = 'Test sentence for coherence analysis.'
-      const result = await IntelligentChunking.chunkBySemanticSimilarity(text, 0.5)
+      const result = await IntelligentChunking.chunkBySemanticSimilarity(
+        text,
+        0.5
+      )
 
       result.forEach(chunk => {
         expect(['high', 'medium', 'low']).toContain(chunk.coherenceLevel)
@@ -537,7 +630,8 @@ describe('Intelligent Chunking', () => {
     })
 
     it('should handle markdown headers', async () => {
-      const text = '# Main Header\n\nContent under header.\n\n## Sub Header\n\nMore content.'
+      const text =
+        '# Main Header\n\nContent under header.\n\n## Sub Header\n\nMore content.'
       const result = await IntelligentChunking.adaptiveChunk(text)
 
       expect(result.length).toBeGreaterThan(0)
@@ -561,7 +655,11 @@ describe('Intelligent Chunking', () => {
   describe('Translation Optimization', () => {
     it('should optimize chunks for translation', async () => {
       const text = 'English text to be translated to Vietnamese.'
-      const result = await IntelligentChunking.optimizeForTranslation(text, 'en', 'vi')
+      const result = await IntelligentChunking.optimizeForTranslation(
+        text,
+        'en',
+        'vi'
+      )
 
       expect(result.length).toBeGreaterThan(0)
       result.forEach(chunk => {
@@ -569,20 +667,31 @@ describe('Intelligent Chunking', () => {
         expect(chunk.translationMetadata.sourceLang).toBe('en')
         expect(chunk.translationMetadata.targetLang).toBe('vi')
         expect(chunk.translationMetadata.complexity).toBeDefined()
-        expect(['high', 'medium', 'low']).toContain(chunk.translationMetadata.complexity)
+        expect(['high', 'medium', 'low']).toContain(
+          chunk.translationMetadata.complexity
+        )
       })
     })
 
     it('should detect named entities', async () => {
       const text = 'John Smith visited New York City last week.'
-      const result = await IntelligentChunking.optimizeForTranslation(text, 'en', 'vi')
+      const result = await IntelligentChunking.optimizeForTranslation(
+        text,
+        'en',
+        'vi'
+      )
 
       expect(result[0].translationMetadata.hasNamedEntities).toBe(true)
     })
 
     it('should detect numbers and dates', async () => {
-      const text = 'The meeting is on 2024-01-15 at 3:00 PM with 25 participants.'
-      const result = await IntelligentChunking.optimizeForTranslation(text, 'en', 'vi')
+      const text =
+        'The meeting is on 2024-01-15 at 3:00 PM with 25 participants.'
+      const result = await IntelligentChunking.optimizeForTranslation(
+        text,
+        'en',
+        'vi'
+      )
 
       expect(result[0].translationMetadata.hasNumbers).toBe(true)
       expect(result[0].translationMetadata.hasDates).toBe(true)
@@ -590,7 +699,11 @@ describe('Intelligent Chunking', () => {
 
     it('should assign priority levels', async () => {
       const text = Array(15).fill('Test sentence.').join(' ')
-      const result = await IntelligentChunking.optimizeForTranslation(text, 'en', 'vi')
+      const result = await IntelligentChunking.optimizeForTranslation(
+        text,
+        'en',
+        'vi'
+      )
 
       expect(result[0].translationMetadata.priority).toBe('high')
       if (result.length > 3) {
@@ -599,9 +712,15 @@ describe('Intelligent Chunking', () => {
     })
 
     it('should validate translation parameters', async () => {
-      await expect(IntelligentChunking.optimizeForTranslation('', 'en', 'vi')).rejects.toThrow('Text is required')
-      await expect(IntelligentChunking.optimizeForTranslation('text', '', 'vi')).rejects.toThrow('Source language is required')
-      await expect(IntelligentChunking.optimizeForTranslation('text', 'en', '')).rejects.toThrow('Target language is required')
+      await expect(
+        IntelligentChunking.optimizeForTranslation('', 'en', 'vi')
+      ).rejects.toThrow('Text is required')
+      await expect(
+        IntelligentChunking.optimizeForTranslation('text', '', 'vi')
+      ).rejects.toThrow('Source language is required')
+      await expect(
+        IntelligentChunking.optimizeForTranslation('text', 'en', '')
+      ).rejects.toThrow('Target language is required')
     })
   })
 
@@ -610,7 +729,7 @@ describe('Intelligent Chunking', () => {
       const chunks = [
         { id: '1', text: 'Short chunk', tokenCount: 50 },
         { id: '2', text: 'Another short', tokenCount: 60 },
-        { id: '3', text: 'Third chunk', tokenCount: 70 }
+        { id: '3', text: 'Third chunk', tokenCount: 70 },
       ]
 
       const result = await IntelligentChunking.mergeChunks(chunks, 200)
@@ -622,7 +741,7 @@ describe('Intelligent Chunking', () => {
     it('should respect target size limits', async () => {
       const chunks = [
         { id: '1', text: 'A'.repeat(800), tokenCount: 200 },
-        { id: '2', text: 'B'.repeat(800), tokenCount: 200 }
+        { id: '2', text: 'B'.repeat(800), tokenCount: 200 },
       ]
 
       const result = await IntelligentChunking.mergeChunks(chunks, 1000)
@@ -643,7 +762,7 @@ describe('Intelligent Chunking', () => {
         { text: 'Good chunk with proper ending.' },
         { text: 'A'.repeat(2500) }, // Too long
         { text: 'Short' }, // Too short
-        { text: '' } // Empty
+        { text: '' }, // Empty
       ]
 
       const result = IntelligentChunking.validateChunks(chunks)
@@ -658,7 +777,7 @@ describe('Intelligent Chunking', () => {
       const chunks = [
         { text: 'First chunk with good content.' },
         { text: 'Second chunk also well structured.' },
-        { text: 'Third chunk completes the set.' }
+        { text: 'Third chunk completes the set.' },
       ]
 
       const result = IntelligentChunking.validateChunks(chunks)
@@ -672,7 +791,7 @@ describe('Intelligent Chunking', () => {
     it('should identify valid chunks', () => {
       const chunks = [
         { text: 'Well structured chunk with proper ending.' },
-        { text: 'Another good chunk that follows the rules.' }
+        { text: 'Another good chunk that follows the rules.' },
       ]
 
       const result = IntelligentChunking.validateChunks(chunks)
@@ -703,10 +822,13 @@ describe('Intelligent Chunking', () => {
 
     it('should assess translation complexity', () => {
       const simpleText = 'Simple sentence.'
-      const complexText = 'Complex API with HTTP JSON endpoints (with nested structures).'
+      const complexText =
+        'Complex API with HTTP JSON endpoints (with nested structures).'
 
-      const simpleResult = IntelligentChunking.assessTranslationComplexity(simpleText)
-      const complexResult = IntelligentChunking.assessTranslationComplexity(complexText)
+      const simpleResult =
+        IntelligentChunking.assessTranslationComplexity(simpleText)
+      const complexResult =
+        IntelligentChunking.assessTranslationComplexity(complexText)
 
       expect(['low', 'medium', 'high']).toContain(simpleResult)
       expect(['low', 'medium', 'high']).toContain(complexResult)
@@ -722,11 +844,15 @@ describe('Intelligent Chunking', () => {
 
     it('should handle edge cases in token encoding', async () => {
       mockTiktoken.encoding_for_model.mockReturnValue({
-        encode: jest.fn(() => { throw new Error('Encoding failed') }),
-        decode: jest.fn()
+        encode: jest.fn(() => {
+          throw new Error('Encoding failed')
+        }),
+        decode: jest.fn(),
       })
 
-      await expect(IntelligentChunking.chunkByTokens('text', 100)).rejects.toThrow()
+      await expect(
+        IntelligentChunking.chunkByTokens('text', 100)
+      ).rejects.toThrow()
     })
 
     it('should handle empty sentences array', () => {
@@ -739,9 +865,9 @@ describe('Intelligent Chunking', () => {
     it('should handle large texts efficiently', async () => {
       const largeText = 'Large text content. '.repeat(10000)
       const startTime = performance.now()
-      
+
       const result = await IntelligentChunking.chunkText(largeText)
-      
+
       const endTime = performance.now()
       const duration = endTime - startTime
 
@@ -751,7 +877,9 @@ describe('Intelligent Chunking', () => {
 
     it('should optimize memory usage', async () => {
       const text = 'Memory test content. '.repeat(1000)
-      const result = await IntelligentChunking.chunkText(text, { maxChunkSize: 100 })
+      const result = await IntelligentChunking.chunkText(text, {
+        maxChunkSize: 100,
+      })
 
       // Ensure chunks don't contain entire original text
       result.forEach(chunk => {

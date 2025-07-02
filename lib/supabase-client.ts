@@ -44,7 +44,11 @@ export function createClient() {
   }
 
   // Create new browser client
-  browserClient = createBrowserClient(supabaseUrl!, supabaseAnonKey!, clientConfig)
+  browserClient = createBrowserClient(
+    supabaseUrl!,
+    supabaseAnonKey!,
+    clientConfig
+  )
 
   return browserClient
 }

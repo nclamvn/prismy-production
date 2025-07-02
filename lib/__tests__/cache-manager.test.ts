@@ -26,7 +26,7 @@ const mockRedis = {
   srem: jest.fn(),
   zadd: jest.fn(),
   zrange: jest.fn(),
-  zrem: jest.fn()
+  zrem: jest.fn(),
 }
 
 const mockMemoryCache = new Map()
@@ -46,14 +46,17 @@ describe('Cache Manager', () => {
           if (!key) throw new Error('Key is required')
           if (value === undefined) throw new Error('Value is required')
 
-          const serializedValue = typeof value === 'object' ? JSON.stringify(value) : String(value)
-          
+          const serializedValue =
+            typeof value === 'object' ? JSON.stringify(value) : String(value)
+
           return {
             key,
             value: serializedValue,
             ttl: ttl || 3600,
             setAt: new Date().toISOString(),
-            expiresAt: new Date(Date.now() + (ttl || 3600) * 1000).toISOString()
+            expiresAt: new Date(
+              Date.now() + (ttl || 3600) * 1000
+            ).toISOString(),
           }
         },
 
@@ -63,9 +66,9 @@ describe('Cache Manager', () => {
           // Simulate cache hit/miss
           if (key === 'missing_key') return null
 
-          const mockValue = key.includes('user') ? 
-            { id: '123', name: 'Test User' } : 
-            'cached_value'
+          const mockValue = key.includes('user')
+            ? { id: '123', name: 'Test User' }
+            : 'cached_value'
 
           return mockValue
         },
@@ -74,11 +77,11 @@ describe('Cache Manager', () => {
           if (!key) throw new Error('Key is required')
 
           const keys = Array.isArray(key) ? key : [key]
-          
+
           return {
             deletedKeys: keys,
             deletedCount: keys.length,
-            deletedAt: new Date().toISOString()
+            deletedAt: new Date().toISOString(),
           }
         },
 
@@ -96,7 +99,7 @@ describe('Cache Manager', () => {
             key,
             ttl,
             expiresAt: new Date(Date.now() + ttl * 1000).toISOString(),
-            success: true
+            success: true,
           }
         },
 
@@ -109,11 +112,11 @@ describe('Cache Manager', () => {
         keys: async (pattern: string = '*') => {
           const allKeys = [
             'user:123',
-            'user:456', 
+            'user:456',
             'session:abc',
             'session:def',
             'translation:en_vi_hello',
-            'config:settings'
+            'config:settings',
           ]
 
           if (pattern === '*') return allKeys
@@ -130,14 +133,14 @@ describe('Cache Manager', () => {
           return {
             flushed: true,
             count: 150,
-            flushedAt: new Date().toISOString()
+            flushedAt: new Date().toISOString(),
           }
         },
 
         mget: async (keys: string[]) => {
           if (!keys || keys.length === 0) throw new Error('Keys are required')
 
-          return keys.map(key => 
+          return keys.map(key =>
             key === 'missing_key' ? null : `value_for_${key}`
           )
         },
@@ -146,11 +149,11 @@ describe('Cache Manager', () => {
           if (!keyValuePairs) throw new Error('Key-value pairs are required')
 
           const keys = Object.keys(keyValuePairs)
-          
+
           return {
             setKeys: keys,
             setCount: keys.length,
-            setAt: new Date().toISOString()
+            setAt: new Date().toISOString(),
           }
         },
 
@@ -160,7 +163,7 @@ describe('Cache Manager', () => {
           return {
             key,
             newValue: 10 + amount,
-            incremented: amount
+            incremented: amount,
           }
         },
 
@@ -170,7 +173,7 @@ describe('Cache Manager', () => {
           return {
             key,
             newValue: Math.max(0, 10 - amount),
-            decremented: amount
+            decremented: amount,
           }
         },
 
@@ -182,7 +185,7 @@ describe('Cache Manager', () => {
             key,
             field,
             value,
-            isNew: true
+            isNew: true,
           }
         },
 
@@ -199,7 +202,7 @@ describe('Cache Manager', () => {
           return {
             field1: 'value1',
             field2: 'value2',
-            field3: 'value3'
+            field3: 'value3',
           }
         },
 
@@ -208,11 +211,11 @@ describe('Cache Manager', () => {
           if (!fields) throw new Error('Fields are required')
 
           const fieldArray = Array.isArray(fields) ? fields : [fields]
-          
+
           return {
             key,
             deletedFields: fieldArray,
-            deletedCount: fieldArray.length
+            deletedCount: fieldArray.length,
           }
         },
 
@@ -221,11 +224,11 @@ describe('Cache Manager', () => {
           if (!members) throw new Error('Members are required')
 
           const memberArray = Array.isArray(members) ? members : [members]
-          
+
           return {
             key,
             addedMembers: memberArray,
-            addedCount: memberArray.length
+            addedCount: memberArray.length,
           }
         },
 
@@ -240,36 +243,42 @@ describe('Cache Manager', () => {
           if (!members) throw new Error('Members are required')
 
           const memberArray = Array.isArray(members) ? members : [members]
-          
+
           return {
             key,
             removedMembers: memberArray,
-            removedCount: memberArray.length
+            removedCount: memberArray.length,
           }
         },
 
         zadd: async (key: string, score: number, member: string) => {
           if (!key) throw new Error('Key is required')
-          if (typeof score !== 'number') throw new Error('Score must be a number')
+          if (typeof score !== 'number')
+            throw new Error('Score must be a number')
           if (!member) throw new Error('Member is required')
 
           return {
             key,
             member,
             score,
-            added: true
+            added: true,
           }
         },
 
-        zrange: async (key: string, start: number, stop: number, withScores: boolean = false) => {
+        zrange: async (
+          key: string,
+          start: number,
+          stop: number,
+          withScores: boolean = false
+        ) => {
           if (!key) throw new Error('Key is required')
 
           const members = ['item1', 'item2', 'item3'].slice(start, stop + 1)
-          
+
           if (withScores) {
             return members.map((member, index) => ({
               member,
-              score: (start + index) * 10
+              score: (start + index) * 10,
             }))
           }
 
@@ -281,11 +290,11 @@ describe('Cache Manager', () => {
           if (!members) throw new Error('Members are required')
 
           const memberArray = Array.isArray(members) ? members : [members]
-          
+
           return {
             key,
             removedMembers: memberArray,
-            removedCount: memberArray.length
+            removedCount: memberArray.length,
           }
         },
 
@@ -298,10 +307,10 @@ describe('Cache Manager', () => {
             operations: {
               gets: 5420,
               sets: 1830,
-              dels: 245
+              dels: 245,
             },
             uptime: 86400, // 24 hours
-            connections: 12
+            connections: 12,
           }
         },
 
@@ -312,17 +321,17 @@ describe('Cache Manager', () => {
             connections: 12,
             memoryUsage: 0.65,
             uptime: 86400,
-            lastCheck: new Date().toISOString()
+            lastCheck: new Date().toISOString(),
           }
         },
 
         clear: async (pattern?: string) => {
           const deletedCount = pattern ? 25 : 150
-          
+
           return {
             pattern: pattern || '*',
             deletedCount,
-            clearedAt: new Date().toISOString()
+            clearedAt: new Date().toISOString(),
           }
         },
 
@@ -339,7 +348,7 @@ describe('Cache Manager', () => {
             },
             del: async (key: string) => {
               return CacheManager.del(`${prefix}:${key}`)
-            }
+            },
           }
         },
 
@@ -351,7 +360,7 @@ describe('Cache Manager', () => {
             acquired: true,
             ttl,
             token: `token_${Date.now()}`,
-            expiresAt: new Date(Date.now() + ttl * 1000).toISOString()
+            expiresAt: new Date(Date.now() + ttl * 1000).toISOString(),
           }
         },
 
@@ -363,13 +372,13 @@ describe('Cache Manager', () => {
             key: `lock:${key}`,
             token,
             released: true,
-            releasedAt: new Date().toISOString()
+            releasedAt: new Date().toISOString(),
           }
         },
 
         pipeline: () => {
           const commands = []
-          
+
           return {
             set: (key: string, value: any) => {
               commands.push({ command: 'set', args: [key, value] })
@@ -383,11 +392,11 @@ describe('Cache Manager', () => {
               return commands.map((cmd, index) => ({
                 command: cmd.command,
                 result: `result_${index}`,
-                success: true
+                success: true,
               }))
-            }
+            },
           }
-        }
+        },
       }
     }
   })
@@ -434,8 +443,12 @@ describe('Cache Manager', () => {
     })
 
     it('should validate cache parameters', async () => {
-      await expect(CacheManager.set('', 'value')).rejects.toThrow('Key is required')
-      await expect(CacheManager.set('key', undefined)).rejects.toThrow('Value is required')
+      await expect(CacheManager.set('', 'value')).rejects.toThrow(
+        'Key is required'
+      )
+      await expect(CacheManager.set('key', undefined)).rejects.toThrow(
+        'Value is required'
+      )
       await expect(CacheManager.get('')).rejects.toThrow('Key is required')
     })
   })
@@ -489,8 +502,12 @@ describe('Cache Manager', () => {
 
     it('should validate utility parameters', async () => {
       await expect(CacheManager.exists('')).rejects.toThrow('Key is required')
-      await expect(CacheManager.expire('', 300)).rejects.toThrow('Key is required')
-      await expect(CacheManager.expire('key', 'invalid')).rejects.toThrow('TTL must be a number')
+      await expect(CacheManager.expire('', 300)).rejects.toThrow(
+        'Key is required'
+      )
+      await expect(CacheManager.expire('key', 'invalid')).rejects.toThrow(
+        'TTL must be a number'
+      )
       await expect(CacheManager.ttl('')).rejects.toThrow('Key is required')
     })
   })
@@ -516,7 +533,9 @@ describe('Cache Manager', () => {
 
     it('should validate bulk parameters', async () => {
       await expect(CacheManager.mget([])).rejects.toThrow('Keys are required')
-      await expect(CacheManager.mset(null)).rejects.toThrow('Key-value pairs are required')
+      await expect(CacheManager.mset(null)).rejects.toThrow(
+        'Key-value pairs are required'
+      )
     })
   })
 
@@ -570,7 +589,7 @@ describe('Cache Manager', () => {
       expect(result).toEqual({
         field1: 'value1',
         field2: 'value2',
-        field3: 'value3'
+        field3: 'value3',
       })
     })
 
@@ -582,10 +601,18 @@ describe('Cache Manager', () => {
     })
 
     it('should validate hash parameters', async () => {
-      await expect(CacheManager.hset('', 'field', 'value')).rejects.toThrow('Key is required')
-      await expect(CacheManager.hset('key', '', 'value')).rejects.toThrow('Field is required')
-      await expect(CacheManager.hget('', 'field')).rejects.toThrow('Key is required')
-      await expect(CacheManager.hget('key', '')).rejects.toThrow('Field is required')
+      await expect(CacheManager.hset('', 'field', 'value')).rejects.toThrow(
+        'Key is required'
+      )
+      await expect(CacheManager.hset('key', '', 'value')).rejects.toThrow(
+        'Field is required'
+      )
+      await expect(CacheManager.hget('', 'field')).rejects.toThrow(
+        'Key is required'
+      )
+      await expect(CacheManager.hget('key', '')).rejects.toThrow(
+        'Field is required'
+      )
     })
   })
 
@@ -611,8 +638,12 @@ describe('Cache Manager', () => {
     })
 
     it('should validate set parameters', async () => {
-      await expect(CacheManager.sadd('', 'member')).rejects.toThrow('Key is required')
-      await expect(CacheManager.sadd('key', null)).rejects.toThrow('Members are required')
+      await expect(CacheManager.sadd('', 'member')).rejects.toThrow(
+        'Key is required'
+      )
+      await expect(CacheManager.sadd('key', null)).rejects.toThrow(
+        'Members are required'
+      )
       await expect(CacheManager.smembers('')).rejects.toThrow('Key is required')
     })
   })
@@ -649,9 +680,15 @@ describe('Cache Manager', () => {
     })
 
     it('should validate sorted set parameters', async () => {
-      await expect(CacheManager.zadd('', 10, 'member')).rejects.toThrow('Key is required')
-      await expect(CacheManager.zadd('key', 'invalid', 'member')).rejects.toThrow('Score must be a number')
-      await expect(CacheManager.zadd('key', 10, '')).rejects.toThrow('Member is required')
+      await expect(CacheManager.zadd('', 10, 'member')).rejects.toThrow(
+        'Key is required'
+      )
+      await expect(
+        CacheManager.zadd('key', 'invalid', 'member')
+      ).rejects.toThrow('Score must be a number')
+      await expect(CacheManager.zadd('key', 10, '')).rejects.toThrow(
+        'Member is required'
+      )
     })
   })
 
@@ -724,8 +761,12 @@ describe('Cache Manager', () => {
 
     it('should validate lock parameters', async () => {
       await expect(CacheManager.lock('')).rejects.toThrow('Key is required')
-      await expect(CacheManager.unlock('', 'token')).rejects.toThrow('Key is required')
-      await expect(CacheManager.unlock('key', '')).rejects.toThrow('Token is required')
+      await expect(CacheManager.unlock('', 'token')).rejects.toThrow(
+        'Key is required'
+      )
+      await expect(CacheManager.unlock('key', '')).rejects.toThrow(
+        'Token is required'
+      )
     })
   })
 
@@ -734,7 +775,7 @@ describe('Cache Manager', () => {
       const pipeline = CacheManager.pipeline()
       pipeline.set('key1', 'value1')
       pipeline.get('key2')
-      
+
       const results = await pipeline.exec()
 
       expect(results).toHaveLength(2)
@@ -773,9 +814,9 @@ describe('Cache Manager', () => {
 
   describe('Performance', () => {
     it('should handle high-volume operations', async () => {
-      const operations = Array(100).fill(null).map((_, i) => 
-        CacheManager.set(`bulk_key_${i}`, `value_${i}`)
-      )
+      const operations = Array(100)
+        .fill(null)
+        .map((_, i) => CacheManager.set(`bulk_key_${i}`, `value_${i}`))
 
       const results = await Promise.all(operations)
 
@@ -788,7 +829,9 @@ describe('Cache Manager', () => {
     it('should optimize bulk operations', async () => {
       const startTime = performance.now()
 
-      const keys = Array(50).fill(null).map((_, i) => `perf_key_${i}`)
+      const keys = Array(50)
+        .fill(null)
+        .map((_, i) => `perf_key_${i}`)
       await CacheManager.mget(keys)
 
       const endTime = performance.now()
@@ -801,7 +844,7 @@ describe('Cache Manager', () => {
   describe('Memory Management', () => {
     it('should handle cache eviction policies', () => {
       const policies = ['lru', 'lfu', 'ttl', 'random']
-      
+
       policies.forEach(policy => {
         expect(typeof policy).toBe('string')
         expect(policy.length).toBeGreaterThan(0)
@@ -810,7 +853,7 @@ describe('Cache Manager', () => {
 
     it('should track memory usage', async () => {
       const stats = await CacheManager.getStats()
-      
+
       expect(stats.usedMemory).toBeDefined()
       expect(typeof stats.usedMemory).toBe('string')
     })
@@ -823,7 +866,7 @@ describe('Cache Manager', () => {
         port: 6379,
         maxRetriesPerRequest: 3,
         retryDelayOnFailover: 100,
-        enableOfflineQueue: false
+        enableOfflineQueue: false,
       }
 
       expect(config.host).toBe('localhost')
@@ -836,11 +879,11 @@ describe('Cache Manager', () => {
         nodes: [
           { host: 'redis1', port: 6379 },
           { host: 'redis2', port: 6379 },
-          { host: 'redis3', port: 6379 }
+          { host: 'redis3', port: 6379 },
         ],
         redisOptions: {
-          password: 'secret'
-        }
+          password: 'secret',
+        },
       }
 
       expect(clusterConfig.nodes).toHaveLength(3)

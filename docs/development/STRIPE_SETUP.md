@@ -13,20 +13,24 @@ This guide walks you through setting up Stripe payments for subscription billing
 ## 1. Stripe Dashboard Setup
 
 ### Create Stripe Account
+
 1. Go to [stripe.com](https://stripe.com) and create an account
 2. Complete business verification if required
 3. Note your account ID for reference
 
 ### Create Products and Prices
+
 Create the following products with monthly pricing:
 
 1. **Standard Plan**
+
    - Product name: "Prismy Standard"
    - Price: $9.99/month
    - Copy the Price ID (starts with `price_`)
 
 2. **Premium Plan**
-   - Product name: "Prismy Premium" 
+
+   - Product name: "Prismy Premium"
    - Price: $29.99/month
    - Copy the Price ID
 
@@ -36,6 +40,7 @@ Create the following products with monthly pricing:
    - Copy the Price ID
 
 ### Get API Keys
+
 1. Go to Developers → API Keys
 2. Copy your **Publishable key** (starts with `pk_`)
 3. Copy your **Secret key** (starts with `sk_`)
@@ -73,18 +78,20 @@ You can apply this in your Supabase dashboard → SQL Editor, or via the Supabas
 ## 4. Webhook Configuration
 
 ### Create Webhook Endpoint
+
 1. In Stripe Dashboard, go to Developers → Webhooks
 2. Click "Add endpoint"
 3. Set endpoint URL: `https://your-domain.com/api/stripe/webhooks`
 4. Select these events:
    - `customer.subscription.created`
-   - `customer.subscription.updated` 
+   - `customer.subscription.updated`
    - `customer.subscription.deleted`
    - `invoice.payment_succeeded`
    - `invoice.payment_failed`
 5. Copy the webhook signing secret (starts with `whsec_`)
 
 ### Add Webhook Secret
+
 Add to your `.env.local`:
 
 ```env
@@ -94,7 +101,9 @@ STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
 ## 5. Testing the Integration
 
 ### Test Payments
+
 1. Use Stripe test cards for testing:
+
    - Success: `4242 4242 4242 4242`
    - Declined: `4000 0000 0000 0002`
    - Requires authentication: `4000 0025 0000 3155`
@@ -107,6 +116,7 @@ STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
    - Check database for updated subscription fields
 
 ### Test Webhooks
+
 1. Use Stripe CLI for local testing:
    ```bash
    stripe listen --forward-to localhost:3000/api/stripe/webhooks
@@ -117,6 +127,7 @@ STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
    ```
 
 ### Test Billing Portal
+
 1. Create a subscription via checkout
 2. Visit `/dashboard/billing`
 3. Click "Manage Billing"
@@ -125,40 +136,49 @@ STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
 ## 6. Production Deployment
 
 ### Update Environment Variables
+
 Replace test keys with live keys:
+
 - `pk_live_...` for publishable key
 - `sk_live_...` for secret key
 - Live price IDs from production products
 
 ### Update Webhook URL
+
 Update webhook endpoint URL to your production domain:
 `https://your-production-domain.com/api/stripe/webhooks`
 
 ### Domain Configuration
+
 Add your production domain to:
+
 1. Stripe → Settings → Branding → Domain
 2. Update `NEXT_PUBLIC_SITE_URL` environment variable
 
 ## 7. Features Included
 
 ### Pricing Page (`/pricing`)
+
 - Displays all subscription plans
 - Monthly/yearly billing toggle (20% discount)
 - Integrates with Stripe Checkout
 - Responsive design with Vietnamese translation
 
 ### Billing Management (`/dashboard/billing`)
+
 - Current subscription status
 - Usage tracking and limits
 - Billing portal access
 - Plan upgrade/downgrade options
 
 ### API Endpoints
+
 - `/api/stripe/create-checkout` - Creates Stripe Checkout session
 - `/api/stripe/create-portal` - Creates billing portal session
 - `/api/stripe/webhooks` - Handles Stripe webhook events
 
 ### Database Integration
+
 - Automatic user profile creation with billing fields
 - Subscription status tracking
 - Usage limits based on plan tier
@@ -169,24 +189,29 @@ Add your production domain to:
 ### Common Issues
 
 **"Invalid price ID" error**
+
 - Verify price IDs in environment variables match Stripe dashboard
 - Ensure you're using the correct test/live keys
 
 **Webhook signature verification failed**
+
 - Check webhook secret matches Stripe dashboard
 - Ensure webhook URL is accessible from internet
 
 **Checkout session creation fails**
+
 - Verify Stripe secret key is correct
 - Check user authentication is working
 - Ensure price IDs exist in your Stripe account
 
 **Billing portal access denied**
+
 - User must have an active subscription
 - Check `stripe_customer_id` exists in user profile
 - Verify billing portal is configured in Stripe
 
 ### Logs and Debugging
+
 - Check browser console for client-side errors
 - Check server logs for API route errors
 - Use Stripe Dashboard → Logs for webhook debugging
@@ -203,6 +228,7 @@ Add your production domain to:
 ## 10. Next Steps
 
 After setup is complete:
+
 1. Test all payment flows thoroughly
 2. Set up monitoring and alerting for failed payments
 3. Configure email notifications for subscription changes

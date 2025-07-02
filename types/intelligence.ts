@@ -1,7 +1,12 @@
 // AI Intelligence System TypeScript definitions
 // Comprehensive type system for AI agents and swarm intelligence
 
-import type { SupportedLanguage, WithId, WithTimestamps, AsyncState } from './index'
+import type {
+  SupportedLanguage,
+  WithId,
+  WithTimestamps,
+  AsyncState,
+} from './index'
 import type { Translation } from './translation'
 import type { Document } from './documents'
 
@@ -26,9 +31,9 @@ export interface Agent extends WithId, WithTimestamps {
   workspaceId?: string
 }
 
-export type AgentType = 
+export type AgentType =
   | 'translator'
-  | 'analyzer' 
+  | 'analyzer'
   | 'editor'
   | 'reviewer'
   | 'summarizer'
@@ -38,7 +43,7 @@ export type AgentType =
   | 'coordinator'
   | 'specialist'
 
-export type AgentSpecialization = 
+export type AgentSpecialization =
   | 'language_pairs'
   | 'domain_expertise'
   | 'document_types'
@@ -50,7 +55,7 @@ export type AgentSpecialization =
   | 'medical_texts'
   | 'financial_reports'
 
-export type AgentStatus = 
+export type AgentStatus =
   | 'idle'
   | 'busy'
   | 'learning'
@@ -292,7 +297,7 @@ export interface AgentTask extends WithId, WithTimestamps {
   metadata: TaskMetadata
 }
 
-export type TaskType = 
+export type TaskType =
   | 'translation'
   | 'analysis'
   | 'optimization'
@@ -306,7 +311,7 @@ export type TaskType =
 
 export type TaskPriority = 'low' | 'normal' | 'high' | 'urgent' | 'critical'
 
-export type TaskStatus = 
+export type TaskStatus =
   | 'pending'
   | 'assigned'
   | 'in_progress'
@@ -655,9 +660,17 @@ export interface IntelligenceContextValue {
     updateAgent: (id: string, updates: Partial<Agent>) => Promise<Agent>
     deleteAgent: (id: string) => Promise<void>
     assignTask: (taskId: string, agentIds: string[]) => Promise<void>
-    createCollaboration: (config: Partial<AgentCollaboration>) => Promise<AgentCollaboration>
-    joinCollaboration: (collaborationId: string, agentId: string) => Promise<void>
-    leaveCollaboration: (collaborationId: string, agentId: string) => Promise<void>
+    createCollaboration: (
+      config: Partial<AgentCollaboration>
+    ) => Promise<AgentCollaboration>
+    joinCollaboration: (
+      collaborationId: string,
+      agentId: string
+    ) => Promise<void>
+    leaveCollaboration: (
+      collaborationId: string,
+      agentId: string
+    ) => Promise<void>
     sendMessage: (message: Partial<SwarmMessage>) => Promise<void>
     getPerformanceMetrics: () => Promise<SwarmPerformance>
     optimizeSwarm: () => Promise<void>
@@ -675,7 +688,9 @@ export interface UseAgents {
 export interface UseSwarmIntelligence {
   swarms: AsyncState<SwarmIntelligence[]>
   performance: SwarmPerformance
-  createSwarm: (config: Partial<SwarmIntelligence>) => Promise<SwarmIntelligence>
+  createSwarm: (
+    config: Partial<SwarmIntelligence>
+  ) => Promise<SwarmIntelligence>
   joinSwarm: (swarmId: string, agentId: string) => Promise<void>
   optimizeSwarm: (swarmId: string) => Promise<void>
   getSwarmMetrics: (swarmId: string) => Promise<SwarmPerformance>
@@ -683,8 +698,13 @@ export interface UseSwarmIntelligence {
 
 export interface UseCollaboration {
   collaborations: AsyncState<AgentCollaboration[]>
-  createCollaboration: (config: Partial<AgentCollaboration>) => Promise<AgentCollaboration>
+  createCollaboration: (
+    config: Partial<AgentCollaboration>
+  ) => Promise<AgentCollaboration>
   joinCollaboration: (id: string, agentId: string) => Promise<void>
-  sendMessage: (collaborationId: string, message: Partial<SwarmMessage>) => Promise<void>
+  sendMessage: (
+    collaborationId: string,
+    message: Partial<SwarmMessage>
+  ) => Promise<void>
   getCollaborationHistory: (id: string) => Promise<SwarmMessage[]>
 }

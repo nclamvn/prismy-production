@@ -5,7 +5,7 @@ import { cookies } from 'next/headers'
 export async function GET(request: NextRequest) {
   try {
     const cookieStore = cookies()
-    
+
     // Create Supabase client
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -26,10 +26,16 @@ export async function GET(request: NextRequest) {
     )
 
     // Get current session
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession()
-    
+    const {
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession()
+
     // Get current user
-    const { data: { user }, error: userError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser()
 
     // Check cookies
     const authCookies = {
@@ -45,7 +51,7 @@ export async function GET(request: NextRequest) {
         .select('*')
         .eq('user_id', user.id)
         .single()
-      
+
       credits = creditsData
     }
 
@@ -70,10 +76,11 @@ export async function GET(request: NextRequest) {
         data: credits,
       },
       environment: {
-        supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL?.substring(0, 30) + '...',
+        supabaseUrl:
+          process.env.NEXT_PUBLIC_SUPABASE_URL?.substring(0, 30) + '...',
         hasAnonKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
         hasServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-      }
+      },
     })
   } catch (error) {
     console.error('Auth debug error:', error)

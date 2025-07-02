@@ -1,7 +1,7 @@
 # 🎨 NotebookLM Design System Documentation
 
 **Complete Design System Implementation for Prismy.in**  
-*Version 1.0.1-notebooklm*
+_Version 1.0.1-notebooklm_
 
 ## 📋 Overview
 
@@ -10,6 +10,7 @@ This documentation covers the complete NotebookLM-inspired design system impleme
 ## 🎯 Design Philosophy
 
 ### NotebookLM Aesthetic Principles
+
 - **Clean & Minimal**: Focus on content with minimal visual clutter
 - **Intelligent Typography**: Clear hierarchy and excellent readability
 - **Subtle Interactions**: Smooth, purposeful animations
@@ -17,6 +18,7 @@ This documentation covers the complete NotebookLM-inspired design system impleme
 - **Material Design 3**: Modern elevation, color, and component patterns
 
 ### Core Values
+
 - **Accessibility First**: WCAG 2.1 AA compliance
 - **Performance Optimized**: Fast loading and smooth interactions
 - **User-Centric**: Designed for translation workflows
@@ -27,30 +29,32 @@ This documentation covers the complete NotebookLM-inspired design system impleme
 ### Color System
 
 #### Primary Palette
+
 ```css
 :root {
   /* NotebookLM Primary */
-  --notebooklm-primary: #0B28FF;
-  --notebooklm-primary-light: #4A90E2;
-  --notebooklm-primary-dark: #0A1F4A;
-  
+  --notebooklm-primary: #0b28ff;
+  --notebooklm-primary-light: #4a90e2;
+  --notebooklm-primary-dark: #0a1f4a;
+
   /* Surface Colors */
-  --surface-panel: #FBFAF9;
-  --surface-elevated: #FFFFFF;
-  --surface-filled: #F7F6F5;
-  --surface-outline: #E5E3E0;
-  
+  --surface-panel: #fbfaf9;
+  --surface-elevated: #ffffff;
+  --surface-filled: #f7f6f5;
+  --surface-outline: #e5e3e0;
+
   /* Text Colors */
-  --text-primary: #1A1A1A;
-  --text-secondary: #6B6B6B;
-  --text-disabled: #A8A8A8;
-  --text-inverse: #FFFFFF;
+  --text-primary: #1a1a1a;
+  --text-secondary: #6b6b6b;
+  --text-disabled: #a8a8a8;
+  --text-inverse: #ffffff;
 }
 ```
 
 #### Dark Theme
+
 ```css
-:root[data-theme="dark"] {
+:root[data-theme='dark'] {
   --notebooklm-primary: #7b9eff;
   --surface-panel: #111111;
   --surface-elevated: #1e1e1e;
@@ -63,58 +67,60 @@ This documentation covers the complete NotebookLM-inspired design system impleme
 ```
 
 #### Semantic Colors
+
 ```css
 :root {
   /* Success */
-  --success-color: #16A34A;
-  --success-background: #F0FDF4;
-  --success-border: #BBF7D0;
-  
+  --success-color: #16a34a;
+  --success-background: #f0fdf4;
+  --success-border: #bbf7d0;
+
   /* Warning */
-  --warning-color: #D97706;
-  --warning-background: #FFFBEB;
-  --warning-border: #FED7AA;
-  
+  --warning-color: #d97706;
+  --warning-background: #fffbeb;
+  --warning-border: #fed7aa;
+
   /* Error */
-  --error-color: #DC2626;
-  --error-background: #FEF2F2;
-  --error-border: #FECACA;
-  
+  --error-color: #dc2626;
+  --error-background: #fef2f2;
+  --error-border: #fecaca;
+
   /* Info */
-  --info-color: #2563EB;
-  --info-background: #EFF6FF;
-  --info-border: #BFDBFE;
+  --info-color: #2563eb;
+  --info-background: #eff6ff;
+  --info-border: #bfdbfe;
 }
 ```
 
 ### Typography System
 
 #### Font Stack
+
 ```css
 :root {
   --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  
+
   /* Material Design 3 Typography Scale */
   --sys-display-large-font: var(--font-family-base);
   --sys-display-large-size: 57px;
   --sys-display-large-line-height: 64px;
   --sys-display-large-weight: 400;
-  
+
   --sys-headline-large-font: var(--font-family-base);
   --sys-headline-large-size: 32px;
   --sys-headline-large-line-height: 40px;
   --sys-headline-large-weight: 600;
-  
+
   --sys-headline-medium-font: var(--font-family-base);
   --sys-headline-medium-size: 28px;
   --sys-headline-medium-line-height: 36px;
   --sys-headline-medium-weight: 600;
-  
+
   --sys-body-large-font: var(--font-family-base);
   --sys-body-large-size: 16px;
   --sys-body-large-line-height: 24px;
   --sys-body-large-weight: 400;
-  
+
   --sys-body-medium-font: var(--font-family-base);
   --sys-body-medium-size: 14px;
   --sys-body-medium-line-height: 20px;
@@ -125,6 +131,7 @@ This documentation covers the complete NotebookLM-inspired design system impleme
 ### Spacing & Layout
 
 #### Spacing Scale
+
 ```css
 :root {
   --spacing-xs: 4px;
@@ -138,14 +145,16 @@ This documentation covers the complete NotebookLM-inspired design system impleme
 ```
 
 #### Grid System
+
 - **Desktop**: 12-column grid with 24px gutters
-- **Tablet**: 8-column grid with 16px gutters  
+- **Tablet**: 8-column grid with 16px gutters
 - **Mobile**: 4-column grid with 16px gutters
 - **Max Width**: 1440px centered container
 
 ### Elevation & Shadows
 
 #### Material Design 3 Elevation
+
 ```css
 :root {
   --elevation-level-0: none;
@@ -158,6 +167,7 @@ This documentation covers the complete NotebookLM-inspired design system impleme
 ```
 
 #### Border Radius
+
 ```css
 :root {
   --mat-card-elevated-container-shape: 12px;
@@ -172,6 +182,7 @@ This documentation covers the complete NotebookLM-inspired design system impleme
 ### Core Components
 
 #### Button Component
+
 ```typescript
 interface ButtonProps {
   variant: 'filled' | 'outlined' | 'text'
@@ -183,6 +194,7 @@ interface ButtonProps {
 ```
 
 **Usage:**
+
 ```tsx
 <Button variant="filled" size="md">
   Get Started
@@ -190,12 +202,14 @@ interface ButtonProps {
 ```
 
 **Styling:**
+
 - Uses NotebookLM primary color
 - Smooth hover animations
 - Loading states with spinner
 - Keyboard focus indicators
 
 #### Input Component
+
 ```typescript
 interface InputProps {
   label?: string
@@ -207,12 +221,14 @@ interface InputProps {
 ```
 
 **Features:**
+
 - Floating label animation
 - Error state styling
 - Dark mode support
 - ARIA accessibility
 
 #### Dialog Component
+
 ```typescript
 interface DialogProps {
   open: boolean
@@ -223,6 +239,7 @@ interface DialogProps {
 ```
 
 **Features:**
+
 - Backdrop blur effect
 - Smooth entrance/exit animations
 - Focus management
@@ -231,12 +248,14 @@ interface DialogProps {
 ### Layout Components
 
 #### MainLayout
+
 - Responsive navigation header
 - Sidebar for authenticated pages
 - Footer with links
 - Mobile-optimized menu
 
 #### Hero Section
+
 - Gradient background effects
 - Animated text reveal
 - CTA button placement
@@ -245,18 +264,21 @@ interface DialogProps {
 ### NotebookLM-Specific Components
 
 #### ThemeToggle
+
 - System preference detection
 - Smooth animation between modes
 - Persistence in localStorage
 - Icon morphing animation
 
 #### AccessibilityPanel
+
 - High contrast mode
 - Reduced motion preference
 - Font size adjustment
 - Screen reader optimization
 
 #### Toast Notifications
+
 - Success, warning, error, info types
 - Auto-dismiss functionality
 - Action buttons
@@ -265,13 +287,15 @@ interface DialogProps {
 ## 🎭 Animation System
 
 ### Motion Principles
+
 - **Easing**: `cubic-bezier(0.2, 0, 0, 1)` (NotebookLM timing)
-- **Durations**: 
+- **Durations**:
   - Short: 150ms (micro-interactions)
   - Medium: 300ms (component states)
   - Long: 500ms (page transitions)
 
 ### Animation Variants
+
 ```typescript
 export const notebookLMButton = {
   whileHover: {
@@ -279,25 +303,26 @@ export const notebookLMButton = {
     scale: 1.02,
     transition: {
       duration: 0.15,
-      ease: [0.2, 0, 0, 1]
-    }
-  }
+      ease: [0.2, 0, 0, 1],
+    },
+  },
 }
 
 export const slideUp = {
   hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
     transition: {
       duration: 0.3,
-      ease: [0.2, 0, 0, 1]
-    }
-  }
+      ease: [0.2, 0, 0, 1],
+    },
+  },
 }
 ```
 
 ### Performance Optimizations
+
 - GPU-accelerated transforms
 - `will-change` optimization
 - Reduced motion respect
@@ -306,11 +331,13 @@ export const slideUp = {
 ## 🌐 Internationalization
 
 ### Language Support
+
 - **Primary**: Vietnamese (vi)
 - **Secondary**: English (en)
 - **Planned**: Chinese, Japanese, Korean
 
 ### RTL Support
+
 - CSS logical properties
 - Direction-aware animations
 - Text alignment handling
@@ -319,18 +346,21 @@ export const slideUp = {
 ## ♿ Accessibility Features
 
 ### WCAG 2.1 AA Compliance
+
 - **Color Contrast**: 4.5:1 minimum ratio
 - **Keyboard Navigation**: Full tab sequence
 - **Screen Readers**: ARIA labels and descriptions
 - **Focus Management**: Visible focus indicators
 
 ### Inclusive Design
+
 - **Touch Targets**: 44px minimum size
 - **Motion Preferences**: Reduced motion support
 - **High Contrast**: System preference detection
 - **Font Scaling**: Supports up to 200% zoom
 
 ### Testing Tools
+
 - axe-core integration
 - Lighthouse accessibility audits
 - Manual keyboard testing
@@ -339,16 +369,28 @@ export const slideUp = {
 ## 📱 Responsive Design
 
 ### Breakpoints
+
 ```css
 /* Mobile First Approach */
-@media (min-width: 640px)  { /* sm */ }
-@media (min-width: 768px)  { /* md */ }
-@media (min-width: 1024px) { /* lg */ }
-@media (min-width: 1280px) { /* xl */ }
-@media (min-width: 1536px) { /* 2xl */ }
+@media (min-width: 640px) {
+  /* sm */
+}
+@media (min-width: 768px) {
+  /* md */
+}
+@media (min-width: 1024px) {
+  /* lg */
+}
+@media (min-width: 1280px) {
+  /* xl */
+}
+@media (min-width: 1536px) {
+  /* 2xl */
+}
 ```
 
 ### Mobile Optimizations
+
 - Touch-friendly interactions
 - Gesture support (swipe, pinch)
 - Performance considerations
@@ -357,6 +399,7 @@ export const slideUp = {
 ## 🔧 Implementation Guide
 
 ### Getting Started
+
 1. Import design tokens: `@/styles/globals.css`
 2. Use components: `@/components/ui/`
 3. Apply animations: `@/lib/motion.ts`
@@ -365,6 +408,7 @@ export const slideUp = {
 ### Code Examples
 
 #### Creating a NotebookLM-styled Component
+
 ```tsx
 import { motion } from 'framer-motion'
 import { slideUp } from '@/lib/motion'
@@ -380,22 +424,26 @@ export function MyComponent() {
         backgroundColor: 'var(--surface-elevated)',
         border: '1px solid var(--surface-outline)',
         borderRadius: 'var(--mat-card-elevated-container-shape)',
-        boxShadow: 'var(--elevation-level-2)'
+        boxShadow: 'var(--elevation-level-2)',
       }}
     >
-      <h2 style={{
-        fontSize: 'var(--sys-headline-medium-size)',
-        color: 'var(--text-primary)',
-        marginBottom: 'var(--spacing-md)'
-      }}>
+      <h2
+        style={{
+          fontSize: 'var(--sys-headline-medium-size)',
+          color: 'var(--text-primary)',
+          marginBottom: 'var(--spacing-md)',
+        }}
+      >
         NotebookLM Component
       </h2>
-      
-      <p style={{
-        fontSize: 'var(--sys-body-large-size)',
-        color: 'var(--text-secondary)',
-        lineHeight: 'var(--sys-body-large-line-height)'
-      }}>
+
+      <p
+        style={{
+          fontSize: 'var(--sys-body-large-size)',
+          color: 'var(--text-secondary)',
+          lineHeight: 'var(--sys-body-large-line-height)',
+        }}
+      >
         Content with proper typography and spacing.
       </p>
     </motion.div>
@@ -404,18 +452,19 @@ export function MyComponent() {
 ```
 
 #### Using Theme Context
+
 ```tsx
 import { useTheme } from '@/components/theme/ThemeProvider'
 
 export function ThemedComponent() {
   const { theme, setTheme } = useTheme()
-  
+
   return (
     <button
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
       style={{
         backgroundColor: 'var(--notebooklm-primary)',
-        color: 'var(--text-inverse)'
+        color: 'var(--text-inverse)',
       }}
     >
       Toggle Theme
@@ -427,17 +476,20 @@ export function ThemedComponent() {
 ## 📊 Performance Guidelines
 
 ### Bundle Size Targets
+
 - **JavaScript**: < 500KB total
 - **CSS**: < 50KB total
 - **Images**: WebP/AVIF formats
 - **Fonts**: Subset and preload
 
 ### Core Web Vitals Targets
+
 - **LCP**: < 2.5s
 - **FID**: < 100ms
 - **CLS**: < 0.1
 
 ### Optimization Techniques
+
 - Code splitting by route
 - Lazy loading non-critical components
 - Image optimization and sizing
@@ -446,18 +498,21 @@ export function ThemedComponent() {
 ## 🧪 Testing Strategy
 
 ### Unit Testing
+
 - Component rendering
 - User interactions
 - Accessibility attributes
 - Theme switching
 
 ### Integration Testing
+
 - User flows
 - Form submissions
 - Navigation patterns
 - API interactions
 
 ### Visual Testing
+
 - Cross-browser compatibility
 - Responsive layouts
 - Dark mode rendering
@@ -466,6 +521,7 @@ export function ThemedComponent() {
 ## 🚀 Deployment
 
 ### Production Checklist
+
 - [ ] All components use design tokens
 - [ ] Accessibility audit passed
 - [ ] Performance budget met
@@ -475,6 +531,7 @@ export function ThemedComponent() {
 - [ ] Animations respect preferences
 
 ### Monitoring
+
 - Core Web Vitals tracking
 - Error boundary reporting
 - User interaction analytics
@@ -483,21 +540,24 @@ export function ThemedComponent() {
 ## 📚 Resources
 
 ### Design References
+
 - [NotebookLM Official](https://notebooklm.google.com)
 - [Material Design 3](https://m3.material.io)
 - [Inter Font Family](https://rsms.me/inter/)
 
 ### Development Tools
+
 - [Framer Motion](https://www.framer.com/motion/)
 - [Tailwind CSS](https://tailwindcss.com)
 - [Radix UI](https://www.radix-ui.com)
 
 ### Accessibility Resources
+
 - [WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
 - [axe-core Testing](https://github.com/dequelabs/axe-core)
 - [ARIA Patterns](https://www.w3.org/WAI/ARIA/apg/patterns/)
 
 ---
 
-*Generated by Phase 10: Post-Launch Optimization & Analytics*  
-*Prismy Design System v1.0.1-notebooklm*
+_Generated by Phase 10: Post-Launch Optimization & Analytics_  
+_Prismy Design System v1.0.1-notebooklm_

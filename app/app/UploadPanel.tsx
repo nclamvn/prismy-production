@@ -24,36 +24,43 @@ export function UploadPanel() {
   const handleDrop = useCallback(async (e: React.DragEvent) => {
     e.preventDefault()
     setIsDragOver(false)
-    
+
     const files = Array.from(e.dataTransfer.files)
     await handleUpload(files)
   }, [])
 
-  const handleFileInput = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || [])
-    await handleUpload(files)
-    
-    // Reset input
-    e.target.value = ''
-  }, [])
+  const handleFileInput = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const files = Array.from(e.target.files || [])
+      await handleUpload(files)
+
+      // Reset input
+      e.target.value = ''
+    },
+    []
+  )
 
   const handleUpload = async (files: File[]) => {
     if (files.length === 0) return
-    
+
     setIsUploading(true)
     setError(null)
 
     try {
       // Validate file types
-      const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain']
+      const allowedTypes = [
+        'application/pdf',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'text/plain',
+      ]
       const invalidFiles = files.filter(f => !allowedTypes.includes(f.type))
-      
+
       if (invalidFiles.length > 0) {
         throw new Error('Only PDF, DOCX, and TXT files are supported')
       }
 
       await upload(files)
-      
+
       // Auto-start translation for uploaded files
       // The upload method will handle adding documents to store and starting polling
     } catch (error) {
@@ -64,10 +71,34 @@ export function UploadPanel() {
   }
 
   const tierLimits = {
-    free: { maxSize: '10 MB', maxFiles: 1, features: ['Basic translation', 'Text extraction'] },
-    basic: { maxSize: '50 MB', maxFiles: 5, features: ['High-quality translation', 'Layout preservation', 'Batch processing'] },
-    premium: { maxSize: '100 MB', maxFiles: 20, features: ['Premium AI models', 'Advanced formatting', 'Priority support'] },
-    enterprise: { maxSize: 'Unlimited', maxFiles: 'Unlimited', features: ['Custom models', 'API access', 'Dedicated support'] }
+    free: {
+      maxSize: '10 MB',
+      maxFiles: 1,
+      features: ['Basic translation', 'Text extraction'],
+    },
+    basic: {
+      maxSize: '50 MB',
+      maxFiles: 5,
+      features: [
+        'High-quality translation',
+        'Layout preservation',
+        'Batch processing',
+      ],
+    },
+    premium: {
+      maxSize: '100 MB',
+      maxFiles: 20,
+      features: [
+        'Premium AI models',
+        'Advanced formatting',
+        'Priority support',
+      ],
+    },
+    enterprise: {
+      maxSize: 'Unlimited',
+      maxFiles: 'Unlimited',
+      features: ['Custom models', 'API access', 'Dedicated support'],
+    },
   }
 
   const currentLimits = tierLimits[tier]
@@ -82,9 +113,10 @@ export function UploadPanel() {
           onDrop={handleDrop}
           className={`
             relative w-full max-w-2xl border-2 border-dashed rounded-lg p-12 text-center transition-all
-            ${isDragOver 
-              ? 'border-border-focus bg-accent-brand-light' 
-              : 'border-border-default hover:border-border-focus'
+            ${
+              isDragOver
+                ? 'border-border-focus bg-accent-brand-light'
+                : 'border-border-default hover:border-border-focus'
             }
             ${isUploading ? 'opacity-50 pointer-events-none' : 'cursor-pointer'}
           `}
@@ -122,7 +154,8 @@ export function UploadPanel() {
                     Drop documents here or click to browse
                   </h3>
                   <p className="text-secondary">
-                    Supports PDF, DOCX, and TXT files up to {currentLimits.maxSize}
+                    Supports PDF, DOCX, and TXT files up to{' '}
+                    {currentLimits.maxSize}
                   </p>
                   {tier === 'free' && (
                     <p className="text-xs text-muted mt-1">
@@ -138,19 +171,23 @@ export function UploadPanel() {
         {/* Quick Actions */}
         <div className="flex flex-col sm:flex-row gap-3">
           <Button
-            onClick={() => document.querySelector('input[type="file"]')?.click()}
+            onClick={() =>
+              document.querySelector('input[type="file"]')?.click()
+            }
             disabled={isUploading}
             size="lg"
           >
             <FileText size={20} className="mr-2" />
             Choose Files
           </Button>
-          
+
           {tier === 'free' && (
             <Button
               variant="outline"
               size="lg"
-              onClick={() => {/* Open upgrade modal */}}
+              onClick={() => {
+                /* Open upgrade modal */
+              }}
             >
               <Crown size={20} className="mr-2" />
               Upgrade for More
@@ -161,7 +198,10 @@ export function UploadPanel() {
         {/* Error Display */}
         {error && (
           <div className="w-full max-w-2xl bg-red-50 border border-red-200 rounded-lg p-4 flex items-start space-x-3">
-            <AlertCircle size={20} className="text-red-500 flex-shrink-0 mt-0.5" />
+            <AlertCircle
+              size={20}
+              className="text-red-500 flex-shrink-0 mt-0.5"
+            />
             <div>
               <h4 className="font-medium text-red-800">Upload Error</h4>
               <p className="text-sm text-red-600 mt-1">{error}</p>
@@ -180,7 +220,9 @@ export function UploadPanel() {
             {tier === 'free' && (
               <Button
                 size="sm"
-                onClick={() => {/* Open pricing */}}
+                onClick={() => {
+                  /* Open pricing */
+                }}
               >
                 View All Plans
               </Button>
@@ -189,15 +231,19 @@ export function UploadPanel() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-1">
-              <dt className="text-sm font-medium text-secondary">File Size Limit</dt>
+              <dt className="text-sm font-medium text-secondary">
+                File Size Limit
+              </dt>
               <dd className="text-primary">{currentLimits.maxSize}</dd>
             </div>
-            
+
             <div className="space-y-1">
-              <dt className="text-sm font-medium text-secondary">Files Per Upload</dt>
+              <dt className="text-sm font-medium text-secondary">
+                Files Per Upload
+              </dt>
               <dd className="text-primary">{currentLimits.maxFiles}</dd>
             </div>
-            
+
             <div className="space-y-1">
               <dt className="text-sm font-medium text-secondary">Features</dt>
               <dd className="text-primary">

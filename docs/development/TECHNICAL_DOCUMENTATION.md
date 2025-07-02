@@ -33,19 +33,19 @@ graph TB
     B --> C[AI Agent Swarm]
     B --> D[Document Processing Engine]
     B --> E[Translation Pipeline]
-    
+
     C --> F[Collaborative Agents]
     C --> G[Quality Reviewers]
     C --> H[Analyzers]
-    
+
     D --> I[Content Extraction]
     D --> J[Structure Analysis]
     D --> K[Format Conversion]
-    
+
     E --> L[Language Detection]
     E --> M[Translation Execution]
     E --> N[Quality Assessment]
-    
+
     B --> O[Performance Monitor]
     B --> P[Memory Monitor]
     B --> Q[Bundle Optimizer]
@@ -54,6 +54,7 @@ graph TB
 ### Technology Stack
 
 #### Frontend
+
 - **Framework**: Next.js 13+ (App Router)
 - **UI Library**: React 18 with TypeScript
 - **Styling**: Tailwind CSS + Custom Design System
@@ -61,18 +62,21 @@ graph TB
 - **State Management**: React Context + Custom Hooks
 
 #### Backend Services
+
 - **Database**: Supabase (PostgreSQL)
 - **Authentication**: Supabase Auth
 - **File Storage**: Supabase Storage
 - **Real-time**: Supabase Realtime
 
 #### AI & Processing
+
 - **Language Models**: OpenAI GPT-4, Anthropic Claude
 - **Document Processing**: Custom PDF/DOCX parsers
 - **Translation API**: Multi-provider aggregation
 - **AI Orchestration**: Custom agent swarm system
 
 #### Performance & Monitoring
+
 - **Performance Monitoring**: Custom advanced monitor
 - **Memory Management**: Leak detection system
 - **Bundle Optimization**: Advanced code splitting
@@ -117,7 +121,7 @@ const { state, operations, suggestions } = useWorkspaceIntelligence()
 // Start an operation
 await operations.start({
   type: 'translation',
-  input: { text: 'Hello world', targetLanguage: 'vi' }
+  input: { text: 'Hello world', targetLanguage: 'vi' },
 })
 
 // Apply a suggestion
@@ -161,12 +165,12 @@ const session = await startCollaboration({
   task: {
     type: 'translation_with_review',
     input: documentContent,
-    qualityThreshold: 0.92
-  }
+    qualityThreshold: 0.92,
+  },
 })
 
 // Monitor progress
-session.on('progress', (update) => {
+session.on('progress', update => {
   console.log(`${update.stage}: ${update.progress}%`)
 })
 ```
@@ -234,9 +238,9 @@ const translationPipeline = {
       ...translation,
       alternatives: generateAlternatives(translation),
       confidence: calculateConfidence(translation),
-      suggestions: generateSuggestions(translation)
+      suggestions: generateSuggestions(translation),
     }
-  }
+  },
 }
 ```
 
@@ -257,15 +261,18 @@ class SwarmCoordinator {
   async assignTask(task: AgentTask): Promise<TaskAssignment> {
     const suitableAgents = this.findSuitableAgents(task)
     const optimalTeam = this.optimizeTeamComposition(suitableAgents, task)
-    
+
     return this.createTaskAssignment(task, optimalTeam)
   }
 
   private findSuitableAgents(task: AgentTask): Agent[] {
-    return Array.from(this.agents.values()).filter(agent => 
-      agent.capabilities.some(cap => task.requiredCapabilities.includes(cap)) &&
-      agent.status === 'idle' &&
-      this.calculateSuitabilityScore(agent, task) > 0.7
+    return Array.from(this.agents.values()).filter(
+      agent =>
+        agent.capabilities.some(cap =>
+          task.requiredCapabilities.includes(cap)
+        ) &&
+        agent.status === 'idle' &&
+        this.calculateSuitabilityScore(agent, task) > 0.7
     )
   }
 }
@@ -286,7 +293,7 @@ interface AgentLearning {
 agent.learn({
   interaction: collaborationSession,
   feedback: qualityMetrics,
-  outcome: taskResult
+  outcome: taskResult,
 })
 ```
 
@@ -301,18 +308,18 @@ class ContextualIntelligence {
       currentFocus: this.identifyCurrentFocus(workspaceState),
       userIntent: this.predictUserIntent(workspaceState),
       optimizationOpportunities: this.findOptimizations(workspaceState),
-      suggestedActions: this.generateSuggestions(workspaceState)
+      suggestedActions: this.generateSuggestions(workspaceState),
     }
   }
 
   private predictUserIntent(state: WorkspaceIntelligenceState): UserIntent {
     const patterns = state.patterns
     const recentActivities = state.activities.slice(-10)
-    
+
     return this.intentPredictor.predict({
       patterns,
       recentActivities,
-      currentMode: state.currentMode
+      currentMode: state.currentMode,
     })
   }
 }
@@ -341,9 +348,9 @@ import { performanceMonitor } from '@/lib/performance/advanced-monitor'
 // Start monitoring
 performanceMonitor.startMonitoring({
   samplingRate: 1.0,
-  onViolation: (violation) => {
+  onViolation: violation => {
     console.warn('Performance budget violated:', violation)
-  }
+  },
 })
 
 // Record custom metrics
@@ -353,7 +360,7 @@ performanceMonitor.recordMetric({
   value: translationTime,
   unit: 'ms',
   category: 'ai_processing',
-  severity: translationTime > 5000 ? 'high' : 'low'
+  severity: translationTime > 5000 ? 'high' : 'low',
 })
 ```
 
@@ -403,20 +410,23 @@ Advanced memory monitoring with automatic leak detection and cleanup.
 #### Usage
 
 ```typescript
-import { memoryMonitor, useMemoryMonitor } from '@/lib/performance/memory-monitor'
+import {
+  memoryMonitor,
+  useMemoryMonitor,
+} from '@/lib/performance/memory-monitor'
 
 // Hook usage
 const { getMemoryUsage, performCleanup } = useMemoryMonitor({
   enabled: true,
-  onLeakDetected: (leak) => {
+  onLeakDetected: leak => {
     console.warn('Memory leak detected:', leak)
-  }
+  },
 })
 
 // Manual monitoring
 memoryMonitor.startMonitoring({
   onLeakDetected: handleLeak,
-  onThresholdExceeded: handleThreshold
+  onThresholdExceeded: handleThreshold,
 })
 ```
 
@@ -441,14 +451,17 @@ import { bundleOptimizer } from '@/lib/performance/bundle-optimizer'
 // Analyze bundles
 const analyses = await bundleOptimizer.analyzeBundles([
   { name: 'main', path: './dist/main.js' },
-  { name: 'vendor', path: './dist/vendor.js' }
+  { name: 'vendor', path: './dist/vendor.js' },
 ])
 
 // Generate optimization strategies
 const strategies = bundleOptimizer.generateSplittingStrategies(analyses)
 
 // Get optimized config
-const webpackConfig = bundleOptimizer.generateOptimizedConfig('webpack', strategies[0])
+const webpackConfig = bundleOptimizer.generateOptimizedConfig(
+  'webpack',
+  strategies[0]
+)
 ```
 
 ## Testing Strategy
@@ -498,7 +511,7 @@ export const renderWithProviders = (
     withAuth: true,
     withWorkspace: true,
     withTheme: true,
-    ...options
+    ...options,
   })
 }
 
@@ -507,7 +520,7 @@ export const createMockUser = (overrides = {}): User => ({
   id: 'test-user-123',
   email: 'test@example.com',
   // ... other properties
-  ...overrides
+  ...overrides,
 })
 ```
 
@@ -576,10 +589,10 @@ npm start
 // next.config.js
 const config = {
   experimental: {
-    webVitalsAttribution: ['CLS', 'LCP']
+    webVitalsAttribution: ['CLS', 'LCP'],
   },
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production'
+    removeConsole: process.env.NODE_ENV === 'production',
   },
   webpack: (config, { dev, isServer }) => {
     if (!dev && !isServer) {
@@ -588,12 +601,12 @@ const config = {
         vendor: {
           test: /[\\/]node_modules[\\/]/,
           name: 'vendor',
-          chunks: 'all'
-        }
+          chunks: 'all',
+        },
       }
     }
     return config
-  }
+  },
 }
 ```
 
@@ -604,10 +617,10 @@ const config = {
 if (process.env.NODE_ENV === 'production') {
   performanceMonitor.startMonitoring({
     samplingRate: 0.1, // 10% sampling in production
-    onViolation: (violation) => {
+    onViolation: violation => {
       // Send to monitoring service
       analytics.track('performance_violation', violation)
-    }
+    },
   })
 }
 ```
@@ -667,7 +680,7 @@ const state = useWorkspaceIntelligence()
 // Update workspace context
 await updateContext({
   activeDocuments: [documentId],
-  cursor: { line: 10, column: 5 }
+  cursor: { line: 10, column: 5 },
 })
 
 // Add activity
@@ -675,7 +688,7 @@ await addActivity({
   type: 'translation',
   status: 'completed',
   input: 'Hello world',
-  output: 'Xin chào thế giới'
+  output: 'Xin chào thế giới',
 })
 ```
 
@@ -685,18 +698,18 @@ await addActivity({
 // Start operation
 const operation = await operations.start({
   type: 'document_processing',
-  input: { file: documentFile, targetLanguages: ['vi', 'es'] }
+  input: { file: documentFile, targetLanguages: ['vi', 'es'] },
 })
 
 // Update operation
 await operations.update(operation.id, {
   progress: 50,
-  status: 'processing'
+  status: 'processing',
 })
 
 // Complete operation
 await operations.complete(operation.id, {
-  result: processedDocument
+  result: processedDocument,
 })
 ```
 
@@ -706,7 +719,7 @@ await operations.complete(operation.id, {
 // Get suggestions
 const suggestions = await getSuggestions({
   category: 'workflow_optimization',
-  limit: 5
+  limit: 5,
 })
 
 // Apply suggestion
@@ -725,7 +738,7 @@ await dismissSuggestion(suggestion.id)
 const agents = await getAgents({
   type: 'translator',
   status: 'idle',
-  specialization: ['en-vi']
+  specialization: ['en-vi'],
 })
 
 // Start collaboration
@@ -734,16 +747,16 @@ const session = await startCollaboration({
   task: {
     type: 'collaborative_translation',
     input: document,
-    qualityThreshold: 0.92
-  }
+    qualityThreshold: 0.92,
+  },
 })
 
 // Monitor collaboration
-session.on('message', (message) => {
+session.on('message', message => {
   console.log(`${message.sender}: ${message.content}`)
 })
 
-session.on('progress', (progress) => {
+session.on('progress', progress => {
   console.log(`Progress: ${progress.percentage}%`)
 })
 ```
@@ -759,9 +772,9 @@ const task = await createTask({
   input: {
     document: documentContent,
     sourceLanguage: 'en',
-    targetLanguage: 'vi'
+    targetLanguage: 'vi',
   },
-  requirements: ['technical_accuracy', 'cultural_adaptation']
+  requirements: ['technical_accuracy', 'cultural_adaptation'],
 })
 
 // Get task status
@@ -770,7 +783,7 @@ const status = await getTaskStatus(task.id)
 // Update task
 await updateTask(task.id, {
   progress: 75,
-  notes: 'Translation phase completed'
+  notes: 'Translation phase completed',
 })
 ```
 
@@ -786,8 +799,8 @@ const uploadResult = await uploadDocument({
   processingOptions: {
     extractText: true,
     preserveFormatting: true,
-    enableOCR: true
-  }
+    enableOCR: true,
+  },
 })
 
 // Get processing status
@@ -805,7 +818,7 @@ const batchResult = await startBatchProcessing({
   files: fileList,
   commonTargetLanguages: ['vi', 'es'],
   processingMode: 'parallel',
-  priority: 'high'
+  priority: 'high',
 })
 
 // Monitor batch progress
@@ -827,8 +840,8 @@ const result = await translate({
   targetLanguage: 'vi',
   options: {
     includeAlternatives: true,
-    qualityThreshold: 0.9
-  }
+    qualityThreshold: 0.9,
+  },
 })
 
 // Document translation
@@ -836,7 +849,7 @@ const documentTranslation = await translateDocument({
   documentId: document.id,
   targetLanguage: 'vi',
   preserveFormatting: true,
-  useCollaboration: true
+  useCollaboration: true,
 })
 ```
 
@@ -848,13 +861,13 @@ const quality = await assessQuality({
   sourceText: originalText,
   translatedText: translationResult,
   sourceLanguage: 'en',
-  targetLanguage: 'vi'
+  targetLanguage: 'vi',
 })
 
 // Get quality metrics
 const metrics = await getQualityMetrics({
   translationId: translation.id,
-  includeDetailed: true
+  includeDetailed: true,
 })
 ```
 

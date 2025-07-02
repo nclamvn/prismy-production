@@ -274,18 +274,19 @@ export const VIETNAMESE_STRINGS: LocalizationStrings = {
     login: 'Đăng nhập',
     signup: 'Đăng ký',
     dashboard: 'Bảng điều khiển',
-    settings: 'Cài đặt'
+    settings: 'Cài đặt',
   },
 
   headers: {
     main_title: 'Nền tảng dịch thuật AI hàng đầu cho người Việt',
-    subtitle: 'Công nghệ dịch thuật thông minh với hiểu biết sâu về văn hóa Việt Nam',
+    subtitle:
+      'Công nghệ dịch thuật thông minh với hiểu biết sâu về văn hóa Việt Nam',
     welcome: 'Chào mừng bạn đến với Prismy',
     features_title: 'Tính năng nổi bật',
     pricing_title: 'Gói dịch vụ',
     testimonials_title: 'Khách hàng đánh giá',
     faq_title: 'Câu hỏi thường gặp',
-    footer_title: 'Prismy - Dịch thuật AI cho người Việt'
+    footer_title: 'Prismy - Dịch thuật AI cho người Việt',
   },
 
   translation: {
@@ -303,7 +304,7 @@ export const VIETNAMESE_STRINGS: LocalizationStrings = {
     word_count: 'Số từ',
     quality_score: 'Điểm chất lượng',
     confidence_score: 'Độ tin cậy',
-    cultural_score: 'Thông minh văn hóa'
+    cultural_score: 'Thông minh văn hóa',
   },
 
   cultural: {
@@ -324,7 +325,7 @@ export const VIETNAMESE_STRINGS: LocalizationStrings = {
     business_manufacturing: 'Sản xuất chế tạo',
     business_retail: 'Bán lẻ thương mại',
     business_government: 'Hành chính nhà nước',
-    business_education: 'Giáo dục đào tạo'
+    business_education: 'Giáo dục đào tạo',
   },
 
   files: {
@@ -336,7 +337,7 @@ export const VIETNAMESE_STRINGS: LocalizationStrings = {
     upload_complete: 'Tải lên hoàn tất',
     file_error: 'Lỗi tài liệu',
     invalid_format: 'Định dạng tài liệu không hỗ trợ',
-    file_too_large: 'Tài liệu quá lớn'
+    file_too_large: 'Tài liệu quá lớn',
   },
 
   business: {
@@ -385,7 +386,7 @@ export const VIETNAMESE_STRINGS: LocalizationStrings = {
     cybersecurity: 'an ninh mạng',
     software: 'phần mềm',
     hardware: 'phần cứng',
-    infrastructure: 'cơ sở hạ tầng'
+    infrastructure: 'cơ sở hạ tầng',
   },
 
   addressing: {
@@ -407,7 +408,7 @@ export const VIETNAMESE_STRINGS: LocalizationStrings = {
     thank_you: 'Xin cảm ơn',
     please: 'Vui lòng',
     excuse_me: 'Xin lỗi',
-    sorry: 'Xin lỗi'
+    sorry: 'Xin lỗi',
   },
 
   time: {
@@ -429,7 +430,7 @@ export const VIETNAMESE_STRINGS: LocalizationStrings = {
     urgent: 'khẩn cấp',
     deadline: 'hạn chót',
     schedule: 'lịch trình',
-    calendar: 'lịch'
+    calendar: 'lịch',
   },
 
   status: {
@@ -447,7 +448,7 @@ export const VIETNAMESE_STRINGS: LocalizationStrings = {
     review: 'Đang xem xét',
     draft: 'Bản nháp',
     published: 'Đã xuất bản',
-    archived: 'Đã lưu trữ'
+    archived: 'Đã lưu trữ',
   },
 
   actions: {
@@ -479,7 +480,7 @@ export const VIETNAMESE_STRINGS: LocalizationStrings = {
     start: 'Bắt đầu',
     stop: 'Dừng',
     pause: 'Tạm dừng',
-    resume: 'Tiếp tục'
+    resume: 'Tiếp tục',
   },
 
   errors: {
@@ -497,7 +498,7 @@ export const VIETNAMESE_STRINGS: LocalizationStrings = {
     not_found: 'Không tìm thấy',
     timeout: 'Hết thời gian chờ',
     validation_error: 'Lỗi xác thực',
-    unknown_error: 'Lỗi không xác định'
+    unknown_error: 'Lỗi không xác định',
   },
 
   success: {
@@ -510,8 +511,8 @@ export const VIETNAMESE_STRINGS: LocalizationStrings = {
     file_processed: 'Xử lý tài liệu thành công',
     settings_saved: 'Lưu cài đặt thành công',
     profile_updated: 'Cập nhật hồ sơ thành công',
-    password_changed: 'Đổi mật khẩu thành công'
-  }
+    password_changed: 'Đổi mật khẩu thành công',
+  },
 }
 
 // English Localization
@@ -525,18 +526,19 @@ export const ENGLISH_STRINGS: LocalizationStrings = {
     login: 'Login',
     signup: 'Sign Up',
     dashboard: 'Dashboard',
-    settings: 'Settings'
+    settings: 'Settings',
   },
 
   headers: {
     main_title: 'Leading AI Translation Platform for Vietnamese Culture',
-    subtitle: 'Intelligent translation technology with deep understanding of Vietnamese culture',
+    subtitle:
+      'Intelligent translation technology with deep understanding of Vietnamese culture',
     welcome: 'Welcome to Prismy',
     features_title: 'Key Features',
     pricing_title: 'Pricing Plans',
     testimonials_title: 'Customer Reviews',
     faq_title: 'Frequently Asked Questions',
-    footer_title: 'Prismy - AI Translation for Vietnamese Culture'
+    footer_title: 'Prismy - AI Translation for Vietnamese Culture',
   },
 
   translation: {
@@ -554,7 +556,7 @@ export const ENGLISH_STRINGS: LocalizationStrings = {
     word_count: 'Words',
     quality_score: 'Quality Score',
     confidence_score: 'Confidence',
-    cultural_score: 'Cultural Intelligence'
+    cultural_score: 'Cultural Intelligence',
   },
 
   cultural: {
@@ -575,7 +577,7 @@ export const ENGLISH_STRINGS: LocalizationStrings = {
     business_manufacturing: 'Manufacturing',
     business_retail: 'Retail & Commerce',
     business_government: 'Government & Public',
-    business_education: 'Education & Training'
+    business_education: 'Education & Training',
   },
 
   files: {
@@ -587,7 +589,7 @@ export const ENGLISH_STRINGS: LocalizationStrings = {
     upload_complete: 'Upload Complete',
     file_error: 'File Error',
     invalid_format: 'Unsupported file format',
-    file_too_large: 'File too large'
+    file_too_large: 'File too large',
   },
 
   business: {
@@ -636,7 +638,7 @@ export const ENGLISH_STRINGS: LocalizationStrings = {
     cybersecurity: 'cybersecurity',
     software: 'software',
     hardware: 'hardware',
-    infrastructure: 'infrastructure'
+    infrastructure: 'infrastructure',
   },
 
   addressing: {
@@ -658,7 +660,7 @@ export const ENGLISH_STRINGS: LocalizationStrings = {
     thank_you: 'Thank you',
     please: 'Please',
     excuse_me: 'Excuse me',
-    sorry: 'Sorry'
+    sorry: 'Sorry',
   },
 
   time: {
@@ -680,7 +682,7 @@ export const ENGLISH_STRINGS: LocalizationStrings = {
     urgent: 'urgent',
     deadline: 'deadline',
     schedule: 'schedule',
-    calendar: 'calendar'
+    calendar: 'calendar',
   },
 
   status: {
@@ -698,7 +700,7 @@ export const ENGLISH_STRINGS: LocalizationStrings = {
     review: 'Under Review',
     draft: 'Draft',
     published: 'Published',
-    archived: 'Archived'
+    archived: 'Archived',
   },
 
   actions: {
@@ -730,7 +732,7 @@ export const ENGLISH_STRINGS: LocalizationStrings = {
     start: 'Start',
     stop: 'Stop',
     pause: 'Pause',
-    resume: 'Resume'
+    resume: 'Resume',
   },
 
   errors: {
@@ -748,7 +750,7 @@ export const ENGLISH_STRINGS: LocalizationStrings = {
     not_found: 'Not found',
     timeout: 'Request timeout',
     validation_error: 'Validation error',
-    unknown_error: 'Unknown error'
+    unknown_error: 'Unknown error',
   },
 
   success: {
@@ -761,8 +763,8 @@ export const ENGLISH_STRINGS: LocalizationStrings = {
     file_processed: 'File processed successfully',
     settings_saved: 'Settings saved successfully',
     profile_updated: 'Profile updated successfully',
-    password_changed: 'Password changed successfully'
-  }
+    password_changed: 'Password changed successfully',
+  },
 }
 
 // Localization helper function

@@ -20,9 +20,20 @@ export interface InteractiveComponentProps extends BaseComponentProps {
 }
 
 // Button component types
-export type ButtonVariant = 'filled' | 'outlined' | 'text' | 'elevated' | 'tonal'
+export type ButtonVariant =
+  | 'filled'
+  | 'outlined'
+  | 'text'
+  | 'elevated'
+  | 'tonal'
 export type ButtonSize = 'sm' | 'md' | 'lg'
-export type ButtonColor = 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info'
+export type ButtonColor =
+  | 'primary'
+  | 'secondary'
+  | 'success'
+  | 'warning'
+  | 'error'
+  | 'info'
 
 export interface ButtonProps extends InteractiveComponentProps {
   variant?: ButtonVariant
@@ -39,7 +50,14 @@ export interface ButtonProps extends InteractiveComponentProps {
 }
 
 // Input component types
-export type InputType = 'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'search'
+export type InputType =
+  | 'text'
+  | 'email'
+  | 'password'
+  | 'number'
+  | 'tel'
+  | 'url'
+  | 'search'
 export type InputVariant = 'outlined' | 'filled' | 'standard'
 
 export interface InputProps extends BaseComponentProps {
@@ -61,9 +79,15 @@ export interface InputProps extends BaseComponentProps {
   maxRows?: number
   autoFocus?: boolean
   autoComplete?: string
-  onChange?: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
-  onBlur?: (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void
-  onFocus?: (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void
+  onChange?: (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => void
+  onBlur?: (
+    event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => void
+  onFocus?: (
+    event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => void
 }
 
 // Select component types
@@ -117,9 +141,13 @@ export interface DialogProps extends ModalProps {
 
 // Toast and Notification types
 export type ToastType = 'success' | 'error' | 'warning' | 'info'
-export type ToastPosition = 
-  | 'top-left' | 'top-center' | 'top-right'
-  | 'bottom-left' | 'bottom-center' | 'bottom-right'
+export type ToastPosition =
+  | 'top-left'
+  | 'top-center'
+  | 'top-right'
+  | 'bottom-left'
+  | 'bottom-center'
+  | 'bottom-right'
 
 export interface ToastProps {
   id: string
@@ -201,7 +229,10 @@ export interface TableProps<T = any> extends BaseComponentProps {
     expandedRowRender: (record: T) => ReactNode
     onExpand: (expanded: boolean, record: T) => void
   }
-  onRow?: (record: T, index: number) => {
+  onRow?: (
+    record: T,
+    index: number
+  ) => {
     onClick?: () => void
     onDoubleClick?: () => void
     onMouseEnter?: () => void
@@ -230,7 +261,10 @@ export interface ValidationRule {
 export interface FormProps extends BaseComponentProps {
   initialValues?: Record<string, any>
   onSubmit: (values: Record<string, any>) => void | Promise<void>
-  onValuesChange?: (changedValues: Record<string, any>, allValues: Record<string, any>) => void
+  onValuesChange?: (
+    changedValues: Record<string, any>,
+    allValues: Record<string, any>
+  ) => void
   validateOnChange?: boolean
   validateOnBlur?: boolean
   children: ReactNode
@@ -293,11 +327,19 @@ export interface ChipProps extends BaseComponentProps {
 // Tooltip component types
 export interface TooltipProps {
   title: ReactNode
-  placement?: 
-    | 'top' | 'top-start' | 'top-end'
-    | 'bottom' | 'bottom-start' | 'bottom-end'
-    | 'left' | 'left-start' | 'left-end'
-    | 'right' | 'right-start' | 'right-end'
+  placement?:
+    | 'top'
+    | 'top-start'
+    | 'top-end'
+    | 'bottom'
+    | 'bottom-start'
+    | 'bottom-end'
+    | 'left'
+    | 'left-start'
+    | 'left-end'
+    | 'right'
+    | 'right-start'
+    | 'right-end'
   arrow?: boolean
   disabled?: boolean
   children: ReactNode
@@ -498,9 +540,15 @@ export interface MemoComponentProps {
 }
 
 // HOC types
-export type WithLoadingHOC<P = {}> = (Component: ComponentType<P>) => ComponentType<P & { loading?: boolean }>
-export type WithErrorBoundaryHOC<P = {}> = (Component: ComponentType<P>) => ComponentType<P>
-export type WithAccessibilityHOC<P = {}> = (Component: ComponentType<P>) => ComponentType<P & AccessibilityProps>
+export type WithLoadingHOC<P = {}> = (
+  Component: ComponentType<P>
+) => ComponentType<P & { loading?: boolean }>
+export type WithErrorBoundaryHOC<P = {}> = (
+  Component: ComponentType<P>
+) => ComponentType<P>
+export type WithAccessibilityHOC<P = {}> = (
+  Component: ComponentType<P>
+) => ComponentType<P & AccessibilityProps>
 
 // Custom hook return types
 export interface UseDisclosure {

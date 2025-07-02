@@ -13,7 +13,7 @@ describe('MSW Setup Test', () => {
     expect(data).toMatchObject({
       status: 'healthy',
       timestamp: expect.any(String),
-      version: expect.any(String)
+      version: expect.any(String),
     })
   })
 
@@ -29,12 +29,12 @@ describe('MSW Setup Test', () => {
     const response = await fetch('/api/translate', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         text: 'Hello',
-        targetLang: 'vi'
-      })
+        targetLang: 'vi',
+      }),
     })
 
     const data = await response.json()
@@ -43,7 +43,7 @@ describe('MSW Setup Test', () => {
     expect(data).toMatchObject({
       translatedText: expect.any(String),
       targetLang: 'vi',
-      confidence: expect.any(Number)
+      confidence: expect.any(Number),
     })
   })
 })

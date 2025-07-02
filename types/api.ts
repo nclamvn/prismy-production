@@ -404,40 +404,47 @@ export interface ApiClient {
   register(request: RegisterRequest): Promise<LoginResponse>
   refreshToken(request: RefreshTokenRequest): Promise<LoginResponse>
   logout(): Promise<void>
-  
+
   // User management
   getCurrentUser(): Promise<User>
   updateUser(request: UpdateUserRequest): Promise<User>
   deleteUser(): Promise<void>
-  
+
   // Translation
   translate(request: TranslationRequest): Promise<TranslationResponse>
-  batchTranslate(request: BatchTranslationRequest): Promise<BatchTranslationResponse>
+  batchTranslate(
+    request: BatchTranslationRequest
+  ): Promise<BatchTranslationResponse>
   getBatchTranslationStatus(jobId: string): Promise<BatchTranslationResponse>
-  
+
   // Documents
   getDocuments(): Promise<Document[]>
   getDocument(id: string): Promise<Document>
-  uploadDocument(request: DocumentUploadRequest): Promise<DocumentUploadResponse>
+  uploadDocument(
+    request: DocumentUploadRequest
+  ): Promise<DocumentUploadResponse>
   deleteDocument(id: string): Promise<void>
-  
+
   // AI Agents
   getAgents(): Promise<Agent[]>
   getAgent(id: string): Promise<Agent>
   createAgentTask(request: CreateAgentTaskRequest): Promise<AgentTask>
   getAgentTasks(): Promise<AgentTask[]>
   getAgentTask(id: string): Promise<AgentTask>
-  
+
   // Workspace
   getWorkspaces(): Promise<Workspace[]>
   getWorkspace(id: string): Promise<Workspace>
   createWorkspace(request: CreateWorkspaceRequest): Promise<Workspace>
-  updateWorkspace(id: string, request: UpdateWorkspaceRequest): Promise<Workspace>
+  updateWorkspace(
+    id: string,
+    request: UpdateWorkspaceRequest
+  ): Promise<Workspace>
   deleteWorkspace(id: string): Promise<void>
-  
+
   // Analytics
   queryAnalytics(query: AnalyticsQuery): Promise<AnalyticsResponse>
-  
+
   // Billing
   getBillingInfo(): Promise<BillingInfo>
   createSubscription(request: CreateSubscriptionRequest): Promise<void>

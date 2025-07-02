@@ -3,17 +3,14 @@
  * Target: 95% coverage for core utility functions
  */
 
-import { 
-  cn,
-  formatDate, 
-  formatNumber,
-  slugify
-} from '../utils'
+import { cn, formatDate, formatNumber, slugify } from '../utils'
 
 describe('Utils', () => {
   describe('cn (className merge)', () => {
     it('should merge class names', () => {
-      expect(cn('px-2 py-1', 'bg-red hover:bg-dark-red')).toBe('px-2 py-1 bg-red hover:bg-dark-red')
+      expect(cn('px-2 py-1', 'bg-red hover:bg-dark-red')).toBe(
+        'px-2 py-1 bg-red hover:bg-dark-red'
+      )
     })
 
     it('should handle conditional classes', () => {
@@ -37,7 +34,9 @@ describe('Utils', () => {
     })
 
     it('should handle objects', () => {
-      expect(cn({ 'px-2': true, 'py-1': false, 'bg-red': true })).toBe('px-2 bg-red')
+      expect(cn({ 'px-2': true, 'py-1': false, 'bg-red': true })).toBe(
+        'px-2 bg-red'
+      )
     })
   })
 
@@ -53,7 +52,7 @@ describe('Utils', () => {
     it('should handle different dates', () => {
       const date1 = new Date('2024-06-01T00:00:00Z')
       const date2 = new Date('2024-12-25T00:00:00Z')
-      
+
       expect(formatDate(date1)).toContain('June')
       expect(formatDate(date2)).toContain('December')
     })
@@ -67,7 +66,7 @@ describe('Utils', () => {
     it('should be consistent with same dates', () => {
       const date1 = new Date('2024-01-01T00:00:00Z')
       const date2 = new Date('2024-01-01T00:00:00Z')
-      
+
       expect(formatDate(date1)).toBe(formatDate(date2))
     })
   })
@@ -175,12 +174,13 @@ describe('Utils', () => {
 
   describe('Performance', () => {
     it('should handle large strings in slugify efficiently', () => {
-      const largeText = 'This is a very long string that needs to be slugified. '.repeat(100)
+      const largeText =
+        'This is a very long string that needs to be slugified. '.repeat(100)
       const start = Date.now()
-      
+
       const result = slugify(largeText)
       const duration = Date.now() - start
-      
+
       expect(duration).toBeLessThan(100) // Should complete within 100ms
       expect(result).toBeDefined()
       expect(typeof result).toBe('string')
@@ -189,21 +189,21 @@ describe('Utils', () => {
     it('should handle many className merges efficiently', () => {
       const classes = Array(100).fill('px-2 py-1 bg-red hover:bg-blue')
       const start = Date.now()
-      
+
       const result = cn(...classes)
       const duration = Date.now() - start
-      
+
       expect(duration).toBeLessThan(50) // Should complete within 50ms
       expect(result).toBeDefined()
     })
 
     it('should format large numbers efficiently', () => {
       const start = Date.now()
-      
+
       for (let i = 0; i < 1000; i++) {
         formatNumber(Math.random() * 1000000)
       }
-      
+
       const duration = Date.now() - start
       expect(duration).toBeLessThan(100) // Should complete within 100ms
     })
@@ -215,12 +215,12 @@ describe('Utils', () => {
       const title = 'My Blog Post Title!'
       const views = 1234567
       const publishDate = new Date('2024-01-15T10:30:00Z')
-      
+
       const slug = slugify(title)
       const formattedViews = formatNumber(views)
       const formattedDate = formatDate(publishDate)
       const className = cn('blog-post', views > 1000000 && 'popular')
-      
+
       expect(slug).toBe('my-blog-post-title')
       expect(formattedViews).toBe('1,234,567')
       expect(formattedDate).toContain('January')
@@ -231,12 +231,16 @@ describe('Utils', () => {
       const username = 'User Name 123!'
       const score = 98765.43
       const joinDate = new Date('2024-06-01T00:00:00Z')
-      
+
       const userSlug = slugify(username)
       const formattedScore = formatNumber(score)
       const memberSince = formatDate(joinDate)
-      const avatarClass = cn('avatar', score > 90000 && 'premium', 'rounded-full')
-      
+      const avatarClass = cn(
+        'avatar',
+        score > 90000 && 'premium',
+        'rounded-full'
+      )
+
       expect(userSlug).toBe('user-name-123')
       expect(formattedScore).toBe('98,765.43')
       expect(memberSince).toContain('June')

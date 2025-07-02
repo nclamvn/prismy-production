@@ -29,7 +29,7 @@ export function useAuth() {
     credits: null,
     creditsLoading: false,
   })
-  
+
   const router = useRouter()
   const supabase = createClient()
 
@@ -41,31 +41,31 @@ export function useAuth() {
     }
 
     setState(prev => ({ ...prev, creditsLoading: true }))
-    
+
     try {
       const response = await fetch('/api/credits/me')
       const data = await response.json()
-      
+
       if (data.success) {
-        setState(prev => ({ 
-          ...prev, 
-          credits: data.credits, 
-          creditsLoading: false 
+        setState(prev => ({
+          ...prev,
+          credits: data.credits,
+          creditsLoading: false,
         }))
       } else {
         console.error('Failed to fetch credits:', data.error)
-        setState(prev => ({ 
-          ...prev, 
-          credits: null, 
-          creditsLoading: false 
+        setState(prev => ({
+          ...prev,
+          credits: null,
+          creditsLoading: false,
         }))
       }
     } catch (error) {
       console.error('Error fetching credits:', error)
-      setState(prev => ({ 
-        ...prev, 
-        credits: null, 
-        creditsLoading: false 
+      setState(prev => ({
+        ...prev,
+        credits: null,
+        creditsLoading: false,
       }))
     }
   }
@@ -80,7 +80,7 @@ export function useAuth() {
     try {
       const { error } = await supabase.auth.signOut()
       if (error) throw error
-      
+
       setState({
         user: null,
         session: null,
@@ -88,7 +88,7 @@ export function useAuth() {
         credits: null,
         creditsLoading: false,
       })
-      
+
       router.push('/login')
     } catch (error) {
       console.error('Error signing out:', error)
@@ -109,12 +109,15 @@ export function useAuth() {
   useEffect(() => {
     // Get initial session
     const getSession = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession()
-      
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession()
+
       if (error) {
         console.error('Error getting session:', error)
       }
-      
+
       setState(prev => ({
         ...prev,
         session,
@@ -126,7 +129,9 @@ export function useAuth() {
     getSession()
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(
       async (event: AuthChangeEvent, session: Session | null) => {
         setState(prev => ({
           ...prev,

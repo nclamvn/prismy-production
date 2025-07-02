@@ -4,16 +4,16 @@
 export const databaseConnection = {
   isHealthy: async () => {
     // Placeholder for database health check
-    return true;
+    return true
   },
-  
+
   getConnectionStatus: () => {
     return {
       status: 'connected',
       connections: 10,
-      maxConnections: 100
-    };
-  }
-};
+      maxConnections: 100,
+    }
+  },
+}
 
-export default databaseConnection;
+export default databaseConnection

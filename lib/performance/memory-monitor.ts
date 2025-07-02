@@ -45,7 +45,12 @@ export interface MemoryThresholds {
 
 export interface CleanupAction {
   id: string
-  type: 'removeListener' | 'disconnectObserver' | 'clearTimeout' | 'forceGC' | 'componentCleanup'
+  type:
+    | 'removeListener'
+    | 'disconnectObserver'
+    | 'clearTimeout'
+    | 'forceGC'
+    | 'componentCleanup'
   target: string
   executed: boolean
   successful?: boolean
@@ -61,7 +66,7 @@ const DEFAULT_THRESHOLDS: MemoryThresholds = {
   componentCountWarning: 1000,
   listenerCountWarning: 500,
   snapshotInterval: 10000, // 10 seconds
-  retentionPeriod: 60 * 60 * 1000 // 1 hour
+  retentionPeriod: 60 * 60 * 1000, // 1 hour
 }
 
 // Memory Monitor Class
@@ -73,12 +78,18 @@ export class MemoryMonitor {
   private isMonitoring = false
   private snapshotInterval?: NodeJS.Timeout
   private componentRegistry: Map<string, WeakRef<any>> = new Map()
-  private listenerRegistry: Map<string, { target: any; type: string; listener: any }> = new Map()
+  private listenerRegistry: Map<
+    string,
+    { target: any; type: string; listener: any }
+  > = new Map()
   private observerRegistry: Map<string, any> = new Map()
   private timeoutRegistry: Set<NodeJS.Timeout> = new Set()
   private intervalRegistry: Set<NodeJS.Timeout> = new Set()
   private onLeakDetected?: (leak: MemoryLeak) => void
-  private onThresholdExceeded?: (threshold: keyof MemoryThresholds, value: number) => void
+  private onThresholdExceeded?: (
+    threshold: keyof MemoryThresholds,
+    value: number
+  ) => void
 
   constructor(thresholds: Partial<MemoryThresholds> = {}) {
     this.thresholds = { ...DEFAULT_THRESHOLDS, ...thresholds }
@@ -86,10 +97,15 @@ export class MemoryMonitor {
   }
 
   // Start memory monitoring
-  public startMonitoring(options: {
-    onLeakDetected?: (leak: MemoryLeak) => void
-    onThresholdExceeded?: (threshold: keyof MemoryThresholds, value: number) => void
-  } = {}): void {
+  public startMonitoring(
+    options: {
+      onLeakDetected?: (leak: MemoryLeak) => void
+      onThresholdExceeded?: (
+        threshold: keyof MemoryThresholds,
+        value: number
+      ) => void
+    } = {}
+  ): void {
     if (this.isMonitoring) return
 
     this.isMonitoring = true
@@ -141,7 +157,7 @@ export class MemoryMonitor {
       stackTrace: this.captureStackTrace(),
       componentCounts: this.getComponentCounts(),
       eventListenerCounts: this.getEventListenerCounts(),
-      observerCounts: this.getObserverCounts()
+      observerCounts: this.getObserverCounts(),
     }
 
     this.snapshots.push(snapshot)
@@ -164,7 +180,12 @@ export class MemoryMonitor {
   }
 
   // Register event listener for tracking
-  public registerEventListener(id: string, target: any, type: string, listener: any): void {
+  public registerEventListener(
+    id: string,
+    target: any,
+    type: string,
+    listener: any
+  ): void {
     this.listenerRegistry.set(id, { target, type, listener })
   }
 
@@ -213,9 +234,13 @@ export class MemoryMonitor {
 
   // Force garbage collection (if available)
   public forceGarbageCollection(): boolean {
-    if (typeof window !== 'undefined' && 'gc' in window && typeof (window as any).gc === 'function') {
+    if (
+      typeof window !== 'undefined' &&
+      'gc' in window &&
+      typeof (window as any).gc === 'function'
+    ) {
       try {
-        (window as any).gc()
+        ;(window as any).gc()
         return true
       } catch (error) {
         console.warn('Failed to force garbage collection:', error)
@@ -234,8 +259,9 @@ export class MemoryMonitor {
     leakCount: number
   } {
     const current = this.snapshots[this.snapshots.length - 1]
-    const peak = this.snapshots.reduce((max, snapshot) => 
-      snapshot.heapUsed > (max?.heapUsed || 0) ? snapshot : max, 
+    const peak = this.snapshots.reduce(
+      (max, snapshot) =>
+        snapshot.heapUsed > (max?.heapUsed || 0) ? snapshot : max,
       null as MemorySnapshot | null
     )
 
@@ -247,25 +273,26 @@ export class MemoryMonitor {
       peak,
       trend,
       growthRate,
-      leakCount: this.detectedLeaks.size
+      leakCount: this.detectedLeaks.size,
     }
   }
 
   // Get detected leaks
   public getDetectedLeaks(): MemoryLeak[] {
-    return Array.from(this.detectedLeaks.values())
-      .sort((a, b) => {
-        // Sort by severity, then by growth rate
-        const severityOrder = { critical: 4, high: 3, medium: 2, low: 1 }
-        const severityDiff = severityOrder[b.severity] - severityOrder[a.severity]
-        if (severityDiff !== 0) return severityDiff
-        return b.growthRate - a.growthRate
-      })
+    return Array.from(this.detectedLeaks.values()).sort((a, b) => {
+      // Sort by severity, then by growth rate
+      const severityOrder = { critical: 4, high: 3, medium: 2, low: 1 }
+      const severityDiff = severityOrder[b.severity] - severityOrder[a.severity]
+      if (severityDiff !== 0) return severityDiff
+      return b.growthRate - a.growthRate
+    })
   }
 
   // Get cleanup history
   public getCleanupHistory(): CleanupAction[] {
-    return [...this.cleanupActions].sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
+    return [...this.cleanupActions].sort(
+      (a, b) => b.timestamp.getTime() - a.timestamp.getTime()
+    )
   }
 
   // Manual cleanup
@@ -276,10 +303,10 @@ export class MemoryMonitor {
   } {
     const actionsPerformed = this.performAutomaticCleanup()
     const memoryBefore = this.getHeapUsed()
-    
+
     // Force garbage collection
     this.forceGarbageCollection()
-    
+
     const memoryAfter = this.getHeapUsed()
     const memoryFreed = Math.max(0, memoryBefore - memoryAfter)
 
@@ -290,7 +317,7 @@ export class MemoryMonitor {
     return {
       actionsPerformed,
       memoryFreed,
-      errors
+      errors,
     }
   }
 
@@ -307,7 +334,7 @@ export class MemoryMonitor {
       leaks: Array.from(this.detectedLeaks.values()),
       cleanupActions: this.cleanupActions,
       thresholds: this.thresholds,
-      summary: this.getMemoryUsage()
+      summary: this.getMemoryUsage(),
     }
   }
 
@@ -346,7 +373,11 @@ export class MemoryMonitor {
 
     // Hook addEventListener
     const originalAddEventListener = EventTarget.prototype.addEventListener
-    EventTarget.prototype.addEventListener = function(type: string, listener: any, options?: any) {
+    EventTarget.prototype.addEventListener = function (
+      type: string,
+      listener: any,
+      options?: any
+    ) {
       const listenerId = `listener-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
       memoryMonitor.registerEventListener(listenerId, this, type, listener)
       return originalAddEventListener.call(this, type, listener, options)
@@ -377,7 +408,7 @@ export class MemoryMonitor {
       value: current.heapUsed,
       unit: 'bytes',
       category: 'memory',
-      severity: current.heapUsed > this.thresholds.heapWarning ? 'high' : 'low'
+      severity: current.heapUsed > this.thresholds.heapWarning ? 'high' : 'low',
     })
   }
 
@@ -406,7 +437,10 @@ export class MemoryMonitor {
         const leak: MemoryLeak = {
           id: leakId,
           type: 'memory',
-          severity: growthRate > this.thresholds.growthRateWarning * 2 ? 'high' : 'medium',
+          severity:
+            growthRate > this.thresholds.growthRateWarning * 2
+              ? 'high'
+              : 'medium',
           description: `Memory usage growing at ${(growthRate / 1024).toFixed(1)} KB/minute`,
           firstDetected: new Date(),
           lastDetected: new Date(),
@@ -415,9 +449,9 @@ export class MemoryMonitor {
           recommendations: [
             'Check for memory leaks in components',
             'Review event listener cleanup',
-            'Consider forcing garbage collection'
+            'Consider forcing garbage collection',
           ],
-          autoFixAttempted: false
+          autoFixAttempted: false,
         }
 
         this.detectedLeaks.set(leakId, leak)
@@ -428,7 +462,10 @@ export class MemoryMonitor {
 
   private detectComponentLeaks(): void {
     const componentCounts = this.getComponentCounts()
-    const totalComponents = Array.from(componentCounts.values()).reduce((sum, count) => sum + count, 0)
+    const totalComponents = Array.from(componentCounts.values()).reduce(
+      (sum, count) => sum + count,
+      0
+    )
 
     if (totalComponents > this.thresholds.componentCountWarning) {
       const leakId = 'component-count-leak'
@@ -447,9 +484,9 @@ export class MemoryMonitor {
           recommendations: [
             'Review component cleanup on unmount',
             'Check for memory leaks in component state',
-            'Consider component pooling'
+            'Consider component pooling',
           ],
-          autoFixAttempted: false
+          autoFixAttempted: false,
         }
 
         this.detectedLeaks.set(leakId, leak)
@@ -478,9 +515,9 @@ export class MemoryMonitor {
           recommendations: [
             'Remove event listeners on component unmount',
             'Use AbortController for automatic cleanup',
-            'Review event delegation patterns'
+            'Review event delegation patterns',
           ],
-          autoFixAttempted: false
+          autoFixAttempted: false,
         }
 
         this.detectedLeaks.set(leakId, leak)
@@ -492,7 +529,8 @@ export class MemoryMonitor {
   private detectObserverLeaks(): void {
     const observerCount = this.observerRegistry.size
 
-    if (observerCount > 100) { // Reasonable threshold for observers
+    if (observerCount > 100) {
+      // Reasonable threshold for observers
       const leakId = 'observer-count-leak'
       const existingLeak = this.detectedLeaks.get(leakId)
 
@@ -509,9 +547,9 @@ export class MemoryMonitor {
           recommendations: [
             'Disconnect observers on component unmount',
             'Review IntersectionObserver usage',
-            'Check ResizeObserver cleanup'
+            'Check ResizeObserver cleanup',
           ],
-          autoFixAttempted: false
+          autoFixAttempted: false,
         }
 
         this.detectedLeaks.set(leakId, leak)
@@ -536,7 +574,10 @@ export class MemoryMonitor {
     this.listenerRegistry.forEach((entry, id) => {
       try {
         // Check if target still exists
-        if (!entry.target || entry.target.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
+        if (
+          !entry.target ||
+          entry.target.nodeType === Node.DOCUMENT_FRAGMENT_NODE
+        ) {
           orphanedListeners.push(id)
         }
       } catch {
@@ -580,13 +621,16 @@ export class MemoryMonitor {
     if (this.snapshots.length < 2) return 0
 
     const recent = this.snapshots.slice(-2)
-    const timeDiff = recent[1].timestamp.getTime() - recent[0].timestamp.getTime()
+    const timeDiff =
+      recent[1].timestamp.getTime() - recent[0].timestamp.getTime()
     const memoryDiff = recent[1].heapUsed - recent[0].heapUsed
 
     return timeDiff > 0 ? (memoryDiff / timeDiff) * 60000 : 0 // bytes per minute
   }
 
-  private calculateGrowthRateFromSnapshots(snapshots: MemorySnapshot[]): number {
+  private calculateGrowthRateFromSnapshots(
+    snapshots: MemorySnapshot[]
+  ): number {
     if (snapshots.length < 2) return 0
 
     const first = snapshots[0]
@@ -598,14 +642,22 @@ export class MemoryMonitor {
   }
 
   private getHeapUsed(): number {
-    if (typeof window !== 'undefined' && 'performance' in window && 'memory' in (performance as any)) {
+    if (
+      typeof window !== 'undefined' &&
+      'performance' in window &&
+      'memory' in (performance as any)
+    ) {
       return (performance as any).memory.usedJSHeapSize
     }
     return 0
   }
 
   private getHeapTotal(): number {
-    if (typeof window !== 'undefined' && 'performance' in window && 'memory' in (performance as any)) {
+    if (
+      typeof window !== 'undefined' &&
+      'performance' in window &&
+      'memory' in (performance as any)
+    ) {
       return (performance as any).memory.totalJSHeapSize
     }
     return 0
@@ -633,7 +685,7 @@ export class MemoryMonitor {
 
   private getComponentCounts(): Map<string, number> {
     const counts = new Map<string, number>()
-    
+
     this.componentRegistry.forEach((weakRef, id) => {
       const component = weakRef.deref()
       if (component) {
@@ -647,7 +699,7 @@ export class MemoryMonitor {
 
   private getEventListenerCounts(): Map<string, number> {
     const counts = new Map<string, number>()
-    
+
     this.listenerRegistry.forEach(entry => {
       counts.set(entry.type, (counts.get(entry.type) || 0) + 1)
     })
@@ -657,7 +709,7 @@ export class MemoryMonitor {
 
   private getObserverCounts(): Map<string, number> {
     const counts = new Map<string, number>()
-    
+
     this.observerRegistry.forEach(observer => {
       const observerType = observer.constructor?.name || 'Unknown'
       counts.set(observerType, (counts.get(observerType) || 0) + 1)
@@ -679,7 +731,7 @@ export class MemoryMonitor {
       }
     })
     this.observerRegistry.clear()
-    
+
     // Clear timeouts and intervals
     this.timeoutRegistry.forEach(timeout => {
       try {
@@ -705,11 +757,13 @@ export class MemoryMonitor {
 export const memoryMonitor = new MemoryMonitor()
 
 // React Hook for memory monitoring
-export function useMemoryMonitor(options: {
-  enabled?: boolean
-  onLeakDetected?: (leak: MemoryLeak) => void
-  thresholds?: Partial<MemoryThresholds>
-} = {}) {
+export function useMemoryMonitor(
+  options: {
+    enabled?: boolean
+    onLeakDetected?: (leak: MemoryLeak) => void
+    thresholds?: Partial<MemoryThresholds>
+  } = {}
+) {
   const { enabled = true, onLeakDetected, thresholds } = options
 
   React.useEffect(() => {
@@ -728,7 +782,7 @@ export function useMemoryMonitor(options: {
     getMemoryUsage: () => memoryMonitor.getMemoryUsage(),
     getDetectedLeaks: () => memoryMonitor.getDetectedLeaks(),
     performCleanup: () => memoryMonitor.performManualCleanup(),
-    forceGC: () => memoryMonitor.forceGarbageCollection()
+    forceGC: () => memoryMonitor.forceGarbageCollection(),
   }
 }
 
@@ -738,7 +792,8 @@ export function withMemoryTracking<P extends object>(
   options: { id?: string } = {}
 ) {
   return React.forwardRef<any, P>((props, ref) => {
-    const componentId = options.id || Component.displayName || Component.name || 'Unknown'
+    const componentId =
+      options.id || Component.displayName || Component.name || 'Unknown'
 
     React.useEffect(() => {
       const instance = { componentId, props, ref }

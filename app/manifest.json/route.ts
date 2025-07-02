@@ -15,25 +15,25 @@ export async function GET() {
         src: '/icon-192.png',
         sizes: '192x192',
         type: 'image/png',
-        purpose: 'any maskable'
+        purpose: 'any maskable',
       },
       {
         src: '/icon-512.png',
         sizes: '512x512',
         type: 'image/png',
-        purpose: 'any maskable'
-      }
+        purpose: 'any maskable',
+      },
     ],
     categories: ['productivity', 'business', 'utilities'],
     lang: 'en',
     dir: 'ltr',
-    prefer_related_applications: false
+    prefer_related_applications: false,
   }
 
   return NextResponse.json(manifest, {
     headers: {
       'Content-Type': 'application/manifest+json',
-      'Cache-Control': 'public, max-age=86400'
-    }
+      'Cache-Control': 'public, max-age=86400',
+    },
   })
 }

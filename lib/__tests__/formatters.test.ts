@@ -12,7 +12,7 @@ describe('Formatters', () => {
       formatCurrency: (amount: number, currency: string = 'USD') => {
         const formatter = new Intl.NumberFormat('en-US', {
           style: 'currency',
-          currency
+          currency,
         })
         return formatter.format(amount)
       },
@@ -32,7 +32,7 @@ describe('Formatters', () => {
         const now = new Date()
         const diff = now.getTime() - d.getTime()
         const minutes = Math.floor(diff / 60000)
-        
+
         if (minutes < 1) return 'just now'
         if (minutes < 60) return `${minutes}m ago`
         if (minutes < 1440) return `${Math.floor(minutes / 60)}h ago`
@@ -46,20 +46,20 @@ describe('Formatters', () => {
       },
       formatBytes: (bytes: number, decimals: number = 2) => {
         if (bytes === 0) return '0 Bytes'
-        
+
         const k = 1024
         const dm = decimals < 0 ? 0 : decimals
         const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
-        
+
         const i = Math.floor(Math.log(bytes) / Math.log(k))
-        
+
         return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
       },
       formatDuration: (seconds: number) => {
         const hours = Math.floor(seconds / 3600)
         const minutes = Math.floor((seconds % 3600) / 60)
         const secs = seconds % 60
-        
+
         if (hours > 0) {
           return `${hours}h ${minutes}m ${secs}s`
         } else if (minutes > 0) {
@@ -84,7 +84,7 @@ describe('Formatters', () => {
         return text.charAt(0).toUpperCase() + text.slice(1)
       },
       titleCase: (text: string) => {
-        return text.replace(/\w\S*/g, (txt) => {
+        return text.replace(/\w\S*/g, txt => {
           return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
         })
       },
@@ -97,7 +97,7 @@ describe('Formatters', () => {
       pluralize: (count: number, singular: string, plural?: string) => {
         if (count === 1) return singular
         return plural || singular + 's'
-      }
+      },
     }
   })
 
@@ -295,11 +295,15 @@ describe('Formatters', () => {
     })
 
     it('should handle phone with existing formatting', () => {
-      expect(formatters.formatPhoneNumber('123-456-7890')).toBe('(123) 456-7890')
+      expect(formatters.formatPhoneNumber('123-456-7890')).toBe(
+        '(123) 456-7890'
+      )
     })
 
     it('should handle phone with spaces', () => {
-      expect(formatters.formatPhoneNumber('123 456 7890')).toBe('(123) 456-7890')
+      expect(formatters.formatPhoneNumber('123 456 7890')).toBe(
+        '(123) 456-7890'
+      )
     })
 
     it('should handle invalid phone number', () => {
@@ -472,16 +476,16 @@ describe('Formatters', () => {
   describe('Performance', () => {
     it('should format efficiently', () => {
       const startTime = performance.now()
-      
+
       for (let i = 0; i < 1000; i++) {
         formatters.formatCurrency(1234.56)
         formatters.formatNumber(1234.56)
         formatters.formatPercentage(0.5)
       }
-      
+
       const endTime = performance.now()
       const totalTime = endTime - startTime
-      
+
       // Should complete 3000 operations in less than 100ms
       expect(totalTime).toBeLessThan(100)
     })
@@ -490,7 +494,7 @@ describe('Formatters', () => {
       // Test if formatters use any caching mechanism
       const result1 = formatters.formatCurrency(1234.56)
       const result2 = formatters.formatCurrency(1234.56)
-      
+
       expect(result1).toBe(result2)
     })
   })

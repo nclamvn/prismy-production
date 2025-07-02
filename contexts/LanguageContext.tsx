@@ -1,6 +1,12 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react'
 
 type Language = 'vi' | 'en'
 
@@ -10,7 +16,9 @@ interface LanguageContextType {
   isLoading: boolean
 }
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
+const LanguageContext = createContext<LanguageContextType | undefined>(
+  undefined
+)
 
 interface LanguageProviderProps {
   children: ReactNode
@@ -62,9 +70,15 @@ export function useLanguage() {
 }
 
 // Higher-order component for pages that need language
-export function withLanguage<T extends {}>(Component: React.ComponentType<T & { language: Language; setLanguage: (lang: Language) => void }>) {
+export function withLanguage<T extends {}>(
+  Component: React.ComponentType<
+    T & { language: Language; setLanguage: (lang: Language) => void }
+  >
+) {
   return function WrappedComponent(props: T) {
     const { language, setLanguage } = useLanguage()
-    return <Component {...props} language={language} setLanguage={setLanguage} />
+    return (
+      <Component {...props} language={language} setLanguage={setLanguage} />
+    )
   }
 }

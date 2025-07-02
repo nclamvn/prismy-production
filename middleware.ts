@@ -30,8 +30,10 @@ export async function middleware(request: NextRequest) {
   // Define protected routes that require authentication
   const protectedRoutes = ['/app', '/workspace', '/dashboard']
   const authRoutes = ['/login', '/auth']
-  
-  const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route))
+
+  const isProtectedRoute = protectedRoutes.some(route =>
+    pathname.startsWith(route)
+  )
   const isAuthRoute = authRoutes.some(route => pathname.startsWith(route))
 
   // Handle auth flow with Supabase
@@ -54,7 +56,10 @@ export async function middleware(request: NextRequest) {
       }
     )
 
-    const { data: { user }, error } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser()
 
     // Redirect unauthenticated users from protected routes
     if (isProtectedRoute && (!user || error)) {
@@ -68,10 +73,9 @@ export async function middleware(request: NextRequest) {
       const nextUrl = request.nextUrl.searchParams.get('next') || '/app'
       return NextResponse.redirect(new URL(nextUrl, request.url))
     }
-
   } catch (error) {
     console.error('Auth error in middleware:', error)
-    
+
     // If there's an auth error on a protected route, redirect to login
     if (isProtectedRoute) {
       const loginUrl = new URL('/login', request.url)

@@ -79,7 +79,7 @@ export class ApiKeyManager {
           rate_limit: params.rateLimit || 1000,
           expires_at: params.expiresAt?.toISOString(),
           is_active: true,
-          usage_count: 0
+          usage_count: 0,
         })
         .select()
         .single()
@@ -99,7 +99,7 @@ export class ApiKeyManager {
         isActive: data.is_active,
         expiresAt: data.expires_at ? new Date(data.expires_at) : undefined,
         createdAt: new Date(data.created_at),
-        updatedAt: new Date(data.updated_at)
+        updatedAt: new Date(data.updated_at),
       }
 
       // Log API key creation
@@ -113,21 +113,20 @@ export class ApiKeyManager {
           keyName: params.name,
           keyPrefix: keyPrefix,
           permissions: params.permissions,
-          rateLimit: params.rateLimit || 1000
+          rateLimit: params.rateLimit || 1000,
         },
         severity: 'medium',
-        outcome: 'success'
+        outcome: 'success',
       })
 
-      logger.info('API key generated', { 
-        keyId: apiKey.id, 
+      logger.info('API key generated', {
+        keyId: apiKey.id,
         userId: params.userId,
         organizationId: params.organizationId,
-        name: params.name 
+        name: params.name,
       })
 
       return { apiKey, rawKey }
-
     } catch (error) {
       logger.error('Failed to generate API key', { error, params })
       throw new Error('Failed to generate API key')
@@ -137,7 +136,10 @@ export class ApiKeyManager {
   /**
    * Validate an API key
    */
-  async validateApiKey(rawKey: string, requiredPermissions?: string[]): Promise<ApiKeyValidation> {
+  async validateApiKey(
+    rawKey: string,
+    requiredPermissions?: string[]
+  ): Promise<ApiKeyValidation> {
     try {
       if (!rawKey || !rawKey.startsWith('pk_')) {
         return { isValid: false, error: 'Invalid API key format' }
@@ -172,7 +174,7 @@ export class ApiKeyManager {
         isActive: data.is_active,
         expiresAt: data.expires_at ? new Date(data.expires_at) : undefined,
         createdAt: new Date(data.created_at),
-        updatedAt: new Date(data.updated_at)
+        updatedAt: new Date(data.updated_at),
       }
 
       // Check if key is active
@@ -188,15 +190,18 @@ export class ApiKeyManager {
       // Check rate limiting
       const rateLimitExceeded = await this.checkRateLimit(apiKey)
       if (rateLimitExceeded) {
-        return { 
-          isValid: false, 
+        return {
+          isValid: false,
           error: 'Rate limit exceeded',
-          rateLimitExceeded: true 
+          rateLimitExceeded: true,
         }
       }
 
       // Check permissions
-      if (requiredPermissions && !this.hasPermissions(apiKey, requiredPermissions)) {
+      if (
+        requiredPermissions &&
+        !this.hasPermissions(apiKey, requiredPermissions)
+      ) {
         return { isValid: false, error: 'Insufficient permissions' }
       }
 
@@ -204,7 +209,6 @@ export class ApiKeyManager {
       await this.updateUsageStats(apiKey.id)
 
       return { isValid: true, apiKey }
-
     } catch (error) {
       logger.error('Failed to validate API key', { error })
       return { isValid: false, error: 'Validation failed' }
@@ -252,9 +256,8 @@ export class ApiKeyManager {
         isActive: item.is_active,
         expiresAt: item.expires_at ? new Date(item.expires_at) : undefined,
         createdAt: new Date(item.created_at),
-        updatedAt: new Date(item.updated_at)
+        updatedAt: new Date(item.updated_at),
       }))
-
     } catch (error) {
       logger.error('Failed to list API keys', { error, userId, organizationId })
       return []
@@ -277,13 +280,16 @@ export class ApiKeyManager {
   ): Promise<boolean> {
     try {
       const updateData: any = {
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       }
 
       if (updates.name !== undefined) updateData.name = updates.name
-      if (updates.permissions !== undefined) updateData.permissions = updates.permissions
-      if (updates.rateLimit !== undefined) updateData.rate_limit = updates.rateLimit
-      if (updates.isActive !== undefined) updateData.is_active = updates.isActive
+      if (updates.permissions !== undefined)
+        updateData.permissions = updates.permissions
+      if (updates.rateLimit !== undefined)
+        updateData.rate_limit = updates.rateLimit
+      if (updates.isActive !== undefined)
+        updateData.is_active = updates.isActive
       if (updates.expiresAt !== undefined) {
         updateData.expires_at = updates.expiresAt?.toISOString() || null
       }
@@ -303,12 +309,11 @@ export class ApiKeyManager {
         resourceId: keyId,
         metadata: updates,
         severity: 'medium',
-        outcome: 'success'
+        outcome: 'success',
       })
 
       logger.info('API key updated', { keyId, updates, updatedBy })
       return true
-
     } catch (error) {
       logger.error('Failed to update API key', { error, keyId, updates })
       return false
@@ -328,10 +333,7 @@ export class ApiKeyManager {
         .single()
 
       // Delete the API key
-      const { error } = await supabase
-        .from('api_keys')
-        .delete()
-        .eq('id', keyId)
+      const { error } = await supabase.from('api_keys').delete().eq('id', keyId)
 
       if (error) throw error
 
@@ -344,15 +346,14 @@ export class ApiKeyManager {
         organizationId: keyData?.organization_id,
         metadata: {
           keyName: keyData?.name,
-          originalOwner: keyData?.user_id
+          originalOwner: keyData?.user_id,
         },
         severity: 'high',
-        outcome: 'success'
+        outcome: 'success',
       })
 
       logger.info('API key revoked', { keyId, revokedBy })
       return true
-
     } catch (error) {
       logger.error('Failed to revoke API key', { error, keyId, revokedBy })
       return false
@@ -384,16 +385,15 @@ export class ApiKeyManager {
         totalRequests: data?.usage_count || 0,
         successfulRequests: Math.floor((data?.usage_count || 0) * 0.95), // Estimate
         failedRequests: Math.floor((data?.usage_count || 0) * 0.05), // Estimate
-        timelineData: [] // Would be populated from usage logs
+        timelineData: [], // Would be populated from usage logs
       }
-
     } catch (error) {
       logger.error('Failed to get usage stats', { error, keyId })
       return {
         totalRequests: 0,
         successfulRequests: 0,
         failedRequests: 0,
-        timelineData: []
+        timelineData: [],
       }
     }
   }
@@ -408,7 +408,10 @@ export class ApiKeyManager {
   /**
    * Check if API key has required permissions
    */
-  private hasPermissions(apiKey: ApiKey, requiredPermissions: string[]): boolean {
+  private hasPermissions(
+    apiKey: ApiKey,
+    requiredPermissions: string[]
+  ): boolean {
     const permissions = apiKey.permissions
 
     // If key has 'all' permission, grant access
@@ -419,7 +422,7 @@ export class ApiKeyManager {
     // Check each required permission
     return requiredPermissions.every(permission => {
       const [resource, action] = permission.split(':')
-      
+
       // Check specific permission
       if (permissions[permission] === true) {
         return true
@@ -446,7 +449,7 @@ export class ApiKeyManager {
     try {
       // Get current usage count in the last hour
       const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000)
-      
+
       // This would typically check a rate limiting store (Redis)
       // For now, we'll use a simple check based on recent requests
       const { data } = await supabase
@@ -459,7 +462,6 @@ export class ApiKeyManager {
       const hourlyLimit = Math.floor(apiKey.rateLimit / 24) // Rough hourly limit
 
       return recentRequests >= hourlyLimit
-
     } catch (error) {
       logger.error('Failed to check rate limit', { error, keyId: apiKey.id })
       return false // Allow if we can't check
@@ -476,10 +478,9 @@ export class ApiKeyManager {
         .update({
           usage_count: supabase.rpc('increment_usage_count'),
           last_used_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq('id', keyId)
-
     } catch (error) {
       logger.error('Failed to update usage stats', { error, keyId })
     }
@@ -498,7 +499,7 @@ export class ApiKeyManager {
         undefined,
         {
           keyPrefix: rawKey.slice(0, 12),
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         }
       )
     } catch (error) {

@@ -25,7 +25,7 @@ export const SUPPORTED_LANGUAGES: Language[] = [
     nativeName: 'English',
     flag: '🇺🇸',
     rtl: false,
-    locale: 'en-US'
+    locale: 'en-US',
   },
   {
     code: 'es',
@@ -33,7 +33,7 @@ export const SUPPORTED_LANGUAGES: Language[] = [
     nativeName: 'Español',
     flag: '🇪🇸',
     rtl: false,
-    locale: 'es-ES'
+    locale: 'es-ES',
   },
   {
     code: 'fr',
@@ -41,7 +41,7 @@ export const SUPPORTED_LANGUAGES: Language[] = [
     nativeName: 'Français',
     flag: '🇫🇷',
     rtl: false,
-    locale: 'fr-FR'
+    locale: 'fr-FR',
   },
   {
     code: 'de',
@@ -49,7 +49,7 @@ export const SUPPORTED_LANGUAGES: Language[] = [
     nativeName: 'Deutsch',
     flag: '🇩🇪',
     rtl: false,
-    locale: 'de-DE'
+    locale: 'de-DE',
   },
   {
     code: 'zh',
@@ -57,7 +57,7 @@ export const SUPPORTED_LANGUAGES: Language[] = [
     nativeName: '中文',
     flag: '🇨🇳',
     rtl: false,
-    locale: 'zh-CN'
+    locale: 'zh-CN',
   },
   {
     code: 'ja',
@@ -65,7 +65,7 @@ export const SUPPORTED_LANGUAGES: Language[] = [
     nativeName: '日本語',
     flag: '🇯🇵',
     rtl: false,
-    locale: 'ja-JP'
+    locale: 'ja-JP',
   },
   {
     code: 'ko',
@@ -73,7 +73,7 @@ export const SUPPORTED_LANGUAGES: Language[] = [
     nativeName: '한국어',
     flag: '🇰🇷',
     rtl: false,
-    locale: 'ko-KR'
+    locale: 'ko-KR',
   },
   {
     code: 'ar',
@@ -81,7 +81,7 @@ export const SUPPORTED_LANGUAGES: Language[] = [
     nativeName: 'العربية',
     flag: '🇸🇦',
     rtl: true,
-    locale: 'ar-SA'
+    locale: 'ar-SA',
   },
   {
     code: 'pt',
@@ -89,7 +89,7 @@ export const SUPPORTED_LANGUAGES: Language[] = [
     nativeName: 'Português',
     flag: '🇧🇷',
     rtl: false,
-    locale: 'pt-BR'
+    locale: 'pt-BR',
   },
   {
     code: 'ru',
@@ -97,7 +97,7 @@ export const SUPPORTED_LANGUAGES: Language[] = [
     nativeName: 'Русский',
     flag: '🇷🇺',
     rtl: false,
-    locale: 'ru-RU'
+    locale: 'ru-RU',
   },
   {
     code: 'vi',
@@ -105,8 +105,8 @@ export const SUPPORTED_LANGUAGES: Language[] = [
     nativeName: 'Tiếng Việt',
     flag: '🇻🇳',
     rtl: false,
-    locale: 'vi-VN'
-  }
+    locale: 'vi-VN',
+  },
 ]
 
 export const DEFAULT_LANGUAGE = 'en'
@@ -124,10 +124,10 @@ export const NAMESPACES = {
   ORGANIZATION: 'organization',
   ADMIN: 'admin',
   ERRORS: 'errors',
-  VALIDATION: 'validation'
+  VALIDATION: 'validation',
 } as const
 
-export type Namespace = typeof NAMESPACES[keyof typeof NAMESPACES]
+export type Namespace = (typeof NAMESPACES)[keyof typeof NAMESPACES]
 
 // Translation interpolation options
 export interface TranslationOptions {
@@ -139,33 +139,33 @@ export interface TranslationOptions {
 // i18next configuration
 export const i18nConfig = {
   debug: process.env.NODE_ENV === 'development',
-  
+
   // Default language
   lng: DEFAULT_LANGUAGE,
   fallbackLng: FALLBACK_LANGUAGE,
-  
+
   // Supported languages
   supportedLngs: SUPPORTED_LANGUAGES.map(lang => lang.code),
-  
+
   // Load all namespaces by default
   defaultNS: NAMESPACES.COMMON,
   ns: Object.values(NAMESPACES),
-  
+
   // Backend configuration for loading translations
   backend: {
     loadPath: '/locales/{{lng}}/{{ns}}.json',
-    addPath: '/locales/{{lng}}/{{ns}}_missing.json'
+    addPath: '/locales/{{lng}}/{{ns}}_missing.json',
   },
-  
+
   // Language detection configuration
   detection: {
     order: ['localStorage', 'cookie', 'navigator', 'htmlTag'],
     caches: ['localStorage', 'cookie'],
     lookupLocalStorage: 'i18nextLng',
     lookupCookie: 'i18next',
-    checkWhitelist: true
+    checkWhitelist: true,
   },
-  
+
   // React i18next configuration
   react: {
     useSuspense: false,
@@ -173,9 +173,9 @@ export const i18nConfig = {
     bindI18nStore: 'added removed',
     transEmptyNodeValue: '',
     transSupportBasicHtmlNodes: true,
-    transKeepBasicHtmlNodesFor: ['br', 'strong', 'i', 'em', 'span']
+    transKeepBasicHtmlNodesFor: ['br', 'strong', 'i', 'em', 'span'],
   },
-  
+
   // Interpolation configuration
   interpolation: {
     escapeValue: false, // React already escapes values
@@ -190,23 +190,23 @@ export const i18nConfig = {
         return formatNumber(value, lng)
       }
       return value
-    }
+    },
   },
-  
+
   // Pluralization
   pluralSeparator: '_',
-  
+
   // Performance
   load: 'languageOnly',
   cleanCode: true,
-  
+
   // Missing key handling
   saveMissing: process.env.NODE_ENV === 'development',
   missingKeyHandler: (lng: string[], ns: string, key: string) => {
     if (process.env.NODE_ENV === 'development') {
       console.warn(`Missing translation key: ${ns}:${key} for language: ${lng}`)
     }
-  }
+  },
 }
 
 // Create i18n instance - placeholder for compatibility
@@ -216,7 +216,7 @@ export function createI18nInstance() {
     init: () => Promise.resolve(),
     t: (key: string) => key,
     language: 'en',
-    changeLanguage: (lang: string) => Promise.resolve()
+    changeLanguage: (lang: string) => Promise.resolve(),
   }
 }
 
@@ -225,18 +225,18 @@ export function formatCurrency(value: number, language: string): string {
   const lang = SUPPORTED_LANGUAGES.find(l => l.code === language)
   return new Intl.NumberFormat(lang?.locale || 'en-US', {
     style: 'currency',
-    currency: 'USD'
+    currency: 'USD',
   }).format(value)
 }
 
 export function formatDate(value: Date | string, language: string): string {
   const lang = SUPPORTED_LANGUAGES.find(l => l.code === language)
   const date = typeof value === 'string' ? new Date(value) : value
-  
+
   return new Intl.DateTimeFormat(lang?.locale || 'en-US', {
     year: 'numeric',
     month: 'long',
-    day: 'numeric'
+    day: 'numeric',
   }).format(date)
 }
 

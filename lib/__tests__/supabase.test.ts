@@ -11,7 +11,7 @@ jest.mock('@supabase/ssr')
 
 // Mock next/headers
 jest.mock('next/headers', () => ({
-  cookies: jest.fn()
+  cookies: jest.fn(),
 }))
 
 // Mock environment variables
@@ -22,7 +22,7 @@ beforeAll(() => {
     NEXT_PUBLIC_SUPABASE_URL: 'https://test.supabase.co',
     NEXT_PUBLIC_SUPABASE_ANON_KEY: 'test-anon-key',
     SUPABASE_SERVICE_ROLE_KEY: 'test-service-key',
-    NODE_ENV: 'test'
+    NODE_ENV: 'test',
   }
 })
 
@@ -47,13 +47,13 @@ describe('Supabase Client System', () => {
     // Mock the Supabase client creation functions
     const { createClient } = require('@supabase/supabase-js')
     const { createBrowserClient, createServerClient } = require('@supabase/ssr')
-    
+
     const mockClient = {
       auth: {
         getSession: jest.fn(),
         refreshSession: jest.fn(),
         signIn: jest.fn(),
-        signOut: jest.fn()
+        signOut: jest.fn(),
       },
       from: jest.fn(() => ({
         select: jest.fn().mockReturnThis(),
@@ -61,8 +61,8 @@ describe('Supabase Client System', () => {
         update: jest.fn().mockReturnThis(),
         delete: jest.fn().mockReturnThis(),
         limit: jest.fn().mockReturnThis(),
-        timeout: jest.fn().mockReturnThis()
-      }))
+        timeout: jest.fn().mockReturnThis(),
+      })),
     }
 
     createClient.mockReturnValue(mockClient)
@@ -97,14 +97,14 @@ describe('Supabase Client System', () => {
         value: {
           getItem: jest.fn(),
           setItem: jest.fn(),
-          removeItem: jest.fn()
+          removeItem: jest.fn(),
         },
-        writable: true
+        writable: true,
       })
 
       const client1 = createClientComponentClient()
       const client2 = createClientComponentClient()
-      
+
       expect(client1).toBeDefined()
       expect(client2).toBeDefined()
     })
@@ -124,9 +124,9 @@ describe('Supabase Client System', () => {
   describe('Route Handler Client', () => {
     it('should create route handler client with cookies', () => {
       const mockCookies = jest.fn(() => ({
-        get: jest.fn((name) => ({ value: `value-${name}` })),
+        get: jest.fn(name => ({ value: `value-${name}` })),
         set: jest.fn(),
-        delete: jest.fn()
+        delete: jest.fn(),
       }))
 
       const client = createRouteHandlerClient({ cookies: mockCookies })
@@ -136,8 +136,10 @@ describe('Supabase Client System', () => {
     it('should handle cookie operations safely', () => {
       const mockCookies = jest.fn(() => ({
         get: jest.fn(() => ({ value: 'test-value' })),
-        set: jest.fn(() => { throw new Error('Cookie set failed') }),
-        delete: jest.fn()
+        set: jest.fn(() => {
+          throw new Error('Cookie set failed')
+        }),
+        delete: jest.fn(),
       }))
 
       // Should not throw even if cookie operations fail
@@ -150,12 +152,12 @@ describe('Supabase Client System', () => {
       const mockCookies = jest.fn(() => ({
         get: jest.fn(() => ({ value: 'test-value' })),
         set: jest.fn(),
-        delete: jest.fn()
+        delete: jest.fn(),
       }))
 
       const client1 = createRouteHandlerClient({ cookies: mockCookies })
       const client2 = createRouteHandlerClient({ cookies: mockCookies })
-      
+
       expect(client1).toBeDefined()
       expect(client2).toBeDefined()
     })
@@ -164,7 +166,7 @@ describe('Supabase Client System', () => {
   describe('Server Component Client', () => {
     it('should create server component client with cookies', () => {
       const mockCookies = jest.fn(() => ({
-        get: jest.fn((name) => ({ value: `server-${name}` }))
+        get: jest.fn(name => ({ value: `server-${name}` })),
       }))
 
       const client = createServerComponentClient({ cookies: mockCookies })
@@ -173,7 +175,9 @@ describe('Supabase Client System', () => {
 
     it('should handle cookie reading errors gracefully', () => {
       const mockCookies = jest.fn(() => ({
-        get: jest.fn(() => { throw new Error('Cookie read failed') })
+        get: jest.fn(() => {
+          throw new Error('Cookie read failed')
+        }),
       }))
 
       // Should not throw even if cookie reading fails
@@ -184,12 +188,12 @@ describe('Supabase Client System', () => {
 
     it('should use connection pooling for server components', () => {
       const mockCookies = jest.fn(() => ({
-        get: jest.fn(() => ({ value: 'test-value' }))
+        get: jest.fn(() => ({ value: 'test-value' })),
       }))
 
       const client1 = createServerComponentClient({ cookies: mockCookies })
       const client2 = createServerComponentClient({ cookies: mockCookies })
-      
+
       expect(client1).toBeDefined()
       expect(client2).toBeDefined()
     })
@@ -205,24 +209,22 @@ describe('Supabase Client System', () => {
     it('should reuse service role client', () => {
       const client1 = createServiceRoleClient()
       const client2 = createServiceRoleClient()
-      
+
       expect(client1).toBeDefined()
       expect(client2).toBeDefined()
     })
 
-    it('should recreate client after timeout', (done) => {
+    it('should recreate client after timeout', done => {
       const client1 = createServiceRoleClient()
-      
+
       // Mock timeout by advancing time
-      jest.spyOn(Date, 'now')
-        .mockReturnValueOnce(0)
-        .mockReturnValueOnce(400000) // 400 seconds later
-      
+      jest.spyOn(Date, 'now').mockReturnValueOnce(0).mockReturnValueOnce(400000) // 400 seconds later
+
       const client2 = createServiceRoleClient()
-      
+
       expect(client1).toBeDefined()
       expect(client2).toBeDefined()
-      
+
       done()
     })
   })
@@ -231,11 +233,11 @@ describe('Supabase Client System', () => {
     it('should apply query optimization', async () => {
       const mockQueryBuilder = {
         limit: jest.fn().mockReturnThis(),
-        timeout: jest.fn().mockReturnThis()
+        timeout: jest.fn().mockReturnThis(),
       }
 
       await withQueryOptimization(mockQueryBuilder)
-      
+
       expect(mockQueryBuilder.limit).toHaveBeenCalledWith(1000)
       expect(mockQueryBuilder.timeout).toHaveBeenCalledWith(10000)
     })
@@ -243,7 +245,7 @@ describe('Supabase Client System', () => {
     it('should handle query builder methods', async () => {
       const mockQueryBuilder = {
         limit: jest.fn().mockReturnThis(),
-        timeout: jest.fn().mockReturnValue(Promise.resolve({ data: 'test' }))
+        timeout: jest.fn().mockReturnValue(Promise.resolve({ data: 'test' })),
       }
 
       const result = await withQueryOptimization(mockQueryBuilder)
@@ -259,12 +261,19 @@ describe('Supabase Client System', () => {
         jest.fn().mockResolvedValue('result3'),
         jest.fn().mockResolvedValue('result4'),
         jest.fn().mockResolvedValue('result5'),
-        jest.fn().mockResolvedValue('result6')
+        jest.fn().mockResolvedValue('result6'),
       ]
 
       const results = await batchQueries(queries, 3)
-      
-      expect(results).toEqual(['result1', 'result2', 'result3', 'result4', 'result5', 'result6'])
+
+      expect(results).toEqual([
+        'result1',
+        'result2',
+        'result3',
+        'result4',
+        'result5',
+        'result6',
+      ])
       queries.forEach(query => {
         expect(query).toHaveBeenCalled()
       })
@@ -273,11 +282,11 @@ describe('Supabase Client System', () => {
     it('should handle single batch', async () => {
       const queries = [
         jest.fn().mockResolvedValue('result1'),
-        jest.fn().mockResolvedValue('result2')
+        jest.fn().mockResolvedValue('result2'),
       ]
 
       const results = await batchQueries(queries, 5)
-      
+
       expect(results).toEqual(['result1', 'result2'])
     })
 
@@ -290,7 +299,7 @@ describe('Supabase Client System', () => {
       const queries = [
         jest.fn().mockResolvedValue('result1'),
         jest.fn().mockResolvedValue('result2'),
-        jest.fn().mockResolvedValue('result3')
+        jest.fn().mockResolvedValue('result3'),
       ]
 
       const results = await batchQueries(queries)
@@ -307,18 +316,18 @@ describe('Supabase Client System', () => {
     it('should handle cleanup in production environment', () => {
       const originalEnv = process.env.NODE_ENV
       process.env.NODE_ENV = 'production'
-      
+
       expect(() => cleanupConnections()).not.toThrow()
-      
+
       process.env.NODE_ENV = originalEnv
     })
 
     it('should handle cleanup in development environment', () => {
       const originalEnv = process.env.NODE_ENV
       process.env.NODE_ENV = 'development'
-      
+
       expect(() => cleanupConnections()).not.toThrow()
-      
+
       process.env.NODE_ENV = originalEnv
     })
   })
@@ -327,20 +336,20 @@ describe('Supabase Client System', () => {
     it('should handle debug function in development', () => {
       const originalEnv = process.env.NODE_ENV
       process.env.NODE_ENV = 'development'
-      
+
       // Just test that debug function runs without error
       expect(() => debugNuclearClient()).not.toThrow()
-      
+
       process.env.NODE_ENV = originalEnv
     })
 
     it('should handle debug function in production', () => {
       const originalEnv = process.env.NODE_ENV
       process.env.NODE_ENV = 'production'
-      
+
       // Just test that debug function runs without error in production
       expect(() => debugNuclearClient()).not.toThrow()
-      
+
       process.env.NODE_ENV = originalEnv
     })
   })
@@ -352,17 +361,17 @@ describe('Supabase Client System', () => {
           getSession: jest.fn().mockResolvedValue({
             data: {
               session: {
-                expires_at: Math.floor(Date.now() / 1000) + 3600 // 1 hour from now
-              }
+                expires_at: Math.floor(Date.now() / 1000) + 3600, // 1 hour from now
+              },
             },
-            error: null
+            error: null,
           }),
-          refreshSession: jest.fn()
-        }
+          refreshSession: jest.fn(),
+        },
       }
 
       const session = await validateAndRefreshSession(mockClient)
-      
+
       expect(session).toBeDefined()
       expect(session.expires_at).toBeDefined()
       expect(mockClient.auth.getSession).toHaveBeenCalled()
@@ -370,41 +379,44 @@ describe('Supabase Client System', () => {
 
     it('should handle session validation error', async () => {
       const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation()
-      
+
       const mockClient = {
         auth: {
           getSession: jest.fn().mockResolvedValue({
             data: { session: null },
-            error: { message: 'Session invalid' }
-          })
-        }
+            error: { message: 'Session invalid' },
+          }),
+        },
       }
 
       const session = await validateAndRefreshSession(mockClient)
-      
+
       expect(session).toBeNull()
-      expect(consoleWarnSpy).toHaveBeenCalledWith('Session validation error:', 'Session invalid')
-      
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        'Session validation error:',
+        'Session invalid'
+      )
+
       consoleWarnSpy.mockRestore()
     })
 
     it('should handle no active session', async () => {
       const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation()
-      
+
       const mockClient = {
         auth: {
           getSession: jest.fn().mockResolvedValue({
             data: { session: null },
-            error: null
-          })
-        }
+            error: null,
+          }),
+        },
       }
 
       const session = await validateAndRefreshSession(mockClient)
-      
+
       expect(session).toBeNull()
       expect(consoleWarnSpy).toHaveBeenCalledWith('No active session found')
-      
+
       consoleWarnSpy.mockRestore()
     })
 
@@ -415,24 +427,24 @@ describe('Supabase Client System', () => {
           getSession: jest.fn().mockResolvedValue({
             data: {
               session: {
-                expires_at: now + 200 // 200 seconds from now (less than 5 minutes)
-              }
+                expires_at: now + 200, // 200 seconds from now (less than 5 minutes)
+              },
             },
-            error: null
+            error: null,
           }),
           refreshSession: jest.fn().mockResolvedValue({
             data: {
               session: {
-                expires_at: now + 3600 // 1 hour from now
-              }
+                expires_at: now + 3600, // 1 hour from now
+              },
             },
-            error: null
-          })
-        }
+            error: null,
+          }),
+        },
       }
 
       const session = await validateAndRefreshSession(mockClient)
-      
+
       expect(session).toBeDefined()
       expect(mockClient.auth.refreshSession).toHaveBeenCalled()
     })
@@ -440,48 +452,54 @@ describe('Supabase Client System', () => {
     it('should handle refresh session error', async () => {
       const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation()
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation()
-      
+
       const now = Math.floor(Date.now() / 1000)
       const mockClient = {
         auth: {
           getSession: jest.fn().mockResolvedValue({
             data: {
               session: {
-                expires_at: now + 200 // 200 seconds from now
-              }
+                expires_at: now + 200, // 200 seconds from now
+              },
             },
-            error: null
+            error: null,
           }),
           refreshSession: jest.fn().mockResolvedValue({
             data: { session: null },
-            error: { message: 'Refresh failed' }
-          })
-        }
+            error: { message: 'Refresh failed' },
+          }),
+        },
       }
 
       const session = await validateAndRefreshSession(mockClient)
-      
+
       expect(session).toBeNull()
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Session refresh failed:', 'Refresh failed')
-      
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        'Session refresh failed:',
+        'Refresh failed'
+      )
+
       consoleLogSpy.mockRestore()
       consoleErrorSpy.mockRestore()
     })
 
     it('should handle validation exception', async () => {
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation()
-      
+
       const mockClient = {
         auth: {
-          getSession: jest.fn().mockRejectedValue(new Error('Network error'))
-        }
+          getSession: jest.fn().mockRejectedValue(new Error('Network error')),
+        },
       }
 
       const session = await validateAndRefreshSession(mockClient)
-      
+
       expect(session).toBeNull()
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Session validation failed:', expect.any(Error))
-      
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        'Session validation failed:',
+        expect.any(Error)
+      )
+
       consoleErrorSpy.mockRestore()
     })
   })
@@ -492,83 +510,98 @@ describe('Supabase Client System', () => {
       const mockClient = { auth: { getSession: jest.fn() } }
 
       const result = await withAuthRetry(operation, mockClient)
-      
+
       expect(result).toBe('success')
       expect(operation).toHaveBeenCalledTimes(1)
     })
 
     it('should retry on 401 error', async () => {
       const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation()
-      
-      const operation = jest.fn()
+
+      const operation = jest
+        .fn()
         .mockRejectedValueOnce({ status: 401, message: 'Unauthorized' })
         .mockResolvedValue('success')
-      
+
       const mockClient = {
         auth: {
           getSession: jest.fn().mockResolvedValue({
-            data: { session: { expires_at: Math.floor(Date.now() / 1000) + 3600 } },
-            error: null
-          })
-        }
+            data: {
+              session: { expires_at: Math.floor(Date.now() / 1000) + 3600 },
+            },
+            error: null,
+          }),
+        },
       }
 
       const result = await withAuthRetry(operation, mockClient, 2)
-      
+
       expect(result).toBe('success')
       expect(operation).toHaveBeenCalledTimes(2)
-      expect(consoleWarnSpy).toHaveBeenCalledWith('Auth error on attempt 1, retrying...')
-      
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        'Auth error on attempt 1, retrying...'
+      )
+
       consoleWarnSpy.mockRestore()
     })
 
     it('should throw non-401 errors immediately', async () => {
-      const operation = jest.fn().mockRejectedValue({ status: 500, message: 'Server error' })
+      const operation = jest
+        .fn()
+        .mockRejectedValue({ status: 500, message: 'Server error' })
       const mockClient = { auth: { getSession: jest.fn() } }
 
       await expect(withAuthRetry(operation, mockClient)).rejects.toEqual({
         status: 500,
-        message: 'Server error'
+        message: 'Server error',
       })
-      
+
       expect(operation).toHaveBeenCalledTimes(1)
     })
 
     it('should throw after max retries', async () => {
-      const operation = jest.fn().mockRejectedValue({ status: 401, message: 'Unauthorized' })
+      const operation = jest
+        .fn()
+        .mockRejectedValue({ status: 401, message: 'Unauthorized' })
       const mockClient = {
         auth: {
           getSession: jest.fn().mockResolvedValue({
-            data: { session: { expires_at: Math.floor(Date.now() / 1000) + 3600 } },
-            error: null
-          })
-        }
+            data: {
+              session: { expires_at: Math.floor(Date.now() / 1000) + 3600 },
+            },
+            error: null,
+          }),
+        },
       }
 
       await expect(withAuthRetry(operation, mockClient, 1)).rejects.toEqual({
         status: 401,
-        message: 'Unauthorized'
+        message: 'Unauthorized',
       })
-      
+
       expect(operation).toHaveBeenCalledTimes(2) // Initial + 1 retry
     })
 
     it('should use default max retries', async () => {
-      const operation = jest.fn().mockRejectedValue({ status: 401, message: 'Unauthorized' })
+      const operation = jest
+        .fn()
+        .mockRejectedValue({ status: 401, message: 'Unauthorized' })
       const mockClient = {
         auth: {
           getSession: jest.fn().mockResolvedValue({
-            data: { session: { expires_at: Math.floor(Date.now() / 1000) + 3600 } },
-            error: null
-          })
-        }
+            data: {
+              session: { expires_at: Math.floor(Date.now() / 1000) + 3600 },
+            },
+            error: null,
+          }),
+        },
       }
 
       await expect(withAuthRetry(operation, mockClient)).rejects.toEqual({
         status: 401,
-        message: 'Unauthorized'
+        message: 'Unauthorized',
       })
-      
+
       expect(operation).toHaveBeenCalledTimes(3) // Initial + 2 retries (default)
     })
   })
@@ -581,7 +614,9 @@ describe('Supabase Client System', () => {
     })
 
     it('should handle environment variables', () => {
-      expect(process.env.NEXT_PUBLIC_SUPABASE_URL).toBe('https://test.supabase.co')
+      expect(process.env.NEXT_PUBLIC_SUPABASE_URL).toBe(
+        'https://test.supabase.co'
+      )
       expect(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY).toBe('test-anon-key')
       expect(process.env.SUPABASE_SERVICE_ROLE_KEY).toBe('test-service-key')
     })
@@ -595,11 +630,11 @@ describe('Supabase Client System', () => {
         email: 'test@example.com',
         user_metadata: {
           full_name: 'Test User',
-          avatar_url: 'https://example.com/avatar.jpg'
+          avatar_url: 'https://example.com/avatar.jpg',
         },
-        created_at: '2024-01-01T00:00:00Z'
+        created_at: '2024-01-01T00:00:00Z',
       }
-      
+
       expect(mockUser.id).toBe('user-123')
       expect(mockUser.email).toBe('test@example.com')
     })
@@ -615,9 +650,9 @@ describe('Supabase Client System', () => {
         usage_count: 0,
         usage_reset_date: '2024-01-01T00:00:00Z',
         created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z'
+        updated_at: '2024-01-01T00:00:00Z',
       }
-      
+
       expect(mockProfile.subscription_tier).toBe('free')
       expect(mockProfile.usage_limit).toBe(100)
     })
@@ -633,9 +668,9 @@ describe('Supabase Client System', () => {
         quality_tier: 'standard',
         quality_score: 0.95,
         character_count: 5,
-        created_at: '2024-01-01T00:00:00Z'
+        created_at: '2024-01-01T00:00:00Z',
       }
-      
+
       expect(mockHistory.source_language).toBe('en')
       expect(mockHistory.target_language).toBe('vi')
       expect(mockHistory.quality_score).toBe(0.95)

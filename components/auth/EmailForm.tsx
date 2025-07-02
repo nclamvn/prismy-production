@@ -58,7 +58,8 @@ export function EmailForm() {
         duration: 5000,
       })
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to send magic link'
+      const errorMessage =
+        err instanceof Error ? err.message : 'Failed to send magic link'
       setError(errorMessage)
       toast.error('Failed to send magic link', {
         description: errorMessage,
@@ -88,7 +89,8 @@ export function EmailForm() {
         description: 'Check your inbox for the new sign-in link.',
       })
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to resend magic link'
+      const errorMessage =
+        err instanceof Error ? err.message : 'Failed to resend magic link'
       toast.error('Failed to resend magic link', {
         description: errorMessage,
       })

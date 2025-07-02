@@ -12,7 +12,7 @@ export const worker = setupWorker(...handlers)
 // Start options for the service worker
 export const workerOptions = {
   serviceWorker: {
-    url: '/mockServiceWorker.js'
+    url: '/mockServiceWorker.js',
   },
-  onUnhandledRequest: 'warn'
+  onUnhandledRequest: 'warn',
 }

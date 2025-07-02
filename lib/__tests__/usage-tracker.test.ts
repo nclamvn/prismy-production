@@ -14,8 +14,8 @@ const mockSupabase = {
     lte: jest.fn().mockReturnThis(),
     order: jest.fn().mockReturnThis(),
     limit: jest.fn().mockReturnThis(),
-    single: jest.fn()
-  }))
+    single: jest.fn(),
+  })),
 }
 
 const mockRedis = {
@@ -24,7 +24,7 @@ const mockRedis = {
   incr: jest.fn(),
   expire: jest.fn(),
   hincrby: jest.fn(),
-  hgetall: jest.fn()
+  hgetall: jest.fn(),
 }
 
 jest.mock('@/lib/supabase', () => ({ createClient: () => mockSupabase }))
@@ -39,7 +39,11 @@ describe('Usage Tracker', () => {
     } catch (error) {
       // Create mock UsageTracker if file doesn't exist
       UsageTracker = {
-        trackUsage: async (userId: string, event: string, metadata: any = {}) => {
+        trackUsage: async (
+          userId: string,
+          event: string,
+          metadata: any = {}
+        ) => {
           if (!userId) throw new Error('User ID is required')
           if (!event) throw new Error('Event is required')
 
@@ -49,12 +53,10 @@ describe('Usage Tracker', () => {
             event,
             metadata,
             timestamp: new Date().toISOString(),
-            session_id: metadata.sessionId || 'session_123'
+            session_id: metadata.sessionId || 'session_123',
           }
 
-          await mockSupabase
-            .from('usage_events')
-            .insert(usage)
+          await mockSupabase.from('usage_events').insert(usage)
 
           // Update Redis counters
           const dateKey = new Date().toISOString().split('T')[0]
@@ -76,8 +78,8 @@ describe('Usage Tracker', () => {
               characterCount: details.characterCount,
               method: details.method || 'google',
               credits: details.credits || 0,
-              duration: details.duration || 0
-            }
+              duration: details.duration || 0,
+            },
           }
 
           return this.trackUsage(userId, 'translation', event.metadata)
@@ -95,14 +97,18 @@ describe('Usage Tracker', () => {
               fileSize: details.fileSize,
               pageCount: details.pageCount || 1,
               credits: details.credits || 0,
-              processingTime: details.processingTime || 0
-            }
+              processingTime: details.processingTime || 0,
+            },
           }
 
           return this.trackUsage(userId, 'document_processing', event.metadata)
         },
 
-        trackPageView: async (userId: string, page: string, metadata: any = {}) => {
+        trackPageView: async (
+          userId: string,
+          page: string,
+          metadata: any = {}
+        ) => {
           if (!userId) throw new Error('User ID is required')
           if (!page) throw new Error('Page is required')
 
@@ -110,7 +116,7 @@ describe('Usage Tracker', () => {
             page,
             referrer: metadata.referrer || '',
             userAgent: metadata.userAgent || '',
-            sessionId: metadata.sessionId || 'session_123'
+            sessionId: metadata.sessionId || 'session_123',
           })
         },
 
@@ -123,7 +129,7 @@ describe('Usage Tracker', () => {
             errorMessage: error.message || 'Unknown error',
             stackTrace: error.stack || '',
             context,
-            severity: context.severity || 'medium'
+            severity: context.severity || 'medium',
           })
         },
 
@@ -147,12 +153,12 @@ describe('Usage Tracker', () => {
             .order('timestamp', { ascending: false })
 
           const summary = this.summarizeUsage(events || [])
-          
+
           return {
             userId,
             timeframe,
             summary,
-            events: events || []
+            events: events || [],
           }
         },
 
@@ -172,11 +178,11 @@ describe('Usage Tracker', () => {
             .gte('timestamp', startDate.toISOString())
 
           const summary = this.summarizeSystemUsage(events || [])
-          
+
           return {
             timeframe,
             summary,
-            totalEvents: events?.length || 0
+            totalEvents: events?.length || 0,
           }
         },
 
@@ -191,15 +197,20 @@ describe('Usage Tracker', () => {
             date.setDate(date.getDate() - i)
             const dateKey = date.toISOString().split('T')[0]
 
-            const dayData = await mockRedis.hgetall(`usage:${userId}:${dateKey}`)
-            
+            const dayData = await mockRedis.hgetall(
+              `usage:${userId}:${dateKey}`
+            )
+
             dailyData.push({
               date: dateKey,
               translations: parseInt(dayData?.translation || '0'),
               documents: parseInt(dayData?.document_processing || '0'),
               pageViews: parseInt(dayData?.page_view || '0'),
               errors: parseInt(dayData?.error || '0'),
-              total: Object.values(dayData || {}).reduce((sum, val) => sum + parseInt(val as string || '0'), 0)
+              total: Object.values(dayData || {}).reduce(
+                (sum, val) => sum + parseInt((val as string) || '0'),
+                0
+              ),
             })
           }
 
@@ -248,11 +259,11 @@ describe('Usage Tracker', () => {
             .gte('timestamp', startDate.toISOString())
 
           const uniqueUsers = new Set(events?.map(e => e.user_id) || [])
-          
+
           return {
             timeframe,
             activeUsers: uniqueUsers.size,
-            userIds: Array.from(uniqueUsers).slice(0, 100) // Limit for privacy
+            userIds: Array.from(uniqueUsers).slice(0, 100), // Limit for privacy
           }
         },
 
@@ -265,7 +276,7 @@ describe('Usage Tracker', () => {
             errors: 0,
             totalCharacters: 0,
             totalCredits: 0,
-            avgDuration: 0
+            avgDuration: 0,
           }
 
           let totalDuration = 0
@@ -299,7 +310,8 @@ describe('Usage Tracker', () => {
             }
           })
 
-          summary.avgDuration = durationCount > 0 ? totalDuration / durationCount : 0
+          summary.avgDuration =
+            durationCount > 0 ? totalDuration / durationCount : 0
 
           return summary
         },
@@ -307,12 +319,13 @@ describe('Usage Tracker', () => {
         summarizeSystemUsage: (events: any[]) => {
           const summary = this.summarizeUsage(events)
           const uniqueUsers = new Set(events.map(e => e.user_id))
-          
+
           return {
             ...summary,
             uniqueUsers: uniqueUsers.size,
-            avgEventsPerUser: uniqueUsers.size > 0 ? events.length / uniqueUsers.size : 0,
-            topEvents: this.getEventFrequency(events).slice(0, 5)
+            avgEventsPerUser:
+              uniqueUsers.size > 0 ? events.length / uniqueUsers.size : 0,
+            topEvents: this.getEventFrequency(events).slice(0, 5),
           }
         },
 
@@ -341,19 +354,23 @@ describe('Usage Tracker', () => {
             exportedAt: new Date().toISOString(),
             format,
             totalEvents: events?.length || 0,
-            events: events || []
+            events: events || [],
           }
 
           if (format === 'csv') {
             // Convert to CSV format (simplified)
             const csvHeader = 'timestamp,event,metadata\n'
-            const csvRows = events?.map(e => 
-              `${e.timestamp},${e.event},"${JSON.stringify(e.metadata)}"`
-            ).join('\n') || ''
-            
+            const csvRows =
+              events
+                ?.map(
+                  e =>
+                    `${e.timestamp},${e.event},"${JSON.stringify(e.metadata)}"`
+                )
+                .join('\n') || ''
+
             return {
               ...exportData,
-              data: csvHeader + csvRows
+              data: csvHeader + csvRows,
             }
           }
 
@@ -362,31 +379,34 @@ describe('Usage Tracker', () => {
 
         trackBatch: async (userId: string, events: any[]) => {
           if (!userId) throw new Error('User ID is required')
-          if (!events || events.length === 0) throw new Error('Events are required')
+          if (!events || events.length === 0)
+            throw new Error('Events are required')
 
           const batchEvents = events.map(event => ({
             user_id: userId,
             event: event.event,
             metadata: event.metadata || {},
             timestamp: new Date().toISOString(),
-            session_id: event.sessionId || 'session_123'
+            session_id: event.sessionId || 'session_123',
           }))
 
-          await mockSupabase
-            .from('usage_events')
-            .insert(batchEvents)
+          await mockSupabase.from('usage_events').insert(batchEvents)
 
           // Update Redis counters for each event
           const dateKey = new Date().toISOString().split('T')[0]
           for (const event of events) {
-            await mockRedis.hincrby(`usage:${userId}:${dateKey}`, event.event, 1)
+            await mockRedis.hincrby(
+              `usage:${userId}:${dateKey}`,
+              event.event,
+              1
+            )
           }
 
           return {
             batchId: `batch_${Date.now()}`,
             userId,
             eventsProcessed: events.length,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           }
         },
 
@@ -402,7 +422,7 @@ describe('Usage Tracker', () => {
               type: 'high_usage',
               message: 'High usage detected in the last 24 hours',
               severity: 'warning',
-              value: usage.summary.totalEvents
+              value: usage.summary.totalEvents,
             })
           }
 
@@ -412,7 +432,7 @@ describe('Usage Tracker', () => {
               type: 'high_errors',
               message: 'Multiple errors detected',
               severity: 'error',
-              value: usage.summary.errors
+              value: usage.summary.errors,
             })
           }
 
@@ -422,7 +442,7 @@ describe('Usage Tracker', () => {
               type: 'high_credits',
               message: 'High credit usage detected',
               severity: 'info',
-              value: usage.summary.totalCredits
+              value: usage.summary.totalCredits,
             })
           }
 
@@ -430,7 +450,7 @@ describe('Usage Tracker', () => {
             userId,
             alertCount: alerts.length,
             alerts,
-            checkedAt: new Date().toISOString()
+            checkedAt: new Date().toISOString(),
           }
         },
 
@@ -446,37 +466,42 @@ describe('Usage Tracker', () => {
           return {
             cutoffDate: cutoffDate.toISOString(),
             eventsDeleted: deletedEvents?.length || 0,
-            cleanupAt: new Date().toISOString()
+            cleanupAt: new Date().toISOString(),
           }
-        }
+        },
       }
     }
   })
 
   beforeEach(() => {
     jest.clearAllMocks()
-    
+
     mockSupabase.from().insert.mockResolvedValue({
       data: { id: 'usage_123' },
-      error: null
+      error: null,
     })
 
-    mockSupabase.from().select().eq().gte().order.mockResolvedValue({
-      data: [
-        {
-          user_id: 'user123',
-          event: 'translation',
-          metadata: { characterCount: 100, credits: 20 },
-          timestamp: new Date().toISOString()
-        }
-      ],
-      error: null
-    })
+    mockSupabase
+      .from()
+      .select()
+      .eq()
+      .gte()
+      .order.mockResolvedValue({
+        data: [
+          {
+            user_id: 'user123',
+            event: 'translation',
+            metadata: { characterCount: 100, credits: 20 },
+            timestamp: new Date().toISOString(),
+          },
+        ],
+        error: null,
+      })
 
     mockRedis.hincrby.mockResolvedValue(1)
     mockRedis.hgetall.mockResolvedValue({
       translation: '5',
-      page_view: '10'
+      page_view: '10',
     })
   })
 
@@ -484,7 +509,7 @@ describe('Usage Tracker', () => {
     it('should track usage event', async () => {
       const result = await UsageTracker.trackUsage('user123', 'translation', {
         sourceLanguage: 'en',
-        targetLanguage: 'vi'
+        targetLanguage: 'vi',
       })
 
       expect(result.id).toBeDefined()
@@ -494,8 +519,12 @@ describe('Usage Tracker', () => {
     })
 
     it('should validate required parameters', async () => {
-      await expect(UsageTracker.trackUsage('', 'event')).rejects.toThrow('User ID is required')
-      await expect(UsageTracker.trackUsage('user123', '')).rejects.toThrow('Event is required')
+      await expect(UsageTracker.trackUsage('', 'event')).rejects.toThrow(
+        'User ID is required'
+      )
+      await expect(UsageTracker.trackUsage('user123', '')).rejects.toThrow(
+        'Event is required'
+      )
     })
 
     it('should include timestamp and session ID', async () => {
@@ -521,7 +550,7 @@ describe('Usage Tracker', () => {
         characterCount: 150,
         method: 'google',
         credits: 30,
-        duration: 1500
+        duration: 1500,
       }
 
       const result = await UsageTracker.trackTranslation('user123', details)
@@ -533,15 +562,19 @@ describe('Usage Tracker', () => {
     })
 
     it('should validate translation details', async () => {
-      await expect(UsageTracker.trackTranslation('', {})).rejects.toThrow('User ID is required')
-      await expect(UsageTracker.trackTranslation('user123', null)).rejects.toThrow('Translation details are required')
+      await expect(UsageTracker.trackTranslation('', {})).rejects.toThrow(
+        'User ID is required'
+      )
+      await expect(
+        UsageTracker.trackTranslation('user123', null)
+      ).rejects.toThrow('Translation details are required')
     })
 
     it('should handle optional translation fields', async () => {
       const details = {
         sourceLanguage: 'en',
         targetLanguage: 'vi',
-        characterCount: 100
+        characterCount: 100,
       }
 
       const result = await UsageTracker.trackTranslation('user123', details)
@@ -559,7 +592,7 @@ describe('Usage Tracker', () => {
         fileSize: 1024000,
         pageCount: 5,
         credits: 100,
-        processingTime: 3000
+        processingTime: 3000,
       }
 
       const result = await UsageTracker.trackDocument('user123', details)
@@ -571,15 +604,19 @@ describe('Usage Tracker', () => {
     })
 
     it('should validate document details', async () => {
-      await expect(UsageTracker.trackDocument('', {})).rejects.toThrow('User ID is required')
-      await expect(UsageTracker.trackDocument('user123', null)).rejects.toThrow('Document details are required')
+      await expect(UsageTracker.trackDocument('', {})).rejects.toThrow(
+        'User ID is required'
+      )
+      await expect(UsageTracker.trackDocument('user123', null)).rejects.toThrow(
+        'Document details are required'
+      )
     })
 
     it('should handle optional document fields', async () => {
       const details = {
         fileName: 'test.txt',
         fileType: 'txt',
-        fileSize: 5000
+        fileSize: 5000,
       }
 
       const result = await UsageTracker.trackDocument('user123', details)
@@ -593,7 +630,7 @@ describe('Usage Tracker', () => {
     it('should track page views', async () => {
       const result = await UsageTracker.trackPageView('user123', '/dashboard', {
         referrer: 'https://example.com',
-        userAgent: 'Mozilla/5.0...'
+        userAgent: 'Mozilla/5.0...',
       })
 
       expect(result.event).toBe('page_view')
@@ -602,8 +639,12 @@ describe('Usage Tracker', () => {
     })
 
     it('should validate page view parameters', async () => {
-      await expect(UsageTracker.trackPageView('', '/page')).rejects.toThrow('User ID is required')
-      await expect(UsageTracker.trackPageView('user123', '')).rejects.toThrow('Page is required')
+      await expect(UsageTracker.trackPageView('', '/page')).rejects.toThrow(
+        'User ID is required'
+      )
+      await expect(UsageTracker.trackPageView('user123', '')).rejects.toThrow(
+        'Page is required'
+      )
     })
 
     it('should handle optional metadata', async () => {
@@ -630,8 +671,12 @@ describe('Usage Tracker', () => {
     })
 
     it('should validate error parameters', async () => {
-      await expect(UsageTracker.trackError('', new Error())).rejects.toThrow('User ID is required')
-      await expect(UsageTracker.trackError('user123', null)).rejects.toThrow('Error is required')
+      await expect(UsageTracker.trackError('', new Error())).rejects.toThrow(
+        'User ID is required'
+      )
+      await expect(UsageTracker.trackError('user123', null)).rejects.toThrow(
+        'Error is required'
+      )
     })
 
     it('should handle different error types', async () => {
@@ -660,7 +705,9 @@ describe('Usage Tracker', () => {
     })
 
     it('should validate user ID for usage retrieval', async () => {
-      await expect(UsageTracker.getUserUsage('')).rejects.toThrow('User ID is required')
+      await expect(UsageTracker.getUserUsage('')).rejects.toThrow(
+        'User ID is required'
+      )
     })
 
     it('should handle different timeframes', async () => {
@@ -692,7 +739,9 @@ describe('Usage Tracker', () => {
     })
 
     it('should validate user ID for daily usage', async () => {
-      await expect(UsageTracker.getDailyUsage('')).rejects.toThrow('User ID is required')
+      await expect(UsageTracker.getDailyUsage('')).rejects.toThrow(
+        'User ID is required'
+      )
     })
 
     it('should return data in chronological order', async () => {
@@ -706,14 +755,17 @@ describe('Usage Tracker', () => {
 
   describe('Top Events', () => {
     it('should get top events', async () => {
-      mockSupabase.from().select().gte.mockResolvedValue({
-        data: [
-          { event: 'translation' },
-          { event: 'translation' },
-          { event: 'page_view' }
-        ],
-        error: null
-      })
+      mockSupabase
+        .from()
+        .select()
+        .gte.mockResolvedValue({
+          data: [
+            { event: 'translation' },
+            { event: 'translation' },
+            { event: 'page_view' },
+          ],
+          error: null,
+        })
 
       const result = await UsageTracker.getTopEvents('7d', 5)
 
@@ -732,14 +784,17 @@ describe('Usage Tracker', () => {
 
   describe('Active Users', () => {
     it('should get active users count', async () => {
-      mockSupabase.from().select().gte.mockResolvedValue({
-        data: [
-          { user_id: 'user1' },
-          { user_id: 'user2' },
-          { user_id: 'user1' }
-        ],
-        error: null
-      })
+      mockSupabase
+        .from()
+        .select()
+        .gte.mockResolvedValue({
+          data: [
+            { user_id: 'user1' },
+            { user_id: 'user2' },
+            { user_id: 'user1' },
+          ],
+          error: null,
+        })
 
       const result = await UsageTracker.getActiveUsers('24h')
 
@@ -754,20 +809,20 @@ describe('Usage Tracker', () => {
       const events = [
         {
           event: 'translation',
-          metadata: { characterCount: 100, credits: 20, duration: 1000 }
+          metadata: { characterCount: 100, credits: 20, duration: 1000 },
         },
         {
           event: 'document_processing',
-          metadata: { credits: 50, processingTime: 2000 }
+          metadata: { credits: 50, processingTime: 2000 },
         },
         {
           event: 'page_view',
-          metadata: {}
+          metadata: {},
         },
         {
           event: 'error',
-          metadata: {}
-        }
+          metadata: {},
+        },
       ]
 
       const result = UsageTracker.summarizeUsage(events)
@@ -795,7 +850,7 @@ describe('Usage Tracker', () => {
     it('should track multiple events in batch', async () => {
       const events = [
         { event: 'translation', metadata: { characterCount: 100 } },
-        { event: 'page_view', metadata: { page: '/dashboard' } }
+        { event: 'page_view', metadata: { page: '/dashboard' } },
       ]
 
       const result = await UsageTracker.trackBatch('user123', events)
@@ -806,9 +861,15 @@ describe('Usage Tracker', () => {
     })
 
     it('should validate batch parameters', async () => {
-      await expect(UsageTracker.trackBatch('', [])).rejects.toThrow('User ID is required')
-      await expect(UsageTracker.trackBatch('user123', [])).rejects.toThrow('Events are required')
-      await expect(UsageTracker.trackBatch('user123', null)).rejects.toThrow('Events are required')
+      await expect(UsageTracker.trackBatch('', [])).rejects.toThrow(
+        'User ID is required'
+      )
+      await expect(UsageTracker.trackBatch('user123', [])).rejects.toThrow(
+        'Events are required'
+      )
+      await expect(UsageTracker.trackBatch('user123', null)).rejects.toThrow(
+        'Events are required'
+      )
     })
   })
 
@@ -818,8 +879,8 @@ describe('Usage Tracker', () => {
         summary: {
           totalEvents: 150,
           errors: 8,
-          totalCredits: 600
-        }
+          totalCredits: 600,
+        },
       }
 
       jest.spyOn(UsageTracker, 'getUserUsage').mockResolvedValue(mockUsage)
@@ -829,11 +890,15 @@ describe('Usage Tracker', () => {
       expect(result.userId).toBe('user123')
       expect(result.alertCount).toBeGreaterThan(0)
       expect(result.alerts).toBeDefined()
-      expect(result.alerts.some(alert => alert.type === 'high_usage')).toBe(true)
+      expect(result.alerts.some(alert => alert.type === 'high_usage')).toBe(
+        true
+      )
     })
 
     it('should validate user ID for alerts', async () => {
-      await expect(UsageTracker.getUsageAlerts('')).rejects.toThrow('User ID is required')
+      await expect(UsageTracker.getUsageAlerts('')).rejects.toThrow(
+        'User ID is required'
+      )
     })
   })
 
@@ -857,16 +922,21 @@ describe('Usage Tracker', () => {
     })
 
     it('should validate export parameters', async () => {
-      await expect(UsageTracker.exportUsageData('')).rejects.toThrow('User ID is required')
+      await expect(UsageTracker.exportUsageData('')).rejects.toThrow(
+        'User ID is required'
+      )
     })
   })
 
   describe('Data Cleanup', () => {
     it('should cleanup old usage data', async () => {
-      mockSupabase.from().delete().lte.mockResolvedValue({
-        data: [{ id: '1' }, { id: '2' }],
-        error: null
-      })
+      mockSupabase
+        .from()
+        .delete()
+        .lte.mockResolvedValue({
+          data: [{ id: '1' }, { id: '2' }],
+          error: null,
+        })
 
       const result = await UsageTracker.cleanup(90)
 
@@ -886,7 +956,7 @@ describe('Usage Tracker', () => {
     it('should handle database errors', async () => {
       mockSupabase.from().insert.mockResolvedValue({
         data: null,
-        error: new Error('Database error')
+        error: new Error('Database error'),
       })
 
       // This would be handled in the actual implementation
@@ -909,7 +979,7 @@ describe('Usage Tracker', () => {
     it('should handle high volume tracking', async () => {
       const events = Array(100).fill({
         event: 'translation',
-        metadata: { characterCount: 100 }
+        metadata: { characterCount: 100 },
       })
 
       const result = await UsageTracker.trackBatch('user123', events)
@@ -920,7 +990,7 @@ describe('Usage Tracker', () => {
     it('should efficiently summarize large datasets', () => {
       const events = Array(1000).fill({
         event: 'translation',
-        metadata: { characterCount: 100, credits: 20 }
+        metadata: { characterCount: 100, credits: 20 },
       })
 
       const startTime = performance.now()

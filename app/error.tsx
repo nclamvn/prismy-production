@@ -23,26 +23,24 @@ export default function Error({
             <span className="text-3xl">😔</span>
           </div>
         </div>
-        
+
         <h2 className="text-2xl font-bold text-primary mb-4">
           Oops! Something went wrong
         </h2>
-        
+
         <p className="text-secondary mb-8">
-          We're sorry for the inconvenience. Please try refreshing the page or contact support if the problem persists.
+          We're sorry for the inconvenience. Please try refreshing the page or
+          contact support if the problem persists.
         </p>
-        
+
         <div className="space-y-4">
-          <Button
-            onClick={reset}
-            className="w-full"
-          >
+          <Button onClick={reset} className="w-full">
             Try again
           </Button>
-          
+
           <Button
             variant="outline"
-            onClick={() => window.location.href = '/'}
+            onClick={() => (window.location.href = '/')}
             className="w-full"
           >
             Go to homepage

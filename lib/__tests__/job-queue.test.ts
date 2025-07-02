@@ -15,7 +15,7 @@ const mockPgBoss = {
   getQueueSize: jest.fn().mockResolvedValue(5),
   fetch: jest.fn().mockResolvedValue([]),
   getJobById: jest.fn().mockResolvedValue(null),
-  deleteQueue: jest.fn().mockResolvedValue(undefined)
+  deleteQueue: jest.fn().mockResolvedValue(undefined),
 }
 
 const mockRedis = {
@@ -26,7 +26,7 @@ const mockRedis = {
   expire: jest.fn(),
   publish: jest.fn(),
   subscribe: jest.fn(),
-  unsubscribe: jest.fn()
+  unsubscribe: jest.fn(),
 }
 
 jest.mock('pg-boss', () => jest.fn(() => mockPgBoss))
@@ -44,14 +44,14 @@ describe('Job Queue', () => {
         init: async () => {
           return {
             success: true,
-            message: 'Job queue initialized'
+            message: 'Job queue initialized',
           }
         },
 
         shutdown: async () => {
           return {
             success: true,
-            message: 'Job queue shutdown'
+            message: 'Job queue shutdown',
           }
         },
 
@@ -68,7 +68,7 @@ describe('Job Queue', () => {
             delay: options.delay || 0,
             attempts: 0,
             maxAttempts: options.maxAttempts || 3,
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
           }
         },
 
@@ -80,7 +80,7 @@ describe('Job Queue', () => {
             queue: queueName,
             handler: handler.name || 'anonymous',
             status: 'processing',
-            registeredAt: new Date().toISOString()
+            registeredAt: new Date().toISOString(),
           }
         },
 
@@ -91,7 +91,7 @@ describe('Job Queue', () => {
             id: jobId,
             status: 'completed',
             result,
-            completedAt: new Date().toISOString()
+            completedAt: new Date().toISOString(),
           }
         },
 
@@ -103,7 +103,7 @@ describe('Job Queue', () => {
             id: jobId,
             status: 'failed',
             error: typeof error === 'string' ? error : error.message,
-            failedAt: new Date().toISOString()
+            failedAt: new Date().toISOString(),
           }
         },
 
@@ -113,7 +113,7 @@ describe('Job Queue', () => {
           return {
             id: jobId,
             status: 'retrying',
-            retriedAt: new Date().toISOString()
+            retriedAt: new Date().toISOString(),
           }
         },
 
@@ -123,7 +123,7 @@ describe('Job Queue', () => {
           return {
             id: jobId,
             status: 'cancelled',
-            cancelledAt: new Date().toISOString()
+            cancelledAt: new Date().toISOString(),
           }
         },
 
@@ -138,7 +138,7 @@ describe('Job Queue', () => {
             attempts: 1,
             maxAttempts: 3,
             createdAt: new Date(Date.now() - 60000).toISOString(),
-            completedAt: new Date().toISOString()
+            completedAt: new Date().toISOString(),
           }
         },
 
@@ -152,7 +152,7 @@ describe('Job Queue', () => {
             completed: 45,
             failed: 1,
             delayed: 0,
-            paused: false
+            paused: false,
           }
         },
 
@@ -165,7 +165,7 @@ describe('Job Queue', () => {
               id: `job_${i}`,
               status,
               queue: 'default',
-              createdAt: new Date(Date.now() - i * 60000).toISOString()
+              createdAt: new Date(Date.now() - i * 60000).toISOString(),
             })
           }
 
@@ -178,7 +178,7 @@ describe('Job Queue', () => {
           return {
             queue: queueName,
             status: 'paused',
-            pausedAt: new Date().toISOString()
+            pausedAt: new Date().toISOString(),
           }
         },
 
@@ -188,7 +188,7 @@ describe('Job Queue', () => {
           return {
             queue: queueName,
             status: 'active',
-            resumedAt: new Date().toISOString()
+            resumedAt: new Date().toISOString(),
           }
         },
 
@@ -198,7 +198,7 @@ describe('Job Queue', () => {
           return {
             queue: queueName,
             cleared: 15,
-            clearedAt: new Date().toISOString()
+            clearedAt: new Date().toISOString(),
           }
         },
 
@@ -215,12 +215,16 @@ describe('Job Queue', () => {
             queues: [
               { name: 'translation', jobs: 80 },
               { name: 'analysis', jobs: 45 },
-              { name: 'notification', jobs: 25 }
-            ]
+              { name: 'notification', jobs: 25 },
+            ],
           }
         },
 
-        scheduleRecurringJob: async (queueName: string, jobData: any, cronPattern: string) => {
+        scheduleRecurringJob: async (
+          queueName: string,
+          jobData: any,
+          cronPattern: string
+        ) => {
           if (!queueName) throw new Error('Queue name is required')
           if (!jobData) throw new Error('Job data is required')
           if (!cronPattern) throw new Error('Cron pattern is required')
@@ -232,7 +236,7 @@ describe('Job Queue', () => {
             pattern: cronPattern,
             status: 'scheduled',
             nextRun: new Date(Date.now() + 3600000).toISOString(),
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
           }
         },
 
@@ -242,14 +246,19 @@ describe('Job Queue', () => {
           return {
             id: jobId,
             status: 'stopped',
-            stoppedAt: new Date().toISOString()
+            stoppedAt: new Date().toISOString(),
           }
         },
 
-        addJobWithPriority: async (queueName: string, jobData: any, priority: number) => {
+        addJobWithPriority: async (
+          queueName: string,
+          jobData: any,
+          priority: number
+        ) => {
           if (!queueName) throw new Error('Queue name is required')
           if (!jobData) throw new Error('Job data is required')
-          if (typeof priority !== 'number') throw new Error('Priority must be a number')
+          if (typeof priority !== 'number')
+            throw new Error('Priority must be a number')
 
           return {
             id: `priority_job_${Date.now()}`,
@@ -257,14 +266,19 @@ describe('Job Queue', () => {
             data: jobData,
             priority,
             status: 'queued',
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
           }
         },
 
-        addDelayedJob: async (queueName: string, jobData: any, delayMs: number) => {
+        addDelayedJob: async (
+          queueName: string,
+          jobData: any,
+          delayMs: number
+        ) => {
           if (!queueName) throw new Error('Queue name is required')
           if (!jobData) throw new Error('Job data is required')
-          if (typeof delayMs !== 'number') throw new Error('Delay must be a number')
+          if (typeof delayMs !== 'number')
+            throw new Error('Delay must be a number')
 
           return {
             id: `delayed_job_${Date.now()}`,
@@ -273,9 +287,9 @@ describe('Job Queue', () => {
             delay: delayMs,
             status: 'delayed',
             executeAt: new Date(Date.now() + delayMs).toISOString(),
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
           }
-        }
+        },
       }
     }
   })
@@ -322,8 +336,12 @@ describe('Job Queue', () => {
     })
 
     it('should validate job parameters', async () => {
-      await expect(JobQueue.addJob('', {})).rejects.toThrow('Queue name is required')
-      await expect(JobQueue.addJob('test', null)).rejects.toThrow('Job data is required')
+      await expect(JobQueue.addJob('', {})).rejects.toThrow(
+        'Queue name is required'
+      )
+      await expect(JobQueue.addJob('test', null)).rejects.toThrow(
+        'Job data is required'
+      )
     })
 
     it('should get job by ID', async () => {
@@ -349,12 +367,18 @@ describe('Job Queue', () => {
     })
 
     it('should validate processor parameters', async () => {
-      await expect(JobQueue.processJob('', jest.fn())).rejects.toThrow('Queue name is required')
-      await expect(JobQueue.processJob('test', null)).rejects.toThrow('Job handler is required')
+      await expect(JobQueue.processJob('', jest.fn())).rejects.toThrow(
+        'Queue name is required'
+      )
+      await expect(JobQueue.processJob('test', null)).rejects.toThrow(
+        'Job handler is required'
+      )
     })
 
     it('should complete job', async () => {
-      const result = await JobQueue.completeJob('job_123', { output: 'success' })
+      const result = await JobQueue.completeJob('job_123', {
+        output: 'success',
+      })
 
       expect(result.id).toBe('job_123')
       expect(result.status).toBe('completed')
@@ -377,9 +401,15 @@ describe('Job Queue', () => {
     })
 
     it('should validate completion parameters', async () => {
-      await expect(JobQueue.completeJob('')).rejects.toThrow('Job ID is required')
-      await expect(JobQueue.failJob('', 'error')).rejects.toThrow('Job ID is required')
-      await expect(JobQueue.failJob('job_123', null)).rejects.toThrow('Error is required')
+      await expect(JobQueue.completeJob('')).rejects.toThrow(
+        'Job ID is required'
+      )
+      await expect(JobQueue.failJob('', 'error')).rejects.toThrow(
+        'Job ID is required'
+      )
+      await expect(JobQueue.failJob('job_123', null)).rejects.toThrow(
+        'Error is required'
+      )
     })
   })
 
@@ -442,10 +472,18 @@ describe('Job Queue', () => {
     })
 
     it('should validate queue management parameters', async () => {
-      await expect(JobQueue.getQueueInfo('')).rejects.toThrow('Queue name is required')
-      await expect(JobQueue.pauseQueue('')).rejects.toThrow('Queue name is required')
-      await expect(JobQueue.resumeQueue('')).rejects.toThrow('Queue name is required')
-      await expect(JobQueue.clearQueue('')).rejects.toThrow('Queue name is required')
+      await expect(JobQueue.getQueueInfo('')).rejects.toThrow(
+        'Queue name is required'
+      )
+      await expect(JobQueue.pauseQueue('')).rejects.toThrow(
+        'Queue name is required'
+      )
+      await expect(JobQueue.resumeQueue('')).rejects.toThrow(
+        'Queue name is required'
+      )
+      await expect(JobQueue.clearQueue('')).rejects.toThrow(
+        'Queue name is required'
+      )
     })
   })
 
@@ -465,7 +503,9 @@ describe('Job Queue', () => {
     })
 
     it('should validate status parameter', async () => {
-      await expect(JobQueue.getJobsByStatus('')).rejects.toThrow('Status is required')
+      await expect(JobQueue.getJobsByStatus('')).rejects.toThrow(
+        'Status is required'
+      )
     })
   })
 
@@ -500,7 +540,11 @@ describe('Job Queue', () => {
     it('should schedule recurring job', async () => {
       const jobData = { type: 'cleanup' }
       const cronPattern = '0 0 * * *' // Daily at midnight
-      const result = await JobQueue.scheduleRecurringJob('maintenance', jobData, cronPattern)
+      const result = await JobQueue.scheduleRecurringJob(
+        'maintenance',
+        jobData,
+        cronPattern
+      )
 
       expect(result.id).toBeDefined()
       expect(result.queue).toBe('maintenance')
@@ -518,10 +562,18 @@ describe('Job Queue', () => {
     })
 
     it('should validate recurring job parameters', async () => {
-      await expect(JobQueue.scheduleRecurringJob('', {}, '0 0 * * *')).rejects.toThrow('Queue name is required')
-      await expect(JobQueue.scheduleRecurringJob('test', null, '0 0 * * *')).rejects.toThrow('Job data is required')
-      await expect(JobQueue.scheduleRecurringJob('test', {}, '')).rejects.toThrow('Cron pattern is required')
-      await expect(JobQueue.stopRecurringJob('')).rejects.toThrow('Job ID is required')
+      await expect(
+        JobQueue.scheduleRecurringJob('', {}, '0 0 * * *')
+      ).rejects.toThrow('Queue name is required')
+      await expect(
+        JobQueue.scheduleRecurringJob('test', null, '0 0 * * *')
+      ).rejects.toThrow('Job data is required')
+      await expect(
+        JobQueue.scheduleRecurringJob('test', {}, '')
+      ).rejects.toThrow('Cron pattern is required')
+      await expect(JobQueue.stopRecurringJob('')).rejects.toThrow(
+        'Job ID is required'
+      )
     })
   })
 
@@ -536,9 +588,15 @@ describe('Job Queue', () => {
     })
 
     it('should validate priority parameters', async () => {
-      await expect(JobQueue.addJobWithPriority('', {}, 5)).rejects.toThrow('Queue name is required')
-      await expect(JobQueue.addJobWithPriority('test', null, 5)).rejects.toThrow('Job data is required')
-      await expect(JobQueue.addJobWithPriority('test', {}, 'high')).rejects.toThrow('Priority must be a number')
+      await expect(JobQueue.addJobWithPriority('', {}, 5)).rejects.toThrow(
+        'Queue name is required'
+      )
+      await expect(
+        JobQueue.addJobWithPriority('test', null, 5)
+      ).rejects.toThrow('Job data is required')
+      await expect(
+        JobQueue.addJobWithPriority('test', {}, 'high')
+      ).rejects.toThrow('Priority must be a number')
     })
   })
 
@@ -555,9 +613,15 @@ describe('Job Queue', () => {
     })
 
     it('should validate delayed job parameters', async () => {
-      await expect(JobQueue.addDelayedJob('', {}, 1000)).rejects.toThrow('Queue name is required')
-      await expect(JobQueue.addDelayedJob('test', null, 1000)).rejects.toThrow('Job data is required')
-      await expect(JobQueue.addDelayedJob('test', {}, 'later')).rejects.toThrow('Delay must be a number')
+      await expect(JobQueue.addDelayedJob('', {}, 1000)).rejects.toThrow(
+        'Queue name is required'
+      )
+      await expect(JobQueue.addDelayedJob('test', null, 1000)).rejects.toThrow(
+        'Job data is required'
+      )
+      await expect(JobQueue.addDelayedJob('test', {}, 'later')).rejects.toThrow(
+        'Delay must be a number'
+      )
     })
   })
 
@@ -602,13 +666,13 @@ describe('Job Queue', () => {
 
     it('should efficiently process concurrent jobs', async () => {
       const startTime = performance.now()
-      
-      const promises = Array(20).fill(null).map(() => 
-        JobQueue.addJob('concurrent', { timestamp: Date.now() })
-      )
+
+      const promises = Array(20)
+        .fill(null)
+        .map(() => JobQueue.addJob('concurrent', { timestamp: Date.now() }))
 
       await Promise.all(promises)
-      
+
       const endTime = performance.now()
       const duration = endTime - startTime
 
@@ -618,8 +682,15 @@ describe('Job Queue', () => {
 
   describe('Job States', () => {
     it('should track job state transitions', async () => {
-      const states = ['queued', 'active', 'completed', 'failed', 'cancelled', 'delayed']
-      
+      const states = [
+        'queued',
+        'active',
+        'completed',
+        'failed',
+        'cancelled',
+        'delayed',
+      ]
+
       states.forEach(state => {
         expect(typeof state).toBe('string')
         expect(state.length).toBeGreaterThan(0)
@@ -628,7 +699,7 @@ describe('Job Queue', () => {
 
     it('should maintain job history', async () => {
       const job = await JobQueue.getJob('job_123')
-      
+
       expect(job.createdAt).toBeDefined()
       expect(job.completedAt).toBeDefined()
       expect(job.attempts).toBeDefined()
@@ -637,8 +708,13 @@ describe('Job Queue', () => {
 
   describe('Queue Configuration', () => {
     it('should support multiple queue types', () => {
-      const queueTypes = ['translation', 'analysis', 'notification', 'maintenance']
-      
+      const queueTypes = [
+        'translation',
+        'analysis',
+        'notification',
+        'maintenance',
+      ]
+
       queueTypes.forEach(type => {
         expect(typeof type).toBe('string')
         expect(type.length).toBeGreaterThan(0)
@@ -650,7 +726,7 @@ describe('Job Queue', () => {
         concurrency: 5,
         retryLimit: 3,
         retryDelay: 5000,
-        timeout: 30000
+        timeout: 30000,
       }
 
       expect(queueConfig.concurrency).toBeGreaterThan(0)

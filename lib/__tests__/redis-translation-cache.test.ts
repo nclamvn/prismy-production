@@ -14,11 +14,11 @@ const mockRedisClient = {
   keys: jest.fn(),
   mget: jest.fn(),
   mset: jest.fn(),
-  ping: jest.fn()
+  ping: jest.fn(),
 }
 
 jest.mock('@upstash/redis', () => ({
-  Redis: jest.fn(() => mockRedisClient)
+  Redis: jest.fn(() => mockRedisClient),
 }))
 
 // Mock environment variables
@@ -28,7 +28,7 @@ beforeAll(() => {
     ...originalEnv,
     UPSTASH_REDIS_REST_URL: 'https://test-redis.upstash.io',
     UPSTASH_REDIS_REST_TOKEN: 'test-token',
-    NODE_ENV: 'test'
+    NODE_ENV: 'test',
   }
 })
 
@@ -51,12 +51,12 @@ describe('Redis Translation Cache', () => {
   describe('Cache Operations', () => {
     it('should set cache entry', async () => {
       mockRedisClient.set.mockResolvedValue('OK')
-      
+
       const cacheData = {
         translatedText: 'Xin chào thế giới',
         detectedSourceLanguage: 'en',
         confidence: 0.95,
-        qualityScore: 0.9
+        qualityScore: 0.9,
       }
 
       await redisTranslationCache.set('test-key', cacheData, 3600)
@@ -72,7 +72,7 @@ describe('Redis Translation Cache', () => {
       const cachedData = {
         translatedText: 'Cached translation',
         detectedSourceLanguage: 'en',
-        confidence: 0.95
+        confidence: 0.95,
       }
 
       mockRedisClient.get.mockResolvedValue(JSON.stringify(cachedData))
@@ -119,8 +119,18 @@ describe('Redis Translation Cache', () => {
 
   describe('Cache Key Generation', () => {
     it('should generate consistent cache keys', () => {
-      const key1 = redisTranslationCache.generateKey('Hello world', 'en', 'vi', 'standard')
-      const key2 = redisTranslationCache.generateKey('Hello world', 'en', 'vi', 'standard')
+      const key1 = redisTranslationCache.generateKey(
+        'Hello world',
+        'en',
+        'vi',
+        'standard'
+      )
+      const key2 = redisTranslationCache.generateKey(
+        'Hello world',
+        'en',
+        'vi',
+        'standard'
+      )
 
       expect(key1).toBe(key2)
       expect(typeof key1).toBe('string')
@@ -128,9 +138,24 @@ describe('Redis Translation Cache', () => {
     })
 
     it('should generate different keys for different inputs', () => {
-      const key1 = redisTranslationCache.generateKey('Hello world', 'en', 'vi', 'standard')
-      const key2 = redisTranslationCache.generateKey('Hello world', 'en', 'fr', 'standard')
-      const key3 = redisTranslationCache.generateKey('Hello world', 'en', 'vi', 'premium')
+      const key1 = redisTranslationCache.generateKey(
+        'Hello world',
+        'en',
+        'vi',
+        'standard'
+      )
+      const key2 = redisTranslationCache.generateKey(
+        'Hello world',
+        'en',
+        'fr',
+        'standard'
+      )
+      const key3 = redisTranslationCache.generateKey(
+        'Hello world',
+        'en',
+        'vi',
+        'premium'
+      )
 
       expect(key1).not.toBe(key2)
       expect(key1).not.toBe(key3)
@@ -138,7 +163,12 @@ describe('Redis Translation Cache', () => {
     })
 
     it('should handle special characters in text', () => {
-      const key = redisTranslationCache.generateKey('Hello @user! 🌍', 'en', 'vi', 'standard')
+      const key = redisTranslationCache.generateKey(
+        'Hello @user! 🌍',
+        'en',
+        'vi',
+        'standard'
+      )
 
       expect(typeof key).toBe('string')
       expect(key.length).toBeGreaterThan(0)
@@ -146,15 +176,30 @@ describe('Redis Translation Cache', () => {
 
     it('should handle very long text', () => {
       const longText = 'A'.repeat(10000)
-      const key = redisTranslationCache.generateKey(longText, 'en', 'vi', 'standard')
+      const key = redisTranslationCache.generateKey(
+        longText,
+        'en',
+        'vi',
+        'standard'
+      )
 
       expect(typeof key).toBe('string')
       expect(key.length).toBeLessThan(500) // Should be hashed/truncated
     })
 
     it('should be case sensitive', () => {
-      const key1 = redisTranslationCache.generateKey('Hello', 'en', 'vi', 'standard')
-      const key2 = redisTranslationCache.generateKey('hello', 'en', 'vi', 'standard')
+      const key1 = redisTranslationCache.generateKey(
+        'Hello',
+        'en',
+        'vi',
+        'standard'
+      )
+      const key2 = redisTranslationCache.generateKey(
+        'hello',
+        'en',
+        'vi',
+        'standard'
+      )
 
       expect(key1).not.toBe(key2)
     })
@@ -165,25 +210,33 @@ describe('Redis Translation Cache', () => {
       const mockData = [
         JSON.stringify({ translatedText: 'Translation 1' }),
         JSON.stringify({ translatedText: 'Translation 2' }),
-        null
+        null,
       ]
 
       mockRedisClient.mget.mockResolvedValue(mockData)
 
-      const results = await redisTranslationCache.getMultiple(['key1', 'key2', 'key3'])
+      const results = await redisTranslationCache.getMultiple([
+        'key1',
+        'key2',
+        'key3',
+      ])
 
       expect(results).toEqual([
         { translatedText: 'Translation 1' },
         { translatedText: 'Translation 2' },
-        null
+        null,
       ])
-      expect(mockRedisClient.mget).toHaveBeenCalledWith(['key1', 'key2', 'key3'])
+      expect(mockRedisClient.mget).toHaveBeenCalledWith([
+        'key1',
+        'key2',
+        'key3',
+      ])
     })
 
     it('should set multiple cache entries', async () => {
       const entries = {
-        'key1': { translatedText: 'Translation 1' },
-        'key2': { translatedText: 'Translation 2' }
+        key1: { translatedText: 'Translation 1' },
+        key2: { translatedText: 'Translation 2' },
       }
 
       mockRedisClient.mset.mockResolvedValue('OK')
@@ -191,8 +244,8 @@ describe('Redis Translation Cache', () => {
       await redisTranslationCache.setMultiple(entries, 3600)
 
       expect(mockRedisClient.mset).toHaveBeenCalledWith({
-        'key1': JSON.stringify(entries.key1),
-        'key2': JSON.stringify(entries.key2)
+        key1: JSON.stringify(entries.key1),
+        key2: JSON.stringify(entries.key2),
       })
     })
 
@@ -213,7 +266,7 @@ describe('Redis Translation Cache', () => {
 
       expect(stats).toEqual({
         totalKeys: 3,
-        keyPattern: expect.any(String)
+        keyPattern: expect.any(String),
       })
       expect(mockRedisClient.keys).toHaveBeenCalled()
     })
@@ -229,13 +282,21 @@ describe('Redis Translation Cache', () => {
 
   describe('Cache Invalidation', () => {
     it('should invalidate user history cache', async () => {
-      mockRedisClient.keys.mockResolvedValue(['user:123:history:1', 'user:123:history:2'])
+      mockRedisClient.keys.mockResolvedValue([
+        'user:123:history:1',
+        'user:123:history:2',
+      ])
       mockRedisClient.del.mockResolvedValue(2)
 
       await redisTranslationCache.invalidateUserHistory('user-123')
 
-      expect(mockRedisClient.keys).toHaveBeenCalledWith('*user:user-123:history*')
-      expect(mockRedisClient.del).toHaveBeenCalledWith(['user:123:history:1', 'user:123:history:2'])
+      expect(mockRedisClient.keys).toHaveBeenCalledWith(
+        '*user:user-123:history*'
+      )
+      expect(mockRedisClient.del).toHaveBeenCalledWith([
+        'user:123:history:1',
+        'user:123:history:2',
+      ])
     })
 
     it('should handle no matching keys for invalidation', async () => {
@@ -247,13 +308,19 @@ describe('Redis Translation Cache', () => {
     })
 
     it('should invalidate pattern-based cache', async () => {
-      mockRedisClient.keys.mockResolvedValue(['translate:en:vi:1', 'translate:en:vi:2'])
+      mockRedisClient.keys.mockResolvedValue([
+        'translate:en:vi:1',
+        'translate:en:vi:2',
+      ])
       mockRedisClient.del.mockResolvedValue(2)
 
       await redisTranslationCache.invalidatePattern('translate:en:vi:*')
 
       expect(mockRedisClient.keys).toHaveBeenCalledWith('translate:en:vi:*')
-      expect(mockRedisClient.del).toHaveBeenCalledWith(['translate:en:vi:1', 'translate:en:vi:2'])
+      expect(mockRedisClient.del).toHaveBeenCalledWith([
+        'translate:en:vi:1',
+        'translate:en:vi:2',
+      ])
     })
   })
 
@@ -289,7 +356,9 @@ describe('Redis Translation Cache', () => {
 
   describe('Error Handling', () => {
     it('should handle Redis connection errors on get', async () => {
-      mockRedisClient.get.mockRejectedValue(new Error('Redis connection failed'))
+      mockRedisClient.get.mockRejectedValue(
+        new Error('Redis connection failed')
+      )
 
       const result = await redisTranslationCache.get('test-key')
 
@@ -297,11 +366,14 @@ describe('Redis Translation Cache', () => {
     })
 
     it('should handle Redis connection errors on set', async () => {
-      mockRedisClient.set.mockRejectedValue(new Error('Redis connection failed'))
+      mockRedisClient.set.mockRejectedValue(
+        new Error('Redis connection failed')
+      )
 
       // Should not throw
-      await expect(redisTranslationCache.set('test-key', { test: 'data' }))
-        .resolves.not.toThrow()
+      await expect(
+        redisTranslationCache.set('test-key', { test: 'data' })
+      ).resolves.not.toThrow()
     })
 
     it('should handle malformed JSON in cache', async () => {
@@ -323,16 +395,27 @@ describe('Redis Translation Cache', () => {
     it('should handle Redis memory issues', async () => {
       mockRedisClient.set.mockRejectedValue(new Error('OOM'))
 
-      await expect(redisTranslationCache.set('test-key', { test: 'data' }))
-        .resolves.not.toThrow()
+      await expect(
+        redisTranslationCache.set('test-key', { test: 'data' })
+      ).resolves.not.toThrow()
     })
   })
 
   describe('Cache Warming', () => {
     it('should warm cache with common translations', async () => {
       const commonTranslations = [
-        { text: 'Hello', sourceLang: 'en', targetLang: 'vi', result: 'Xin chào' },
-        { text: 'Goodbye', sourceLang: 'en', targetLang: 'vi', result: 'Tạm biệt' }
+        {
+          text: 'Hello',
+          sourceLang: 'en',
+          targetLang: 'vi',
+          result: 'Xin chào',
+        },
+        {
+          text: 'Goodbye',
+          sourceLang: 'en',
+          targetLang: 'vi',
+          result: 'Tạm biệt',
+        },
       ]
 
       mockRedisClient.mset.mockResolvedValue('OK')
@@ -384,10 +467,11 @@ describe('Redis Translation Cache', () => {
     })
 
     it('should handle ping timeout', async () => {
-      mockRedisClient.ping.mockImplementation(() => 
-        new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('TIMEOUT')), 1000)
-        )
+      mockRedisClient.ping.mockImplementation(
+        () =>
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('TIMEOUT')), 1000)
+          )
       )
 
       const isHealthy = await redisTranslationCache.healthCheck()
@@ -398,7 +482,9 @@ describe('Redis Translation Cache', () => {
 
   describe('Cache Configuration', () => {
     it('should use environment configuration', () => {
-      expect(process.env.UPSTASH_REDIS_REST_URL).toBe('https://test-redis.upstash.io')
+      expect(process.env.UPSTASH_REDIS_REST_URL).toBe(
+        'https://test-redis.upstash.io'
+      )
       expect(process.env.UPSTASH_REDIS_REST_TOKEN).toBe('test-token')
     })
 
@@ -425,10 +511,13 @@ describe('Redis Translation Cache', () => {
       mockRedisClient.get.mockResolvedValue(JSON.stringify({ test: 'data' }))
       mockRedisClient.set.mockResolvedValue('OK')
 
-      const operations = Array(10).fill(0).map((_, i) => [
-        redisTranslationCache.get(`key-${i}`),
-        redisTranslationCache.set(`key-${i}`, { data: i })
-      ]).flat()
+      const operations = Array(10)
+        .fill(0)
+        .map((_, i) => [
+          redisTranslationCache.get(`key-${i}`),
+          redisTranslationCache.set(`key-${i}`, { data: i }),
+        ])
+        .flat()
 
       const results = await Promise.allSettled(operations)
 
@@ -440,8 +529,10 @@ describe('Redis Translation Cache', () => {
       const largeData = {
         translatedText: 'A'.repeat(100000),
         metadata: Object.fromEntries(
-          Array(1000).fill(0).map((_, i) => [`key${i}`, `value${i}`])
-        )
+          Array(1000)
+            .fill(0)
+            .map((_, i) => [`key${i}`, `value${i}`])
+        ),
       }
 
       mockRedisClient.set.mockResolvedValue('OK')
@@ -473,7 +564,7 @@ describe('Redis Translation Cache', () => {
       expect(metrics).toEqual({
         hits: 2,
         misses: 1,
-        hitRate: 0.67
+        hitRate: 0.67,
       })
     })
 
@@ -485,7 +576,7 @@ describe('Redis Translation Cache', () => {
       expect(metrics).toEqual({
         hits: 0,
         misses: 0,
-        hitRate: 0
+        hitRate: 0,
       })
     })
   })

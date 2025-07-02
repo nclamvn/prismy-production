@@ -75,7 +75,7 @@ class ProductionMetrics {
     INP: { good: 200, poor: 500 },
     API_RESPONSE_TIME: { good: 1000, poor: 5000 },
     MEMORY_USAGE: { good: 0.7, poor: 0.9 },
-    ERROR_RATE: { good: 0.01, poor: 0.05 }
+    ERROR_RATE: { good: 0.01, poor: 0.05 },
   }
 
   private constructor() {}
@@ -110,7 +110,6 @@ class ProductionMetrics {
 
       this.isInitialized = true
       logger.info('Production metrics monitoring initialized')
-
     } catch (error) {
       logger.error('Failed to initialize production metrics', { error })
     }
@@ -119,7 +118,9 @@ class ProductionMetrics {
   private async initializeWebVitals(): Promise<void> {
     try {
       // Dynamically import web-vitals
-      const { onCLS, onFCP, onFID, onLCP, onTTFB, onINP } = await import('web-vitals')
+      const { onCLS, onFCP, onFID, onLCP, onTTFB, onINP } = await import(
+        'web-vitals'
+      )
 
       const handleMetric = (metric: any) => {
         const webVitalMetric: WebVitalsMetric = {
@@ -130,7 +131,7 @@ class ProductionMetrics {
           id: metric.id,
           navigationType: metric.navigationType || 'navigate',
           url: window.location.href,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         }
 
         this.webVitalsBuffer.push(webVitalMetric)
@@ -143,12 +144,11 @@ class ProductionMetrics {
       onFID(handleMetric)
       onLCP(handleMetric)
       onTTFB(handleMetric)
-      
+
       // INP might not be available in all versions
       if (onINP) {
         onINP(handleMetric)
       }
-
     } catch (error) {
       logger.warn('Web Vitals not available, using fallback metrics', { error })
       this.initializeFallbackMetrics()
@@ -159,11 +159,11 @@ class ProductionMetrics {
     // Basic performance metrics using native APIs
     if (typeof window !== 'undefined' && 'performance' in window) {
       // Monitor paint timing
-      const paintObserver = new PerformanceObserver((list) => {
+      const paintObserver = new PerformanceObserver(list => {
         for (const entry of list.getEntries()) {
           if (entry.name === 'first-contentful-paint') {
             this.recordMetric('FCP_FALLBACK', entry.startTime, 'ms', {
-              type: 'fallback'
+              type: 'fallback',
             })
           }
         }
@@ -177,18 +177,18 @@ class ProductionMetrics {
   private initializeResourceMonitoring(): void {
     if (!('PerformanceObserver' in window)) return
 
-    const resourceObserver = new PerformanceObserver((list) => {
+    const resourceObserver = new PerformanceObserver(list => {
       for (const entry of list.getEntries()) {
         if (entry.entryType === 'resource') {
           const resourceEntry = entry as PerformanceResourceTiming
-          
+
           const metric: ResourceMetric = {
             name: resourceEntry.name,
             type: this.getResourceType(resourceEntry.name),
             size: resourceEntry.transferSize || 0,
             loadTime: resourceEntry.duration,
             cacheStatus: this.getCacheStatus(resourceEntry),
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           }
 
           this.handleResourceMetric(metric)
@@ -203,7 +203,7 @@ class ProductionMetrics {
   private initializeNavigationTiming(): void {
     if (!('PerformanceObserver' in window)) return
 
-    const navigationObserver = new PerformanceObserver((list) => {
+    const navigationObserver = new PerformanceObserver(list => {
       for (const entry of list.getEntries()) {
         if (entry.entryType === 'navigation') {
           const navEntry = entry as PerformanceNavigationTiming
@@ -223,10 +223,10 @@ class ProductionMetrics {
         const memory = (performance as any).memory
         if (memory) {
           const usage = memory.usedJSHeapSize / memory.jsHeapSizeLimit
-          
+
           this.recordMetric('MEMORY_USAGE', usage, 'ratio', {
             usedMB: Math.round(memory.usedJSHeapSize / 1024 / 1024),
-            totalMB: Math.round(memory.jsHeapSizeLimit / 1024 / 1024)
+            totalMB: Math.round(memory.jsHeapSizeLimit / 1024 / 1024),
           })
 
           // Alert if memory usage is high
@@ -247,7 +247,7 @@ class ProductionMetrics {
       if (connection) {
         this.recordMetric('CONNECTION_DOWNLINK', connection.downlink, 'mbps', {
           effectiveType: connection.effectiveType,
-          rtt: connection.rtt
+          rtt: connection.rtt,
         })
       }
     }
@@ -260,7 +260,10 @@ class ProductionMetrics {
   }
 
   private async processBatch(): Promise<void> {
-    if (this.webVitalsBuffer.length === 0 && this.apiMetricsBuffer.length === 0) {
+    if (
+      this.webVitalsBuffer.length === 0 &&
+      this.apiMetricsBuffer.length === 0
+    ) {
       return
     }
 
@@ -268,7 +271,7 @@ class ProductionMetrics {
       const batch = {
         webVitals: [...this.webVitalsBuffer],
         apiMetrics: [...this.apiMetricsBuffer],
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       }
 
       // Clear buffers
@@ -277,7 +280,6 @@ class ProductionMetrics {
 
       // Send to monitoring endpoints
       await this.sendMetricsBatch(batch)
-
     } catch (error) {
       logger.error('Failed to process metrics batch', { error })
     }
@@ -292,8 +294,10 @@ class ProductionMetrics {
         fetch(process.env.NEXT_PUBLIC_METRICS_ENDPOINT, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(batch)
-        }).catch(error => logger.warn('Failed to send to metrics endpoint', { error }))
+          body: JSON.stringify(batch),
+        }).catch(error =>
+          logger.warn('Failed to send to metrics endpoint', { error })
+        )
       )
     }
 
@@ -303,7 +307,7 @@ class ProductionMetrics {
         gtag('event', 'web_vital', {
           metric_name: metric.name,
           metric_value: Math.round(metric.value),
-          metric_rating: metric.rating
+          metric_rating: metric.rating,
         })
       })
     }
@@ -317,7 +321,7 @@ class ProductionMetrics {
       message: `Web Vital: ${metric.name}`,
       category: 'performance',
       level: metric.rating === 'poor' ? 'warning' : 'info',
-      data: metric
+      data: metric,
     })
 
     // Create alerts for poor metrics
@@ -334,27 +338,29 @@ class ProductionMetrics {
       logger.warn(`Poor ${metric.name} performance`, {
         value: metric.value,
         rating: metric.rating,
-        url: metric.url
+        url: metric.url,
       })
     }
   }
 
   private handleResourceMetric(metric: ResourceMetric): void {
     // Alert on large resources
-    if (metric.size > 1024 * 1024) { // 1MB
+    if (metric.size > 1024 * 1024) {
+      // 1MB
       logger.warn('Large resource detected', {
         name: metric.name,
         size: `${Math.round(metric.size / 1024 / 1024)}MB`,
-        loadTime: `${metric.loadTime.toFixed(2)}ms`
+        loadTime: `${metric.loadTime.toFixed(2)}ms`,
       })
     }
 
     // Alert on slow loading resources
-    if (metric.loadTime > 5000) { // 5 seconds
+    if (metric.loadTime > 5000) {
+      // 5 seconds
       logger.warn('Slow resource loading', {
         name: metric.name,
         loadTime: `${metric.loadTime.toFixed(2)}ms`,
-        type: metric.type
+        type: metric.type,
       })
     }
   }
@@ -363,14 +369,15 @@ class ProductionMetrics {
     const metrics = {
       DNS: navEntry.domainLookupEnd - navEntry.domainLookupStart,
       TCP: navEntry.connectEnd - navEntry.connectStart,
-      SSL: navEntry.secureConnectionStart > 0 
-        ? navEntry.connectEnd - navEntry.secureConnectionStart 
-        : 0,
+      SSL:
+        navEntry.secureConnectionStart > 0
+          ? navEntry.connectEnd - navEntry.secureConnectionStart
+          : 0,
       TTFB: navEntry.responseStart - navEntry.requestStart,
       Download: navEntry.responseEnd - navEntry.responseStart,
       DOMParse: navEntry.domInteractive - navEntry.responseEnd,
       DOMReady: navEntry.domContentLoadedEventEnd - navEntry.navigationStart,
-      WindowLoad: navEntry.loadEventEnd - navEntry.navigationStart
+      WindowLoad: navEntry.loadEventEnd - navEntry.navigationStart,
     }
 
     Object.entries(metrics).forEach(([name, value]) => {
@@ -379,7 +386,11 @@ class ProductionMetrics {
 
     // Alert on slow TTFB
     if (metrics.TTFB > this.thresholds.TTFB.poor) {
-      alertManager.createPerformanceAlert('TTFB', metrics.TTFB, this.thresholds.TTFB.poor)
+      alertManager.createPerformanceAlert(
+        'TTFB',
+        metrics.TTFB,
+        this.thresholds.TTFB.poor
+      )
     }
   }
 
@@ -395,7 +406,7 @@ class ProductionMetrics {
       value,
       unit,
       timestamp: new Date().toISOString(),
-      metadata
+      metadata,
     }
 
     this.metrics.push(metric)
@@ -404,7 +415,7 @@ class ProductionMetrics {
     errorTracker.addBreadcrumb({
       message: `Metric: ${name}`,
       category: 'performance',
-      data: metric
+      data: metric,
     })
   }
 
@@ -425,7 +436,7 @@ class ProductionMetrics {
       logger.warn('API error recorded', {
         endpoint: metric.endpoint,
         statusCode: metric.statusCode,
-        responseTime: metric.responseTime
+        responseTime: metric.responseTime,
       })
     }
   }
@@ -436,7 +447,7 @@ class ProductionMetrics {
       gtag('event', metric.event, {
         value: metric.value,
         currency: metric.currency,
-        custom_parameters: metric.properties
+        custom_parameters: metric.properties,
       })
     }
 
@@ -444,19 +455,27 @@ class ProductionMetrics {
     errorTracker.addBreadcrumb({
       message: `Business metric: ${metric.event}`,
       category: 'business',
-      data: metric
+      data: metric,
     })
 
     logger.info('Business metric recorded', metric)
   }
 
-  public markFeatureUsage(feature: string, properties?: Record<string, any>): void {
-    this.recordMetric(`FEATURE_${feature.toUpperCase()}`, 1, 'count', properties)
-    
+  public markFeatureUsage(
+    feature: string,
+    properties?: Record<string, any>
+  ): void {
+    this.recordMetric(
+      `FEATURE_${feature.toUpperCase()}`,
+      1,
+      'count',
+      properties
+    )
+
     errorTracker.addBreadcrumb({
       message: `Feature used: ${feature}`,
       category: 'user',
-      data: properties
+      data: properties,
     })
   }
 
@@ -465,7 +484,10 @@ class ProductionMetrics {
   }
 
   // Utility methods
-  private getMetricRating(name: string, value: number): 'good' | 'needs-improvement' | 'poor' {
+  private getMetricRating(
+    name: string,
+    value: number
+  ): 'good' | 'needs-improvement' | 'poor' {
     const threshold = this.thresholds[name as keyof typeof this.thresholds]
     if (!threshold) return 'good'
 
@@ -482,7 +504,9 @@ class ProductionMetrics {
     return 'other'
   }
 
-  private getCacheStatus(entry: PerformanceResourceTiming): 'hit' | 'miss' | 'bypass' {
+  private getCacheStatus(
+    entry: PerformanceResourceTiming
+  ): 'hit' | 'miss' | 'bypass' {
     if (entry.transferSize === 0) return 'hit'
     if (entry.transferSize < entry.encodedBodySize) return 'hit'
     return 'miss'
@@ -513,7 +537,7 @@ class ProductionMetrics {
       totalMetrics: this.metrics.length,
       webVitalsCount: this.webVitalsBuffer.length,
       apiMetricsCount: this.apiMetricsBuffer.length,
-      isInitialized: this.isInitialized
+      isInitialized: this.isInitialized,
     }
   }
 }
@@ -539,15 +563,20 @@ export class PerformanceTransaction {
     this.endTime = performance.now()
     const duration = this.endTime - this.startTime
 
-    this.metricsInstance.recordMetric(`TRANSACTION_${this.name}`, duration, 'ms', {
-      marks: this.metrics
-    })
+    this.metricsInstance.recordMetric(
+      `TRANSACTION_${this.name}`,
+      duration,
+      'ms',
+      {
+        marks: this.metrics,
+      }
+    )
 
     // Log slow transactions
     if (duration > 1000) {
       logger.warn(`Slow transaction: ${this.name}`, {
         duration: `${duration.toFixed(2)}ms`,
-        marks: this.metrics
+        marks: this.metrics,
       })
     }
   }

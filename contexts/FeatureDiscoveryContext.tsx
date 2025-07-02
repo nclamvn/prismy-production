@@ -22,20 +22,24 @@ interface FeatureDiscoveryContextType {
   updateUserLevel: (level: 'beginner' | 'intermediate' | 'advanced') => void
 }
 
-const FeatureDiscoveryContext = createContext<FeatureDiscoveryContextType | undefined>(undefined)
+const FeatureDiscoveryContext = createContext<
+  FeatureDiscoveryContextType | undefined
+>(undefined)
 
 interface FeatureDiscoveryProviderProps {
   children: React.ReactNode
 }
 
-export function FeatureDiscoveryProvider({ children }: FeatureDiscoveryProviderProps) {
+export function FeatureDiscoveryProvider({
+  children,
+}: FeatureDiscoveryProviderProps) {
   const [isDiscoveryOpen, setIsDiscoveryOpen] = useState(false)
   const [state, setState] = useState<FeatureDiscoveryState>({
     hasSeenDiscovery: false,
     completedFeatures: [],
     currentFeature: null,
     userLevel: 'beginner',
-    dismissedNotifications: []
+    dismissedNotifications: [],
   })
 
   // Load state from localStorage on mount
@@ -46,7 +50,7 @@ export function FeatureDiscoveryProvider({ children }: FeatureDiscoveryProviderP
         const parsed = JSON.parse(savedState)
         setState(prevState => ({
           ...prevState,
-          ...parsed
+          ...parsed,
         }))
       }
 
@@ -66,7 +70,10 @@ export function FeatureDiscoveryProvider({ children }: FeatureDiscoveryProviderP
   // Save state to localStorage whenever it changes
   useEffect(() => {
     try {
-      localStorage.setItem('prismy-feature-discovery-state', JSON.stringify(state))
+      localStorage.setItem(
+        'prismy-feature-discovery-state',
+        JSON.stringify(state)
+      )
     } catch (error) {
       console.error('Failed to save feature discovery state:', error)
     }
@@ -84,8 +91,10 @@ export function FeatureDiscoveryProvider({ children }: FeatureDiscoveryProviderP
   const completeFeature = (feature: string) => {
     setState(prev => ({
       ...prev,
-      completedFeatures: [...prev.completedFeatures, feature].filter((f, i, arr) => arr.indexOf(f) === i),
-      currentFeature: null
+      completedFeatures: [...prev.completedFeatures, feature].filter(
+        (f, i, arr) => arr.indexOf(f) === i
+      ),
+      currentFeature: null,
     }))
 
     // Auto-advance user level based on completed features
@@ -106,14 +115,19 @@ export function FeatureDiscoveryProvider({ children }: FeatureDiscoveryProviderP
   const dismissNotification = (notificationId: string) => {
     setState(prev => ({
       ...prev,
-      dismissedNotifications: [...prev.dismissedNotifications, notificationId].filter((id, i, arr) => arr.indexOf(id) === i)
+      dismissedNotifications: [
+        ...prev.dismissedNotifications,
+        notificationId,
+      ].filter((id, i, arr) => arr.indexOf(id) === i),
     }))
   }
 
   const shouldShowFeatureHint = (feature: string): boolean => {
-    return !state.completedFeatures.includes(feature) && 
-           !state.dismissedNotifications.includes(`hint-${feature}`) &&
-           state.hasSeenDiscovery
+    return (
+      !state.completedFeatures.includes(feature) &&
+      !state.dismissedNotifications.includes(`hint-${feature}`) &&
+      state.hasSeenDiscovery
+    )
   }
 
   const getUserLevel = (): 'beginner' | 'intermediate' | 'advanced' => {
@@ -133,7 +147,7 @@ export function FeatureDiscoveryProvider({ children }: FeatureDiscoveryProviderP
     dismissNotification,
     shouldShowFeatureHint,
     getUserLevel,
-    updateUserLevel
+    updateUserLevel,
   }
 
   return (
@@ -146,7 +160,9 @@ export function FeatureDiscoveryProvider({ children }: FeatureDiscoveryProviderP
 export function useFeatureDiscovery() {
   const context = useContext(FeatureDiscoveryContext)
   if (context === undefined) {
-    throw new Error('useFeatureDiscovery must be used within a FeatureDiscoveryProvider')
+    throw new Error(
+      'useFeatureDiscovery must be used within a FeatureDiscoveryProvider'
+    )
   }
   return context
 }
@@ -154,28 +170,35 @@ export function useFeatureDiscovery() {
 // Hook for checking if a specific feature should show hints
 export function useFeatureHint(feature: string) {
   const { shouldShowFeatureHint, dismissNotification } = useFeatureDiscovery()
-  
+
   return {
     shouldShow: shouldShowFeatureHint(feature),
-    dismiss: () => dismissNotification(`hint-${feature}`)
+    dismiss: () => dismissNotification(`hint-${feature}`),
   }
 }
 
 // Hook for progressive feature unlock
 export function useProgressiveFeatures() {
   const { state, getUserLevel } = useFeatureDiscovery()
-  
+
   const getAvailableFeatures = () => {
     const level = getUserLevel()
     const baseFeatures = ['translation', 'history', 'analytics']
-    
+
     switch (level) {
       case 'beginner':
         return baseFeatures
       case 'intermediate':
         return [...baseFeatures, 'agents', 'insights']
       case 'advanced':
-        return [...baseFeatures, 'agents', 'insights', 'enterprise', 'voice-control', 'learning-networks']
+        return [
+          ...baseFeatures,
+          'agents',
+          'insights',
+          'enterprise',
+          'voice-control',
+          'learning-networks',
+        ]
       default:
         return baseFeatures
     }
@@ -187,18 +210,20 @@ export function useProgressiveFeatures() {
 
   const getFeatureUnlockMessage = (feature: string): string | null => {
     const level = getUserLevel()
-    
+
     if (isFeatureUnlocked(feature)) return null
-    
+
     const unlockRequirements = {
-      'agents': 'Complete 2 translations to unlock AI Agents',
-      'insights': 'Complete 3 translations to unlock Smart Insights', 
-      'enterprise': 'Upgrade to Pro plan to unlock Enterprise Features',
+      agents: 'Complete 2 translations to unlock AI Agents',
+      insights: 'Complete 3 translations to unlock Smart Insights',
+      enterprise: 'Upgrade to Pro plan to unlock Enterprise Features',
       'voice-control': 'Upgrade to Pro plan to unlock Voice Control',
-      'learning-networks': 'Upgrade to Pro plan to unlock Learning Networks'
+      'learning-networks': 'Upgrade to Pro plan to unlock Learning Networks',
     }
 
-    return unlockRequirements[feature as keyof typeof unlockRequirements] || null
+    return (
+      unlockRequirements[feature as keyof typeof unlockRequirements] || null
+    )
   }
 
   return {
@@ -206,6 +231,6 @@ export function useProgressiveFeatures() {
     isFeatureUnlocked,
     getFeatureUnlockMessage,
     userLevel: getUserLevel(),
-    completedFeaturesCount: state.completedFeatures.length
+    completedFeaturesCount: state.completedFeatures.length,
   }
 }

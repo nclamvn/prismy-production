@@ -24,7 +24,7 @@ export const redisCache = {
       return false
     }
   },
-  
+
   get: async (key: string): Promise<any> => {
     try {
       const value = await redis.get(key)
@@ -34,7 +34,7 @@ export const redisCache = {
       return null
     }
   },
-  
+
   set: async (key: string, value: any, ttl?: number): Promise<boolean> => {
     try {
       if (ttl) {
@@ -98,23 +98,23 @@ export const redisCache = {
       return 0
     }
   },
-  
+
   getConnectionStatus: async () => {
     try {
       const info = await redis.ping()
       return {
         status: info === 'PONG' ? 'connected' : 'disconnected',
         ping: info,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       }
     } catch (error) {
       return {
         status: 'error',
         error: error instanceof Error ? error.message : 'Unknown error',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       }
     }
-  }
+  },
 }
 
 // Export Redis instance for advanced operations

@@ -1,4 +1,5 @@
 import { headers } from 'next/headers'
+import React from 'react'
 
 /**
  * CSP Nonce utilities for Master Prompt architecture
@@ -24,7 +25,7 @@ export function getCSPNonce(): string | null {
 // Get CSP nonce for client-side usage
 export function getClientCSPNonce(): string | null {
   if (typeof window === 'undefined') return null
-  
+
   // Try to get nonce from a meta tag or script attribute
   const metaTag = document.querySelector('meta[name="csp-nonce"]')
   if (metaTag) {
@@ -53,17 +54,17 @@ export function createStyleTag(content: string, nonce?: string): string {
 }
 
 // React component for CSP-compliant inline scripts
-export function CSPScript({ 
-  children, 
-  nonce 
-}: { 
+export function CSPScript({
+  children,
+  nonce,
+}: {
   children: string
-  nonce?: string 
+  nonce?: string
 }) {
   const finalNonce = nonce || getCSPNonce()
-  
+
   return (
-    <script 
+    <script
       nonce={finalNonce || undefined}
       dangerouslySetInnerHTML={{ __html: children }}
     />
@@ -71,17 +72,17 @@ export function CSPScript({
 }
 
 // React component for CSP-compliant inline styles
-export function CSPStyle({ 
-  children, 
-  nonce 
-}: { 
+export function CSPStyle({
+  children,
+  nonce,
+}: {
   children: string
-  nonce?: string 
+  nonce?: string
 }) {
   const finalNonce = nonce || getCSPNonce()
-  
+
   return (
-    <style 
+    <style
       nonce={finalNonce || undefined}
       dangerouslySetInnerHTML={{ __html: children }}
     />
@@ -96,11 +97,11 @@ export function validateCSPDirectives(csp: string): boolean {
     'style-src',
     'object-src',
     'base-uri',
-    'frame-ancestors'
+    'frame-ancestors',
   ]
 
   const lowercaseCSP = csp.toLowerCase()
-  
+
   for (const directive of requiredDirectives) {
     if (!lowercaseCSP.includes(directive)) {
       console.warn(`CSP missing required directive: ${directive}`)
@@ -129,17 +130,20 @@ export function createCSPReportHandler() {
       originalPolicy: report['original-policy'],
       documentURI: report['document-uri'],
       lineNumber: report['line-number'],
-      sourceFile: report['source-file']
+      sourceFile: report['source-file'],
     })
 
     // In production, send to monitoring service
-    if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
+    if (
+      typeof window !== 'undefined' &&
+      process.env.NODE_ENV === 'production'
+    ) {
       fetch('/api/security/csp-report', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(report)
+        body: JSON.stringify(report),
       }).catch(error => {
         console.error('Failed to send CSP report:', error)
       })
@@ -154,7 +158,7 @@ export function monitorCSPViolations() {
   }
 
   // Listen for CSP violations
-  document.addEventListener('securitypolicyviolation', (event) => {
+  document.addEventListener('securitypolicyviolation', event => {
     console.group('🚨 CSP Violation Detected')
     console.error('Blocked URI:', event.blockedURI)
     console.error('Violated Directive:', event.violatedDirective)

@@ -65,7 +65,5 @@
     "compliance": 85.71428571428571,
     "marketReadiness": "Near Production Ready"
   },
-  "recommendations": [
-    "Increase usage of design tokens for colors"
-  ]
+  "recommendations": ["Increase usage of design tokens for colors"]
 }

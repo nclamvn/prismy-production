@@ -52,7 +52,12 @@ export interface DuplicationInfo {
 }
 
 export interface OptimizationOpportunity {
-  type: 'code-splitting' | 'tree-shaking' | 'compression' | 'deduplication' | 'lazy-loading'
+  type:
+    | 'code-splitting'
+    | 'tree-shaking'
+    | 'compression'
+    | 'deduplication'
+    | 'lazy-loading'
   priority: 'low' | 'medium' | 'high' | 'critical'
   description: string
   estimatedSavings: number
@@ -143,7 +148,8 @@ export class BundleOptimizer {
     const startTime = performance.now()
 
     // Get bundle content
-    const content = bundleInfo.content || await this.loadBundleContent(bundleInfo.path)
+    const content =
+      bundleInfo.content || (await this.loadBundleContent(bundleInfo.path))
     const size = content.length
 
     // Analyze modules
@@ -187,7 +193,7 @@ export class BundleOptimizer {
       criticalPath: this.isCriticalPath(bundleInfo.name, modules),
       duplications,
       optimizationOpportunities,
-      timestamp: new Date()
+      timestamp: new Date(),
     }
 
     // Record bundle metrics
@@ -198,14 +204,16 @@ export class BundleOptimizer {
       cacheStatus: 'miss',
       dependencies,
       compressionRatio: size > 0 ? gzipSize / size : 0,
-      timestamp: new Date()
+      timestamp: new Date(),
     })
 
     return analysis
   }
 
   // Generate code splitting strategies
-  public generateSplittingStrategies(analyses: BundleAnalysis[]): SplittingStrategy[] {
+  public generateSplittingStrategies(
+    analyses: BundleAnalysis[]
+  ): SplittingStrategy[] {
     const strategies: SplittingStrategy[] = []
 
     // Route-based splitting
@@ -245,7 +253,9 @@ export class BundleOptimizer {
   }
 
   // Compression analysis
-  public async analyzeCompression(content: string): Promise<CompressionAnalysis[]> {
+  public async analyzeCompression(
+    content: string
+  ): Promise<CompressionAnalysis[]> {
     const analyses: CompressionAnalysis[] = []
 
     // Gzip analysis
@@ -295,7 +305,7 @@ export class BundleOptimizer {
       bundleSizeReduction,
       loadTimeImprovement,
       cacheEfficiencyGain,
-      recommendations
+      recommendations,
     }
   }
 
@@ -306,33 +316,39 @@ export class BundleOptimizer {
     partiallyUsedModules: ModuleInfo[]
     recommendations: string[]
   } {
-    const unusedModules = modules.filter(m => 
-      m.usageAnalysis.usedExports === 0 && m.usageAnalysis.totalExports > 0
+    const unusedModules = modules.filter(
+      m => m.usageAnalysis.usedExports === 0 && m.usageAnalysis.totalExports > 0
     )
 
-    const partiallyUsedModules = modules.filter(m => 
-      m.usageAnalysis.usedExports > 0 && 
-      m.usageAnalysis.usedExports < m.usageAnalysis.totalExports
+    const partiallyUsedModules = modules.filter(
+      m =>
+        m.usageAnalysis.usedExports > 0 &&
+        m.usageAnalysis.usedExports < m.usageAnalysis.totalExports
     )
 
-    const totalUnusedSize = unusedModules.reduce((sum, m) => sum + m.size, 0) +
-      partiallyUsedModules.reduce((sum, m) => 
-        sum + (m.size * (1 - m.usageAnalysis.usedExports / m.usageAnalysis.totalExports)), 0
+    const totalUnusedSize =
+      unusedModules.reduce((sum, m) => sum + m.size, 0) +
+      partiallyUsedModules.reduce(
+        (sum, m) =>
+          sum +
+          m.size *
+            (1 - m.usageAnalysis.usedExports / m.usageAnalysis.totalExports),
+        0
       )
 
     const recommendations = [
-      ...unusedModules.length > 0 ? ['Remove unused modules'] : [],
-      ...partiallyUsedModules.length > 0 ? ['Optimize partial imports'] : [],
+      ...(unusedModules.length > 0 ? ['Remove unused modules'] : []),
+      ...(partiallyUsedModules.length > 0 ? ['Optimize partial imports'] : []),
       'Enable sideEffects: false in package.json',
       'Use ES modules for better tree shaking',
-      'Avoid importing entire libraries'
+      'Avoid importing entire libraries',
     ]
 
     return {
       totalUnusedSize,
       unusedModules,
       partiallyUsedModules,
-      recommendations
+      recommendations,
     }
   }
 
@@ -353,9 +369,14 @@ export class BundleOptimizer {
     const bundleAnalyses = Array.from(this.analyses.values())
     const totalSize = bundleAnalyses.reduce((sum, b) => sum + b.size, 0)
     const totalGzipSize = bundleAnalyses.reduce((sum, b) => sum + b.gzipSize, 0)
-    
-    const allOpportunities = bundleAnalyses.flatMap(b => b.optimizationOpportunities)
-    const estimatedSavings = allOpportunities.reduce((sum, o) => sum + o.estimatedSavings, 0)
+
+    const allOpportunities = bundleAnalyses.flatMap(
+      b => b.optimizationOpportunities
+    )
+    const estimatedSavings = allOpportunities.reduce(
+      (sum, o) => sum + o.estimatedSavings,
+      0
+    )
 
     return {
       summary: {
@@ -363,7 +384,7 @@ export class BundleOptimizer {
         totalSize,
         totalGzipSize,
         optimizationOpportunities: allOpportunities.length,
-        estimatedSavings
+        estimatedSavings,
       },
       bundleAnalyses,
       strategies: this.strategies,
@@ -371,7 +392,7 @@ export class BundleOptimizer {
         const priorityOrder = { critical: 4, high: 3, medium: 2, low: 1 }
         return priorityOrder[b.priority] - priorityOrder[a.priority]
       }),
-      performanceImpact: this.calculateOverallPerformanceImpact(bundleAnalyses)
+      performanceImpact: this.calculateOverallPerformanceImpact(bundleAnalyses),
     }
   }
 
@@ -382,11 +403,14 @@ export class BundleOptimizer {
     return ''
   }
 
-  private async extractModules(content: string, bundlePath: string): Promise<ModuleInfo[]> {
+  private async extractModules(
+    content: string,
+    bundlePath: string
+  ): Promise<ModuleInfo[]> {
     // Parse bundle and extract module information
     // This is a simplified implementation
     const modules: ModuleInfo[] = []
-    
+
     // Mock module extraction logic
     const modulePattern = /\/\*\*\*\/ "([^"]+)":/g
     let match
@@ -394,7 +418,7 @@ export class BundleOptimizer {
     while ((match = modulePattern.exec(content)) !== null) {
       const modulePath = match[1]
       const moduleSize = Math.floor(Math.random() * 10000) // Mock size
-      
+
       modules.push({
         id: `module-${modules.length}`,
         name: modulePath.split('/').pop() || modulePath,
@@ -411,9 +435,9 @@ export class BundleOptimizer {
           unusedExports: [],
           importedBy: [],
           frequency: Math.random(),
-          criticalPath: Math.random() > 0.7
+          criticalPath: Math.random() > 0.7,
         },
-        dependencies: []
+        dependencies: [],
       })
     }
 
@@ -439,24 +463,39 @@ export class BundleOptimizer {
       .filter((dep, index, arr) => dep && arr.indexOf(dep) === index)
   }
 
-  private determineChunkType(name: string, modules: ModuleInfo[]): 'entry' | 'async' | 'vendor' | 'runtime' {
+  private determineChunkType(
+    name: string,
+    modules: ModuleInfo[]
+  ): 'entry' | 'async' | 'vendor' | 'runtime' {
     if (name.includes('runtime')) return 'runtime'
-    if (name.includes('vendor') || modules.some(m => m.path.includes('node_modules'))) return 'vendor'
+    if (
+      name.includes('vendor') ||
+      modules.some(m => m.path.includes('node_modules'))
+    )
+      return 'vendor'
     if (name.includes('async') || name.includes('chunk')) return 'async'
     return 'entry'
   }
 
-  private analyzeCacheability(modules: ModuleInfo[], dependencies: string[]): 'high' | 'medium' | 'low' {
-    const vendorModuleRatio = modules.filter(m => m.path.includes('node_modules')).length / modules.length
-    
+  private analyzeCacheability(
+    modules: ModuleInfo[],
+    dependencies: string[]
+  ): 'high' | 'medium' | 'low' {
+    const vendorModuleRatio =
+      modules.filter(m => m.path.includes('node_modules')).length /
+      modules.length
+
     if (vendorModuleRatio > 0.8) return 'high'
     if (vendorModuleRatio > 0.5) return 'medium'
     return 'low'
   }
 
   private isCriticalPath(name: string, modules: ModuleInfo[]): boolean {
-    return name.includes('main') || name.includes('entry') || 
-           modules.some(m => m.usageAnalysis.criticalPath)
+    return (
+      name.includes('main') ||
+      name.includes('entry') ||
+      modules.some(m => m.usageAnalysis.criticalPath)
+    )
   }
 
   private detectDuplications(modules: ModuleInfo[]): DuplicationInfo[] {
@@ -478,7 +517,7 @@ export class BundleOptimizer {
           size: instances[0].size,
           chunks: instances.map(i => i.id),
           occurrences: instances.length,
-          reason: 'code-splitting'
+          reason: 'code-splitting',
         })
       }
     })
@@ -495,7 +534,8 @@ export class BundleOptimizer {
     const opportunities: OptimizationOpportunity[] = []
 
     // Large bundle opportunity
-    if (size > 250 * 1024) { // 250KB
+    if (size > 250 * 1024) {
+      // 250KB
       opportunities.push({
         type: 'code-splitting',
         priority: 'high',
@@ -505,9 +545,9 @@ export class BundleOptimizer {
         implementation: [
           'Implement route-based code splitting',
           'Split vendor libraries into separate chunk',
-          'Use dynamic imports for non-critical features'
+          'Use dynamic imports for non-critical features',
         ],
-        risk: 'low'
+        risk: 'low',
       })
     }
 
@@ -523,9 +563,9 @@ export class BundleOptimizer {
         implementation: [
           'Enable Brotli compression',
           'Optimize assets for better compression',
-          'Minify code more aggressively'
+          'Minify code more aggressively',
         ],
-        risk: 'low'
+        risk: 'low',
       })
     }
 
@@ -540,9 +580,9 @@ export class BundleOptimizer {
         implementation: [
           'Configure splitChunks to prevent duplication',
           'Use shared dependencies chunk',
-          'Review import patterns'
+          'Review import patterns',
         ],
-        risk: 'low'
+        risk: 'low',
       })
     })
 
@@ -559,9 +599,9 @@ export class BundleOptimizer {
         implementation: [
           'Remove unused imports',
           'Enable sideEffects: false',
-          'Use ES modules consistently'
+          'Use ES modules consistently',
         ],
-        risk: 'low'
+        risk: 'low',
       })
     }
 
@@ -585,10 +625,10 @@ export class BundleOptimizer {
 
     // Update analyses with cross-bundle insights
     analyses.forEach(analysis => {
-      const commonDeps = analysis.dependencies.filter(dep => 
-        (dependencyCount.get(dep) || 0) > 1
+      const commonDeps = analysis.dependencies.filter(
+        dep => (dependencyCount.get(dep) || 0) > 1
       )
-      
+
       if (commonDeps.length > 0) {
         analysis.optimizationOpportunities.push({
           type: 'code-splitting',
@@ -599,9 +639,9 @@ export class BundleOptimizer {
           implementation: [
             'Extract common dependencies to vendor chunk',
             'Configure splitChunks.cacheGroups',
-            'Use shared module federation'
+            'Use shared module federation',
           ],
-          risk: 'low'
+          risk: 'low',
         })
       }
     })
@@ -612,7 +652,9 @@ export class BundleOptimizer {
     // based on the bundle analyses
   }
 
-  private generateRouteSplittingStrategy(analyses: BundleAnalysis[]): SplittingStrategy {
+  private generateRouteSplittingStrategy(
+    analyses: BundleAnalysis[]
+  ): SplittingStrategy {
     return {
       name: 'Route-based Splitting',
       description: 'Split bundles by application routes for optimal loading',
@@ -620,18 +662,18 @@ export class BundleOptimizer {
         {
           name: 'home',
           modules: ['pages/home', 'components/home'],
-          loadPriority: 'high'
+          loadPriority: 'high',
         },
         {
           name: 'dashboard',
           modules: ['pages/dashboard', 'components/dashboard'],
-          loadPriority: 'medium'
-        }
+          loadPriority: 'medium',
+        },
       ],
       estimatedImpact: {
         initialBundleReduction: 0.4,
         loadTimeImprovement: 0.3,
-        cacheEfficiencyGain: 0.5
+        cacheEfficiencyGain: 0.5,
       },
       implementation: {
         webpack: {
@@ -642,17 +684,19 @@ export class BundleOptimizer {
                 routes: {
                   test: /pages\//,
                   name: 'routes',
-                  chunks: 'all'
-                }
-              }
-            }
-          }
-        }
-      }
+                  chunks: 'all',
+                },
+              },
+            },
+          },
+        },
+      },
     }
   }
 
-  private generateVendorSplittingStrategy(analyses: BundleAnalysis[]): SplittingStrategy {
+  private generateVendorSplittingStrategy(
+    analyses: BundleAnalysis[]
+  ): SplittingStrategy {
     return {
       name: 'Vendor Splitting',
       description: 'Separate vendor libraries for better caching',
@@ -661,13 +705,13 @@ export class BundleOptimizer {
           name: 'vendor',
           modules: ['node_modules'],
           loadPriority: 'high',
-          cacheGroup: 'vendor'
-        }
+          cacheGroup: 'vendor',
+        },
       ],
       estimatedImpact: {
         initialBundleReduction: 0.2,
         loadTimeImprovement: 0.1,
-        cacheEfficiencyGain: 0.8
+        cacheEfficiencyGain: 0.8,
       },
       implementation: {
         webpack: {
@@ -677,17 +721,19 @@ export class BundleOptimizer {
                 vendor: {
                   test: /[\\/]node_modules[\\/]/,
                   name: 'vendor',
-                  chunks: 'all'
-                }
-              }
-            }
-          }
-        }
-      }
+                  chunks: 'all',
+                },
+              },
+            },
+          },
+        },
+      },
     }
   }
 
-  private generateFeatureSplittingStrategy(analyses: BundleAnalysis[]): SplittingStrategy {
+  private generateFeatureSplittingStrategy(
+    analyses: BundleAnalysis[]
+  ): SplittingStrategy {
     return {
       name: 'Feature-based Splitting',
       description: 'Split by application features for modular loading',
@@ -695,13 +741,15 @@ export class BundleOptimizer {
       estimatedImpact: {
         initialBundleReduction: 0.3,
         loadTimeImprovement: 0.25,
-        cacheEfficiencyGain: 0.4
+        cacheEfficiencyGain: 0.4,
       },
-      implementation: {}
+      implementation: {},
     }
   }
 
-  private generateDynamicImportStrategy(analyses: BundleAnalysis[]): SplittingStrategy {
+  private generateDynamicImportStrategy(
+    analyses: BundleAnalysis[]
+  ): SplittingStrategy {
     return {
       name: 'Dynamic Import Strategy',
       description: 'Use dynamic imports for lazy loading of features',
@@ -709,13 +757,15 @@ export class BundleOptimizer {
       estimatedImpact: {
         initialBundleReduction: 0.5,
         loadTimeImprovement: 0.4,
-        cacheEfficiencyGain: 0.3
+        cacheEfficiencyGain: 0.3,
       },
-      implementation: {}
+      implementation: {},
     }
   }
 
-  private generateComponentSplittingStrategy(analyses: BundleAnalysis[]): SplittingStrategy {
+  private generateComponentSplittingStrategy(
+    analyses: BundleAnalysis[]
+  ): SplittingStrategy {
     return {
       name: 'Component Splitting',
       description: 'Split large components into separate chunks',
@@ -723,9 +773,9 @@ export class BundleOptimizer {
       estimatedImpact: {
         initialBundleReduction: 0.25,
         loadTimeImprovement: 0.2,
-        cacheEfficiencyGain: 0.35
+        cacheEfficiencyGain: 0.35,
       },
-      implementation: {}
+      implementation: {},
     }
   }
 
@@ -741,10 +791,12 @@ export class BundleOptimizer {
     return strategy.implementation.rollup || {}
   }
 
-  private async analyzeGzipCompression(content: string): Promise<CompressionAnalysis> {
+  private async analyzeGzipCompression(
+    content: string
+  ): Promise<CompressionAnalysis> {
     const originalSize = content.length
     const compressedSize = Math.floor(originalSize * 0.7) // Mock compression
-    
+
     return {
       algorithm: 'gzip',
       originalSize,
@@ -752,14 +804,16 @@ export class BundleOptimizer {
       compressionRatio: compressedSize / originalSize,
       compressionTime: 50,
       decompressionTime: 10,
-      supportLevel: 'universal'
+      supportLevel: 'universal',
     }
   }
 
-  private async analyzeBrotliCompression(content: string): Promise<CompressionAnalysis> {
+  private async analyzeBrotliCompression(
+    content: string
+  ): Promise<CompressionAnalysis> {
     const originalSize = content.length
     const compressedSize = Math.floor(originalSize * 0.6) // Better compression
-    
+
     return {
       algorithm: 'brotli',
       originalSize,
@@ -767,13 +821,12 @@ export class BundleOptimizer {
       compressionRatio: compressedSize / originalSize,
       compressionTime: 100,
       decompressionTime: 15,
-      supportLevel: 'modern'
+      supportLevel: 'modern',
     }
   }
 
   private isBrotliSupported(): boolean {
-    return typeof window !== 'undefined' && 
-           'CompressionStream' in window
+    return typeof window !== 'undefined' && 'CompressionStream' in window
   }
 
   private generatePerformanceRecommendations(
@@ -792,7 +845,9 @@ export class BundleOptimizer {
     }
 
     if (cacheEfficiencyGain > 50 * 1024) {
-      recommendations.push('Improved cache efficiency will benefit return visitors')
+      recommendations.push(
+        'Improved cache efficiency will benefit return visitors'
+      )
     }
 
     return recommendations
@@ -800,16 +855,23 @@ export class BundleOptimizer {
 
   private calculateOverallPerformanceImpact(analyses: BundleAnalysis[]): any {
     const totalSize = analyses.reduce((sum, a) => sum + a.size, 0)
-    const totalOpportunities = analyses.reduce((sum, a) => sum + a.optimizationOpportunities.length, 0)
-    const estimatedSavings = analyses.reduce((sum, a) => 
-      sum + a.optimizationOpportunities.reduce((s, o) => s + o.estimatedSavings, 0), 0
+    const totalOpportunities = analyses.reduce(
+      (sum, a) => sum + a.optimizationOpportunities.length,
+      0
+    )
+    const estimatedSavings = analyses.reduce(
+      (sum, a) =>
+        sum +
+        a.optimizationOpportunities.reduce((s, o) => s + o.estimatedSavings, 0),
+      0
     )
 
     return {
       totalSize,
       totalOpportunities,
       estimatedSavings,
-      savingsPercentage: totalSize > 0 ? (estimatedSavings / totalSize) * 100 : 0
+      savingsPercentage:
+        totalSize > 0 ? (estimatedSavings / totalSize) * 100 : 0,
     }
   }
 }

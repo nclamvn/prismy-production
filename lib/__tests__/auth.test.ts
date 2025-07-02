@@ -9,7 +9,7 @@ import { checkAdmin } from '../auth'
 
 // Mock Next.js cookies
 jest.mock('next/headers', () => ({
-  cookies: jest.fn()
+  cookies: jest.fn(),
 }))
 
 // Mock Supabase client
@@ -18,12 +18,12 @@ const mockSupabaseClient = {
     getSession: jest.fn(),
     signInWithPassword: jest.fn(),
     signUp: jest.fn(),
-    signOut: jest.fn()
-  }
+    signOut: jest.fn(),
+  },
 }
 
 jest.mock('@/lib/supabase', () => ({
-  createServerComponentClient: jest.fn(() => mockSupabaseClient)
+  createServerComponentClient: jest.fn(() => mockSupabaseClient),
 }))
 
 describe('Authentication System', () => {
@@ -46,11 +46,11 @@ describe('Authentication System', () => {
           session: {
             user: {
               id: 'admin-user-123',
-              email: 'admin@prismy.com'
-            }
-          }
+              email: 'admin@prismy.com',
+            },
+          },
         },
-        error: null
+        error: null,
       })
 
       const result = await checkAdmin()
@@ -66,11 +66,11 @@ describe('Authentication System', () => {
           session: {
             user: {
               id: 'regular-user-123',
-              email: 'user@example.com'
-            }
-          }
+              email: 'user@example.com',
+            },
+          },
         },
-        error: null
+        error: null,
       })
 
       const result = await checkAdmin()
@@ -86,11 +86,11 @@ describe('Authentication System', () => {
           session: {
             user: {
               id: 'manager-user-123',
-              email: 'manager@prismy.com'
-            }
-          }
+              email: 'manager@prismy.com',
+            },
+          },
         },
-        error: null
+        error: null,
       })
 
       const result = await checkAdmin()
@@ -103,7 +103,7 @@ describe('Authentication System', () => {
       mockCookies.mockReturnValue({} as any)
       mockSupabaseClient.auth.getSession.mockResolvedValue({
         data: { session: null },
-        error: null
+        error: null,
       })
 
       const result = await checkAdmin()
@@ -116,7 +116,7 @@ describe('Authentication System', () => {
       mockCookies.mockReturnValue({} as any)
       mockSupabaseClient.auth.getSession.mockResolvedValue({
         data: { session: null },
-        error: { message: 'Authentication failed' }
+        error: { message: 'Authentication failed' },
       })
 
       const result = await checkAdmin()
@@ -127,18 +127,18 @@ describe('Authentication System', () => {
 
     it('should handle missing ADMIN_EMAILS environment variable', async () => {
       delete process.env.ADMIN_EMAILS
-      
+
       mockCookies.mockReturnValue({} as any)
       mockSupabaseClient.auth.getSession.mockResolvedValue({
         data: {
           session: {
             user: {
               id: 'user-123',
-              email: 'admin@prismy.com'
-            }
-          }
+              email: 'admin@prismy.com',
+            },
+          },
         },
-        error: null
+        error: null,
       })
 
       const result = await checkAdmin()
@@ -149,18 +149,18 @@ describe('Authentication System', () => {
 
     it('should handle empty ADMIN_EMAILS environment variable', async () => {
       process.env.ADMIN_EMAILS = ''
-      
+
       mockCookies.mockReturnValue({} as any)
       mockSupabaseClient.auth.getSession.mockResolvedValue({
         data: {
           session: {
             user: {
               id: 'user-123',
-              email: 'admin@prismy.com'
-            }
-          }
+              email: 'admin@prismy.com',
+            },
+          },
         },
-        error: null
+        error: null,
       })
 
       const result = await checkAdmin()
@@ -176,11 +176,11 @@ describe('Authentication System', () => {
           session: {
             user: {
               id: 'user-123',
-              email: null
-            }
-          }
+              email: null,
+            },
+          },
         },
-        error: null
+        error: null,
       })
 
       const result = await checkAdmin()
@@ -195,12 +195,12 @@ describe('Authentication System', () => {
         data: {
           session: {
             user: {
-              id: 'user-123'
+              id: 'user-123',
               // email is undefined
-            }
-          }
+            },
+          },
         },
-        error: null
+        error: null,
       })
 
       const result = await checkAdmin()
@@ -216,11 +216,11 @@ describe('Authentication System', () => {
           session: {
             user: {
               id: 'user-123',
-              email: 'ADMIN@PRISMY.COM' // Uppercase
-            }
-          }
+              email: 'ADMIN@PRISMY.COM', // Uppercase
+            },
+          },
         },
-        error: null
+        error: null,
       })
 
       const result = await checkAdmin()
@@ -232,18 +232,18 @@ describe('Authentication System', () => {
 
     it('should handle whitespace in admin emails configuration', async () => {
       process.env.ADMIN_EMAILS = ' admin@prismy.com , manager@prismy.com '
-      
+
       mockCookies.mockReturnValue({} as any)
       mockSupabaseClient.auth.getSession.mockResolvedValue({
         data: {
           session: {
             user: {
               id: 'user-123',
-              email: 'admin@prismy.com'
-            }
-          }
+              email: 'admin@prismy.com',
+            },
+          },
         },
-        error: null
+        error: null,
       })
 
       const result = await checkAdmin()
@@ -266,7 +266,10 @@ describe('Authentication System', () => {
 
       expect(result.isAdmin).toBe(false)
       expect(result.userId).toBeNull()
-      expect(consoleSpy).toHaveBeenCalledWith('Error checking admin status:', expect.any(Error))
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Error checking admin status:',
+        expect.any(Error)
+      )
 
       consoleSpy.mockRestore()
     })
@@ -277,9 +280,9 @@ describe('Authentication System', () => {
         data: {
           session: {
             // Missing user object
-          }
+          },
         },
-        error: null
+        error: null,
       })
 
       const result = await checkAdmin()
@@ -303,26 +306,26 @@ describe('Authentication System', () => {
     it('should parse comma-separated admin emails', () => {
       const testEmail = 'test@prismy.com'
       process.env.ADMIN_EMAILS = `admin@prismy.com,${testEmail},manager@prismy.com`
-      
+
       const adminEmails = process.env.ADMIN_EMAILS.split(',')
-      
+
       expect(adminEmails).toContain(testEmail)
       expect(adminEmails).toHaveLength(3)
     })
 
     it('should handle single admin email', () => {
       process.env.ADMIN_EMAILS = 'admin@prismy.com'
-      
+
       const adminEmails = process.env.ADMIN_EMAILS.split(',')
-      
+
       expect(adminEmails).toEqual(['admin@prismy.com'])
     })
 
     it('should handle empty string in split', () => {
       process.env.ADMIN_EMAILS = 'admin@prismy.com,,manager@prismy.com'
-      
+
       const adminEmails = process.env.ADMIN_EMAILS.split(',')
-      
+
       expect(adminEmails).toContain('')
       expect(adminEmails).toHaveLength(3)
     })
@@ -338,36 +341,36 @@ describe('Authentication System', () => {
               id: 'integration-admin-123',
               email: 'admin@prismy.com',
               created_at: '2024-01-01T00:00:00Z',
-              last_sign_in_at: '2024-01-01T12:00:00Z'
-            }
-          }
+              last_sign_in_at: '2024-01-01T12:00:00Z',
+            },
+          },
         },
-        error: null
+        error: null,
       })
 
       const result = await checkAdmin()
 
       expect(result).toEqual({
         isAdmin: true,
-        userId: 'integration-admin-123'
+        userId: 'integration-admin-123',
       })
     })
 
     it('should handle production-like environment', async () => {
       // Simulate production environment
       process.env.ADMIN_EMAILS = 'prod-admin@prismy.com'
-      
+
       mockCookies.mockReturnValue({} as any)
       mockSupabaseClient.auth.getSession.mockResolvedValue({
         data: {
           session: {
             user: {
               id: 'prod-user-123',
-              email: 'regular-user@example.com'
-            }
-          }
+              email: 'regular-user@example.com',
+            },
+          },
         },
-        error: null
+        error: null,
       })
 
       const result = await checkAdmin()
@@ -385,11 +388,11 @@ describe('Authentication System', () => {
           session: {
             user: {
               id: 'perf-user-123',
-              email: 'admin@prismy.com'
-            }
-          }
+              email: 'admin@prismy.com',
+            },
+          },
         },
-        error: null
+        error: null,
       })
 
       const startTime = performance.now()
@@ -407,14 +410,16 @@ describe('Authentication System', () => {
           session: {
             user: {
               id: 'concurrent-user-123',
-              email: 'admin@prismy.com'
-            }
-          }
+              email: 'admin@prismy.com',
+            },
+          },
         },
-        error: null
+        error: null,
       })
 
-      const promises = Array(10).fill(null).map(() => checkAdmin())
+      const promises = Array(10)
+        .fill(null)
+        .map(() => checkAdmin())
       const results = await Promise.all(promises)
 
       // All should return the same result

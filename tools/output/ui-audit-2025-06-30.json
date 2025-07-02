@@ -11,19 +11,14 @@
     {
       "class": "antialiased",
       "count": 1,
-      "files": [
-        "app/layout.tsx"
-      ],
+      "files": ["app/layout.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "overflow-x-hidden",
       "count": 2,
-      "files": [
-        "app/layout.tsx",
-        "app/enterprise/page.tsx"
-      ],
+      "files": ["app/layout.tsx", "app/enterprise/page.tsx"],
       "category": "other",
       "variants": []
     },
@@ -1428,9 +1423,7 @@
         "lib/error-tracking/error-boundary.tsx"
       ],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "transition-colors",
@@ -1550,9 +1543,7 @@
     {
       "class": "container",
       "count": 1,
-      "files": [
-        "app/[locale]/page.tsx"
-      ],
+      "files": ["app/[locale]/page.tsx"],
       "category": "other",
       "variants": []
     },
@@ -1785,13 +1776,9 @@
     {
       "class": "md:text-6xl",
       "count": 1,
-      "files": [
-        "app/[locale]/page.tsx"
-      ],
+      "files": ["app/[locale]/page.tsx"],
       "category": "typography",
-      "variants": [
-        "md"
-      ]
+      "variants": ["md"]
     },
     {
       "class": "mb-6",
@@ -1964,9 +1951,7 @@
         "components/workflows/TemplateMarketplace.tsx"
       ],
       "category": "layout",
-      "variants": [
-        "sm"
-      ]
+      "variants": ["sm"]
     },
     {
       "class": "gap-4",
@@ -2281,9 +2266,7 @@
         "lib/i18n/provider.tsx"
       ],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "bg-white",
@@ -2777,9 +2760,7 @@
         "components/workspace/dashboard/EnterpriseFeatures.tsx"
       ],
       "category": "layout",
-      "variants": [
-        "md"
-      ]
+      "variants": ["md"]
     },
     {
       "class": "font-medium",
@@ -3443,9 +3424,7 @@
         "components/workspace/dashboard/PredictiveInsights.tsx"
       ],
       "category": "layout",
-      "variants": [
-        "md"
-      ]
+      "variants": ["md"]
     },
     {
       "class": "gap-8",
@@ -3478,10 +3457,7 @@
     {
       "class": "mt-16",
       "count": 2,
-      "files": [
-        "app/[locale]/page.tsx",
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/[locale]/page.tsx", "app/landing/page.tsx"],
       "category": "spacing",
       "variants": []
     },
@@ -3793,20 +3769,14 @@
     {
       "class": "bg-yellow-50",
       "count": 2,
-      "files": [
-        "app/admin/page.tsx",
-        "components/auth/AuthErrorHandler.tsx"
-      ],
+      "files": ["app/admin/page.tsx", "components/auth/AuthErrorHandler.tsx"],
       "category": "colors",
       "variants": []
     },
     {
       "class": "border-yellow-200",
       "count": 2,
-      "files": [
-        "app/admin/page.tsx",
-        "components/auth/AuthErrorHandler.tsx"
-      ],
+      "files": ["app/admin/page.tsx", "components/auth/AuthErrorHandler.tsx"],
       "category": "colors",
       "variants": []
     },
@@ -4053,10 +4023,7 @@
     {
       "class": "px-1",
       "count": 2,
-      "files": [
-        "app/admin/page.tsx",
-        "components/analytics/ConsentBanner.tsx"
-      ],
+      "files": ["app/admin/page.tsx", "components/analytics/ConsentBanner.tsx"],
       "category": "spacing",
       "variants": []
     },
@@ -4077,14 +4044,9 @@
     {
       "class": "hover:bg-blue-600",
       "count": 2,
-      "files": [
-        "app/admin/page.tsx",
-        "app/dashboard/agents/page.tsx"
-      ],
+      "files": ["app/admin/page.tsx", "app/dashboard/agents/page.tsx"],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "py-2",
@@ -4445,9 +4407,7 @@
     {
       "class": "border-black",
       "count": 1,
-      "files": [
-        "app/api-docs/page.tsx"
-      ],
+      "files": ["app/api-docs/page.tsx"],
       "category": "colors",
       "variants": []
     },
@@ -4643,10 +4603,7 @@
     {
       "class": "text-black",
       "count": 2,
-      "files": [
-        "app/api-docs/page.tsx",
-        "app/enterprise/page.tsx"
-      ],
+      "files": ["app/api-docs/page.tsx", "app/enterprise/page.tsx"],
       "category": "typography",
       "variants": []
     },
@@ -4661,9 +4618,7 @@
         "components/ui/BlogCard.tsx"
       ],
       "category": "other",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "relative",
@@ -4775,9 +4730,7 @@
         "components/__tests__/layout/navbar.test.tsx"
       ],
       "category": "spacing",
-      "variants": [
-        "sm"
-      ]
+      "variants": ["sm"]
     },
     {
       "class": "lg:px-8",
@@ -4801,9 +4754,7 @@
         "components/__tests__/layout/navbar.test.tsx"
       ],
       "category": "spacing",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "mb-16",
@@ -4826,13 +4777,9 @@
     {
       "class": "lg:text-6xl",
       "count": 1,
-      "files": [
-        "app/community/page.tsx"
-      ],
+      "files": ["app/community/page.tsx"],
       "category": "typography",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "max-w-3xl",
@@ -4934,9 +4881,7 @@
         "components/__tests__/ui/dashboard.test.tsx"
       ],
       "category": "layout",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "max-w-4xl",
@@ -4971,9 +4916,7 @@
         "components/sections/TrustSignals.tsx"
       ],
       "category": "typography",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "border-2",
@@ -5115,9 +5058,7 @@
         "components/sections/TrustSignals.tsx"
       ],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "hover:shadow-lg",
@@ -5138,9 +5079,7 @@
         "components/workflows/TemplateMarketplace.tsx"
       ],
       "category": "effects",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "transition-all",
@@ -5482,9 +5421,7 @@
         "lib/error-tracking/error-boundary.tsx"
       ],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "duration-200",
@@ -5719,9 +5656,7 @@
         "components/sections/ProductShowcase.tsx"
       ],
       "category": "effects",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "transition-shadow",
@@ -5847,10 +5782,7 @@
     {
       "class": "object-cover",
       "count": 2,
-      "files": [
-        "app/community/page.tsx",
-        "app/blog/[id]/page.tsx"
-      ],
+      "files": ["app/community/page.tsx", "app/blog/[id]/page.tsx"],
       "category": "other",
       "variants": []
     },
@@ -6279,9 +6211,7 @@
         "components/workspace/SwarmIntelligenceDashboard.tsx"
       ],
       "category": "layout",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "space-y-3",
@@ -6531,9 +6461,7 @@
         "components/workflows/TemplateMarketplace.tsx"
       ],
       "category": "layout",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "lg:items-center",
@@ -6545,9 +6473,7 @@
         "components/workflows/TemplateMarketplace.tsx"
       ],
       "category": "other",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "justify-between",
@@ -6730,13 +6656,9 @@
     {
       "class": "lg:mb-0",
       "count": 1,
-      "files": [
-        "app/community/page.tsx"
-      ],
+      "files": ["app/community/page.tsx"],
       "category": "spacing",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "mr-4",
@@ -6786,9 +6708,7 @@
         "components/invite/InviteRedemptionPage.tsx"
       ],
       "category": "other",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "hover:to-purple-700",
@@ -6798,9 +6718,7 @@
         "components/invite/InviteRedemptionPage.tsx"
       ],
       "category": "other",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "transform",
@@ -6842,9 +6760,7 @@
         "components/ui/Button.tsx"
       ],
       "category": "other",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "lg:text-5xl",
@@ -6856,9 +6772,7 @@
         "components/sections/TrustSignals.tsx"
       ],
       "category": "typography",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "text-blue-100",
@@ -6929,9 +6843,7 @@
         "components/workspace/dashboard/PredictiveInsights.tsx"
       ],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "w-5",
@@ -7131,9 +7043,7 @@
         "components/workspace/dashboard/PredictiveInsights.tsx"
       ],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "hover:text-blue-600",
@@ -7143,9 +7053,7 @@
         "components/__tests__/layout/navbar.test.tsx"
       ],
       "category": "typography",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "rounded-xl",
@@ -7416,9 +7324,7 @@
         "components/__tests__/layout/navbar.test.tsx"
       ],
       "category": "typography",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "space-x-1",
@@ -7465,9 +7371,7 @@
         "components/workspace/PersonalizedRecommendations.tsx"
       ],
       "category": "effects",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "p-2",
@@ -7864,10 +7768,7 @@
     {
       "class": "from-indigo-500",
       "count": 2,
-      "files": [
-        "app/dashboard/page.tsx",
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/dashboard/page.tsx", "app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
@@ -7899,10 +7800,7 @@
     {
       "class": "to-green-600",
       "count": 2,
-      "files": [
-        "app/dashboard/page.tsx",
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/dashboard/page.tsx", "app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
@@ -8188,10 +8086,7 @@
     {
       "class": "label-md3",
       "count": 2,
-      "files": [
-        "app/beta/page.tsx",
-        "app/admin/invites/page.tsx"
-      ],
+      "files": ["app/beta/page.tsx", "app/admin/invites/page.tsx"],
       "category": "other",
       "variants": []
     },
@@ -8213,9 +8108,7 @@
     {
       "class": "field-error",
       "count": 1,
-      "files": [
-        "app/beta/page.tsx"
-      ],
+      "files": ["app/beta/page.tsx"],
       "category": "other",
       "variants": []
     },
@@ -8441,9 +8334,7 @@
     {
       "class": "pt-20",
       "count": 1,
-      "files": [
-        "app/blog/page.tsx"
-      ],
+      "files": ["app/blog/page.tsx"],
       "category": "spacing",
       "variants": []
     },
@@ -8457,9 +8348,7 @@
         "components/pricing/PricingPage.tsx"
       ],
       "category": "spacing",
-      "variants": [
-        "md"
-      ]
+      "variants": ["md"]
     },
     {
       "class": "lg:mb-16",
@@ -8471,9 +8360,7 @@
         "components/pricing/PricingPage.tsx"
       ],
       "category": "spacing",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "hero-gif-container",
@@ -8514,40 +8401,28 @@
     {
       "class": "text-text-primary",
       "count": 2,
-      "files": [
-        "app/blog/page.tsx",
-        "app/enterprise/page.tsx"
-      ],
+      "files": ["app/blog/page.tsx", "app/enterprise/page.tsx"],
       "category": "typography",
       "variants": []
     },
     {
       "class": "body-xl",
       "count": 2,
-      "files": [
-        "app/blog/page.tsx",
-        "app/enterprise/page.tsx"
-      ],
+      "files": ["app/blog/page.tsx", "app/enterprise/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "text-text-secondary",
       "count": 2,
-      "files": [
-        "app/blog/page.tsx",
-        "app/enterprise/page.tsx"
-      ],
+      "files": ["app/blog/page.tsx", "app/enterprise/page.tsx"],
       "category": "typography",
       "variants": []
     },
     {
       "class": "text-text-muted",
       "count": 2,
-      "files": [
-        "app/blog/page.tsx",
-        "app/enterprise/page.tsx"
-      ],
+      "files": ["app/blog/page.tsx", "app/enterprise/page.tsx"],
       "category": "typography",
       "variants": []
     },
@@ -8682,20 +8557,14 @@
     {
       "class": "bg-bg-secondary",
       "count": 2,
-      "files": [
-        "app/blog/page.tsx",
-        "app/enterprise/page.tsx"
-      ],
+      "files": ["app/blog/page.tsx", "app/enterprise/page.tsx"],
       "category": "colors",
       "variants": []
     },
     {
       "class": "zen-card-hover",
       "count": 2,
-      "files": [
-        "app/blog/page.tsx",
-        "app/enterprise/page.tsx"
-      ],
+      "files": ["app/blog/page.tsx", "app/enterprise/page.tsx"],
       "category": "other",
       "variants": []
     },
@@ -8725,9 +8594,7 @@
         "components/workspace/SwarmIntelligenceDashboard.tsx"
       ],
       "category": "layout",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "gap-2",
@@ -8815,10 +8682,7 @@
     {
       "class": "tracking-wide",
       "count": 2,
-      "files": [
-        "app/blog/page.tsx",
-        "components/navigation/ModernNavbar.tsx"
-      ],
+      "files": ["app/blog/page.tsx", "components/navigation/ModernNavbar.tsx"],
       "category": "other",
       "variants": []
     },
@@ -8861,29 +8725,21 @@
     {
       "class": "blog-metadata-container",
       "count": 1,
-      "files": [
-        "app/blog/page.tsx"
-      ],
+      "files": ["app/blog/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "hover:text-text-accent",
       "count": 1,
-      "files": [
-        "app/blog/page.tsx"
-      ],
+      "files": ["app/blog/page.tsx"],
       "category": "typography",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "aspect-video",
       "count": 1,
-      "files": [
-        "app/blog/page.tsx"
-      ],
+      "files": ["app/blog/page.tsx"],
       "category": "other",
       "variants": []
     },
@@ -8946,27 +8802,21 @@
     {
       "class": "body-xs",
       "count": 1,
-      "files": [
-        "app/blog/page.tsx"
-      ],
+      "files": ["app/blog/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "border-l-4",
       "count": 1,
-      "files": [
-        "app/demo/page.tsx"
-      ],
+      "files": ["app/demo/page.tsx"],
       "category": "colors",
       "variants": []
     },
     {
       "class": "border-red-500",
       "count": 1,
-      "files": [
-        "app/demo/page.tsx"
-      ],
+      "files": ["app/demo/page.tsx"],
       "category": "colors",
       "variants": []
     },
@@ -9021,10 +8871,7 @@
     {
       "class": "bg-red-500",
       "count": 2,
-      "files": [
-        "app/demo/page.tsx",
-        "components/documents/BatchUpload.tsx"
-      ],
+      "files": ["app/demo/page.tsx", "components/documents/BatchUpload.tsx"],
       "category": "colors",
       "variants": []
     },
@@ -9057,9 +8904,7 @@
         "components/workspace/dashboard/PredictiveInsights.tsx"
       ],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "border-green-500",
@@ -9137,9 +8982,7 @@
         "components/__tests__/ui/dashboard.test.tsx"
       ],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "gap-6",
@@ -9239,9 +9082,7 @@
     {
       "class": "pt-24",
       "count": 1,
-      "files": [
-        "app/documents/page.tsx"
-      ],
+      "files": ["app/documents/page.tsx"],
       "category": "spacing",
       "variants": []
     },
@@ -9258,18 +9099,14 @@
     {
       "class": "content-container",
       "count": 1,
-      "files": [
-        "app/documents/page.tsx"
-      ],
+      "files": ["app/documents/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "documents-hero-gif-container",
       "count": 1,
-      "files": [
-        "app/documents/page.tsx"
-      ],
+      "files": ["app/documents/page.tsx"],
       "category": "other",
       "variants": []
     },
@@ -9472,19 +9309,14 @@
     {
       "class": "btn-pill-compact-md",
       "count": 1,
-      "files": [
-        "app/documents/page.tsx"
-      ],
+      "files": ["app/documents/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "btn-text-safe",
       "count": 2,
-      "files": [
-        "app/documents/page.tsx",
-        "app/enterprise/page.tsx"
-      ],
+      "files": ["app/documents/page.tsx", "app/enterprise/page.tsx"],
       "category": "other",
       "variants": []
     },
@@ -9503,10 +9335,7 @@
     {
       "class": "border-t-gray-900",
       "count": 2,
-      "files": [
-        "app/documents/page.tsx",
-        "components/auth/CreditDisplay.tsx"
-      ],
+      "files": ["app/documents/page.tsx", "components/auth/CreditDisplay.tsx"],
       "category": "colors",
       "variants": []
     },
@@ -9529,9 +9358,7 @@
     {
       "class": "sticky",
       "count": 1,
-      "files": [
-        "app/features/page.tsx"
-      ],
+      "files": ["app/features/page.tsx"],
       "category": "other",
       "variants": []
     },
@@ -9587,18 +9414,14 @@
     {
       "class": "bg-white/80",
       "count": 1,
-      "files": [
-        "app/features/page.tsx"
-      ],
+      "files": ["app/features/page.tsx"],
       "category": "colors",
       "variants": []
     },
     {
       "class": "backdrop-blur-md",
       "count": 1,
-      "files": [
-        "app/features/page.tsx"
-      ],
+      "files": ["app/features/page.tsx"],
       "category": "other",
       "variants": []
     },
@@ -9640,9 +9463,7 @@
         "components/__tests__/layout/navbar.test.tsx"
       ],
       "category": "layout",
-      "variants": [
-        "md"
-      ]
+      "variants": ["md"]
     },
     {
       "class": "hover:text-gray-900",
@@ -9660,9 +9481,7 @@
         "components/__tests__/layout/navbar.test.tsx"
       ],
       "category": "typography",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "py-16",
@@ -9679,35 +9498,23 @@
     {
       "class": "md:text-5xl",
       "count": 1,
-      "files": [
-        "app/features/page.tsx"
-      ],
+      "files": ["app/features/page.tsx"],
       "category": "typography",
-      "variants": [
-        "md"
-      ]
+      "variants": ["md"]
     },
     {
       "class": "group-hover:bg-blue-200",
       "count": 1,
-      "files": [
-        "app/features/page.tsx"
-      ],
+      "files": ["app/features/page.tsx"],
       "category": "other",
-      "variants": [
-        "group-hover"
-      ]
+      "variants": ["group-hover"]
     },
     {
       "class": "group-hover:text-blue-700",
       "count": 1,
-      "files": [
-        "app/features/page.tsx"
-      ],
+      "files": ["app/features/page.tsx"],
       "category": "other",
-      "variants": [
-        "group-hover"
-      ]
+      "variants": ["group-hover"]
     },
     {
       "class": "ml-1",
@@ -9733,9 +9540,7 @@
         "components/onboarding/AIFeatureIntroduction.tsx"
       ],
       "category": "other",
-      "variants": [
-        "group-hover"
-      ]
+      "variants": ["group-hover"]
     },
     {
       "class": "transition-transform",
@@ -9757,9 +9562,7 @@
     {
       "class": "btn-pill-compact-lg",
       "count": 1,
-      "files": [
-        "app/enterprise/page.tsx"
-      ],
+      "files": ["app/enterprise/page.tsx"],
       "category": "other",
       "variants": []
     },
@@ -9785,25 +9588,19 @@
         "components/workspace/dashboard/EnterpriseFeatures.tsx"
       ],
       "category": "layout",
-      "variants": [
-        "md"
-      ]
+      "variants": ["md"]
     },
     {
       "class": "zen-icon-hover",
       "count": 1,
-      "files": [
-        "app/enterprise/page.tsx"
-      ],
+      "files": ["app/enterprise/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "space-y-12",
       "count": 1,
-      "files": [
-        "app/enterprise/page.tsx"
-      ],
+      "files": ["app/enterprise/page.tsx"],
       "category": "spacing",
       "variants": []
     },
@@ -9907,23 +9704,16 @@
     {
       "class": "textarea-base",
       "count": 1,
-      "files": [
-        "app/enterprise/page.tsx"
-      ],
+      "files": ["app/enterprise/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "md:col-span-2",
       "count": 2,
-      "files": [
-        "app/enterprise/page.tsx",
-        "app/dashboard/history/page.tsx"
-      ],
+      "files": ["app/enterprise/page.tsx", "app/dashboard/history/page.tsx"],
       "category": "other",
-      "variants": [
-        "md"
-      ]
+      "variants": ["md"]
     },
     {
       "class": "fixed",
@@ -10000,18 +9790,14 @@
     {
       "class": "kapo-glass-light",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "border-white/20",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "colors",
       "variants": []
     },
@@ -10032,49 +9818,35 @@
     {
       "class": "via-purple-600",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "to-pink-600",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "group-hover:scale-105",
       "count": 2,
-      "files": [
-        "app/landing/page.tsx",
-        "app/blog/[id]/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx", "app/blog/[id]/page.tsx"],
       "category": "other",
-      "variants": [
-        "group-hover"
-      ]
+      "variants": ["group-hover"]
     },
     {
       "class": "w-7",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "sizing",
       "variants": []
     },
     {
       "class": "h-7",
       "count": 2,
-      "files": [
-        "app/landing/page.tsx",
-        "components/Footer.tsx"
-      ],
+      "files": ["app/landing/page.tsx", "components/Footer.tsx"],
       "category": "sizing",
       "variants": []
     },
@@ -10123,57 +9895,42 @@
     {
       "class": "blur-lg",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "opacity-30",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "effects",
       "variants": []
     },
     {
       "class": "group-hover:opacity-50",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
-      "variants": [
-        "group-hover"
-      ]
+      "variants": ["group-hover"]
     },
     {
       "class": "transition-opacity",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "animations",
       "variants": []
     },
     {
       "class": "font-black",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "typography",
       "variants": []
     },
     {
       "class": "tracking-tight",
       "count": 2,
-      "files": [
-        "app/landing/page.tsx",
-        "components/sections/ModernHero.tsx"
-      ],
+      "files": ["app/landing/page.tsx", "components/sections/ModernHero.tsx"],
       "category": "other",
       "variants": []
     },
@@ -10188,9 +9945,7 @@
         "components/workspace/WorkspaceSkeleton.tsx"
       ],
       "category": "layout",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "gap-12",
@@ -10219,9 +9974,7 @@
     {
       "class": "w-0",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "sizing",
       "variants": []
     },
@@ -10241,20 +9994,14 @@
     {
       "class": "group-hover:w-full",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
-      "variants": [
-        "group-hover"
-      ]
+      "variants": ["group-hover"]
     },
     {
       "class": "kapo-btn-primary",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
@@ -10274,13 +10021,9 @@
     {
       "class": "hover:shadow-2xl",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "effects",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "lg:hidden",
@@ -10294,9 +10037,7 @@
         "components/workspace/WorkspaceLayout.tsx"
       ],
       "category": "other",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "p-3",
@@ -10385,9 +10126,7 @@
     {
       "class": "kapo-glass",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
@@ -10404,10 +10143,7 @@
     {
       "class": "opacity-0",
       "count": 2,
-      "files": [
-        "app/landing/page.tsx",
-        "components/theme/ThemeToggle.tsx"
-      ],
+      "files": ["app/landing/page.tsx", "components/theme/ThemeToggle.tsx"],
       "category": "effects",
       "variants": []
     },
@@ -10427,27 +10163,21 @@
     {
       "class": "from-white",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "via-blue-50/30",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "to-purple-50/30",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
@@ -10465,18 +10195,14 @@
     {
       "class": "from-white/50",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "via-transparent",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
@@ -10493,74 +10219,56 @@
     {
       "class": "top-20",
       "count": 2,
-      "files": [
-        "app/landing/page.tsx",
-        "components/sections/ModernHero.tsx"
-      ],
+      "files": ["app/landing/page.tsx", "components/sections/ModernHero.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "left-10",
       "count": 2,
-      "files": [
-        "app/landing/page.tsx",
-        "components/sections/ModernHero.tsx"
-      ],
+      "files": ["app/landing/page.tsx", "components/sections/ModernHero.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "w-72",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "sizing",
       "variants": []
     },
     {
       "class": "h-72",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "sizing",
       "variants": []
     },
     {
       "class": "kapo-animate-float",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "bottom-20",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "right-10",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "w-96",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "sizing",
       "variants": []
     },
@@ -10578,9 +10286,7 @@
     {
       "class": "opacity-20",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "effects",
       "variants": []
     },
@@ -10606,10 +10312,7 @@
     {
       "class": "left-1/4",
       "count": 2,
-      "files": [
-        "app/landing/page.tsx",
-        "components/sections/ModernHero.tsx"
-      ],
+      "files": ["app/landing/page.tsx", "components/sections/ModernHero.tsx"],
       "category": "other",
       "variants": []
     },
@@ -10639,9 +10342,7 @@
     {
       "class": "opacity-25",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "effects",
       "variants": []
     },
@@ -10661,54 +10362,42 @@
     {
       "class": "kapo-hero-massive",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "kapo-animate-gradient",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "bg-clip-text",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "colors",
       "variants": []
     },
     {
       "class": "text-transparent",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "typography",
       "variants": []
     },
     {
       "class": "kapo-subtitle",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "px-12",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "spacing",
       "variants": []
     },
@@ -10741,9 +10430,7 @@
     {
       "class": "kapo-btn-secondary",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
@@ -10763,29 +10450,21 @@
     {
       "class": "text-5xl",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "typography",
       "variants": []
     },
     {
       "class": "group-hover:scale-110",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
-      "variants": [
-        "group-hover"
-      ]
+      "variants": ["group-hover"]
     },
     {
       "class": "bottom-8",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
@@ -10836,36 +10515,28 @@
     {
       "class": "kapo-animate-pulse",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "py-32",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "spacing",
       "variants": []
     },
     {
       "class": "bg-gradient-to-b",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "colors",
       "variants": []
     },
     {
       "class": "to-gray-50/50",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
@@ -10883,82 +10554,58 @@
     {
       "class": "kapo-section-title",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "grid-cols-12",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "layout",
       "variants": []
     },
     {
       "class": "lg:gap-8",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "spacing",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "col-span-12",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "lg:col-span-6",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "lg:row-span-2",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "kapo-card",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "lg:p-12",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "spacing",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "duration-500",
@@ -10975,31 +10622,23 @@
     {
       "class": "w-9",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "sizing",
       "variants": []
     },
     {
       "class": "h-9",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "sizing",
       "variants": []
     },
     {
       "class": "group-hover:gap-4",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
-      "variants": [
-        "group-hover"
-      ]
+      "variants": ["group-hover"]
     },
     {
       "class": "w-32",
@@ -11033,72 +10672,51 @@
     {
       "class": "from-blue-400/20",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "to-purple-600/20",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "blur-3xl",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "group-hover:scale-150",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
-      "variants": [
-        "group-hover"
-      ]
+      "variants": ["group-hover"]
     },
     {
       "class": "duration-700",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "animations",
       "variants": []
     },
     {
       "class": "sm:col-span-6",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
-      "variants": [
-        "sm"
-      ]
+      "variants": ["sm"]
     },
     {
       "class": "lg:p-8",
       "count": 2,
-      "files": [
-        "app/landing/page.tsx",
-        "components/auth/AuthModal.tsx"
-      ],
+      "files": ["app/landing/page.tsx", "components/auth/AuthModal.tsx"],
       "category": "spacing",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "w-14",
@@ -11124,150 +10742,112 @@
     {
       "class": "to-teal-600",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "from-pink-500",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "to-rose-600",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "lg:col-span-8",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "from-orange-500",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "to-red-600",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "from-orange-400/20",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "to-red-600/20",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "blur-2xl",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "group-hover:scale-125",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
-      "variants": [
-        "group-hover"
-      ]
+      "variants": ["group-hover"]
     },
     {
       "class": "lg:col-span-4",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "from-teal-500",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "to-cyan-600",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "from-emerald-500",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "from-black/20",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "top-10",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
@@ -11314,9 +10894,7 @@
     {
       "class": "bottom-10",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
@@ -11337,59 +10915,42 @@
     {
       "class": "h-80",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "sizing",
       "variants": []
     },
     {
       "class": "opacity-15",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "effects",
       "variants": []
     },
     {
       "class": "border-white/30",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "colors",
       "variants": []
     },
     {
       "class": "hover:bg-white/20",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "hover:bg-white/10",
       "count": 2,
-      "files": [
-        "app/landing/page.tsx",
-        "app/support/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx", "app/support/page.tsx"],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "text-blue-100/80",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "typography",
       "variants": []
     },
@@ -11407,18 +10968,14 @@
     {
       "class": "from-gray-900",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "to-black",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "other",
       "variants": []
     },
@@ -11486,25 +11043,16 @@
     {
       "class": "hover:text-white",
       "count": 2,
-      "files": [
-        "app/landing/page.tsx",
-        "components/ui/FeatureHint.tsx"
-      ],
+      "files": ["app/landing/page.tsx", "components/ui/FeatureHint.tsx"],
       "category": "typography",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "lg:text-right",
       "count": 1,
-      "files": [
-        "app/landing/page.tsx"
-      ],
+      "files": ["app/landing/page.tsx"],
       "category": "typography",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "left-4",
@@ -11539,28 +11087,21 @@
     {
       "class": "pl-12",
       "count": 1,
-      "files": [
-        "app/support/page.tsx"
-      ],
+      "files": ["app/support/page.tsx"],
       "category": "spacing",
       "variants": []
     },
     {
       "class": "text-white/90",
       "count": 1,
-      "files": [
-        "app/support/page.tsx"
-      ],
+      "files": ["app/support/page.tsx"],
       "category": "typography",
       "variants": []
     },
     {
       "class": "btn-md3-outlined",
       "count": 2,
-      "files": [
-        "app/support/page.tsx",
-        "app/admin/monitor/page.tsx"
-      ],
+      "files": ["app/support/page.tsx", "app/admin/monitor/page.tsx"],
       "category": "other",
       "variants": []
     },
@@ -11616,10 +11157,7 @@
     {
       "class": "border-gray-900",
       "count": 2,
-      "files": [
-        "app/admin/invites/page.tsx",
-        "app/admin/monitor/page.tsx"
-      ],
+      "files": ["app/admin/invites/page.tsx", "app/admin/monitor/page.tsx"],
       "category": "colors",
       "variants": []
     },
@@ -11638,10 +11176,7 @@
     {
       "class": "btn-md3-outlined-sm",
       "count": 2,
-      "files": [
-        "app/admin/invites/page.tsx",
-        "app/blog/[id]/page.tsx"
-      ],
+      "files": ["app/admin/invites/page.tsx", "app/blog/[id]/page.tsx"],
       "category": "other",
       "variants": []
     },
@@ -11689,10 +11224,7 @@
     {
       "class": "btn-md3-text-sm",
       "count": 2,
-      "files": [
-        "app/admin/invites/page.tsx",
-        "app/blog/[id]/page.tsx"
-      ],
+      "files": ["app/admin/invites/page.tsx", "app/blog/[id]/page.tsx"],
       "category": "other",
       "variants": []
     },
@@ -11883,13 +11415,9 @@
     {
       "class": "sm:items-center",
       "count": 1,
-      "files": [
-        "app/dashboard/analytics/page.tsx"
-      ],
+      "files": ["app/dashboard/analytics/page.tsx"],
       "category": "other",
-      "variants": [
-        "sm"
-      ]
+      "variants": ["sm"]
     },
     {
       "class": "p-1",
@@ -11918,13 +11446,9 @@
     {
       "class": "sm:mt-0",
       "count": 1,
-      "files": [
-        "app/dashboard/analytics/page.tsx"
-      ],
+      "files": ["app/dashboard/analytics/page.tsx"],
       "category": "spacing",
-      "variants": [
-        "sm"
-      ]
+      "variants": ["sm"]
     },
     {
       "class": "bg-orange-100",
@@ -11968,67 +11492,49 @@
     {
       "class": "to-blue-400",
       "count": 1,
-      "files": [
-        "app/dashboard/analytics/page.tsx"
-      ],
+      "files": ["app/dashboard/analytics/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "rounded-t-sm",
       "count": 1,
-      "files": [
-        "app/dashboard/analytics/page.tsx"
-      ],
+      "files": ["app/dashboard/analytics/page.tsx"],
       "category": "borders",
       "variants": []
     },
     {
       "class": "hover:from-blue-600",
       "count": 1,
-      "files": [
-        "app/dashboard/analytics/page.tsx"
-      ],
+      "files": ["app/dashboard/analytics/page.tsx"],
       "category": "other",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "hover:to-blue-500",
       "count": 1,
-      "files": [
-        "app/dashboard/analytics/page.tsx"
-      ],
+      "files": ["app/dashboard/analytics/page.tsx"],
       "category": "other",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "mx-3",
       "count": 1,
-      "files": [
-        "app/dashboard/analytics/page.tsx"
-      ],
+      "files": ["app/dashboard/analytics/page.tsx"],
       "category": "spacing",
       "variants": []
     },
     {
       "class": "from-green-400",
       "count": 1,
-      "files": [
-        "app/dashboard/analytics/page.tsx"
-      ],
+      "files": ["app/dashboard/analytics/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "to-green-500",
       "count": 1,
-      "files": [
-        "app/dashboard/analytics/page.tsx"
-      ],
+      "files": ["app/dashboard/analytics/page.tsx"],
       "category": "other",
       "variants": []
     },
@@ -12041,9 +11547,7 @@
         "components/workspace/BatchProcessingInterface.tsx"
       ],
       "category": "other",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "space-y-8",
@@ -12110,9 +11614,7 @@
     {
       "class": "to-pink-100",
       "count": 1,
-      "files": [
-        "app/dashboard/enterprise/page.tsx"
-      ],
+      "files": ["app/dashboard/enterprise/page.tsx"],
       "category": "other",
       "variants": []
     },
@@ -12248,9 +11750,7 @@
     {
       "class": "px-2.5",
       "count": 1,
-      "files": [
-        "app/dashboard/history/page.tsx"
-      ],
+      "files": ["app/dashboard/history/page.tsx"],
       "category": "spacing",
       "variants": []
     },
@@ -12281,9 +11781,7 @@
         "components/workspace/EnterpriseDashboard.tsx"
       ],
       "category": "typography",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "hover:text-red-600",
@@ -12296,9 +11794,7 @@
         "components/workspace/dashboard/PredictiveInsights.tsx"
       ],
       "category": "typography",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "space-x-8",
@@ -12367,22 +11863,16 @@
     {
       "class": "border-purple-600",
       "count": 1,
-      "files": [
-        "app/dashboard/insights/page.tsx"
-      ],
+      "files": ["app/dashboard/insights/page.tsx"],
       "category": "colors",
       "variants": []
     },
     {
       "class": "lg:w-64",
       "count": 1,
-      "files": [
-        "app/dashboard/settings/page.tsx"
-      ],
+      "files": ["app/dashboard/settings/page.tsx"],
       "category": "sizing",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "space-x-6",
@@ -12530,9 +12020,7 @@
         "lib/i18n/provider.tsx"
       ],
       "category": "other",
-      "variants": [
-        "focus"
-      ]
+      "variants": ["focus"]
     },
     {
       "class": "focus:ring-blue-500",
@@ -12570,9 +12058,7 @@
         "lib/i18n/provider.tsx"
       ],
       "category": "other",
-      "variants": [
-        "focus"
-      ]
+      "variants": ["focus"]
     },
     {
       "class": "focus:border-transparent",
@@ -12586,9 +12072,7 @@
         "components/workspace/dashboard/CrossDocumentIntelligence.tsx"
       ],
       "category": "colors",
-      "variants": [
-        "focus"
-      ]
+      "variants": ["focus"]
     },
     {
       "class": "text-yellow-400",
@@ -12628,31 +12112,23 @@
     {
       "class": "pt-8",
       "count": 1,
-      "files": [
-        "app/blog/[id]/page.tsx"
-      ],
+      "files": ["app/blog/[id]/page.tsx"],
       "category": "spacing",
       "variants": []
     },
     {
       "class": "leading-tight",
       "count": 1,
-      "files": [
-        "app/blog/[id]/page.tsx"
-      ],
+      "files": ["app/blog/[id]/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "md:h-96",
       "count": 1,
-      "files": [
-        "app/blog/[id]/page.tsx"
-      ],
+      "files": ["app/blog/[id]/page.tsx"],
       "category": "sizing",
-      "variants": [
-        "md"
-      ]
+      "variants": ["md"]
     },
     {
       "class": "prose",
@@ -12667,47 +12143,35 @@
     {
       "class": "prose-lg",
       "count": 1,
-      "files": [
-        "app/blog/[id]/page.tsx"
-      ],
+      "files": ["app/blog/[id]/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "group-hover:text-blue-600",
       "count": 1,
-      "files": [
-        "app/blog/[id]/page.tsx"
-      ],
+      "files": ["app/blog/[id]/page.tsx"],
       "category": "other",
-      "variants": [
-        "group-hover"
-      ]
+      "variants": ["group-hover"]
     },
     {
       "class": "zen-container",
       "count": 1,
-      "files": [
-        "app/dashboard/agents/page.tsx"
-      ],
+      "files": ["app/dashboard/agents/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "space-zen",
       "count": 1,
-      "files": [
-        "app/dashboard/agents/page.tsx"
-      ],
+      "files": ["app/dashboard/agents/page.tsx"],
       "category": "spacing",
       "variants": []
     },
     {
       "class": "content-zen",
       "count": 1,
-      "files": [
-        "app/dashboard/agents/page.tsx"
-      ],
+      "files": ["app/dashboard/agents/page.tsx"],
       "category": "other",
       "variants": []
     },
@@ -12726,27 +12190,21 @@
     {
       "class": "text-display-lg",
       "count": 1,
-      "files": [
-        "app/dashboard/agents/page.tsx"
-      ],
+      "files": ["app/dashboard/agents/page.tsx"],
       "category": "typography",
       "variants": []
     },
     {
       "class": "text-body-lg",
       "count": 1,
-      "files": [
-        "app/dashboard/agents/page.tsx"
-      ],
+      "files": ["app/dashboard/agents/page.tsx"],
       "category": "typography",
       "variants": []
     },
     {
       "class": "text-mono-medium",
       "count": 1,
-      "files": [
-        "app/dashboard/agents/page.tsx"
-      ],
+      "files": ["app/dashboard/agents/page.tsx"],
       "category": "typography",
       "variants": []
     },
@@ -12758,36 +12216,26 @@
         "components/security/security-dashboard.tsx"
       ],
       "category": "layout",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "disabled:bg-gray-300",
       "count": 1,
-      "files": [
-        "app/dashboard/agents/page.tsx"
-      ],
+      "files": ["app/dashboard/agents/page.tsx"],
       "category": "colors",
-      "variants": [
-        "disabled"
-      ]
+      "variants": ["disabled"]
     },
     {
       "class": "list-disc",
       "count": 1,
-      "files": [
-        "app/dashboard/agents/page.tsx"
-      ],
+      "files": ["app/dashboard/agents/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "list-inside",
       "count": 1,
-      "files": [
-        "app/dashboard/agents/page.tsx"
-      ],
+      "files": ["app/dashboard/agents/page.tsx"],
       "category": "other",
       "variants": []
     },
@@ -12808,40 +12256,28 @@
     {
       "class": "bg-yellow-500",
       "count": 1,
-      "files": [
-        "app/dashboard/agents/page.tsx"
-      ],
+      "files": ["app/dashboard/agents/page.tsx"],
       "category": "colors",
       "variants": []
     },
     {
       "class": "hover:bg-yellow-600",
       "count": 1,
-      "files": [
-        "app/dashboard/agents/page.tsx"
-      ],
+      "files": ["app/dashboard/agents/page.tsx"],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "hover:bg-green-600",
       "count": 1,
-      "files": [
-        "app/dashboard/agents/page.tsx"
-      ],
+      "files": ["app/dashboard/agents/page.tsx"],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "rotate-180",
       "count": 1,
-      "files": [
-        "app/dashboard/enterprise/analytics/page.tsx"
-      ],
+      "files": ["app/dashboard/enterprise/analytics/page.tsx"],
       "category": "other",
       "variants": []
     },
@@ -12853,25 +12289,19 @@
         "components/monitoring/PerformanceAccessibilityMonitor.tsx"
       ],
       "category": "layout",
-      "variants": [
-        "md"
-      ]
+      "variants": ["md"]
     },
     {
       "class": "to-purple-500",
       "count": 1,
-      "files": [
-        "app/dashboard/enterprise/analytics/page.tsx"
-      ],
+      "files": ["app/dashboard/enterprise/analytics/page.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "pt-2",
       "count": 1,
-      "files": [
-        "app/dashboard/enterprise/analytics/page.tsx"
-      ],
+      "files": ["app/dashboard/enterprise/analytics/page.tsx"],
       "category": "spacing",
       "variants": []
     },
@@ -12892,13 +12322,9 @@
     {
       "class": "hover:bg-blue-50",
       "count": 1,
-      "files": [
-        "app/dashboard/enterprise/insights/page.tsx"
-      ],
+      "files": ["app/dashboard/enterprise/insights/page.tsx"],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "bg-green-50",
@@ -12917,18 +12343,14 @@
     {
       "class": "bg-purple-50",
       "count": 1,
-      "files": [
-        "app/dashboard/enterprise/insights/page.tsx"
-      ],
+      "files": ["app/dashboard/enterprise/insights/page.tsx"],
       "category": "colors",
       "variants": []
     },
     {
       "class": "min-h-[400px]",
       "count": 1,
-      "files": [
-        "components/ErrorBoundary.tsx"
-      ],
+      "files": ["components/ErrorBoundary.tsx"],
       "category": "sizing",
       "variants": []
     },
@@ -12960,9 +12382,7 @@
         "components/workspace/dashboard/PredictiveInsights.tsx"
       ],
       "category": "typography",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "whitespace-pre-wrap",
@@ -12990,9 +12410,7 @@
         "components/workspace/SettingsDashboard.tsx"
       ],
       "category": "other",
-      "variants": [
-        "last"
-      ]
+      "variants": ["last"]
     },
     {
       "class": "focus:outline-none",
@@ -13030,9 +12448,7 @@
         "lib/i18n/provider.tsx"
       ],
       "category": "other",
-      "variants": [
-        "focus"
-      ]
+      "variants": ["focus"]
     },
     {
       "class": "animate-accordion-open",
@@ -13048,106 +12464,79 @@
     {
       "class": "pb-4",
       "count": 2,
-      "files": [
-        "components/Footer.tsx",
-        "components/pricing/PricingPage.tsx"
-      ],
+      "files": ["components/Footer.tsx", "components/pricing/PricingPage.tsx"],
       "category": "spacing",
       "variants": []
     },
     {
       "class": "hover:font-semibold",
       "count": 1,
-      "files": [
-        "components/Footer.tsx"
-      ],
+      "files": ["components/Footer.tsx"],
       "category": "typography",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "focus-visible-ring",
       "count": 1,
-      "files": [
-        "components/Footer.tsx"
-      ],
+      "files": ["components/Footer.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "w-[18px]",
       "count": 1,
-      "files": [
-        "components/Footer.tsx"
-      ],
+      "files": ["components/Footer.tsx"],
       "category": "sizing",
       "variants": []
     },
     {
       "class": "h-[18px]",
       "count": 1,
-      "files": [
-        "components/Footer.tsx"
-      ],
+      "files": ["components/Footer.tsx"],
       "category": "sizing",
       "variants": []
     },
     {
       "class": "border-0",
       "count": 1,
-      "files": [
-        "components/Footer.tsx"
-      ],
+      "files": ["components/Footer.tsx"],
       "category": "colors",
       "variants": []
     },
     {
       "class": "outline-0",
       "count": 1,
-      "files": [
-        "components/Footer.tsx"
-      ],
+      "files": ["components/Footer.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "footer-content-container",
       "count": 1,
-      "files": [
-        "components/Footer.tsx"
-      ],
+      "files": ["components/Footer.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "pt-10",
       "count": 1,
-      "files": [
-        "components/Footer.tsx"
-      ],
+      "files": ["components/Footer.tsx"],
       "category": "spacing",
       "variants": []
     },
     {
       "class": "pb-6",
       "count": 1,
-      "files": [
-        "components/Footer.tsx"
-      ],
+      "files": ["components/Footer.tsx"],
       "category": "spacing",
       "variants": []
     },
     {
       "class": "md:pb-4",
       "count": 1,
-      "files": [
-        "components/Footer.tsx"
-      ],
+      "files": ["components/Footer.tsx"],
       "category": "spacing",
-      "variants": [
-        "md"
-      ]
+      "variants": ["md"]
     },
     {
       "class": "animate-slide-up",
@@ -13166,24 +12555,16 @@
     {
       "class": "md:flex-row",
       "count": 1,
-      "files": [
-        "components/Footer.tsx"
-      ],
+      "files": ["components/Footer.tsx"],
       "category": "layout",
-      "variants": [
-        "md"
-      ]
+      "variants": ["md"]
     },
     {
       "class": "md:mb-0",
       "count": 1,
-      "files": [
-        "components/Footer.tsx"
-      ],
+      "files": ["components/Footer.tsx"],
       "category": "spacing",
-      "variants": [
-        "md"
-      ]
+      "variants": ["md"]
     },
     {
       "class": "max-w-lg",
@@ -13227,9 +12608,7 @@
     {
       "class": "space-x-5",
       "count": 1,
-      "files": [
-        "components/Footer.tsx"
-      ],
+      "files": ["components/Footer.tsx"],
       "category": "spacing",
       "variants": []
     },
@@ -13259,30 +12638,21 @@
     {
       "class": "hover:scale-110",
       "count": 1,
-      "files": [
-        "components/Footer.tsx"
-      ],
+      "files": ["components/Footer.tsx"],
       "category": "other",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "duration-150",
       "count": 2,
-      "files": [
-        "components/Footer.tsx",
-        "components/ui/UniversalDropdown.tsx"
-      ],
+      "files": ["components/Footer.tsx", "components/ui/UniversalDropdown.tsx"],
       "category": "animations",
       "variants": []
     },
     {
       "class": "self-end",
       "count": 1,
-      "files": [
-        "components/Footer.tsx"
-      ],
+      "files": ["components/Footer.tsx"],
       "category": "other",
       "variants": []
     },
@@ -13318,9 +12688,7 @@
     {
       "class": "animate-sw-update",
       "count": 1,
-      "files": [
-        "components/ServiceWorkerRegistration.tsx"
-      ],
+      "files": ["components/ServiceWorkerRegistration.tsx"],
       "category": "other",
       "variants": []
     },
@@ -13346,20 +12714,14 @@
         "components/sections/ProductShowcase.tsx"
       ],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "xl:grid-cols-2",
       "count": 1,
-      "files": [
-        "components/agents/AIInterfaceRefinement.tsx"
-      ],
+      "files": ["components/agents/AIInterfaceRefinement.tsx"],
       "category": "layout",
-      "variants": [
-        "xl"
-      ]
+      "variants": ["xl"]
     },
     {
       "class": "bg-purple-500",
@@ -13375,9 +12737,7 @@
     {
       "class": "max-h-48",
       "count": 1,
-      "files": [
-        "components/agents/AgentSwarmInterface.tsx"
-      ],
+      "files": ["components/agents/AgentSwarmInterface.tsx"],
       "category": "sizing",
       "variants": []
     },
@@ -13410,13 +12770,9 @@
     {
       "class": "hover:bg-gray-300",
       "count": 1,
-      "files": [
-        "components/admin/AdminDashboard.tsx"
-      ],
+      "files": ["components/admin/AdminDashboard.tsx"],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "whitespace-nowrap",
@@ -13442,9 +12798,7 @@
         "components/workflow/workflow-dashboard.tsx"
       ],
       "category": "typography",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "disabled:opacity-50",
@@ -13479,9 +12833,7 @@
         "components/workspace/dashboard/PredictiveInsights.tsx"
       ],
       "category": "effects",
-      "variants": [
-        "disabled"
-      ]
+      "variants": ["disabled"]
     },
     {
       "class": "min-w-full",
@@ -13535,112 +12887,72 @@
     {
       "class": "focus:not-sr-only",
       "count": 1,
-      "files": [
-        "components/accessibility/AccessibilityEnhancer.tsx"
-      ],
+      "files": ["components/accessibility/AccessibilityEnhancer.tsx"],
       "category": "other",
-      "variants": [
-        "focus"
-      ]
+      "variants": ["focus"]
     },
     {
       "class": "focus:absolute",
       "count": 1,
-      "files": [
-        "components/accessibility/AccessibilityEnhancer.tsx"
-      ],
+      "files": ["components/accessibility/AccessibilityEnhancer.tsx"],
       "category": "other",
-      "variants": [
-        "focus"
-      ]
+      "variants": ["focus"]
     },
     {
       "class": "focus:top-4",
       "count": 1,
-      "files": [
-        "components/accessibility/AccessibilityEnhancer.tsx"
-      ],
+      "files": ["components/accessibility/AccessibilityEnhancer.tsx"],
       "category": "other",
-      "variants": [
-        "focus"
-      ]
+      "variants": ["focus"]
     },
     {
       "class": "focus:left-4",
       "count": 1,
-      "files": [
-        "components/accessibility/AccessibilityEnhancer.tsx"
-      ],
+      "files": ["components/accessibility/AccessibilityEnhancer.tsx"],
       "category": "other",
-      "variants": [
-        "focus"
-      ]
+      "variants": ["focus"]
     },
     {
       "class": "focus:z-50",
       "count": 1,
-      "files": [
-        "components/accessibility/AccessibilityEnhancer.tsx"
-      ],
+      "files": ["components/accessibility/AccessibilityEnhancer.tsx"],
       "category": "other",
-      "variants": [
-        "focus"
-      ]
+      "variants": ["focus"]
     },
     {
       "class": "focus:px-4",
       "count": 1,
-      "files": [
-        "components/accessibility/AccessibilityEnhancer.tsx"
-      ],
+      "files": ["components/accessibility/AccessibilityEnhancer.tsx"],
       "category": "spacing",
-      "variants": [
-        "focus"
-      ]
+      "variants": ["focus"]
     },
     {
       "class": "focus:py-2",
       "count": 1,
-      "files": [
-        "components/accessibility/AccessibilityEnhancer.tsx"
-      ],
+      "files": ["components/accessibility/AccessibilityEnhancer.tsx"],
       "category": "spacing",
-      "variants": [
-        "focus"
-      ]
+      "variants": ["focus"]
     },
     {
       "class": "focus:bg-blue-600",
       "count": 1,
-      "files": [
-        "components/accessibility/AccessibilityEnhancer.tsx"
-      ],
+      "files": ["components/accessibility/AccessibilityEnhancer.tsx"],
       "category": "colors",
-      "variants": [
-        "focus"
-      ]
+      "variants": ["focus"]
     },
     {
       "class": "focus:text-white",
       "count": 1,
-      "files": [
-        "components/accessibility/AccessibilityEnhancer.tsx"
-      ],
+      "files": ["components/accessibility/AccessibilityEnhancer.tsx"],
       "category": "typography",
-      "variants": [
-        "focus"
-      ]
+      "variants": ["focus"]
     },
     {
       "class": "focus:rounded",
       "count": 1,
-      "files": [
-        "components/accessibility/AccessibilityEnhancer.tsx"
-      ],
+      "files": ["components/accessibility/AccessibilityEnhancer.tsx"],
       "category": "borders",
-      "variants": [
-        "focus"
-      ]
+      "variants": ["focus"]
     },
     {
       "class": "z-40",
@@ -13693,9 +13005,7 @@
     {
       "class": "focus-trap",
       "count": 1,
-      "files": [
-        "components/accessibility/AccessibilityPanel.tsx"
-      ],
+      "files": ["components/accessibility/AccessibilityPanel.tsx"],
       "category": "other",
       "variants": []
     },
@@ -13724,45 +13034,35 @@
     {
       "class": "top-1",
       "count": 1,
-      "files": [
-        "components/accessibility/AccessibilityPanel.tsx"
-      ],
+      "files": ["components/accessibility/AccessibilityPanel.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "aria-live-region",
       "count": 1,
-      "files": [
-        "components/accessibility/AccessibilityProvider.tsx"
-      ],
+      "files": ["components/accessibility/AccessibilityProvider.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "skip-link",
       "count": 1,
-      "files": [
-        "components/accessibility/AccessibilityProvider.tsx"
-      ],
+      "files": ["components/accessibility/AccessibilityProvider.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "sr-only-focusable",
       "count": 1,
-      "files": [
-        "components/accessibility/AccessibilityProvider.tsx"
-      ],
+      "files": ["components/accessibility/AccessibilityProvider.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "animate-consent-banner",
       "count": 1,
-      "files": [
-        "components/analytics/ConsentBanner.tsx"
-      ],
+      "files": ["components/analytics/ConsentBanner.tsx"],
       "category": "other",
       "variants": []
     },
@@ -13781,20 +13081,14 @@
     {
       "class": "hover:bg-opacity-10",
       "count": 1,
-      "files": [
-        "components/analytics/ConsentBanner.tsx"
-      ],
+      "files": ["components/analytics/ConsentBanner.tsx"],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "animate-consent-details",
       "count": 1,
-      "files": [
-        "components/analytics/ConsentBanner.tsx"
-      ],
+      "files": ["components/analytics/ConsentBanner.tsx"],
       "category": "other",
       "variants": []
     },
@@ -13824,9 +13118,7 @@
     {
       "class": "ml-7",
       "count": 1,
-      "files": [
-        "components/analytics/report-builder.tsx"
-      ],
+      "files": ["components/analytics/report-builder.tsx"],
       "category": "spacing",
       "variants": []
     },
@@ -13850,29 +13142,21 @@
         "components/workspace/SwarmIntelligenceDashboard.tsx"
       ],
       "category": "other",
-      "variants": [
-        "disabled"
-      ]
+      "variants": ["disabled"]
     },
     {
       "class": "top-5",
       "count": 1,
-      "files": [
-        "components/analytics/report-builder.tsx"
-      ],
+      "files": ["components/analytics/report-builder.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "sm:block",
       "count": 1,
-      "files": [
-        "components/analytics/report-builder.tsx"
-      ],
+      "files": ["components/analytics/report-builder.tsx"],
       "category": "layout",
-      "variants": [
-        "sm"
-      ]
+      "variants": ["sm"]
     },
     {
       "class": "z-[10000]",
@@ -13887,9 +13171,7 @@
     {
       "class": "animate-slide-down",
       "count": 1,
-      "files": [
-        "components/auth/AuthErrorHandler.tsx"
-      ],
+      "files": ["components/auth/AuthErrorHandler.tsx"],
       "category": "other",
       "variants": []
     },
@@ -14006,20 +13288,14 @@
         "lib/error-tracking/error-boundary.tsx"
       ],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "focus:ring-red-500",
       "count": 1,
-      "files": [
-        "components/auth/AuthErrorHandler.tsx"
-      ],
+      "files": ["components/auth/AuthErrorHandler.tsx"],
       "category": "other",
-      "variants": [
-        "focus"
-      ]
+      "variants": ["focus"]
     },
     {
       "class": "focus:ring-offset-2",
@@ -14030,9 +13306,7 @@
         "components/ui/language-selector.tsx"
       ],
       "category": "other",
-      "variants": [
-        "focus"
-      ]
+      "variants": ["focus"]
     },
     {
       "class": "hover:bg-blue-200",
@@ -14042,9 +13316,7 @@
         "components/workspace/SwarmIntelligenceDashboard.tsx"
       ],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "focus:ring-gray-500",
@@ -14054,9 +13326,7 @@
         "components/auth/AuthModal.tsx"
       ],
       "category": "other",
-      "variants": [
-        "focus"
-      ]
+      "variants": ["focus"]
     },
     {
       "class": "hover:text-red-500",
@@ -14066,20 +13336,14 @@
         "components/documents/BatchUpload.tsx"
       ],
       "category": "typography",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "focus:ring-offset-red-50",
       "count": 1,
-      "files": [
-        "components/auth/AuthErrorHandler.tsx"
-      ],
+      "files": ["components/auth/AuthErrorHandler.tsx"],
       "category": "other",
-      "variants": [
-        "focus"
-      ]
+      "variants": ["focus"]
     },
     {
       "class": "z-[9998]",
@@ -14094,18 +13358,14 @@
     {
       "class": "bg-black/60",
       "count": 1,
-      "files": [
-        "components/auth/AuthModal.tsx"
-      ],
+      "files": ["components/auth/AuthModal.tsx"],
       "category": "colors",
       "variants": []
     },
     {
       "class": "z-[9999]",
       "count": 1,
-      "files": [
-        "components/auth/AuthModal.tsx"
-      ],
+      "files": ["components/auth/AuthModal.tsx"],
       "category": "other",
       "variants": []
     },
@@ -14117,26 +13377,19 @@
         "components/sections/ModernHero.tsx"
       ],
       "category": "spacing",
-      "variants": [
-        "sm"
-      ]
+      "variants": ["sm"]
     },
     {
       "class": "my-auto",
       "count": 1,
-      "files": [
-        "components/auth/AuthModal.tsx"
-      ],
+      "files": ["components/auth/AuthModal.tsx"],
       "category": "spacing",
       "variants": []
     },
     {
       "class": "pointer-events-auto",
       "count": 2,
-      "files": [
-        "components/auth/AuthModal.tsx",
-        "components/ui/Toast.tsx"
-      ],
+      "files": ["components/auth/AuthModal.tsx", "components/ui/Toast.tsx"],
       "category": "other",
       "variants": []
     },
@@ -14148,29 +13401,21 @@
         "components/workspace/EnhancedDocumentInterface.tsx"
       ],
       "category": "typography",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "btn-auth-modal",
       "count": 1,
-      "files": [
-        "components/auth/AuthModal.tsx"
-      ],
+      "files": ["components/auth/AuthModal.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "focus:underline",
       "count": 1,
-      "files": [
-        "components/auth/AuthModal.tsx"
-      ],
+      "files": ["components/auth/AuthModal.tsx"],
       "category": "other",
-      "variants": [
-        "focus"
-      ]
+      "variants": ["focus"]
     },
     {
       "class": "top-6",
@@ -14195,9 +13440,7 @@
     {
       "class": "bottom-full",
       "count": 1,
-      "files": [
-        "components/auth/CreditDisplay.tsx"
-      ],
+      "files": ["components/auth/CreditDisplay.tsx"],
       "category": "other",
       "variants": []
     },
@@ -14218,18 +13461,14 @@
     {
       "class": "animate-tooltip-fade-in",
       "count": 1,
-      "files": [
-        "components/auth/CreditDisplay.tsx"
-      ],
+      "files": ["components/auth/CreditDisplay.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "font-normal",
       "count": 1,
-      "files": [
-        "components/auth/CreditDisplay.tsx"
-      ],
+      "files": ["components/auth/CreditDisplay.tsx"],
       "category": "typography",
       "variants": []
     },
@@ -14278,35 +13517,23 @@
     {
       "class": "focus:ring-1",
       "count": 1,
-      "files": [
-        "components/auth/UnifiedUserMenu.tsx"
-      ],
+      "files": ["components/auth/UnifiedUserMenu.tsx"],
       "category": "other",
-      "variants": [
-        "focus"
-      ]
+      "variants": ["focus"]
     },
     {
       "class": "focus:ring-gray-300",
       "count": 1,
-      "files": [
-        "components/auth/UnifiedUserMenu.tsx"
-      ],
+      "files": ["components/auth/UnifiedUserMenu.tsx"],
       "category": "other",
-      "variants": [
-        "focus"
-      ]
+      "variants": ["focus"]
     },
     {
       "class": "md:block",
       "count": 1,
-      "files": [
-        "components/auth/UnifiedUserMenu.tsx"
-      ],
+      "files": ["components/auth/UnifiedUserMenu.tsx"],
       "category": "layout",
-      "variants": [
-        "md"
-      ]
+      "variants": ["md"]
     },
     {
       "class": "min-w-0",
@@ -14343,36 +13570,28 @@
     {
       "class": "dashboard-header",
       "count": 1,
-      "files": [
-        "components/dashboard/DashboardLayout.tsx"
-      ],
+      "files": ["components/dashboard/DashboardLayout.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "from-gray-600",
       "count": 1,
-      "files": [
-        "components/documents/AgentVisualization.tsx"
-      ],
+      "files": ["components/documents/AgentVisualization.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "to-gray-800",
       "count": 1,
-      "files": [
-        "components/documents/AgentVisualization.tsx"
-      ],
+      "files": ["components/documents/AgentVisualization.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "-bottom-2",
       "count": 1,
-      "files": [
-        "components/documents/AgentVisualization.tsx"
-      ],
+      "files": ["components/documents/AgentVisualization.tsx"],
       "category": "other",
       "variants": []
     },
@@ -14399,9 +13618,7 @@
     {
       "class": "w-0.5",
       "count": 1,
-      "files": [
-        "components/documents/AgentVisualization.tsx"
-      ],
+      "files": ["components/documents/AgentVisualization.tsx"],
       "category": "sizing",
       "variants": []
     },
@@ -14470,25 +13687,19 @@
         "components/workspace/SimpleTranslationInterface.tsx"
       ],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "prose-sm",
       "count": 1,
-      "files": [
-        "components/documents/DocumentPreview.tsx"
-      ],
+      "files": ["components/documents/DocumentPreview.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "select-text",
       "count": 1,
-      "files": [
-        "components/documents/DocumentPreview.tsx"
-      ],
+      "files": ["components/documents/DocumentPreview.tsx"],
       "category": "other",
       "variants": []
     },
@@ -14546,9 +13757,7 @@
     {
       "class": "min-w-12",
       "count": 1,
-      "files": [
-        "components/documents/DocumentViewer.tsx"
-      ],
+      "files": ["components/documents/DocumentViewer.tsx"],
       "category": "sizing",
       "variants": []
     },
@@ -14561,9 +13770,7 @@
         "components/ui/FeatureDiscovery.tsx"
       ],
       "category": "typography",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "hover:text-purple-700",
@@ -14574,9 +13781,7 @@
         "components/ui/FeatureDiscovery.tsx"
       ],
       "category": "typography",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "border-purple-300",
@@ -14596,9 +13801,7 @@
         "components/ui/FeatureDiscovery.tsx"
       ],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "bg-purple-600",
@@ -14624,9 +13827,7 @@
         "components/workspace/dashboard/PredictiveInsights.tsx"
       ],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "border-blue-300",
@@ -14641,13 +13842,9 @@
     {
       "class": "hover:border-blue-400",
       "count": 1,
-      "files": [
-        "components/documents/SmartDocumentWorkflow.tsx"
-      ],
+      "files": ["components/documents/SmartDocumentWorkflow.tsx"],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "text-purple-800",
@@ -14663,27 +13860,21 @@
     {
       "class": "mt-auto",
       "count": 1,
-      "files": [
-        "components/invite/InviteRedemptionPage.tsx"
-      ],
+      "files": ["components/invite/InviteRedemptionPage.tsx"],
       "category": "spacing",
       "variants": []
     },
     {
       "class": "min-h-full",
       "count": 1,
-      "files": [
-        "components/error-tracking/ErrorReportDialog.tsx"
-      ],
+      "files": ["components/error-tracking/ErrorReportDialog.tsx"],
       "category": "sizing",
       "variants": []
     },
     {
       "class": "max-h-[70vh]",
       "count": 1,
-      "files": [
-        "components/error-tracking/ErrorReportDialog.tsx"
-      ],
+      "files": ["components/error-tracking/ErrorReportDialog.tsx"],
       "category": "sizing",
       "variants": []
     },
@@ -14700,13 +13891,9 @@
     {
       "class": "focus:border-blue-500",
       "count": 1,
-      "files": [
-        "components/error-tracking/ErrorReportDialog.tsx"
-      ],
+      "files": ["components/error-tracking/ErrorReportDialog.tsx"],
       "category": "colors",
-      "variants": [
-        "focus"
-      ]
+      "variants": ["focus"]
     },
     {
       "class": "bg-orange-50",
@@ -14732,9 +13919,7 @@
     {
       "class": "text-orange-900",
       "count": 1,
-      "files": [
-        "components/monitoring/PerformanceAccessibilityMonitor.tsx"
-      ],
+      "files": ["components/monitoring/PerformanceAccessibilityMonitor.tsx"],
       "category": "typography",
       "variants": []
     },
@@ -14772,117 +13957,89 @@
         "components/__tests__/layout/navbar.test.tsx"
       ],
       "category": "other",
-      "variants": [
-        "md"
-      ]
+      "variants": ["md"]
     },
     {
       "class": "touch-target",
       "count": 1,
-      "files": [
-        "components/mobile/SwipeableNavigation.tsx"
-      ],
+      "files": ["components/mobile/SwipeableNavigation.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "nav-touch-target",
       "count": 1,
-      "files": [
-        "components/mobile/SwipeableNavigation.tsx"
-      ],
+      "files": ["components/mobile/SwipeableNavigation.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "mobile-focus",
       "count": 1,
-      "files": [
-        "components/mobile/SwipeableNavigation.tsx"
-      ],
+      "files": ["components/mobile/SwipeableNavigation.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "z-30",
       "count": 1,
-      "files": [
-        "components/mobile/SwipeableNavigation.tsx"
-      ],
+      "files": ["components/mobile/SwipeableNavigation.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "mobile-safe-bottom",
       "count": 1,
-      "files": [
-        "components/mobile/SwipeableNavigation.tsx"
-      ],
+      "files": ["components/mobile/SwipeableNavigation.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "swipe-horizontal",
       "count": 1,
-      "files": [
-        "components/mobile/SwipeableNavigation.tsx"
-      ],
+      "files": ["components/mobile/SwipeableNavigation.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "justify-around",
       "count": 1,
-      "files": [
-        "components/mobile/SwipeableNavigation.tsx"
-      ],
+      "files": ["components/mobile/SwipeableNavigation.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "pb-2",
       "count": 1,
-      "files": [
-        "components/mobile/SwipeableNavigation.tsx"
-      ],
+      "files": ["components/mobile/SwipeableNavigation.tsx"],
       "category": "spacing",
       "variants": []
     },
     {
       "class": "mx-1",
       "count": 1,
-      "files": [
-        "components/mobile/SwipeableNavigation.tsx"
-      ],
+      "files": ["components/mobile/SwipeableNavigation.tsx"],
       "category": "spacing",
       "variants": []
     },
     {
       "class": "bg-current",
       "count": 1,
-      "files": [
-        "components/mobile/SwipeableNavigation.tsx"
-      ],
+      "files": ["components/mobile/SwipeableNavigation.tsx"],
       "category": "colors",
       "variants": []
     },
     {
       "class": "hover:border-purple-300",
       "count": 1,
-      "files": [
-        "components/onboarding/AIFeatureIntroduction.tsx"
-      ],
+      "files": ["components/onboarding/AIFeatureIntroduction.tsx"],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "w-1.5",
       "count": 1,
-      "files": [
-        "components/onboarding/AIFeatureIntroduction.tsx"
-      ],
+      "files": ["components/onboarding/AIFeatureIntroduction.tsx"],
       "category": "sizing",
       "variants": []
     },
@@ -14908,9 +14065,7 @@
         "components/onboarding/SmartUserJourney.tsx"
       ],
       "category": "other",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "hover:to-indigo-700",
@@ -14921,9 +14076,7 @@
         "components/onboarding/SmartUserJourney.tsx"
       ],
       "category": "other",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "h-1",
@@ -14960,91 +14113,65 @@
     {
       "class": "bg-purple-700",
       "count": 1,
-      "files": [
-        "components/onboarding/AIOnboarding.tsx"
-      ],
+      "files": ["components/onboarding/AIOnboarding.tsx"],
       "category": "colors",
       "variants": []
     },
     {
       "class": "to-emerald-500",
       "count": 1,
-      "files": [
-        "components/onboarding/AIOnboarding.tsx"
-      ],
+      "files": ["components/onboarding/AIOnboarding.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "hover:from-green-600",
       "count": 1,
-      "files": [
-        "components/onboarding/AIOnboarding.tsx"
-      ],
+      "files": ["components/onboarding/AIOnboarding.tsx"],
       "category": "other",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "hover:to-emerald-600",
       "count": 1,
-      "files": [
-        "components/onboarding/AIOnboarding.tsx"
-      ],
+      "files": ["components/onboarding/AIOnboarding.tsx"],
       "category": "other",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "origin-left",
       "count": 1,
-      "files": [
-        "components/onboarding/AIOnboarding.tsx"
-      ],
+      "files": ["components/onboarding/AIOnboarding.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "from-yellow-500",
       "count": 1,
-      "files": [
-        "components/onboarding/SmartUserJourney.tsx"
-      ],
+      "files": ["components/onboarding/SmartUserJourney.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "to-orange-500",
       "count": 1,
-      "files": [
-        "components/onboarding/SmartUserJourney.tsx"
-      ],
+      "files": ["components/onboarding/SmartUserJourney.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "hover:from-yellow-600",
       "count": 1,
-      "files": [
-        "components/onboarding/SmartUserJourney.tsx"
-      ],
+      "files": ["components/onboarding/SmartUserJourney.tsx"],
       "category": "other",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "hover:to-orange-600",
       "count": 1,
-      "files": [
-        "components/onboarding/SmartUserJourney.tsx"
-      ],
+      "files": ["components/onboarding/SmartUserJourney.tsx"],
       "category": "other",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "h-screen",
@@ -15060,42 +14187,30 @@
     {
       "class": "max-w-24",
       "count": 1,
-      "files": [
-        "components/layouts/NotebookLMLayout.tsx"
-      ],
+      "files": ["components/layouts/NotebookLMLayout.tsx"],
       "category": "sizing",
       "variants": []
     },
     {
       "class": "hover:bg-gray-800",
       "count": 1,
-      "files": [
-        "components/layouts/NotebookLMLayout.tsx"
-      ],
+      "files": ["components/layouts/NotebookLMLayout.tsx"],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "bg-black/50",
       "count": 1,
-      "files": [
-        "components/layouts/NotebookLMLayout.tsx"
-      ],
+      "files": ["components/layouts/NotebookLMLayout.tsx"],
       "category": "colors",
       "variants": []
     },
     {
       "class": "lg:pb-0",
       "count": 1,
-      "files": [
-        "components/layouts/NotebookLMLayout.tsx"
-      ],
+      "files": ["components/layouts/NotebookLMLayout.tsx"],
       "category": "spacing",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "lg:block",
@@ -15105,9 +14220,7 @@
         "components/workspace/WorkspaceLayout.tsx"
       ],
       "category": "layout",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "lg:px-6",
@@ -15118,9 +14231,7 @@
         "components/workspace/WorkspaceLayout.tsx"
       ],
       "category": "spacing",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "lg:py-4",
@@ -15131,9 +14242,7 @@
         "components/workspace/WorkspaceLayout.tsx"
       ],
       "category": "spacing",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "sm:inline",
@@ -15146,69 +14255,49 @@
         "components/workspace/WorkspaceLayout.tsx"
       ],
       "category": "layout",
-      "variants": [
-        "sm"
-      ]
+      "variants": ["sm"]
     },
     {
       "class": "prismy-navbar",
       "count": 1,
-      "files": [
-        "components/navigation/ModernNavbar.tsx"
-      ],
+      "files": ["components/navigation/ModernNavbar.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "backdrop-blur",
       "count": 1,
-      "files": [
-        "components/navigation/ModernNavbar.tsx"
-      ],
+      "files": ["components/navigation/ModernNavbar.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "ease-out",
       "count": 1,
-      "files": [
-        "components/navigation/ModernNavbar.tsx"
-      ],
+      "files": ["components/navigation/ModernNavbar.tsx"],
       "category": "animations",
       "variants": []
     },
     {
       "class": "lg:h-16",
       "count": 1,
-      "files": [
-        "components/navigation/ModernNavbar.tsx"
-      ],
+      "files": ["components/navigation/ModernNavbar.tsx"],
       "category": "sizing",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "lg:space-x-4",
       "count": 1,
-      "files": [
-        "components/navigation/ModernNavbar.tsx"
-      ],
+      "files": ["components/navigation/ModernNavbar.tsx"],
       "category": "spacing",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "hover:font-bold",
       "count": 1,
-      "files": [
-        "components/navigation/ModernNavbar.tsx"
-      ],
+      "files": ["components/navigation/ModernNavbar.tsx"],
       "category": "typography",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "group-hover:opacity-80",
@@ -15218,52 +14307,40 @@
         "components/ui/BlogCard.tsx"
       ],
       "category": "other",
-      "variants": [
-        "group-hover"
-      ]
+      "variants": ["group-hover"]
     },
     {
       "class": "navbar-cta-outline",
       "count": 1,
-      "files": [
-        "components/navigation/ModernNavbar.tsx"
-      ],
+      "files": ["components/navigation/ModernNavbar.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "backdrop-blur-lg",
       "count": 1,
-      "files": [
-        "components/navigation/ModernNavbar.tsx"
-      ],
+      "files": ["components/navigation/ModernNavbar.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "from-gray-50",
       "count": 1,
-      "files": [
-        "components/payment/PaymentResult.tsx"
-      ],
+      "files": ["components/payment/PaymentResult.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "to-gray-50",
       "count": 1,
-      "files": [
-        "components/payment/PaymentResult.tsx"
-      ],
+      "files": ["components/payment/PaymentResult.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "pricing-page",
       "count": 1,
-      "files": [
-        "components/pricing/PricingPage.tsx"
-      ],
+      "files": ["components/pricing/PricingPage.tsx"],
       "category": "other",
       "variants": []
     },
@@ -15275,45 +14352,33 @@
         "components/sections/ModernHero.tsx"
       ],
       "category": "spacing",
-      "variants": [
-        "md"
-      ]
+      "variants": ["md"]
     },
     {
       "class": "lg:px-12",
       "count": 1,
-      "files": [
-        "components/pricing/PricingPage.tsx"
-      ],
+      "files": ["components/pricing/PricingPage.tsx"],
       "category": "spacing",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "heading-hero",
       "count": 1,
-      "files": [
-        "components/pricing/PricingPage.tsx"
-      ],
+      "files": ["components/pricing/PricingPage.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "subheadline",
       "count": 1,
-      "files": [
-        "components/pricing/PricingPage.tsx"
-      ],
+      "files": ["components/pricing/PricingPage.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "badge-accent",
       "count": 1,
-      "files": [
-        "components/pricing/PricingPage.tsx"
-      ],
+      "files": ["components/pricing/PricingPage.tsx"],
       "category": "other",
       "variants": []
     },
@@ -15352,118 +14417,86 @@
     {
       "class": "md:grid",
       "count": 1,
-      "files": [
-        "components/pricing/PricingPage.tsx"
-      ],
+      "files": ["components/pricing/PricingPage.tsx"],
       "category": "layout",
-      "variants": [
-        "md"
-      ]
+      "variants": ["md"]
     },
     {
       "class": "-top-3",
       "count": 1,
-      "files": [
-        "components/pricing/PricingPage.tsx"
-      ],
+      "files": ["components/pricing/PricingPage.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "badge-base",
       "count": 1,
-      "files": [
-        "components/pricing/PricingPage.tsx"
-      ],
+      "files": ["components/pricing/PricingPage.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "md:text-3xl",
       "count": 1,
-      "files": [
-        "components/pricing/PricingPage.tsx"
-      ],
+      "files": ["components/pricing/PricingPage.tsx"],
       "category": "typography",
-      "variants": [
-        "md"
-      ]
+      "variants": ["md"]
     },
     {
       "class": "tag-success",
       "count": 1,
-      "files": [
-        "components/pricing/PricingPage.tsx"
-      ],
+      "files": ["components/pricing/PricingPage.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "snap-x",
       "count": 1,
-      "files": [
-        "components/pricing/PricingPage.tsx"
-      ],
+      "files": ["components/pricing/PricingPage.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "snap-mandatory",
       "count": 1,
-      "files": [
-        "components/pricing/PricingPage.tsx"
-      ],
+      "files": ["components/pricing/PricingPage.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "scrollbar-hide",
       "count": 1,
-      "files": [
-        "components/pricing/PricingPage.tsx"
-      ],
+      "files": ["components/pricing/PricingPage.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "mt-24",
       "count": 1,
-      "files": [
-        "components/pricing/PricingPage.tsx"
-      ],
+      "files": ["components/pricing/PricingPage.tsx"],
       "category": "spacing",
       "variants": []
     },
     {
       "class": "min-w-[800px]",
       "count": 1,
-      "files": [
-        "components/pricing/PricingPage.tsx"
-      ],
+      "files": ["components/pricing/PricingPage.tsx"],
       "category": "sizing",
       "variants": []
     },
     {
       "class": "lg:min-w-full",
       "count": 1,
-      "files": [
-        "components/pricing/PricingPage.tsx"
-      ],
+      "files": ["components/pricing/PricingPage.tsx"],
       "category": "sizing",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "md:p-12",
       "count": 1,
-      "files": [
-        "components/pricing/PricingPage.tsx"
-      ],
+      "files": ["components/pricing/PricingPage.tsx"],
       "category": "spacing",
-      "variants": [
-        "md"
-      ]
+      "variants": ["md"]
     },
     {
       "class": "text-gray-200",
@@ -15478,45 +14511,35 @@
     {
       "class": "mb-10",
       "count": 1,
-      "files": [
-        "components/pricing/PricingPage.tsx"
-      ],
+      "files": ["components/pricing/PricingPage.tsx"],
       "category": "spacing",
       "variants": []
     },
     {
       "class": "cubic-bezier(0.25,",
       "count": 1,
-      "files": [
-        "components/pricing/PricingPage.tsx"
-      ],
+      "files": ["components/pricing/PricingPage.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "0.46,",
       "count": 1,
-      "files": [
-        "components/pricing/PricingPage.tsx"
-      ],
+      "files": ["components/pricing/PricingPage.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "0.45,",
       "count": 1,
-      "files": [
-        "components/pricing/PricingPage.tsx"
-      ],
+      "files": ["components/pricing/PricingPage.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "0.94)",
       "count": 1,
-      "files": [
-        "components/pricing/PricingPage.tsx"
-      ],
+      "files": ["components/pricing/PricingPage.tsx"],
       "category": "other",
       "variants": []
     },
@@ -15528,45 +14551,33 @@
         "components/sections/TrustSignals.tsx"
       ],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "hover:-translate-y-px",
       "count": 1,
-      "files": [
-        "components/pricing/PricingPage.tsx"
-      ],
+      "files": ["components/pricing/PricingPage.tsx"],
       "category": "other",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "opacity-60",
       "count": 1,
-      "files": [
-        "components/pricing/PricingPage.tsx"
-      ],
+      "files": ["components/pricing/PricingPage.tsx"],
       "category": "effects",
       "variants": []
     },
     {
       "class": "border-red-400",
       "count": 1,
-      "files": [
-        "components/performance/ComponentProfiler.tsx"
-      ],
+      "files": ["components/performance/ComponentProfiler.tsx"],
       "category": "colors",
       "variants": []
     },
     {
       "class": "rounded-t",
       "count": 1,
-      "files": [
-        "components/performance/ComponentProfiler.tsx"
-      ],
+      "files": ["components/performance/ComponentProfiler.tsx"],
       "category": "borders",
       "variants": []
     },
@@ -15578,16 +14589,12 @@
         "components/workflow/workflow-builder.tsx"
       ],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "scale-50",
       "count": 1,
-      "files": [
-        "components/panels/ExportPanel.tsx"
-      ],
+      "files": ["components/panels/ExportPanel.tsx"],
       "category": "other",
       "variants": []
     },
@@ -15640,103 +14647,75 @@
         "components/workflow/workflow-builder.tsx"
       ],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "invisible",
       "count": 1,
-      "files": [
-        "components/theme/ThemeToggle.tsx"
-      ],
+      "files": ["components/theme/ThemeToggle.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "group-hover:opacity-100",
       "count": 1,
-      "files": [
-        "components/theme/ThemeToggle.tsx"
-      ],
+      "files": ["components/theme/ThemeToggle.tsx"],
       "category": "other",
-      "variants": [
-        "group-hover"
-      ]
+      "variants": ["group-hover"]
     },
     {
       "class": "group-hover:visible",
       "count": 1,
-      "files": [
-        "components/theme/ThemeToggle.tsx"
-      ],
+      "files": ["components/theme/ThemeToggle.tsx"],
       "category": "other",
-      "variants": [
-        "group-hover"
-      ]
+      "variants": ["group-hover"]
     },
     {
       "class": "hover:bg-opacity-80",
       "count": 1,
-      "files": [
-        "components/theme/ThemeToggle.tsx"
-      ],
+      "files": ["components/theme/ThemeToggle.tsx"],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "animate-theme-switch",
       "count": 1,
-      "files": [
-        "components/theme/ThemeToggle.tsx"
-      ],
+      "files": ["components/theme/ThemeToggle.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "min-h-64",
       "count": 1,
-      "files": [
-        "components/transitions/PageTransition.tsx"
-      ],
+      "files": ["components/transitions/PageTransition.tsx"],
       "category": "sizing",
       "variants": []
     },
     {
       "class": "text-indigo-500",
       "count": 1,
-      "files": [
-        "components/security/security-dashboard.tsx"
-      ],
+      "files": ["components/security/security-dashboard.tsx"],
       "category": "typography",
       "variants": []
     },
     {
       "class": "bg-amber-50",
       "count": 1,
-      "files": [
-        "components/security/two-factor-setup.tsx"
-      ],
+      "files": ["components/security/two-factor-setup.tsx"],
       "category": "colors",
       "variants": []
     },
     {
       "class": "border-amber-200",
       "count": 1,
-      "files": [
-        "components/security/two-factor-setup.tsx"
-      ],
+      "files": ["components/security/two-factor-setup.tsx"],
       "category": "colors",
       "variants": []
     },
     {
       "class": "text-amber-800",
       "count": 1,
-      "files": [
-        "components/security/two-factor-setup.tsx"
-      ],
+      "files": ["components/security/two-factor-setup.tsx"],
       "category": "typography",
       "variants": []
     },
@@ -15763,208 +14742,154 @@
     {
       "class": "pt-0",
       "count": 1,
-      "files": [
-        "components/sections/ModernHero.tsx"
-      ],
+      "files": ["components/sections/ModernHero.tsx"],
       "category": "spacing",
       "variants": []
     },
     {
       "class": "blur-xl",
       "count": 1,
-      "files": [
-        "components/sections/ModernHero.tsx"
-      ],
+      "files": ["components/sections/ModernHero.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "animate-float-slow",
       "count": 1,
-      "files": [
-        "components/sections/ModernHero.tsx"
-      ],
+      "files": ["components/sections/ModernHero.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "top-40",
       "count": 1,
-      "files": [
-        "components/sections/ModernHero.tsx"
-      ],
+      "files": ["components/sections/ModernHero.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "right-20",
       "count": 1,
-      "files": [
-        "components/sections/ModernHero.tsx"
-      ],
+      "files": ["components/sections/ModernHero.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "animate-float-medium",
       "count": 1,
-      "files": [
-        "components/sections/ModernHero.tsx"
-      ],
+      "files": ["components/sections/ModernHero.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "bottom-32",
       "count": 1,
-      "files": [
-        "components/sections/ModernHero.tsx"
-      ],
+      "files": ["components/sections/ModernHero.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "animate-float-fast",
       "count": 1,
-      "files": [
-        "components/sections/ModernHero.tsx"
-      ],
+      "files": ["components/sections/ModernHero.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "hero-animate-1",
       "count": 1,
-      "files": [
-        "components/sections/ModernHero.tsx"
-      ],
+      "files": ["components/sections/ModernHero.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "hero-title-reduced",
       "count": 1,
-      "files": [
-        "components/sections/ModernHero.tsx"
-      ],
+      "files": ["components/sections/ModernHero.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "gradient-text",
       "count": 1,
-      "files": [
-        "components/sections/ModernHero.tsx"
-      ],
+      "files": ["components/sections/ModernHero.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "animate-gradient-text",
       "count": 1,
-      "files": [
-        "components/sections/ModernHero.tsx"
-      ],
+      "files": ["components/sections/ModernHero.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "-mt-3",
       "count": 1,
-      "files": [
-        "components/sections/ModernHero.tsx"
-      ],
+      "files": ["components/sections/ModernHero.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "max-w-xl",
       "count": 1,
-      "files": [
-        "components/sections/ModernHero.tsx"
-      ],
+      "files": ["components/sections/ModernHero.tsx"],
       "category": "sizing",
       "variants": []
     },
     {
       "class": "sm:max-w-2xl",
       "count": 1,
-      "files": [
-        "components/sections/ModernHero.tsx"
-      ],
+      "files": ["components/sections/ModernHero.tsx"],
       "category": "sizing",
-      "variants": [
-        "sm"
-      ]
+      "variants": ["sm"]
     },
     {
       "class": "lg:max-w-3xl",
       "count": 1,
-      "files": [
-        "components/sections/ModernHero.tsx"
-      ],
+      "files": ["components/sections/ModernHero.tsx"],
       "category": "sizing",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "sm:text-xl",
       "count": 1,
-      "files": [
-        "components/sections/ModernHero.tsx"
-      ],
+      "files": ["components/sections/ModernHero.tsx"],
       "category": "typography",
-      "variants": [
-        "sm"
-      ]
+      "variants": ["sm"]
     },
     {
       "class": "lg:text-2xl",
       "count": 1,
-      "files": [
-        "components/sections/ModernHero.tsx"
-      ],
+      "files": ["components/sections/ModernHero.tsx"],
       "category": "typography",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "hero-animate-2",
       "count": 1,
-      "files": [
-        "components/sections/ModernHero.tsx"
-      ],
+      "files": ["components/sections/ModernHero.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "hero-animate-3",
       "count": 1,
-      "files": [
-        "components/sections/ModernHero.tsx"
-      ],
+      "files": ["components/sections/ModernHero.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "sm:w-auto",
       "count": 1,
-      "files": [
-        "components/sections/ModernHero.tsx"
-      ],
+      "files": ["components/sections/ModernHero.tsx"],
       "category": "sizing",
-      "variants": [
-        "sm"
-      ]
+      "variants": ["sm"]
     },
     {
       "class": "hero-animate-4",
       "count": 1,
-      "files": [
-        "components/sections/ModernHero.tsx"
-      ],
+      "files": ["components/sections/ModernHero.tsx"],
       "category": "other",
       "variants": []
     },
@@ -15976,114 +14901,82 @@
         "components/workspace/DownloadInterface.tsx"
       ],
       "category": "layout",
-      "variants": [
-        "sm"
-      ]
+      "variants": ["sm"]
     },
     {
       "class": "sm:gap-6",
       "count": 1,
-      "files": [
-        "components/sections/ModernHero.tsx"
-      ],
+      "files": ["components/sections/ModernHero.tsx"],
       "category": "spacing",
-      "variants": [
-        "sm"
-      ]
+      "variants": ["sm"]
     },
     {
       "class": "max-w-5xl",
       "count": 1,
-      "files": [
-        "components/sections/ModernHero.tsx"
-      ],
+      "files": ["components/sections/ModernHero.tsx"],
       "category": "sizing",
       "variants": []
     },
     {
       "class": "hero-animate-5",
       "count": 1,
-      "files": [
-        "components/sections/ModernHero.tsx"
-      ],
+      "files": ["components/sections/ModernHero.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "sm:gap-3",
       "count": 1,
-      "files": [
-        "components/sections/ModernHero.tsx"
-      ],
+      "files": ["components/sections/ModernHero.tsx"],
       "category": "spacing",
-      "variants": [
-        "sm"
-      ]
+      "variants": ["sm"]
     },
     {
       "class": "sm:mt-12",
       "count": 1,
-      "files": [
-        "components/sections/ModernHero.tsx"
-      ],
+      "files": ["components/sections/ModernHero.tsx"],
       "category": "spacing",
-      "variants": [
-        "sm"
-      ]
+      "variants": ["sm"]
     },
     {
       "class": "hero-animate-6",
       "count": 1,
-      "files": [
-        "components/sections/ModernHero.tsx"
-      ],
+      "files": ["components/sections/ModernHero.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "sm:px-4",
       "count": 1,
-      "files": [
-        "components/sections/ModernHero.tsx"
-      ],
+      "files": ["components/sections/ModernHero.tsx"],
       "category": "spacing",
-      "variants": [
-        "sm"
-      ]
+      "variants": ["sm"]
     },
     {
       "class": "mb-24",
       "count": 1,
-      "files": [
-        "components/sections/ProductShowcase.tsx"
-      ],
+      "files": ["components/sections/ProductShowcase.tsx"],
       "category": "spacing",
       "variants": []
     },
     {
       "class": "bg-gray-500",
       "count": 1,
-      "files": [
-        "components/sections/ProductShowcase.tsx"
-      ],
+      "files": ["components/sections/ProductShowcase.tsx"],
       "category": "colors",
       "variants": []
     },
     {
       "class": "-right-4",
       "count": 1,
-      "files": [
-        "components/sections/ProductShowcase.tsx"
-      ],
+      "files": ["components/sections/ProductShowcase.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "bg-gray-700",
       "count": 1,
-      "files": [
-        "components/sections/ProductShowcase.tsx"
-      ],
+      "files": ["components/sections/ProductShowcase.tsx"],
       "category": "colors",
       "variants": []
     },
@@ -16103,9 +14996,7 @@
     {
       "class": "btn-focus",
       "count": 1,
-      "files": [
-        "components/ui/Button.tsx"
-      ],
+      "files": ["components/ui/Button.tsx"],
       "category": "other",
       "variants": []
     },
@@ -16122,22 +15013,16 @@
     {
       "class": "ripple-effect",
       "count": 1,
-      "files": [
-        "components/ui/Button.tsx"
-      ],
+      "files": ["components/ui/Button.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "active:scale-95",
       "count": 1,
-      "files": [
-        "components/ui/Button.tsx"
-      ],
+      "files": ["components/ui/Button.tsx"],
       "category": "other",
-      "variants": [
-        "active"
-      ]
+      "variants": ["active"]
     },
     {
       "class": "max-h-60",
@@ -16153,13 +15038,9 @@
     {
       "class": "hover:no-underline",
       "count": 1,
-      "files": [
-        "components/ui/ErrorBoundary.tsx"
-      ],
+      "files": ["components/ui/ErrorBoundary.tsx"],
       "category": "other",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "top-3",
@@ -16174,67 +15055,49 @@
     {
       "class": "hover:-translate-y-1",
       "count": 1,
-      "files": [
-        "components/ui/FeatureCard.tsx"
-      ],
+      "files": ["components/ui/FeatureCard.tsx"],
       "category": "other",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "animate-feature-discovery",
       "count": 1,
-      "files": [
-        "components/ui/FeatureDiscovery.tsx"
-      ],
+      "files": ["components/ui/FeatureDiscovery.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "text-yellow-300",
       "count": 1,
-      "files": [
-        "components/ui/FeatureHint.tsx"
-      ],
+      "files": ["components/ui/FeatureHint.tsx"],
       "category": "typography",
       "variants": []
     },
     {
       "class": "text-purple-200",
       "count": 1,
-      "files": [
-        "components/ui/FeatureHint.tsx"
-      ],
+      "files": ["components/ui/FeatureHint.tsx"],
       "category": "typography",
       "variants": []
     },
     {
       "class": "p-0.5",
       "count": 1,
-      "files": [
-        "components/ui/FeatureHint.tsx"
-      ],
+      "files": ["components/ui/FeatureHint.tsx"],
       "category": "spacing",
       "variants": []
     },
     {
       "class": "hover:bg-opacity-20",
       "count": 1,
-      "files": [
-        "components/ui/FeatureHint.tsx"
-      ],
+      "files": ["components/ui/FeatureHint.tsx"],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "bg-purple-400",
       "count": 1,
-      "files": [
-        "components/ui/FeatureHint.tsx"
-      ],
+      "files": ["components/ui/FeatureHint.tsx"],
       "category": "colors",
       "variants": []
     },
@@ -16262,260 +15125,182 @@
     {
       "class": "-translate-x-full",
       "count": 1,
-      "files": [
-        "components/ui/Skeleton.tsx"
-      ],
+      "files": ["components/ui/Skeleton.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "animate-shimmer",
       "count": 1,
-      "files": [
-        "components/ui/Skeleton.tsx"
-      ],
+      "files": ["components/ui/Skeleton.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "sm:grid-cols-3",
       "count": 1,
-      "files": [
-        "components/ui/StudioActions.tsx"
-      ],
+      "files": ["components/ui/StudioActions.tsx"],
       "category": "layout",
-      "variants": [
-        "sm"
-      ]
+      "variants": ["sm"]
     },
     {
       "class": "z-[100]",
       "count": 1,
-      "files": [
-        "components/ui/Toast.tsx"
-      ],
+      "files": ["components/ui/Toast.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "animate-toast-slide-in",
       "count": 1,
-      "files": [
-        "components/ui/Toast.tsx"
-      ],
+      "files": ["components/ui/Toast.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "z-[60]",
       "count": 1,
-      "files": [
-        "components/ui/UniversalDropdown.tsx"
-      ],
+      "files": ["components/ui/UniversalDropdown.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "animate-dropdown-open",
       "count": 1,
-      "files": [
-        "components/ui/UniversalDropdown.tsx"
-      ],
+      "files": ["components/ui/UniversalDropdown.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "bg-background",
       "count": 2,
-      "files": [
-        "components/ui/input.tsx",
-        "components/ui/textarea.tsx"
-      ],
+      "files": ["components/ui/input.tsx", "components/ui/textarea.tsx"],
       "category": "colors",
       "variants": []
     },
     {
       "class": "ring-offset-background",
       "count": 2,
-      "files": [
-        "components/ui/input.tsx",
-        "components/ui/textarea.tsx"
-      ],
+      "files": ["components/ui/input.tsx", "components/ui/textarea.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "file:border-0",
       "count": 1,
-      "files": [
-        "components/ui/input.tsx"
-      ],
+      "files": ["components/ui/input.tsx"],
       "category": "other",
-      "variants": [
-        "file"
-      ]
+      "variants": ["file"]
     },
     {
       "class": "file:bg-transparent",
       "count": 1,
-      "files": [
-        "components/ui/input.tsx"
-      ],
+      "files": ["components/ui/input.tsx"],
       "category": "other",
-      "variants": [
-        "file"
-      ]
+      "variants": ["file"]
     },
     {
       "class": "file:text-sm",
       "count": 1,
-      "files": [
-        "components/ui/input.tsx"
-      ],
+      "files": ["components/ui/input.tsx"],
       "category": "other",
-      "variants": [
-        "file"
-      ]
+      "variants": ["file"]
     },
     {
       "class": "file:font-medium",
       "count": 1,
-      "files": [
-        "components/ui/input.tsx"
-      ],
+      "files": ["components/ui/input.tsx"],
       "category": "other",
-      "variants": [
-        "file"
-      ]
+      "variants": ["file"]
     },
     {
       "class": "placeholder:text-muted-foreground",
       "count": 2,
-      "files": [
-        "components/ui/input.tsx",
-        "components/ui/textarea.tsx"
-      ],
+      "files": ["components/ui/input.tsx", "components/ui/textarea.tsx"],
       "category": "other",
-      "variants": [
-        "placeholder"
-      ]
+      "variants": ["placeholder"]
     },
     {
       "class": "focus-visible:outline-none",
       "count": 2,
-      "files": [
-        "components/ui/input.tsx",
-        "components/ui/textarea.tsx"
-      ],
+      "files": ["components/ui/input.tsx", "components/ui/textarea.tsx"],
       "category": "other",
-      "variants": [
-        "focus-visible"
-      ]
+      "variants": ["focus-visible"]
     },
     {
       "class": "focus-visible:ring-2",
       "count": 2,
-      "files": [
-        "components/ui/input.tsx",
-        "components/ui/textarea.tsx"
-      ],
+      "files": ["components/ui/input.tsx", "components/ui/textarea.tsx"],
       "category": "other",
-      "variants": [
-        "focus-visible"
-      ]
+      "variants": ["focus-visible"]
     },
     {
       "class": "focus-visible:ring-offset-2",
       "count": 2,
-      "files": [
-        "components/ui/input.tsx",
-        "components/ui/textarea.tsx"
-      ],
+      "files": ["components/ui/input.tsx", "components/ui/textarea.tsx"],
       "category": "other",
-      "variants": [
-        "focus-visible"
-      ]
+      "variants": ["focus-visible"]
     },
     {
       "class": "min-w-72",
       "count": 1,
-      "files": [
-        "components/ui/language-selector.tsx"
-      ],
+      "files": ["components/ui/language-selector.tsx"],
       "category": "sizing",
       "variants": []
     },
     {
       "class": "ring-1",
       "count": 1,
-      "files": [
-        "components/ui/language-selector.tsx"
-      ],
+      "files": ["components/ui/language-selector.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "ring-black",
       "count": 1,
-      "files": [
-        "components/ui/language-selector.tsx"
-      ],
+      "files": ["components/ui/language-selector.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "ring-opacity-5",
       "count": 1,
-      "files": [
-        "components/ui/language-selector.tsx"
-      ],
+      "files": ["components/ui/language-selector.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "pr-3",
       "count": 1,
-      "files": [
-        "components/ui/language-selector.tsx"
-      ],
+      "files": ["components/ui/language-selector.tsx"],
       "category": "spacing",
       "variants": []
     },
     {
       "class": "focus:bg-gray-100",
       "count": 1,
-      "files": [
-        "components/ui/language-selector.tsx"
-      ],
+      "files": ["components/ui/language-selector.tsx"],
       "category": "colors",
-      "variants": [
-        "focus"
-      ]
+      "variants": ["focus"]
     },
     {
       "class": "min-h-[80px]",
       "count": 1,
-      "files": [
-        "components/ui/textarea.tsx"
-      ],
+      "files": ["components/ui/textarea.tsx"],
       "category": "sizing",
       "variants": []
     },
     {
       "class": "resize-y",
       "count": 1,
-      "files": [
-        "components/ui/textarea.tsx"
-      ],
+      "files": ["components/ui/textarea.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "border-orange-500",
       "count": 1,
-      "files": [
-        "components/workflow/workflow-builder.tsx"
-      ],
+      "files": ["components/workflow/workflow-builder.tsx"],
       "category": "colors",
       "variants": []
     },
@@ -16547,58 +15332,42 @@
         "components/workflows/WorkflowBuilder.tsx"
       ],
       "category": "other",
-      "variants": [
-        "focus"
-      ]
+      "variants": ["focus"]
     },
     {
       "class": "border-green-300",
       "count": 1,
-      "files": [
-        "components/workflow/workflow-builder.tsx"
-      ],
+      "files": ["components/workflow/workflow-builder.tsx"],
       "category": "colors",
       "variants": []
     },
     {
       "class": "hover:bg-green-100",
       "count": 1,
-      "files": [
-        "components/workflow/workflow-builder.tsx"
-      ],
+      "files": ["components/workflow/workflow-builder.tsx"],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "border-orange-300",
       "count": 1,
-      "files": [
-        "components/workflow/workflow-builder.tsx"
-      ],
+      "files": ["components/workflow/workflow-builder.tsx"],
       "category": "colors",
       "variants": []
     },
     {
       "class": "text-orange-700",
       "count": 1,
-      "files": [
-        "components/workflow/workflow-builder.tsx"
-      ],
+      "files": ["components/workflow/workflow-builder.tsx"],
       "category": "typography",
       "variants": []
     },
     {
       "class": "hover:bg-orange-100",
       "count": 1,
-      "files": [
-        "components/workflow/workflow-builder.tsx"
-      ],
+      "files": ["components/workflow/workflow-builder.tsx"],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "border-l",
@@ -16623,20 +15392,14 @@
     {
       "class": "hover:text-red-900",
       "count": 1,
-      "files": [
-        "components/workflow/workflow-dashboard.tsx"
-      ],
+      "files": ["components/workflow/workflow-dashboard.tsx"],
       "category": "typography",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "-mb-px",
       "count": 1,
-      "files": [
-        "components/workflow/workflow-dashboard.tsx"
-      ],
+      "files": ["components/workflow/workflow-dashboard.tsx"],
       "category": "other",
       "variants": []
     },
@@ -16658,20 +15421,14 @@
         "components/workflows/WorkflowBuilder.tsx"
       ],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "hover:bg-red-50",
       "count": 1,
-      "files": [
-        "components/workflows/AutomationManager.tsx"
-      ],
+      "files": ["components/workflows/AutomationManager.tsx"],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "hover:text-blue-800",
@@ -16681,127 +15438,91 @@
         "components/workspace/SimpleTranslationInterface.tsx"
       ],
       "category": "typography",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "bottom-3",
       "count": 1,
-      "files": [
-        "components/workflows/TemplateMarketplace.tsx"
-      ],
+      "files": ["components/workflows/TemplateMarketplace.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "bg-gray-300",
       "count": 1,
-      "files": [
-        "components/workflows/TemplateMarketplace.tsx"
-      ],
+      "files": ["components/workflows/TemplateMarketplace.tsx"],
       "category": "colors",
       "variants": []
     },
     {
       "class": "lg:space-y-0",
       "count": 1,
-      "files": [
-        "components/workflows/TemplateMarketplace.tsx"
-      ],
+      "files": ["components/workflows/TemplateMarketplace.tsx"],
       "category": "spacing",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "sm:space-y-0",
       "count": 1,
-      "files": [
-        "components/workflows/TemplateMarketplace.tsx"
-      ],
+      "files": ["components/workflows/TemplateMarketplace.tsx"],
       "category": "spacing",
-      "variants": [
-        "sm"
-      ]
+      "variants": ["sm"]
     },
     {
       "class": "sm:space-x-4",
       "count": 1,
-      "files": [
-        "components/workflows/TemplateMarketplace.tsx"
-      ],
+      "files": ["components/workflows/TemplateMarketplace.tsx"],
       "category": "spacing",
-      "variants": [
-        "sm"
-      ]
+      "variants": ["sm"]
     },
     {
       "class": "sm:w-64",
       "count": 1,
-      "files": [
-        "components/workflows/TemplateMarketplace.tsx"
-      ],
+      "files": ["components/workflows/TemplateMarketplace.tsx"],
       "category": "sizing",
-      "variants": [
-        "sm"
-      ]
+      "variants": ["sm"]
     },
     {
       "class": "border-r",
       "count": 1,
-      "files": [
-        "components/workflows/WorkflowBuilder.tsx"
-      ],
+      "files": ["components/workflows/WorkflowBuilder.tsx"],
       "category": "colors",
       "variants": []
     },
     {
       "class": "cursor-move",
       "count": 1,
-      "files": [
-        "components/workflows/WorkflowBuilder.tsx"
-      ],
+      "files": ["components/workflows/WorkflowBuilder.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "min-w-[60px]",
       "count": 1,
-      "files": [
-        "components/workflows/WorkflowBuilder.tsx"
-      ],
+      "files": ["components/workflows/WorkflowBuilder.tsx"],
       "category": "sizing",
       "variants": []
     },
     {
       "class": "cursor-crosshair",
       "count": 1,
-      "files": [
-        "components/workflows/WorkflowBuilder.tsx"
-      ],
+      "files": ["components/workflows/WorkflowBuilder.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "text-blue-400",
       "count": 1,
-      "files": [
-        "components/workspace/ApiDeveloperPortal.tsx"
-      ],
+      "files": ["components/workspace/ApiDeveloperPortal.tsx"],
       "category": "typography",
       "variants": []
     },
     {
       "class": "hover:border-blue-500",
       "count": 1,
-      "files": [
-        "components/workspace/BatchProcessingInterface.tsx"
-      ],
+      "files": ["components/workspace/BatchProcessingInterface.tsx"],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "hover:text-red-700",
@@ -16811,20 +15532,14 @@
         "components/__tests__/layout/navbar.test.tsx"
       ],
       "category": "typography",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "lg:col-span-1",
       "count": 1,
-      "files": [
-        "components/workspace/BatchProcessingInterface.tsx"
-      ],
+      "files": ["components/workspace/BatchProcessingInterface.tsx"],
       "category": "other",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "max-h-[80vh]",
@@ -16839,114 +15554,86 @@
     {
       "class": "w-2.5",
       "count": 1,
-      "files": [
-        "components/workspace/ContextualAssistant.tsx"
-      ],
+      "files": ["components/workspace/ContextualAssistant.tsx"],
       "category": "sizing",
       "variants": []
     },
     {
       "class": "h-2.5",
       "count": 1,
-      "files": [
-        "components/workspace/ContextualAssistant.tsx"
-      ],
+      "files": ["components/workspace/ContextualAssistant.tsx"],
       "category": "sizing",
       "variants": []
     },
     {
       "class": "m-auto",
       "count": 1,
-      "files": [
-        "components/workspace/ContextualAssistant.tsx"
-      ],
+      "files": ["components/workspace/ContextualAssistant.tsx"],
       "category": "spacing",
       "variants": []
     },
     {
       "class": "justify-start",
       "count": 1,
-      "files": [
-        "components/workspace/ContextualAssistant.tsx"
-      ],
+      "files": ["components/workspace/ContextualAssistant.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "rounded-bl-none",
       "count": 1,
-      "files": [
-        "components/workspace/ContextualAssistant.tsx"
-      ],
+      "files": ["components/workspace/ContextualAssistant.tsx"],
       "category": "borders",
       "variants": []
     },
     {
       "class": "animate-bounce",
       "count": 1,
-      "files": [
-        "components/workspace/ContextualAssistant.tsx"
-      ],
+      "files": ["components/workspace/ContextualAssistant.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "delay-100",
       "count": 1,
-      "files": [
-        "components/workspace/ContextualAssistant.tsx"
-      ],
+      "files": ["components/workspace/ContextualAssistant.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "delay-200",
       "count": 1,
-      "files": [
-        "components/workspace/ContextualAssistant.tsx"
-      ],
+      "files": ["components/workspace/ContextualAssistant.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "pb-3",
       "count": 1,
-      "files": [
-        "components/workspace/DocumentInteractionHub.tsx"
-      ],
+      "files": ["components/workspace/DocumentInteractionHub.tsx"],
       "category": "spacing",
       "variants": []
     },
     {
       "class": "whitespace-pre-line",
       "count": 1,
-      "files": [
-        "components/workspace/DocumentInteractionHub.tsx"
-      ],
+      "files": ["components/workspace/DocumentInteractionHub.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "hover:text-green-800",
       "count": 1,
-      "files": [
-        "components/workspace/EnhancedDocumentInterface.tsx"
-      ],
+      "files": ["components/workspace/EnhancedDocumentInterface.tsx"],
       "category": "typography",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "hover:shadow-sm",
       "count": 1,
-      "files": [
-        "components/workspace/EnhancedDocumentInterface.tsx"
-      ],
+      "files": ["components/workspace/EnhancedDocumentInterface.tsx"],
       "category": "effects",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "resize-none",
@@ -16961,65 +15648,49 @@
     {
       "class": "text-green-900",
       "count": 1,
-      "files": [
-        "components/workspace/EnhancedDocumentInterface.tsx"
-      ],
+      "files": ["components/workspace/EnhancedDocumentInterface.tsx"],
       "category": "typography",
       "variants": []
     },
     {
       "class": "bg-orange-600",
       "count": 1,
-      "files": [
-        "components/workspace/SettingsDashboard.tsx"
-      ],
+      "files": ["components/workspace/SettingsDashboard.tsx"],
       "category": "colors",
       "variants": []
     },
     {
       "class": "hover:bg-orange-700",
       "count": 1,
-      "files": [
-        "components/workspace/SettingsDashboard.tsx"
-      ],
+      "files": ["components/workspace/SettingsDashboard.tsx"],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "text-red-900",
       "count": 1,
-      "files": [
-        "components/workspace/SettingsDashboard.tsx"
-      ],
+      "files": ["components/workspace/SettingsDashboard.tsx"],
       "category": "typography",
       "variants": []
     },
     {
       "class": "h-40",
       "count": 1,
-      "files": [
-        "components/workspace/SimpleTranslationInterface.tsx"
-      ],
+      "files": ["components/workspace/SimpleTranslationInterface.tsx"],
       "category": "sizing",
       "variants": []
     },
     {
       "class": "bg-opacity-75",
       "count": 1,
-      "files": [
-        "components/workspace/SimpleTranslationInterface.tsx"
-      ],
+      "files": ["components/workspace/SimpleTranslationInterface.tsx"],
       "category": "colors",
       "variants": []
     },
     {
       "class": "animate-slide-in-left",
       "count": 1,
-      "files": [
-        "components/workspace/SimpleTranslationInterface.tsx"
-      ],
+      "files": ["components/workspace/SimpleTranslationInterface.tsx"],
       "category": "other",
       "variants": []
     },
@@ -17031,9 +15702,7 @@
         "components/workspace/WorkspaceSkeleton.tsx"
       ],
       "category": "layout",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "lg:w-80",
@@ -17043,36 +15712,26 @@
         "components/workspace/WorkspaceSkeleton.tsx"
       ],
       "category": "sizing",
-      "variants": [
-        "lg"
-      ]
+      "variants": ["lg"]
     },
     {
       "class": "xl:flex",
       "count": 1,
-      "files": [
-        "components/workspace/WorkspaceLayout.tsx"
-      ],
+      "files": ["components/workspace/WorkspaceLayout.tsx"],
       "category": "layout",
-      "variants": [
-        "xl"
-      ]
+      "variants": ["xl"]
     },
     {
       "class": "pr-6",
       "count": 1,
-      "files": [
-        "components/workspace/WorkspaceLayout.tsx"
-      ],
+      "files": ["components/workspace/WorkspaceLayout.tsx"],
       "category": "spacing",
       "variants": []
     },
     {
       "class": "no-underline",
       "count": 1,
-      "files": [
-        "components/workspace/WorkspaceLayout.tsx"
-      ],
+      "files": ["components/workspace/WorkspaceLayout.tsx"],
       "category": "other",
       "variants": []
     },
@@ -17089,36 +15748,28 @@
     {
       "class": "text-green-100",
       "count": 1,
-      "files": [
-        "components/__tests__/ui/dashboard.test.tsx"
-      ],
+      "files": ["components/__tests__/ui/dashboard.test.tsx"],
       "category": "typography",
       "variants": []
     },
     {
       "class": "custom-input",
       "count": 1,
-      "files": [
-        "components/__tests__/ui/input.test.tsx"
-      ],
+      "files": ["components/__tests__/ui/input.test.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "custom-textarea",
       "count": 1,
-      "files": [
-        "components/__tests__/ui/textarea.test.tsx"
-      ],
+      "files": ["components/__tests__/ui/textarea.test.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "another-class",
       "count": 1,
-      "files": [
-        "components/__tests__/ui/textarea.test.tsx"
-      ],
+      "files": ["components/__tests__/ui/textarea.test.tsx"],
       "category": "other",
       "variants": []
     },
@@ -17140,47 +15791,35 @@
         "components/workspace/dashboard/EnterpriseFeatures.tsx"
       ],
       "category": "colors",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "from-indigo-50",
       "count": 1,
-      "files": [
-        "components/workspace/dashboard/CrossDocumentIntelligence.tsx"
-      ],
+      "files": ["components/workspace/dashboard/CrossDocumentIntelligence.tsx"],
       "category": "other",
       "variants": []
     },
     {
       "class": "border-indigo-200",
       "count": 1,
-      "files": [
-        "components/workspace/dashboard/CrossDocumentIntelligence.tsx"
-      ],
+      "files": ["components/workspace/dashboard/CrossDocumentIntelligence.tsx"],
       "category": "colors",
       "variants": []
     },
     {
       "class": "text-indigo-800",
       "count": 1,
-      "files": [
-        "components/workspace/dashboard/CrossDocumentIntelligence.tsx"
-      ],
+      "files": ["components/workspace/dashboard/CrossDocumentIntelligence.tsx"],
       "category": "typography",
       "variants": []
     },
     {
       "class": "hover:text-indigo-700",
       "count": 1,
-      "files": [
-        "components/workspace/dashboard/CrossDocumentIntelligence.tsx"
-      ],
+      "files": ["components/workspace/dashboard/CrossDocumentIntelligence.tsx"],
       "category": "typography",
-      "variants": [
-        "hover"
-      ]
+      "variants": ["hover"]
     },
     {
       "class": "focus:ring-indigo-500",
@@ -17190,27 +15829,19 @@
         "components/workspace/dashboard/EnterpriseFeatures.tsx"
       ],
       "category": "other",
-      "variants": [
-        "focus"
-      ]
+      "variants": ["focus"]
     },
     {
       "class": "focus:ring-purple-500",
       "count": 1,
-      "files": [
-        "components/workspace/dashboard/EnterpriseFeatures.tsx"
-      ],
+      "files": ["components/workspace/dashboard/EnterpriseFeatures.tsx"],
       "category": "other",
-      "variants": [
-        "focus"
-      ]
+      "variants": ["focus"]
     },
     {
       "class": "space-y-0.5",
       "count": 1,
-      "files": [
-        "components/workspace/dashboard/PredictiveInsights.tsx"
-      ],
+      "files": ["components/workspace/dashboard/PredictiveInsights.tsx"],
       "category": "spacing",
       "variants": []
     }
@@ -17283,9 +15914,7 @@
         "transition-colors"
       ],
       "inlineStyles": [],
-      "dependencies": [
-        "next/link"
-      ]
+      "dependencies": ["next/link"]
     },
     {
       "name": "page",
@@ -17293,9 +15922,7 @@
       "type": "component",
       "tailwindClasses": [],
       "inlineStyles": [],
-      "dependencies": [
-        "next/navigation"
-      ]
+      "dependencies": ["next/navigation"]
     },
     {
       "name": "layout",
@@ -17479,10 +16106,7 @@
         "text-sm"
       ],
       "inlineStyles": [],
-      "dependencies": [
-        "react",
-        "swagger-ui-react"
-      ]
+      "dependencies": ["react", "swagger-ui-react"]
     },
     {
       "name": "page",
@@ -17808,12 +16432,7 @@
         "{ borderColor: 'var(--surface-outline)'",
         "{ backgroundColor: 'var(--success-100)'"
       ],
-      "dependencies": [
-        "react",
-        "next/navigation",
-        "lucide-react",
-        "next/link"
-      ]
+      "dependencies": ["react", "next/navigation", "lucide-react", "next/link"]
     },
     {
       "name": "page",
@@ -17988,10 +16607,7 @@
         "space-y-1"
       ],
       "inlineStyles": [],
-      "dependencies": [
-        "next/link",
-        "lucide-react"
-      ]
+      "dependencies": ["next/link", "lucide-react"]
     },
     {
       "name": "page",
@@ -18705,18 +17321,13 @@
         "{ color: 'var(--notebooklm-primary)'",
         "{ backgroundColor: 'var(--notebooklm-primary)'"
       ],
-      "dependencies": [
-        "next",
-        "next/link"
-      ]
+      "dependencies": ["next", "next/link"]
     },
     {
       "name": "page",
       "path": "app/workspace/page.tsx",
       "type": "component",
-      "tailwindClasses": [
-        "h-full"
-      ],
+      "tailwindClasses": ["h-full"],
       "inlineStyles": [],
       "dependencies": [
         "react",
@@ -19051,9 +17662,7 @@
       "type": "component",
       "tailwindClasses": [],
       "inlineStyles": [],
-      "dependencies": [
-        "@/components/billing/BillingPage"
-      ]
+      "dependencies": ["@/components/billing/BillingPage"]
     },
     {
       "name": "page",
@@ -19427,9 +18036,7 @@
         "space-y-3",
         "max-w-md"
       ],
-      "inlineStyles": [
-        "{ width: '45%'"
-      ],
+      "inlineStyles": ["{ width: '45%'"],
       "dependencies": [
         "react",
         "framer-motion",
@@ -19557,9 +18164,7 @@
         "duration-300",
         "p-12"
       ],
-      "inlineStyles": [
-        "{ width: `${workflow.progress"
-      ],
+      "inlineStyles": ["{ width: `${workflow.progress"],
       "dependencies": [
         "react",
         "framer-motion",
@@ -19667,12 +18272,7 @@
         "{ color: 'var(--notebooklm-primary)'",
         "{\n                        backgroundColor: 'var(--notebooklm-primary-light)',\n                        color: 'var(--notebooklm-primary)',"
       ],
-      "dependencies": [
-        "next",
-        "next/navigation",
-        "next/link",
-        "next/image"
-      ]
+      "dependencies": ["next", "next/navigation", "next/link", "next/image"]
     },
     {
       "name": "page",
@@ -19765,13 +18365,8 @@
         "mt-8",
         "mt-1"
       ],
-      "inlineStyles": [
-        "{ width: `${agent.efficiency"
-      ],
-      "dependencies": [
-        "react",
-        "@/components/workspace/types"
-      ]
+      "inlineStyles": ["{ width: `${agent.efficiency"],
+      "dependencies": ["react", "@/components/workspace/types"]
     },
     {
       "name": "page",
@@ -19887,10 +18482,7 @@
         "border-gray-100",
         "text-lg"
       ],
-      "inlineStyles": [
-        "{ width: `${dept.usage",
-        "{ width: `${dept.efficiency"
-      ],
+      "inlineStyles": ["{ width: `${dept.usage", "{ width: `${dept.efficiency"],
       "dependencies": [
         "next/dynamic",
         "react",
@@ -20048,9 +18640,7 @@
       "type": "component",
       "tailwindClasses": [],
       "inlineStyles": [],
-      "dependencies": [
-        "react"
-      ]
+      "dependencies": ["react"]
     },
     {
       "name": "ErrorBoundary",
@@ -20101,11 +18691,7 @@
         "whitespace-pre-wrap"
       ],
       "inlineStyles": [],
-      "dependencies": [
-        "react",
-        "next/navigation",
-        "lucide-react"
-      ],
+      "dependencies": ["react", "next/navigation", "lucide-react"],
       "propsInterface": "interface ErrorBoundaryProps {\n  children: React.ReactNode\n  fallback?: React.ComponentType<ErrorFallbackProps>\n  onError?: (error: Error, errorInfo: React.ErrorInfo) => void\n  showErrorDetails?: boolean\n}"
     },
     {
@@ -20235,9 +18821,7 @@
         "left-4"
       ],
       "inlineStyles": [],
-      "dependencies": [
-        "react"
-      ],
+      "dependencies": ["react"],
       "propsInterface": "interface ServiceWorkerRegistrationProps {\n  onUpdate?: () => void\n  onSuccess?: () => void\n  onError?: (error: Error) => void\n}"
     },
     {
@@ -20304,10 +18888,7 @@
         "ml-1"
       ],
       "inlineStyles": [],
-      "dependencies": [
-        "react",
-        "lucide-react"
-      ]
+      "dependencies": ["react", "lucide-react"]
     },
     {
       "name": "AIInterfaceRefinement",
@@ -20748,11 +19329,7 @@
         "mr-3"
       ],
       "inlineStyles": [],
-      "dependencies": [
-        "react",
-        "@/lib/supabase",
-        "@/components/ui/Toast"
-      ]
+      "dependencies": ["react", "@/lib/supabase", "@/components/ui/Toast"]
     },
     {
       "name": "CostTrackingDashboard",
@@ -20844,9 +19421,7 @@
         "whitespace-nowrap"
       ],
       "inlineStyles": [],
-      "dependencies": [
-        "react"
-      ]
+      "dependencies": ["react"]
     },
     {
       "name": "MonitoringDashboard",
@@ -20934,9 +19509,7 @@
       "inlineStyles": [
         "{\n                      width: `${Math.min(\n                        (healthData.performance.memoryUsage.used / healthData.performance.memoryUsage.total) * 100,\n                        100\n                      )"
       ],
-      "dependencies": [
-        "react"
-      ]
+      "dependencies": ["react"]
     },
     {
       "name": "RealTimeCostDashboard",
@@ -21017,12 +19590,8 @@
         "bg-red-100",
         "text-red-800"
       ],
-      "inlineStyles": [
-        "{ backgroundColor: COLORS[index % COLORS.length]"
-      ],
-      "dependencies": [
-        "react"
-      ]
+      "inlineStyles": ["{ backgroundColor: COLORS[index % COLORS.length]"],
+      "dependencies": ["react"]
     },
     {
       "name": "AccessibilityEnhancer",
@@ -21047,10 +19616,7 @@
       "inlineStyles": [
         "{ backgroundColor: 'var(--notebooklm-primary)', color: 'var(--surface-elevated)'"
       ],
-      "dependencies": [
-        "react",
-        "next/navigation"
-      ],
+      "dependencies": ["react", "next/navigation"],
       "propsInterface": "interface AccessibilityEnhancerProps {\n  children: React.ReactNode\n  enableAnnouncements?: boolean\n  enableKeyboardNavigation?: boolean\n  enableFocusManagement?: boolean\n  enableReducedMotion?: boolean\n}"
     },
     {
@@ -21117,26 +19683,16 @@
         "{\n                              backgroundColor: 'white',\n                              left: isEnabled ? '26px' : '2px',\n                              boxShadow: 'var(--elevation-level-1)'",
         "{\n                    borderTop: '1px solid var(--surface-outline)'"
       ],
-      "dependencies": [
-        "react",
-        "lucide-react",
-        "@/components/ui/Button"
-      ],
+      "dependencies": ["react", "lucide-react", "@/components/ui/Button"],
       "propsInterface": "interface AccessibilityPanelProps {\n  language?: 'vi' | 'en'\n}"
     },
     {
       "name": "AccessibilityProvider",
       "path": "components/accessibility/AccessibilityProvider.tsx",
       "type": "component",
-      "tailwindClasses": [
-        "aria-live-region",
-        "skip-link",
-        "sr-only-focusable"
-      ],
+      "tailwindClasses": ["aria-live-region", "skip-link", "sr-only-focusable"],
       "inlineStyles": [],
-      "dependencies": [
-        "react"
-      ],
+      "dependencies": ["react"],
       "propsInterface": "interface AccessibilityProviderProps {\n  children: ReactNode\n}"
     },
     {
@@ -21242,11 +19798,7 @@
         "{ color: 'var(--notebooklm-primary)'",
         "{ color: 'var(--notebooklm-primary)'"
       ],
-      "dependencies": [
-        "react",
-        "lucide-react",
-        "@/components/ui/Button"
-      ],
+      "dependencies": ["react", "lucide-react", "@/components/ui/Button"],
       "propsInterface": "interface ConsentBannerProps {\n  onConsentChange?: (consent: ConsentSettings) => void\n}"
     },
     {
@@ -21441,11 +19993,7 @@
         "hover:bg-green-700"
       ],
       "inlineStyles": [],
-      "dependencies": [
-        "react",
-        "@/lib/i18n/provider",
-        "@/lib/logger"
-      ]
+      "dependencies": ["react", "@/lib/i18n/provider", "@/lib/logger"]
     },
     {
       "name": "AuthErrorHandler",
@@ -21657,11 +20205,7 @@
         "z-10"
       ],
       "inlineStyles": [],
-      "dependencies": [
-        "react",
-        "react-dom",
-        "@/contexts/AuthContext"
-      ],
+      "dependencies": ["react", "react-dom", "@/contexts/AuthContext"],
       "propsInterface": "interface AuthModalProps {\n  isOpen: boolean\n  onClose: () => void\n  initialMode?: 'signin' | 'signup'\n  language?: 'vi' | 'en'\n  redirectTo?: string\n}"
     },
     {
@@ -21724,10 +20268,7 @@
         "hover:bg-green-700"
       ],
       "inlineStyles": [],
-      "dependencies": [
-        "react",
-        "@/contexts/SSRSafeLanguageContext"
-      ],
+      "dependencies": ["react", "@/contexts/SSRSafeLanguageContext"],
       "propsInterface": "interface CreditDisplayProps {\n  userId?: string\n  showDetails?: boolean\n  size?: 'sm' | 'md' | 'lg'\n  variant?: 'badge' | 'card' | 'inline'\n  onInviteClick?: () => void\n  onTopUpClick?: () => void\n  className?: string\n}"
     },
     {
@@ -21975,11 +20516,7 @@
         "{ width: `${Math.min(100, usageData?.percentage.characters || 0)",
         "{ animationDelay: '400ms'"
       ],
-      "dependencies": [
-        "react",
-        "@/lib/stripe",
-        "@/lib/supabase"
-      ],
+      "dependencies": ["react", "@/lib/stripe", "@/lib/supabase"],
       "propsInterface": "interface BillingPageProps {\n  profile: UserProfile | null\n  language?: 'vi' | 'en'\n}"
     },
     {
@@ -22388,9 +20925,7 @@
         "space-x-4",
         "text-purple-700"
       ],
-      "inlineStyles": [
-        "{width: '60%'"
-      ],
+      "inlineStyles": ["{width: '60%'"],
       "dependencies": [
         "react",
         "framer-motion",
@@ -22492,10 +21027,7 @@
         "{ animationDelay: '300ms'",
         "{ animationDelay: `${index * 50"
       ],
-      "dependencies": [
-        "react",
-        "@/lib/batch-processor"
-      ],
+      "dependencies": ["react", "@/lib/batch-processor"],
       "propsInterface": "interface BatchUploadProps {\n  language?: 'vi' | 'en'\n  maxFiles?: number\n  maxSizeMB?: number\n  onBatchComplete?: (job: BatchJob) => void\n  onBatchError?: (error: Error) => void\n}"
     },
     {
@@ -22571,11 +21103,7 @@
         "{ animationDelay: `${index * 50",
         "{\n                        top: '10px',\n                        right: '10px'"
       ],
-      "dependencies": [
-        "react",
-        "framer-motion",
-        "@/lib/document-processor"
-      ],
+      "dependencies": ["react", "framer-motion", "@/lib/document-processor"],
       "propsInterface": "interface DocumentPreviewProps {\n  document: ProcessedDocument\n  language?: 'vi' | 'en'\n  showMetadata?: boolean\n  showChunks?: boolean\n  maxHeight?: number\n  onChunkSelect?: (chunkId: string) => void\n  onTextSelect?: (selectedText: string) => void\n}"
     },
     {
@@ -22688,11 +21216,7 @@
         "{\n                  fontSize: 'var(--sys-body-medium-size)',\n                  lineHeight: 'var(--sys-body-medium-line-height)',\n                  fontFamily: 'var(--sys-body-medium-font)',\n                  fontWeight: 'var(--sys-body-medium-weight)',\n                  color: 'rgb(21, 128, 61)'",
         "{\n                    fontWeight: 'var(--sys-label-medium-weight)'"
       ],
-      "dependencies": [
-        "react",
-        "framer-motion",
-        "@/lib/motion"
-      ],
+      "dependencies": ["react", "framer-motion", "@/lib/motion"],
       "propsInterface": "interface DocumentUploadProps {\n  language?: 'vi' | 'en'\n  onFileSelect: (file: File) => void\n  maxSizeMB?: number\n  isProcessing?: boolean\n}"
     },
     {
@@ -22775,11 +21299,7 @@
         "{\n            backgroundColor: 'rgba(239, 68, 68, 0.1)',\n            border: '1px solid rgba(239, 68, 68, 0.3)',\n            borderRadius: 'var(--mat-card-outlined-container-shape)'",
         "{\n              fontSize: 'var(--sys-body-medium-size)',\n              lineHeight: 'var(--sys-body-medium-line-height)',\n              fontFamily: 'var(--sys-body-medium-font)',\n              fontWeight: 'var(--sys-body-medium-weight)',\n              color: 'rgb(185, 28, 28)'"
       ],
-      "dependencies": [
-        "react",
-        "framer-motion",
-        "@/lib/motion"
-      ],
+      "dependencies": ["react", "framer-motion", "@/lib/motion"],
       "propsInterface": "interface DocumentViewerProps {\n  file: File\n  language?: 'vi' | 'en'\n  onTextExtract?: (text: string) => void\n  onError?: (error: string) => void\n}"
     },
     {
@@ -22899,11 +21419,7 @@
         "{\n                  fontSize: 'var(--sys-title-medium-size)',\n                  lineHeight: 'var(--sys-title-medium-line-height)',\n                  fontFamily: 'var(--sys-title-medium-font)',\n                  fontWeight: 'var(--sys-title-medium-weight)',\n                  color: 'var(--text-primary)'",
         "{ width: `${uploadProgress"
       ],
-      "dependencies": [
-        "react",
-        "framer-motion",
-        "@/lib/motion"
-      ]
+      "dependencies": ["react", "framer-motion", "@/lib/motion"]
     },
     {
       "name": "SmartDocumentWorkflow",
@@ -22998,9 +21514,7 @@
         "w-4",
         "h-4"
       ],
-      "inlineStyles": [
-        "{ width: `${Math.min(processingProgress, 100)"
-      ],
+      "inlineStyles": ["{ width: `${Math.min(processingProgress, 100)"],
       "dependencies": [
         "react",
         "framer-motion",
@@ -23307,10 +21821,7 @@
         "text-green-700"
       ],
       "inlineStyles": [],
-      "dependencies": [
-        "react",
-        "lucide-react"
-      ],
+      "dependencies": ["react", "lucide-react"],
       "propsInterface": "interface PerformanceAccessibilityMonitorProps {\n  language?: 'vi' | 'en'\n  onOptimizationSuggestion?: (suggestion: string) => void\n}"
     },
     {
@@ -23404,9 +21915,7 @@
       "type": "component",
       "tailwindClasses": [],
       "inlineStyles": [],
-      "dependencies": [
-        "react"
-      ],
+      "dependencies": ["react"],
       "propsInterface": "interface WebVitalsMonitorProps {\n  onMetric?: (metric: Metric) => void\n  debug?: boolean\n}"
     },
     {
@@ -23926,10 +22435,7 @@
         "{ backgroundColor: 'var(--surface-outline)'",
         "{ color: 'var(--text-disabled)'"
       ],
-      "dependencies": [
-        "react",
-        "@/lib/bundle-optimizer"
-      ],
+      "dependencies": ["react", "@/lib/bundle-optimizer"],
       "propsInterface": "interface LazyWrapperProps {\n  children: React.ReactNode\n  fallback?: React.ReactNode\n  name?: string\n  priority?: 'high' | 'medium' | 'low'\n  threshold?: number // Viewport threshold for loading\n}"
     },
     {
@@ -23957,9 +22463,7 @@
         "{ width, height",
         "{ opacity: isLoaded ? 1 : 0, transition: 'opacity 0.3s'"
       ],
-      "dependencies": [
-        "react"
-      ],
+      "dependencies": ["react"],
       "propsInterface": "interface OptimizedComponentWrapperProps {\n  children: React.ReactNode\n  componentId: string\n  enableVirtualization?: boolean\n  enableAccessibilityEnhancements?: boolean\n  enablePerformanceOptimization?: boolean\n  ariaLabel?: string\n  ariaDescription?: string\n  role?: string\n  onPerformanceIssue?: (issue: string) => void\n  className?: string\n}"
     },
     {
@@ -23968,19 +22472,14 @@
       "type": "component",
       "tailwindClasses": [],
       "inlineStyles": [],
-      "dependencies": [
-        "react",
-        "next/navigation"
-      ],
+      "dependencies": ["react", "next/navigation"],
       "propsInterface": "interface PerformanceMonitorProps {\n  children: React.ReactNode\n  enableLogging?: boolean\n  enableAnalytics?: boolean\n  threshold?: {\n    routeChange: number\n    componentMount: number\n    render: number\n  }"
     },
     {
       "name": "MainLayout",
       "path": "components/layouts/MainLayout.tsx",
       "type": "component",
-      "tailwindClasses": [
-        "min-h-screen"
-      ],
+      "tailwindClasses": ["min-h-screen"],
       "inlineStyles": [
         "{ backgroundColor: 'var(--surface-panel)'",
         "{\n          backgroundColor: 'var(--surface-panel)',\n          minHeight: isNavbarHidden ? '100vh' : 'calc(100vh - 64px)',"
@@ -24105,9 +22604,7 @@
         "border-t",
         "z-40"
       ],
-      "inlineStyles": [
-        "{ backgroundColor: 'var(--surface-panel)'"
-      ],
+      "inlineStyles": ["{ backgroundColor: 'var(--surface-panel)'"],
       "dependencies": [
         "react",
         "next/navigation",
@@ -24266,9 +22763,7 @@
       "type": "component",
       "tailwindClasses": [],
       "inlineStyles": [],
-      "dependencies": [
-        "next/navigation"
-      ]
+      "dependencies": ["next/navigation"]
     },
     {
       "name": "ModernNavbar",
@@ -24720,12 +23215,8 @@
         "w-2",
         "rounded-t"
       ],
-      "inlineStyles": [
-        "{ height: `${Math.min((time / 50) * 100, 100)"
-      ],
-      "dependencies": [
-        "react"
-      ]
+      "inlineStyles": ["{ height: `${Math.min((time / 50) * 100, 100)"],
+      "dependencies": ["react"]
     },
     {
       "name": "PerformanceDashboard",
@@ -24807,11 +23298,7 @@
         "text-right"
       ],
       "inlineStyles": [],
-      "dependencies": [
-        "react",
-        "framer-motion",
-        "@/lib/logger"
-      ],
+      "dependencies": ["react", "framer-motion", "@/lib/logger"],
       "propsInterface": "interface PerformanceDashboardProps {\n  className?: string\n  autoRefresh?: boolean\n  refreshInterval?: number\n}"
     },
     {
@@ -24895,13 +23382,8 @@
         "overflow-auto",
         "whitespace-pre-wrap"
       ],
-      "inlineStyles": [
-        "{ width: `${exportData.qualityScore * 100"
-      ],
-      "dependencies": [
-        "react",
-        "@/contexts/SSRSafeLanguageContext"
-      ],
+      "inlineStyles": ["{ width: `${exportData.qualityScore * 100"],
+      "dependencies": ["react", "@/contexts/SSRSafeLanguageContext"],
       "propsInterface": "interface ExportPanelProps {\n  exportData?: ExportData\n  onDownload?: (format: string, options: any) => void\n}"
     },
     {
@@ -25022,10 +23504,7 @@
       "inlineStyles": [
         "{\n                                    width: `${doc.chunkProgress.percentage"
       ],
-      "dependencies": [
-        "react",
-        "@/contexts/SSRSafeLanguageContext"
-      ],
+      "dependencies": ["react", "@/contexts/SSRSafeLanguageContext"],
       "propsInterface": "interface SourcesPanelProps {\n  onDocumentSelect?: (document: Document) => void\n  onTextExtracted?: (text: string, document: Document) => void\n}"
     },
     {
@@ -25034,9 +23513,7 @@
       "type": "component",
       "tailwindClasses": [],
       "inlineStyles": [],
-      "dependencies": [
-        "react"
-      ],
+      "dependencies": ["react"],
       "propsInterface": "interface ThemeProviderProps {\n  children: ReactNode\n  defaultTheme?: Theme\n  attribute?: string\n}"
     },
     {
@@ -25095,10 +23572,7 @@
         "{ backgroundColor: 'var(--notebooklm-primary)'",
         "{\n            backgroundColor: resolvedTheme === 'dark' \n              ? 'var(--notebooklm-primary)' \n              : 'var(--surface-outline)'"
       ],
-      "dependencies": [
-        "lucide-react",
-        "@/components/ui/Button"
-      ],
+      "dependencies": ["lucide-react", "@/components/ui/Button"],
       "propsInterface": "interface ThemeToggleProps {\n  variant?: 'button' | 'dropdown'\n  showLabel?: boolean\n  className?: string\n}"
     },
     {
@@ -25336,11 +23810,7 @@
         "hover:text-gray-700"
       ],
       "inlineStyles": [],
-      "dependencies": [
-        "react",
-        "@/lib/i18n/provider",
-        "@/lib/logger"
-      ]
+      "dependencies": ["react", "@/lib/i18n/provider", "@/lib/logger"]
     },
     {
       "name": "CommunityProof",
@@ -25776,13 +24246,8 @@
         "text-green-800",
         "ml-2"
       ],
-      "inlineStyles": [
-        "{ backgroundColor: 'rgba(251, 250, 249, 1)'"
-      ],
-      "dependencies": [
-        "framer-motion",
-        "@/contexts/SSRSafeLanguageContext"
-      ]
+      "inlineStyles": ["{ backgroundColor: 'rgba(251, 250, 249, 1)'"],
+      "dependencies": ["framer-motion", "@/contexts/SSRSafeLanguageContext"]
     },
     {
       "name": "ArtlineIcons",
@@ -25790,9 +24255,7 @@
       "type": "component",
       "tailwindClasses": [],
       "inlineStyles": [],
-      "dependencies": [
-        "react"
-      ]
+      "dependencies": ["react"]
     },
     {
       "name": "BlogCard",
@@ -25833,10 +24296,7 @@
         "{ color: 'var(--text-disabled)'",
         "{\n                  fontSize: 'var(--sys-body-small-size)',\n                  lineHeight: 'var(--sys-body-small-line-height)',\n                  fontFamily: 'var(--sys-body-small-font)',\n                  fontWeight: 'var(--sys-body-small-weight)',\n                  color: 'var(--text-disabled)'"
       ],
-      "dependencies": [
-        "next/link",
-        "lucide-react"
-      ],
+      "dependencies": ["next/link", "lucide-react"],
       "propsInterface": "interface BlogCardProps {\n  title: string\n  excerpt: string\n  author: string\n  publishDate: string\n  readTime: string\n  slug: string\n  category: string\n  artlineIllustration?: 'translation' | 'ai' | 'business' | 'technology' | 'security'\n  delay?: number\n  className?: string\n}"
     },
     {
@@ -25872,10 +24332,7 @@
         "{\n        ...getButtonStyles(),\n        position: 'relative',\n        overflow: 'hidden'",
         "{ position: 'relative', zIndex: 2"
       ],
-      "dependencies": [
-        "react",
-        "@/lib/utils"
-      ]
+      "dependencies": ["react", "@/lib/utils"]
     },
     {
       "name": "ErrorBoundary",
@@ -25962,11 +24419,7 @@
         "{\n            fontSize: 'var(--sys-body-medium-size)',\n            color: 'var(--error-color)',\n            marginBottom: retry ? '8px' : '0'",
         "{ color: 'var(--error-color)'"
       ],
-      "dependencies": [
-        "react",
-        "lucide-react",
-        "framer-motion"
-      ]
+      "dependencies": ["react", "lucide-react", "framer-motion"]
     },
     {
       "name": "FallbackStates",
@@ -26019,11 +24472,7 @@
         "{ \n          color: 'var(--text-primary)',\n          fontSize: size === 'sm' ? '16px' : size === 'md' ? '18px' : '20px'",
         "{ \n          color: 'var(--text-secondary)',\n          fontSize: size === 'sm' ? '14px' : '16px'"
       ],
-      "dependencies": [
-        "react",
-        "framer-motion",
-        "@/lib/motion"
-      ]
+      "dependencies": ["react", "framer-motion", "@/lib/motion"]
     },
     {
       "name": "FeatureCard",
@@ -26069,11 +24518,7 @@
         "{\n                backgroundColor: 'var(--surface-panel)',\n                color: 'var(--text-secondary)',\n                fontSize: 'var(--sys-body-small-size)',\n                lineHeight: 'var(--sys-body-small-line-height)',\n                fontFamily: 'var(--sys-body-small-font)',\n                fontWeight: 'var(--sys-body-small-weight)',\n                borderRadius: 'var(--shape-corner-full)'",
         "{\n            backgroundColor: 'var(--notebooklm-primary)'"
       ],
-      "dependencies": [
-        "react",
-        "lucide-react",
-        "@/lib/utils"
-      ],
+      "dependencies": ["react", "lucide-react", "@/lib/utils"],
       "propsInterface": "interface FeatureCardProps {\n  icon: LucideIcon\n  title: string\n  description: string\n  delay?: number\n  tags?: string[]\n  isSelected?: boolean\n  onClick?: (event: React.MouseEvent) => void\n  className?: string\n  'aria-label'?: string\n  'aria-describedby'?: string\n  role?: string\n  tabIndex?: number\n}"
     },
     {
@@ -26155,9 +24600,7 @@
         "{\n          top: '50%',\n          left: '50%',\n          transform: 'translate(-50%, -50%)'",
         "{ width: `${((currentStep + 1) / currentFeature.steps.length) * 100"
       ],
-      "dependencies": [
-        "react"
-      ],
+      "dependencies": ["react"],
       "propsInterface": "interface FeatureDiscoveryProps {\n  isOpen: boolean\n  onClose: () => void\n  onComplete: (feature: string) => void\n  userLevel?: 'beginner' | 'intermediate' | 'advanced'\n}"
     },
     {
@@ -26274,10 +24717,7 @@
         "{\n        backgroundColor: 'var(--surface-elevated)',\n        borderRadius: 'var(--mat-card-elevated-container-shape)',\n        border: '1px solid var(--surface-outline)'",
         "{\n        backgroundColor: 'var(--surface-elevated)',\n        borderRadius: 'var(--mat-card-outlined-container-shape)',\n        border: '1px solid var(--surface-outline)'"
       ],
-      "dependencies": [
-        "react",
-        "@/lib/utils"
-      ],
+      "dependencies": ["react", "@/lib/utils"],
       "propsInterface": "interface SkeletonProps {\n  className?: string\n  variant?: 'text' | 'circular' | 'rectangular' | 'rounded'\n  animation?: 'pulse' | 'wave' | 'shimmer' | 'none'\n  width?: string | number\n  height?: string | number\n  count?: number\n  duration?: number\n}"
     },
     {
@@ -26348,22 +24788,14 @@
         "{\n                backgroundColor: 'transparent',\n                color: styles.iconColor,\n                border: `1px solid ${styles.iconColor",
         "{\n            backgroundColor: 'transparent',\n            border: 'none',\n            borderRadius: 'var(--shape-corner-small)',\n            color: 'var(--text-disabled)',\n            cursor: 'pointer',\n            transition: 'all 200ms cubic-bezier(0.2, 0, 0, 1)'"
       ],
-      "dependencies": [
-        "react",
-        "lucide-react"
-      ]
+      "dependencies": ["react", "lucide-react"]
     },
     {
       "name": "UnifiedGetStartedButton",
       "path": "components/ui/UnifiedGetStartedButton.tsx",
       "type": "component",
-      "tailwindClasses": [
-        "animate-pulse"
-      ],
-      "inlineStyles": [
-        "style",
-        "style"
-      ],
+      "tailwindClasses": ["animate-pulse"],
+      "inlineStyles": ["style", "style"],
       "dependencies": [
         "react",
         "@/contexts/AuthContext",
@@ -26407,10 +24839,7 @@
         "{\n                      padding: '12px 16px',\n                      backgroundColor: isSelected ? 'var(--notebooklm-primary-light)' : 'transparent',\n                      color: isSelected ? 'var(--notebooklm-primary)' : 'var(--text-primary)',\n                      fontSize: 'var(--sys-body-medium-size)',\n                      lineHeight: 'var(--sys-body-medium-line-height)',\n                      fontFamily: 'var(--sys-body-medium-font)',\n                      fontWeight: isSelected ? '600' : 'var(--sys-body-medium-weight)',\n                      borderRadius: isSelected ? 'var(--mat-card-outlined-container-shape)' : '0'",
         "{ backgroundColor: 'var(--notebooklm-primary)'"
       ],
-      "dependencies": [
-        "react",
-        "lucide-react"
-      ],
+      "dependencies": ["react", "lucide-react"],
       "propsInterface": "interface UniversalDropdownProps {\n  options: DropdownOption[]\n  value: string\n  onChange: (value: string) => void\n  placeholder?: string\n  disabled?: boolean\n  className?: string\n  size?: 'sm' | 'md' | 'lg'\n}"
     },
     {
@@ -26443,10 +24872,7 @@
         "mt-1"
       ],
       "inlineStyles": [],
-      "dependencies": [
-        "react",
-        "@/lib/utils"
-      ]
+      "dependencies": ["react", "@/lib/utils"]
     },
     {
       "name": "language-selector",
@@ -26535,9 +24961,7 @@
         "focus:bg-gray-100",
         "p-1"
       ],
-      "inlineStyles": [
-        "{ maxHeight"
-      ],
+      "inlineStyles": ["{ maxHeight"],
       "dependencies": [
         "react",
         "@heroicons/react/24/outline",
@@ -26574,10 +24998,7 @@
         "mt-1"
       ],
       "inlineStyles": [],
-      "dependencies": [
-        "react",
-        "@/lib/utils"
-      ]
+      "dependencies": ["react", "@/lib/utils"]
     },
     {
       "name": "workflow-builder",
@@ -27118,9 +25539,7 @@
         "text-gray-500",
         "py-8"
       ],
-      "inlineStyles": [
-        "{ backgroundColor: getNodeColor(template.type)"
-      ],
+      "inlineStyles": ["{ backgroundColor: getNodeColor(template.type)"],
       "dependencies": [
         "react",
         "framer-motion",
@@ -27234,9 +25653,7 @@
         "mb-6",
         "animate-spin"
       ],
-      "inlineStyles": [
-        "{ width: `${lang.percentage"
-      ],
+      "inlineStyles": ["{ width: `${lang.percentage"],
       "dependencies": [
         "react",
         "@/contexts/SSRSafeLanguageContext",
@@ -27816,9 +26233,7 @@
         "transition-all",
         "duration-300"
       ],
-      "inlineStyles": [
-        "{ width: `${downloadProgress.progress"
-      ],
+      "inlineStyles": ["{ width: `${downloadProgress.progress"],
       "dependencies": [
         "react",
         "@/contexts/SSRSafeLanguageContext",
@@ -28974,26 +27389,15 @@
         "hover:text-blue-700"
       ],
       "inlineStyles": [],
-      "dependencies": [
-        "react",
-        "@testing-library/react"
-      ]
+      "dependencies": ["react", "@testing-library/react"]
     },
     {
       "name": "button.test",
       "path": "components/__tests__/ui/button.test.tsx",
       "type": "component",
-      "tailwindClasses": [
-        "custom-class"
-      ],
-      "inlineStyles": [
-        "{ backgroundColor: 'white'"
-      ],
-      "dependencies": [
-        "react",
-        "@testing-library/react",
-        "jest-axe"
-      ]
+      "tailwindClasses": ["custom-class"],
+      "inlineStyles": ["{ backgroundColor: 'white'"],
+      "dependencies": ["react", "@testing-library/react", "jest-axe"]
     },
     {
       "name": "dashboard.test",
@@ -29057,42 +27461,23 @@
         "text-xs"
       ],
       "inlineStyles": [],
-      "dependencies": [
-        "react",
-        "@testing-library/react"
-      ]
+      "dependencies": ["react", "@testing-library/react"]
     },
     {
       "name": "input.test",
       "path": "components/__tests__/ui/input.test.tsx",
       "type": "component",
-      "tailwindClasses": [
-        "custom-input"
-      ],
+      "tailwindClasses": ["custom-input"],
       "inlineStyles": [],
-      "dependencies": [
-        "react",
-        "@testing-library/react",
-        "jest-axe"
-      ]
+      "dependencies": ["react", "@testing-library/react", "jest-axe"]
     },
     {
       "name": "textarea.test",
       "path": "components/__tests__/ui/textarea.test.tsx",
       "type": "component",
-      "tailwindClasses": [
-        "custom-textarea",
-        "custom-class",
-        "another-class"
-      ],
-      "inlineStyles": [
-        "{ resize: 'vertical'"
-      ],
-      "dependencies": [
-        "react",
-        "@testing-library/react",
-        "jest-axe"
-      ]
+      "tailwindClasses": ["custom-textarea", "custom-class", "another-class"],
+      "inlineStyles": ["{ resize: 'vertical'"],
+      "dependencies": ["react", "@testing-library/react", "jest-axe"]
     },
     {
       "name": "CrossDocumentIntelligence",
@@ -29238,10 +27623,7 @@
         "z-50"
       ],
       "inlineStyles": [],
-      "dependencies": [
-        "react",
-        "framer-motion"
-      ],
+      "dependencies": ["react", "framer-motion"],
       "propsInterface": "interface CrossDocumentIntelligenceProps {\n  onAnalysisComplete?: (analysis: any) => void\n  onQuerySubmit?: (query: MultiDocumentQuery, result: any) => void\n}"
     },
     {
@@ -29359,10 +27741,7 @@
         "focus:ring-indigo-500"
       ],
       "inlineStyles": [],
-      "dependencies": [
-        "react",
-        "framer-motion"
-      ]
+      "dependencies": ["react", "framer-motion"]
     },
     {
       "name": "PredictiveInsights",
@@ -29541,11 +27920,7 @@
         "hover:bg-red-200"
       ],
       "inlineStyles": [],
-      "dependencies": [
-        "react",
-        "next/link",
-        "@/lib/logger"
-      ]
+      "dependencies": ["react", "next/link", "@/lib/logger"]
     },
     {
       "name": "provider",

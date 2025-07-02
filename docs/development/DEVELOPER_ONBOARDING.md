@@ -5,14 +5,16 @@ Welcome to the Prismy development team! This comprehensive guide will get you up
 ## 📋 Quick Start Checklist
 
 ### Prerequisites
+
 - [ ] Node.js 18.17.0+ installed
-- [ ] npm 9.0.0+ installed  
+- [ ] npm 9.0.0+ installed
 - [ ] Git configured
 - [ ] VSCode with recommended extensions
 - [ ] Access to Supabase project
 - [ ] Access to Vercel project
 
 ### Initial Setup
+
 - [ ] Clone repository
 - [ ] Install dependencies
 - [ ] Configure environment variables
@@ -25,30 +27,35 @@ Welcome to the Prismy development team! This comprehensive guide will get you up
 ## 🛠️ Development Environment Setup
 
 ### 1. Clone Repository
+
 ```bash
 git clone https://github.com/your-org/prismy-production.git
 cd prismy-production
 ```
 
 ### 2. Install Dependencies
+
 ```bash
 npm install
 ```
 
 ### 3. Environment Configuration
+
 Copy and configure environment variables:
+
 ```bash
 cp .env.example .env.local
 ```
 
 **Required Environment Variables:**
+
 ```env
 # Database
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 
-# Authentication  
+# Authentication
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 
 # AI Services
@@ -68,9 +75,11 @@ SENTRY_PROJECT=your_sentry_project
 ```
 
 ### 4. Development Server
+
 ```bash
 npm run dev
 ```
+
 Visit: http://localhost:3000
 
 ---
@@ -78,12 +87,13 @@ Visit: http://localhost:3000
 ## 🏗️ Project Architecture
 
 ### Folder Structure
+
 ```
 prismy-production/
 ├── 📱 app/           # Next.js App Router (pages & APIs)
 ├── 🧩 components/    # React components
 ├── 📚 lib/           # Business logic
-├── 🎣 hooks/         # Custom hooks  
+├── 🎣 hooks/         # Custom hooks
 ├── 🎨 styles/        # Global styles
 ├── 🔧 config/        # Configuration files
 ├── 📜 scripts/       # Build scripts
@@ -93,6 +103,7 @@ prismy-production/
 ```
 
 ### Key Technologies
+
 - **Frontend**: React 18, Next.js 15, Tailwind CSS
 - **Backend**: Next.js API Routes, Supabase
 - **Database**: PostgreSQL (via Supabase)
@@ -107,22 +118,27 @@ prismy-production/
 ## 🚀 Development Workflow
 
 ### Daily Development
+
 1. **Pull latest changes**
+
    ```bash
    git pull origin main
    ```
 
 2. **Create feature branch**
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
 
 3. **Make changes with hot reload**
+
    ```bash
    npm run dev
    ```
 
 4. **Run tests**
+
    ```bash
    npm run test
    npm run test:e2e
@@ -134,12 +150,14 @@ prismy-production/
    ```
 
 ### Code Quality
+
 - **Linting**: `npm run lint`
 - **Formatting**: `npm run format`
 - **Type checking**: `npm run type-check`
 - **Full test suite**: `npm run test:all`
 
 ### Git Workflow
+
 - Create feature branches from `main`
 - Use conventional commits: `feat:`, `fix:`, `docs:`
 - Squash commits before merging
@@ -150,6 +168,7 @@ prismy-production/
 ## 🧪 Testing Strategy
 
 ### Unit Tests (Jest)
+
 ```bash
 npm run test:unit       # Run unit tests
 npm run test:watch      # Watch mode
@@ -157,12 +176,14 @@ npm run test:coverage   # Coverage report
 ```
 
 ### E2E Tests (Playwright)
+
 ```bash
 npm run test:e2e        # Run E2E tests
 npm run test:e2e:ui     # Visual test runner
 ```
 
 ### Test File Locations
+
 - Unit tests: `*.spec.ts` files
 - E2E tests: `tests/` directory
 - Mocks: `__mocks__/` directories
@@ -172,15 +193,18 @@ npm run test:e2e:ui     # Visual test runner
 ## 🔧 Configuration Files
 
 ### Build Configurations
+
 - `config/build/next.config.js` - Next.js configuration
 - `config/build/tailwind.config.ts` - Tailwind CSS
 - `config/build/tsconfig.json` - TypeScript
 
-### Testing Configurations  
+### Testing Configurations
+
 - `config/testing/jest.config.js` - Jest setup
 - `config/testing/playwright.config.ts` - E2E testing
 
 ### Deployment Configurations
+
 - `config/deployment/vercel.json` - Vercel settings
 - `config/deployment/lighthouserc.json` - Performance audits
 
@@ -189,24 +213,28 @@ npm run test:e2e:ui     # Visual test runner
 ## 🎯 Common Development Tasks
 
 ### Adding New Components
+
 1. Create component in `components/[category]/`
 2. Add TypeScript interfaces
 3. Include tests
 4. Update exports in `index.ts`
 
 ### Creating API Endpoints
+
 1. Add route in `app/api/[path]/route.ts`
 2. Implement HTTP methods (GET, POST, etc.)
 3. Add error handling
 4. Include API documentation
 
 ### Database Changes
+
 1. Create migration in `config/database/supabase/migrations/`
 2. Test locally with Supabase CLI
 3. Update TypeScript types
 4. Document schema changes
 
 ### Adding New Features
+
 1. Plan architecture and data flow
 2. Create components and API endpoints
 3. Add comprehensive tests
@@ -220,28 +248,33 @@ npm run test:e2e:ui     # Visual test runner
 ### Common Issues
 
 **Build Failures:**
+
 - Check TypeScript errors: `npm run type-check`
 - Verify imports and exports
 - Clear `.next` cache: `npm run clean`
 
 **Database Issues:**
+
 - Verify Supabase connection
 - Check RLS policies
 - Review migration status
 
 **Authentication Problems:**
+
 - Verify environment variables
 - Check Supabase Auth settings
 - Review redirect URLs
 
 **Performance Issues:**
+
 - Run Lighthouse audit: `npm run analyze`
 - Check bundle size
 - Profile components
 
 ### Debug Tools
+
 - React DevTools
-- Next.js DevTools  
+- Next.js DevTools
 - Supabase Dashboard
 - Sentry Error Tracking
 - Vercel Analytics
@@ -251,18 +284,21 @@ npm run test:e2e:ui     # Visual test runner
 ## 📚 Key Resources
 
 ### Documentation
+
 - [Next.js Docs](https://nextjs.org/docs)
 - [Supabase Docs](https://supabase.com/docs)
 - [Tailwind CSS](https://tailwindcss.com/docs)
 - [Stripe API](https://stripe.com/docs/api)
 
 ### Internal Docs
+
 - `docs/api/` - API Reference
-- `docs/architecture/` - System Architecture  
+- `docs/architecture/` - System Architecture
 - `docs/deployment/` - Deployment Guide
 - `TECHNICAL_DOCUMENTATION.md` - Technical Overview
 
 ### Team Resources
+
 - Slack: #prismy-dev
 - Code Review Guidelines: See PR template
 - Design System: Figma workspace
@@ -273,17 +309,20 @@ npm run test:e2e:ui     # Visual test runner
 ## 🚀 Deployment Process
 
 ### Development Deployment
+
 - Every PR creates preview deployment
 - Auto-deploys to staging on `develop` branch
 - Production deploys on `main` branch merge
 
 ### CI/CD Pipeline
+
 - **Quality Checks**: Lint, type-check, tests
 - **Security Scans**: Dependency audit, CodeQL
 - **Performance**: Lighthouse, bundle analysis
 - **Monitoring**: Health checks, alerts
 
 ### Release Process
+
 1. Feature development on branches
 2. PR review and approval
 3. Merge to `develop` → staging deployment
@@ -295,6 +334,7 @@ npm run test:e2e:ui     # Visual test runner
 ## 🎓 Learning Path
 
 ### Week 1: Environment & Basics
+
 - [ ] Complete setup checklist
 - [ ] Explore codebase structure
 - [ ] Run development server
@@ -302,6 +342,7 @@ npm run test:e2e:ui     # Visual test runner
 - [ ] Understand build process
 
 ### Week 2: Core Features
+
 - [ ] Study authentication flow
 - [ ] Understand document processing
 - [ ] Learn translation service
@@ -309,6 +350,7 @@ npm run test:e2e:ui     # Visual test runner
 - [ ] Practice debugging
 
 ### Week 3: Advanced Topics
+
 - [ ] Performance optimization
 - [ ] Security best practices
 - [ ] Testing strategies
@@ -316,6 +358,7 @@ npm run test:e2e:ui     # Visual test runner
 - [ ] Monitoring and alerts
 
 ### Week 4: Contribution
+
 - [ ] Pick first ticket
 - [ ] Submit first PR
 - [ ] Code review process
@@ -327,17 +370,20 @@ npm run test:e2e:ui     # Visual test runner
 ## 🆘 Getting Help
 
 ### Quick Help
+
 - Check this documentation first
 - Search existing issues/PRs
 - Review error logs and console
 
 ### Team Support
+
 - **Slack**: #prismy-dev for questions
 - **Code Review**: Tag senior developers
 - **Architecture**: Schedule design discussion
 - **Urgent Issues**: Contact team lead
 
 ### External Resources
+
 - Stack Overflow for general questions
 - GitHub Issues for bug reports
 - Community forums for framework help
@@ -347,6 +393,7 @@ npm run test:e2e:ui     # Visual test runner
 ## ✅ Success Metrics
 
 You'll know you're ready when you can:
+
 - [ ] Set up development environment independently
 - [ ] Navigate codebase confidently
 - [ ] Make changes without breaking builds
@@ -359,5 +406,5 @@ You'll know you're ready when you can:
 
 ---
 
-*Last updated: $(date)*
-*Need updates? Edit this file and submit a PR.*
+_Last updated: $(date)_
+_Need updates? Edit this file and submit a PR._

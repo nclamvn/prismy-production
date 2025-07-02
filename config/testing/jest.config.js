@@ -35,8 +35,8 @@ const customJestConfig = {
       branches: 50,
       functions: 50,
       lines: 50,
-      statements: 50
-    }
+      statements: 50,
+    },
   },
   coverageReporters: ['text', 'lcov', 'html'],
   coverageDirectory: 'coverage',

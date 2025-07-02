@@ -5,12 +5,14 @@ This document outlines all the environment variables that need to be configured 
 ## Critical Environment Variables (Required for Build)
 
 ### 1. Redis/Upstash Configuration
+
 ```
 UPSTASH_REDIS_REST_URL=https://your-redis-instance.upstash.io
 UPSTASH_REDIS_REST_TOKEN=your-redis-token
 ```
 
 ### 2. Supabase Configuration
+
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://your-supabase-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
@@ -18,6 +20,7 @@ SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
 ```
 
 ### 3. Google Services
+
 ```
 GOOGLE_TRANSLATE_API_KEY=your-google-translate-api-key
 GOOGLE_CLOUD_PROJECT_ID=your-google-project-id
@@ -25,12 +28,14 @@ GOOGLE_APPLICATION_CREDENTIALS_JSON={"type":"service_account",...}
 ```
 
 ### 4. Authentication
+
 ```
 NEXTAUTH_SECRET=your-nextauth-secret
 NEXTAUTH_URL=https://prismy.in
 ```
 
 ### 5. Stripe Configuration
+
 ```
 STRIPE_SECRET_KEY=sk_live_your-stripe-secret-key
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_your-stripe-publishable-key
@@ -38,6 +43,7 @@ STRIPE_WEBHOOK_SECRET=whsec_your-webhook-secret
 ```
 
 ### 6. Payment Gateways (Vietnam)
+
 ```
 MOMO_PARTNER_CODE=your-momo-partner-code
 MOMO_ACCESS_KEY=your-momo-access-key
@@ -47,6 +53,7 @@ VNPAY_HASH_SECRET=your-vnpay-hash-secret
 ```
 
 ### 7. OpenAI Configuration
+
 ```
 OPENAI_API_KEY=sk-your-openai-api-key
 ```
@@ -63,6 +70,7 @@ OPENAI_API_KEY=sk-your-openai-api-key
 ## Build Configuration in Vercel
 
 The project is already configured with:
+
 - Build Command: `npm run build`
 - Output Directory: `.next`
 - Install Command: `npm install`
@@ -78,6 +86,7 @@ The project is already configured with:
 ## Post-Deployment Verification
 
 After deployment, verify:
+
 - [ ] Homepage loads correctly
 - [ ] Authentication works
 - [ ] Translation functionality works
@@ -89,12 +98,14 @@ After deployment, verify:
 ## Troubleshooting
 
 If build fails:
+
 1. Check environment variables are set correctly
 2. Verify Redis/Upstash connection
 3. Check Supabase configuration
 4. Review build logs in Vercel dashboard
 
 All SSR issues have been resolved in the latest commit:
+
 - Fixed window/document access in performance optimizer
 - Fixed accessibility enhancer SSR issues
 - Added proper browser API checks

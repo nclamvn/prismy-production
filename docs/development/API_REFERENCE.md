@@ -35,6 +35,7 @@ Content-Type: application/json
 Authenticate user with email and password.
 
 **Request Body:**
+
 ```json
 {
   "email": "user@example.com",
@@ -43,6 +44,7 @@ Authenticate user with email and password.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -85,6 +87,7 @@ Authenticate user with email and password.
 Register new user account.
 
 **Request Body:**
+
 ```json
 {
   "email": "user@example.com",
@@ -95,13 +98,20 @@ Register new user account.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
   "data": {
-    "user": { /* User object */ },
-    "tokens": { /* Token object */ },
-    "session": { /* Session object */ },
+    "user": {
+      /* User object */
+    },
+    "tokens": {
+      /* Token object */
+    },
+    "session": {
+      /* Session object */
+    },
     "requiresVerification": true,
     "verificationMethod": "email"
   }
@@ -113,6 +123,7 @@ Register new user account.
 Logout current user session.
 
 **Request Body:**
+
 ```json
 {
   "sessionId": "session-123"
@@ -120,6 +131,7 @@ Logout current user session.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -132,11 +144,14 @@ Logout current user session.
 Get current user information.
 
 **Response:**
+
 ```json
 {
   "success": true,
   "data": {
-    "user": { /* User object */ },
+    "user": {
+      /* User object */
+    },
     "permissions": ["read", "write", "admin"],
     "subscription": {
       "plan": "premium",
@@ -160,6 +175,7 @@ The Workspace Intelligence API provides access to the AI-powered workspace syste
 Get current workspace state.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -236,6 +252,7 @@ Get current workspace state.
 Record new workspace activity.
 
 **Request Body:**
+
 ```json
 {
   "type": "translation",
@@ -255,6 +272,7 @@ Record new workspace activity.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -275,6 +293,7 @@ Record new workspace activity.
 Start new workspace operation.
 
 **Request Body:**
+
 ```json
 {
   "type": "document_translation",
@@ -292,6 +311,7 @@ Start new workspace operation.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -313,6 +333,7 @@ Start new workspace operation.
 Update operation status.
 
 **Request Body:**
+
 ```json
 {
   "status": "in_progress",
@@ -322,6 +343,7 @@ Update operation status.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -341,11 +363,13 @@ Update operation status.
 Get workspace suggestions.
 
 **Query Parameters:**
+
 - `category` (optional): Filter by suggestion category
 - `limit` (optional): Maximum number of suggestions (default: 10)
 - `minConfidence` (optional): Minimum confidence threshold (default: 0.7)
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -382,6 +406,7 @@ Get workspace suggestions.
 Apply a workspace suggestion.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -403,6 +428,7 @@ Apply a workspace suggestion.
 Dismiss a workspace suggestion.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -423,12 +449,14 @@ The AI Agent API manages the collaborative AI agent system for enhanced translat
 Get available AI agents.
 
 **Query Parameters:**
+
 - `type` (optional): Filter by agent type (translator, reviewer, analyzer)
 - `status` (optional): Filter by status (idle, active, busy)
 - `specialization` (optional): Filter by specialization
 - `limit` (optional): Maximum number of agents (default: 20)
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -477,6 +505,7 @@ Get available AI agents.
 Get specific agent details.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -489,7 +518,9 @@ Get specific agent details.
       "specialization": ["en-vi", "technical_translation"],
       "status": "idle",
       "capabilities": ["translate", "quality_check", "context_analysis"],
-      "performance": { /* Performance metrics */ },
+      "performance": {
+        /* Performance metrics */
+      },
       "configuration": {
         "model": "gpt-4",
         "parameters": {
@@ -532,6 +563,7 @@ Get specific agent details.
 Start agent collaboration session.
 
 **Request Body:**
+
 ```json
 {
   "agents": ["agent-translator-1", "agent-reviewer-1"],
@@ -556,6 +588,7 @@ Start agent collaboration session.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -582,6 +615,7 @@ Start agent collaboration session.
 Get collaboration session details.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -642,6 +676,7 @@ Get collaboration session details.
 Create task within collaboration session.
 
 **Request Body:**
+
 ```json
 {
   "title": "Cultural Adaptation Review",
@@ -659,6 +694,7 @@ Create task within collaboration session.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -681,6 +717,7 @@ Create task within collaboration session.
 Get swarm performance metrics.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -729,6 +766,7 @@ The Translation API provides access to the multi-provider translation system wit
 Translate text with optional parameters.
 
 **Request Body:**
+
 ```json
 {
   "text": "Hello, how are you today?",
@@ -747,6 +785,7 @@ Translate text with optional parameters.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -787,13 +826,10 @@ Translate text with optional parameters.
 Translate multiple texts in batch.
 
 **Request Body:**
+
 ```json
 {
-  "texts": [
-    "Hello world",
-    "How are you?",
-    "Thank you very much"
-  ],
+  "texts": ["Hello world", "How are you?", "Thank you very much"],
   "sourceLanguage": "en",
   "targetLanguage": "vi",
   "options": {
@@ -805,6 +841,7 @@ Translate multiple texts in batch.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -846,6 +883,7 @@ Translate multiple texts in batch.
 Get translation history.
 
 **Query Parameters:**
+
 - `page` (optional): Page number (default: 1)
 - `limit` (optional): Items per page (default: 20)
 - `sourceLanguage` (optional): Filter by source language
@@ -854,6 +892,7 @@ Get translation history.
 - `endDate` (optional): Filter by end date (ISO string)
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -897,6 +936,7 @@ Get translation history.
 Get specific translation details.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -934,17 +974,24 @@ Get specific translation details.
 Assess translation quality.
 
 **Request Body:**
+
 ```json
 {
   "sourceText": "Hello world",
   "translatedText": "Xin chào thế giới",
   "sourceLanguage": "en",
   "targetLanguage": "vi",
-  "assessmentCriteria": ["fluency", "accuracy", "coherence", "cultural_adaptation"]
+  "assessmentCriteria": [
+    "fluency",
+    "accuracy",
+    "coherence",
+    "cultural_adaptation"
+  ]
 }
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -988,6 +1035,7 @@ The Document Processing API handles document upload, analysis, and translation w
 Upload document for processing.
 
 **Request Body (multipart/form-data):**
+
 ```
 file: [file upload]
 targetLanguages: ["vi", "es"]
@@ -1000,6 +1048,7 @@ options: {
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -1050,6 +1099,7 @@ options: {
 Get document list.
 
 **Query Parameters:**
+
 - `page` (optional): Page number (default: 1)
 - `limit` (optional): Items per page (default: 20)
 - `status` (optional): Filter by status
@@ -1057,6 +1107,7 @@ Get document list.
 - `startDate` (optional): Filter by upload date
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -1091,6 +1142,7 @@ Get document list.
 Get specific document details.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -1190,6 +1242,7 @@ Get specific document details.
 Start document translation.
 
 **Request Body:**
+
 ```json
 {
   "targetLanguage": "vi",
@@ -1203,6 +1256,7 @@ Start document translation.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -1225,6 +1279,7 @@ Start document translation.
 Get document translation for specific language.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -1259,6 +1314,7 @@ Get document translation for specific language.
 Start batch document processing.
 
 **Request Body (multipart/form-data):**
+
 ```
 files: [multiple file uploads]
 commonTargetLanguages: ["vi", "es"]
@@ -1270,6 +1326,7 @@ options: {
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -1303,6 +1360,7 @@ options: {
 Get batch processing status.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -1353,11 +1411,13 @@ The Performance Monitoring API provides access to performance metrics, monitorin
 Get current performance metrics.
 
 **Query Parameters:**
+
 - `category` (optional): Filter by metric category
 - `timeRange` (optional): Time range for metrics (1h, 24h, 7d, 30d)
 - `aggregation` (optional): Aggregation method (avg, max, min, sum)
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -1404,6 +1464,7 @@ Get current performance metrics.
 Record custom performance metric.
 
 **Request Body:**
+
 ```json
 {
   "name": "Translation Processing Time",
@@ -1420,6 +1481,7 @@ Record custom performance metric.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -1440,6 +1502,7 @@ Record custom performance metric.
 Get performance analysis and insights.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -1488,6 +1551,7 @@ Get performance analysis and insights.
 Get component performance metrics.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -1553,35 +1617,41 @@ All API errors follow a consistent format:
 ### Common Error Codes
 
 #### Authentication Errors (401)
+
 - `UNAUTHORIZED`: Missing or invalid authentication token
 - `TOKEN_EXPIRED`: JWT token has expired
 - `INVALID_CREDENTIALS`: Invalid email/password combination
 - `ACCOUNT_DISABLED`: User account is disabled
 
 #### Authorization Errors (403)
+
 - `FORBIDDEN`: Insufficient permissions for requested action
 - `SUBSCRIPTION_REQUIRED`: Feature requires active subscription
 - `RATE_LIMIT_EXCEEDED`: API rate limit exceeded
 
 #### Validation Errors (400)
+
 - `VALIDATION_ERROR`: Request data validation failed
 - `MISSING_REQUIRED_FIELD`: Required field is missing
 - `INVALID_FORMAT`: Data format is invalid
 - `FILE_TOO_LARGE`: Uploaded file exceeds size limit
 
 #### Resource Errors (404)
+
 - `NOT_FOUND`: Requested resource not found
 - `DOCUMENT_NOT_FOUND`: Document not found
 - `TRANSLATION_NOT_FOUND`: Translation not found
 - `AGENT_NOT_FOUND`: AI agent not found
 
 #### Processing Errors (422)
+
 - `PROCESSING_FAILED`: Document processing failed
 - `TRANSLATION_FAILED`: Translation failed
 - `COLLABORATION_FAILED`: Agent collaboration failed
 - `QUALITY_THRESHOLD_NOT_MET`: Quality below threshold
 
 #### Server Errors (500)
+
 - `INTERNAL_ERROR`: Internal server error
 - `SERVICE_UNAVAILABLE`: External service unavailable
 - `TIMEOUT`: Request timeout
@@ -1602,14 +1672,14 @@ try {
   const response = await fetch('/api/translate', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
     },
-    body: JSON.stringify(requestData)
+    body: JSON.stringify(requestData),
   })
-  
+
   const result = await response.json()
-  
+
   if (!result.success) {
     switch (result.error.code) {
       case 'RATE_LIMIT_EXCEEDED':
@@ -1626,10 +1696,9 @@ try {
     }
     return
   }
-  
+
   // Handle successful response
   handleTranslationResult(result.data)
-  
 } catch (error) {
   // Handle network or parsing errors
   showError('Network error. Please check your connection.')
@@ -1640,12 +1709,12 @@ try {
 
 ### Rate Limits by Endpoint Category
 
-| Category | Authenticated | Unauthenticated |
-|----------|--------------|-----------------|
-| Translation | 1000/hour | 10/hour |
-| Document Processing | 100/hour | 5/hour |
-| AI Agent Collaboration | 500/hour | N/A |
-| Performance Metrics | 10000/hour | N/A |
+| Category               | Authenticated | Unauthenticated |
+| ---------------------- | ------------- | --------------- |
+| Translation            | 1000/hour     | 10/hour         |
+| Document Processing    | 100/hour      | 5/hour          |
+| AI Agent Collaboration | 500/hour      | N/A             |
+| Performance Metrics    | 10000/hour    | N/A             |
 
 ### Rate Limit Headers
 

@@ -8,7 +8,11 @@ import { http, HttpResponse } from 'msw'
 import { server } from './mocks/server'
 
 // Example API client functions to test
-async function translateText(text: string, targetLang: string, sourceLang?: string) {
+async function translateText(
+  text: string,
+  targetLang: string,
+  sourceLang?: string
+) {
   const response = await fetch('/api/translate', {
     method: 'POST',
     headers: {
@@ -17,8 +21,8 @@ async function translateText(text: string, targetLang: string, sourceLang?: stri
     body: JSON.stringify({
       text,
       targetLang,
-      sourceLang
-    })
+      sourceLang,
+    }),
   })
 
   if (!response.ok) {
@@ -34,7 +38,7 @@ async function detectLanguage(text: string) {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ text })
+    body: JSON.stringify({ text }),
   })
 
   if (!response.ok) {
@@ -46,7 +50,7 @@ async function detectLanguage(text: string) {
 
 async function getSupportedLanguages() {
   const response = await fetch('/api/languages')
-  
+
   if (!response.ok) {
     throw new Error(`Failed to fetch languages: ${response.statusText}`)
   }
@@ -62,8 +66,8 @@ async function createCheckoutSession(planId: string, paymentMethod: string) {
     },
     body: JSON.stringify({
       planId,
-      paymentMethod
-    })
+      paymentMethod,
+    }),
   })
 
   if (!response.ok) {
@@ -85,7 +89,7 @@ describe('API Contract Tests with MSW', () => {
         confidence: expect.any(Number),
         qualityScore: expect.any(Number),
         timestamp: expect.any(String),
-        cached: expect.any(Boolean)
+        cached: expect.any(Boolean),
       })
 
       expect(result.confidence).toBeGreaterThanOrEqual(0)
@@ -105,7 +109,9 @@ describe('API Contract Tests with MSW', () => {
         })
       )
 
-      await expect(translateText('Hello', 'vi')).rejects.toThrow('Translation failed')
+      await expect(translateText('Hello', 'vi')).rejects.toThrow(
+        'Translation failed'
+      )
     })
 
     it('should validate required fields', async () => {
@@ -113,7 +119,7 @@ describe('API Contract Tests with MSW', () => {
       const response = await fetch('/api/translate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: 'Hello' })
+        body: JSON.stringify({ text: 'Hello' }),
       })
 
       expect(response.status).toBe(400)
@@ -128,7 +134,7 @@ describe('API Contract Tests with MSW', () => {
 
       expect(result).toMatchObject({
         detectedLanguage: expect.any(String),
-        confidence: expect.any(Number)
+        confidence: expect.any(Number),
       })
 
       expect(result.confidence).toBeGreaterThanOrEqual(0)
@@ -139,7 +145,7 @@ describe('API Contract Tests with MSW', () => {
       const response = await fetch('/api/detect-language', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: '' })
+        body: JSON.stringify({ text: '' }),
       })
 
       expect(response.status).toBe(400)
@@ -158,7 +164,7 @@ describe('API Contract Tests with MSW', () => {
       result.languages.forEach((lang: any) => {
         expect(lang).toMatchObject({
           code: expect.any(String),
-          name: expect.any(String)
+          name: expect.any(String),
         })
         expect(lang.code).toMatch(/^[a-z]{2}(-[A-Z]{2})?$/) // ISO language code format
       })
@@ -173,7 +179,7 @@ describe('API Contract Tests with MSW', () => {
         sessionId: expect.any(String),
         paymentUrl: expect.any(String),
         amount: expect.any(Number),
-        currency: expect.any(String)
+        currency: expect.any(String),
       })
 
       expect(result.sessionId).toMatch(/^cs_test_/)
@@ -184,7 +190,7 @@ describe('API Contract Tests with MSW', () => {
       const response = await fetch('/api/payments/create-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planId: 'premium' }) // Missing paymentMethod
+        body: JSON.stringify({ planId: 'premium' }), // Missing paymentMethod
       })
 
       expect(response.status).toBe(400)
@@ -197,8 +203,8 @@ describe('API Contract Tests with MSW', () => {
     it('should fetch user profile with auth', async () => {
       const response = await fetch('/api/user/profile', {
         headers: {
-          'Authorization': 'Bearer test-token'
-        }
+          Authorization: 'Bearer test-token',
+        },
       })
 
       expect(response.ok).toBe(true)
@@ -211,7 +217,7 @@ describe('API Contract Tests with MSW', () => {
         tier: expect.stringMatching(/^(free|standard|premium|enterprise)$/),
         usageCount: expect.any(Number),
         usageLimit: expect.any(Number),
-        createdAt: expect.any(String)
+        createdAt: expect.any(String),
       })
     })
 
@@ -228,12 +234,12 @@ describe('API Contract Tests with MSW', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer test-token'
+          Authorization: 'Bearer test-token',
         },
         body: JSON.stringify({
           featureType: 'translation',
-          units: 5
-        })
+          units: 5,
+        }),
       })
 
       expect(response.ok).toBe(true)
@@ -243,7 +249,7 @@ describe('API Contract Tests with MSW', () => {
         success: true,
         remainingCredits: expect.any(Number),
         usedCredits: expect.any(Number),
-        feature: 'translation'
+        feature: 'translation',
       })
     })
   })
@@ -264,7 +270,7 @@ describe('API Contract Tests with MSW', () => {
 
       try {
         await fetch('/api/test/timeout', {
-          signal: controller.signal
+          signal: controller.signal,
         })
         fail('Should have thrown an error')
       } catch (error) {

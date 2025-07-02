@@ -2,16 +2,16 @@
 
 import { useState } from 'react'
 import { useWorkspaceStore, type Document } from './hooks/useWorkspaceStore'
-import { 
-  FileText, 
-  Download, 
-  MessageCircle, 
-  Crown, 
+import {
+  FileText,
+  Download,
+  MessageCircle,
+  Crown,
   Loader,
   RefreshCw,
   Eye,
   Copy,
-  CheckCircle
+  CheckCircle,
 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 
@@ -20,9 +20,12 @@ interface TranslationPanelProps {
 }
 
 export function TranslationPanel({ document }: TranslationPanelProps) {
-  const { setChatPanelOpen, chatPanelOpen, translate, tier } = useWorkspaceStore()
+  const { setChatPanelOpen, chatPanelOpen, translate, tier } =
+    useWorkspaceStore()
   const [copied, setCopied] = useState(false)
-  const [viewMode, setViewMode] = useState<'split' | 'original' | 'translated'>('split')
+  const [viewMode, setViewMode] = useState<'split' | 'original' | 'translated'>(
+    'split'
+  )
 
   const handleRetranslate = async () => {
     try {
@@ -80,7 +83,8 @@ Con cáo nâu nhanh nhẹn nhảy qua con chó lười biếng. Câu này chứa
 ## Kết luận
 Prismy cung cấp dịch tài liệu cấp doanh nghiệp với độ chính xác được hỗ trợ bởi AI.`
 
-  const isProcessing = document.status === 'uploading' || document.status === 'processing'
+  const isProcessing =
+    document.status === 'uploading' || document.status === 'processing'
   const isTranslated = document.status === 'translated'
   const hasError = document.status === 'error'
 
@@ -94,10 +98,10 @@ Prismy cung cấp dịch tài liệu cấp doanh nghiệp với độ chính xá
             <div>
               <h2 className="font-semibold text-primary">{document.name}</h2>
               <p className="text-sm text-secondary">
-                {document.size < 1024 * 1024 
-                  ? `${Math.round(document.size / 1024)} KB` 
-                  : `${(document.size / (1024 * 1024)).toFixed(1)} MB`
-                } • {document.tier} tier
+                {document.size < 1024 * 1024
+                  ? `${Math.round(document.size / 1024)} KB`
+                  : `${(document.size / (1024 * 1024)).toFixed(1)} MB`}{' '}
+                • {document.tier} tier
               </p>
             </div>
           </div>
@@ -109,8 +113,8 @@ Prismy cung cấp dịch tài liệu cấp doanh nghiệp với độ chính xá
                 <button
                   onClick={() => setViewMode('original')}
                   className={`px-3 py-1.5 text-sm transition-colors ${
-                    viewMode === 'original' 
-                      ? 'bg-accent-brand text-white' 
+                    viewMode === 'original'
+                      ? 'bg-accent-brand text-white'
                       : 'bg-surface hover:bg-bg-muted'
                   }`}
                 >
@@ -119,8 +123,8 @@ Prismy cung cấp dịch tài liệu cấp doanh nghiệp với độ chính xá
                 <button
                   onClick={() => setViewMode('split')}
                   className={`px-3 py-1.5 text-sm transition-colors ${
-                    viewMode === 'split' 
-                      ? 'bg-accent-brand text-white' 
+                    viewMode === 'split'
+                      ? 'bg-accent-brand text-white'
                       : 'bg-surface hover:bg-bg-muted'
                   }`}
                 >
@@ -129,8 +133,8 @@ Prismy cung cấp dịch tài liệu cấp doanh nghiệp với độ chính xá
                 <button
                   onClick={() => setViewMode('translated')}
                   className={`px-3 py-1.5 text-sm transition-colors ${
-                    viewMode === 'translated' 
-                      ? 'bg-accent-brand text-white' 
+                    viewMode === 'translated'
+                      ? 'bg-accent-brand text-white'
                       : 'bg-surface hover:bg-bg-muted'
                   }`}
                 >
@@ -151,11 +155,7 @@ Prismy cung cấp dịch tài liệu cấp doanh nghiệp với độ chính xá
                   {copied ? <CheckCircle size={16} /> : <Copy size={16} />}
                 </Button>
 
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={handleDownload}
-                >
+                <Button size="sm" variant="outline" onClick={handleDownload}>
                   <Download size={16} />
                 </Button>
               </>
@@ -167,7 +167,10 @@ Prismy cung cấp dịch tài liệu cấp doanh nghiệp với độ chính xá
               onClick={handleRetranslate}
               disabled={isProcessing}
             >
-              <RefreshCw size={16} className={isProcessing ? 'animate-spin' : ''} />
+              <RefreshCw
+                size={16}
+                className={isProcessing ? 'animate-spin' : ''}
+              />
             </Button>
 
             <Button
@@ -185,12 +188,16 @@ Prismy cung cấp dịch tài liệu cấp doanh nghiệp với độ chính xá
           <div className="mt-3">
             <div className="flex items-center justify-between text-sm mb-2">
               <span className="text-secondary">
-                {document.status === 'uploading' ? 'Uploading...' : 'Translating...'}
+                {document.status === 'uploading'
+                  ? 'Uploading...'
+                  : 'Translating...'}
               </span>
-              <span className="text-primary">{Math.round(document.progress)}%</span>
+              <span className="text-primary">
+                {Math.round(document.progress)}%
+              </span>
             </div>
             <div className="w-full bg-bg-muted rounded-full h-2">
-              <div 
+              <div
                 className="bg-accent-brand h-2 rounded-full transition-all duration-300"
                 style={{ width: `${document.progress}%` }}
               />
@@ -201,16 +208,14 @@ Prismy cung cấp dịch tài liệu cấp doanh nghiệp với độ chính xá
 
       {/* Content Area */}
       <div className="flex-1 overflow-hidden">
-        {isProcessing && (
-          <ProcessingView document={document} />
-        )}
+        {isProcessing && <ProcessingView document={document} />}
 
         {hasError && (
           <ErrorView document={document} onRetry={handleRetranslate} />
         )}
 
         {isTranslated && (
-          <TranslatedView 
+          <TranslatedView
             original={mockOriginalContent}
             translated={mockTranslatedContent}
             viewMode={viewMode}
@@ -228,23 +233,27 @@ function ProcessingView({ document }: { document: Document }) {
     <div className="h-full flex items-center justify-center">
       <div className="text-center space-y-4 max-w-md">
         <div className="relative">
-          <Loader size={48} className="animate-spin text-accent-brand mx-auto" />
+          <Loader
+            size={48}
+            className="animate-spin text-accent-brand mx-auto"
+          />
           <div className="absolute inset-0 flex items-center justify-center">
             <span className="text-xs font-medium text-accent-brand">
               {Math.round(document.progress)}%
             </span>
           </div>
         </div>
-        
+
         <div>
           <h3 className="text-lg font-semibold text-primary mb-2">
-            {document.status === 'uploading' ? 'Uploading Document' : 'AI Translation in Progress'}
+            {document.status === 'uploading'
+              ? 'Uploading Document'
+              : 'AI Translation in Progress'}
           </h3>
           <p className="text-secondary">
-            {document.status === 'uploading' 
+            {document.status === 'uploading'
               ? 'Analyzing document structure and content...'
-              : 'Our AI is carefully translating your document while preserving formatting...'
-            }
+              : 'Our AI is carefully translating your document while preserving formatting...'}
           </p>
         </div>
       </div>
@@ -253,22 +262,29 @@ function ProcessingView({ document }: { document: Document }) {
 }
 
 // Error State Component
-function ErrorView({ document, onRetry }: { document: Document; onRetry: () => void }) {
+function ErrorView({
+  document,
+  onRetry,
+}: {
+  document: Document
+  onRetry: () => void
+}) {
   return (
     <div className="h-full flex items-center justify-center">
       <div className="text-center space-y-4 max-w-md">
         <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto">
           <FileText size={32} className="text-red-500" />
         </div>
-        
+
         <div>
           <h3 className="text-lg font-semibold text-primary mb-2">
             Translation Failed
           </h3>
           <p className="text-secondary mb-4">
-            We encountered an error while processing your document. Please try again.
+            We encountered an error while processing your document. Please try
+            again.
           </p>
-          
+
           <Button onClick={onRetry}>
             <RefreshCw size={16} className="mr-2" />
             Try Again
@@ -287,7 +303,12 @@ interface TranslatedViewProps {
   tier: string
 }
 
-function TranslatedView({ original, translated, viewMode, tier }: TranslatedViewProps) {
+function TranslatedView({
+  original,
+  translated,
+  viewMode,
+  tier,
+}: TranslatedViewProps) {
   const showUpgradeOverlay = tier === 'free'
 
   return (
@@ -301,21 +322,20 @@ function TranslatedView({ original, translated, viewMode, tier }: TranslatedView
               Upgrade for Full Access
             </h3>
             <p className="text-secondary mb-4">
-              Get layout-preserved translations, download options, and unlimited usage.
+              Get layout-preserved translations, download options, and unlimited
+              usage.
             </p>
-            <Button>
-              View Pricing Plans
-            </Button>
+            <Button>View Pricing Plans</Button>
           </div>
         </div>
       )}
 
       {/* Content Grid */}
-      <div className={`h-full ${
-        viewMode === 'split' 
-          ? 'grid grid-cols-2 gap-4' 
-          : 'flex'
-      } p-4`}>
+      <div
+        className={`h-full ${
+          viewMode === 'split' ? 'grid grid-cols-2 gap-4' : 'flex'
+        } p-4`}
+      >
         {/* Original Content */}
         {(viewMode === 'split' || viewMode === 'original') && (
           <div className="flex flex-col">
@@ -350,18 +370,34 @@ function DocumentContent({ content }: { content: string }) {
     <div className="prose prose-sm max-w-none text-primary">
       {content.split('\n').map((line, index) => {
         if (line.startsWith('# ')) {
-          return <h1 key={index} className="text-xl font-bold mb-3">{line.substring(2)}</h1>
+          return (
+            <h1 key={index} className="text-xl font-bold mb-3">
+              {line.substring(2)}
+            </h1>
+          )
         }
         if (line.startsWith('## ')) {
-          return <h2 key={index} className="text-lg font-semibold mb-2 mt-4">{line.substring(3)}</h2>
+          return (
+            <h2 key={index} className="text-lg font-semibold mb-2 mt-4">
+              {line.substring(3)}
+            </h2>
+          )
         }
         if (line.startsWith('- ')) {
-          return <li key={index} className="ml-4">{line.substring(2)}</li>
+          return (
+            <li key={index} className="ml-4">
+              {line.substring(2)}
+            </li>
+          )
         }
         if (line.trim() === '') {
           return <br key={index} />
         }
-        return <p key={index} className="mb-2">{line}</p>
+        return (
+          <p key={index} className="mb-2">
+            {line}
+          </p>
+        )
       })}
     </div>
   )

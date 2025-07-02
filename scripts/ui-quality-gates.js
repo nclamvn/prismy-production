@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
+const fs = require('fs')
+const path = require('path')
+const { execSync } = require('child_process')
 
 /**
  * UI Quality Gates Script
@@ -15,269 +15,312 @@ class UIQualityGates {
       passed: 0,
       failed: 0,
       warnings: 0,
-      metrics: {}
-    };
-    
+      metrics: {},
+    }
+
     this.standards = {
       // Vietnamese market specific standards
       vietnamese: {
         diacriticsSupport: true,
         vndFormatting: true,
         culturalColors: true,
-        bilingualSupport: true
+        bilingualSupport: true,
       },
-      
+
       // Performance standards
       performance: {
         firstContentfulPaint: 1500, // ms
         largestContentfulPaint: 2500, // ms
         cumulativeLayoutShift: 0.1,
-        timeToInteractive: 3000 // ms
+        timeToInteractive: 3000, // ms
       },
-      
+
       // Accessibility standards
       accessibility: {
         contrastRatio: 4.5,
         keyboardNavigation: true,
         screenReaderSupport: true,
-        focusManagement: true
+        focusManagement: true,
       },
-      
+
       // Design token compliance
       designTokens: {
         colorTokenUsage: 0.8, // 80% of colors should use tokens
         spacingTokenUsage: 0.8, // 80% of spacing should use tokens
-        typographyTokenUsage: 0.75 // 75% of typography should use tokens
-      }
-    };
+        typographyTokenUsage: 0.75, // 75% of typography should use tokens
+      },
+    }
   }
 
   async runQualityGates() {
-    console.log('🎨 Starting UI Quality Gates for Vietnamese Market...\n');
-    
+    console.log('🎨 Starting UI Quality Gates for Vietnamese Market...\n')
+
     try {
-      await this.checkVietnameseCompliance();
-      await this.checkDesignTokens();
-      await this.checkPerformance();
-      await this.checkAccessibility();
-      await this.checkVisualRegression();
-      await this.generateReport();
-      
-      this.printSummary();
-      
+      await this.checkVietnameseCompliance()
+      await this.checkDesignTokens()
+      await this.checkPerformance()
+      await this.checkAccessibility()
+      await this.checkVisualRegression()
+      await this.generateReport()
+
+      this.printSummary()
+
       if (this.results.failed > 0) {
-        process.exit(1);
+        process.exit(1)
       }
-      
     } catch (error) {
-      console.error('❌ Quality gates failed:', error.message);
-      process.exit(1);
+      console.error('❌ Quality gates failed:', error.message)
+      process.exit(1)
     }
   }
 
   async checkVietnameseCompliance() {
-    console.log('🇻🇳 Checking Vietnamese Market Compliance...');
-    
+    console.log('🇻🇳 Checking Vietnamese Market Compliance...')
+
     // Check for Vietnamese diacritics support
-    const diacriticsCheck = this.checkDiacriticsSupport();
-    this.recordResult('Vietnamese Diacritics Support', diacriticsCheck);
-    
+    const diacriticsCheck = this.checkDiacriticsSupport()
+    this.recordResult('Vietnamese Diacritics Support', diacriticsCheck)
+
     // Check VND currency formatting
-    const vndCheck = this.checkVNDFormatting();
-    this.recordResult('VND Currency Formatting', vndCheck);
-    
+    const vndCheck = this.checkVNDFormatting()
+    this.recordResult('VND Currency Formatting', vndCheck)
+
     // Check cultural colors usage
-    const culturalColorsCheck = this.checkCulturalColors();
-    this.recordResult('Vietnamese Cultural Colors', culturalColorsCheck);
-    
+    const culturalColorsCheck = this.checkCulturalColors()
+    this.recordResult('Vietnamese Cultural Colors', culturalColorsCheck)
+
     // Check bilingual text support
-    const bilingualCheck = this.checkBilingualSupport();
-    this.recordResult('Bilingual Text Support', bilingualCheck);
-    
-    console.log('✅ Vietnamese compliance checks completed\n');
+    const bilingualCheck = this.checkBilingualSupport()
+    this.recordResult('Bilingual Text Support', bilingualCheck)
+
+    console.log('✅ Vietnamese compliance checks completed\n')
   }
 
   checkDiacriticsSupport() {
     try {
-      const tokenFiles = this.findFiles('tokens/', '.json');
+      const tokenFiles = this.findFiles('tokens/', '.json')
       const hasVietnameseFont = tokenFiles.some(file => {
-        const content = fs.readFileSync(file, 'utf8');
-        return content.includes('vietnamese') || content.includes('Roboto') || content.includes('Noto Sans');
-      });
-      
-      const componentsWithVietnamese = this.findFiles('components/', '.tsx').filter(file => {
-        const content = fs.readFileSync(file, 'utf8');
-        return content.includes('font-vietnamese') || content.includes('vietnamese');
-      });
-      
+        const content = fs.readFileSync(file, 'utf8')
+        return (
+          content.includes('vietnamese') ||
+          content.includes('Roboto') ||
+          content.includes('Noto Sans')
+        )
+      })
+
+      const componentsWithVietnamese = this.findFiles(
+        'components/',
+        '.tsx'
+      ).filter(file => {
+        const content = fs.readFileSync(file, 'utf8')
+        return (
+          content.includes('font-vietnamese') || content.includes('vietnamese')
+        )
+      })
+
       return {
         passed: hasVietnameseFont && componentsWithVietnamese.length > 0,
-        details: `Vietnamese font support: ${hasVietnameseFont}, Components: ${componentsWithVietnamese.length}`
-      };
+        details: `Vietnamese font support: ${hasVietnameseFont}, Components: ${componentsWithVietnamese.length}`,
+      }
     } catch (error) {
-      return { passed: false, details: `Error checking diacritics: ${error.message}` };
+      return {
+        passed: false,
+        details: `Error checking diacritics: ${error.message}`,
+      }
     }
   }
 
   checkVNDFormatting() {
     try {
-      const utilsPath = 'lib/utils.ts';
+      const utilsPath = 'lib/utils.ts'
       if (!fs.existsSync(utilsPath)) {
-        return { passed: false, details: 'Utils file not found' };
+        return { passed: false, details: 'Utils file not found' }
       }
-      
-      const utilsContent = fs.readFileSync(utilsPath, 'utf8');
-      const hasVNDUtils = utilsContent.includes('formatVND') || utilsContent.includes('vietnameseUtils');
-      
-      const currencyComponents = this.findFiles('components/', '.tsx').filter(file => {
-        const content = fs.readFileSync(file, 'utf8');
-        return content.includes('currency') || content.includes('VND') || content.includes('₫');
-      });
-      
+
+      const utilsContent = fs.readFileSync(utilsPath, 'utf8')
+      const hasVNDUtils =
+        utilsContent.includes('formatVND') ||
+        utilsContent.includes('vietnameseUtils')
+
+      const currencyComponents = this.findFiles('components/', '.tsx').filter(
+        file => {
+          const content = fs.readFileSync(file, 'utf8')
+          return (
+            content.includes('currency') ||
+            content.includes('VND') ||
+            content.includes('₫')
+          )
+        }
+      )
+
       return {
         passed: hasVNDUtils && currencyComponents.length > 0,
-        details: `VND utilities: ${hasVNDUtils}, Currency components: ${currencyComponents.length}`
-      };
+        details: `VND utilities: ${hasVNDUtils}, Currency components: ${currencyComponents.length}`,
+      }
     } catch (error) {
-      return { passed: false, details: `Error checking VND formatting: ${error.message}` };
+      return {
+        passed: false,
+        details: `Error checking VND formatting: ${error.message}`,
+      }
     }
   }
 
   checkCulturalColors() {
     try {
-      const colorsPath = 'tokens/colors.json';
+      const colorsPath = 'tokens/colors.json'
       if (!fs.existsSync(colorsPath)) {
-        return { passed: false, details: 'Colors token file not found' };
+        return { passed: false, details: 'Colors token file not found' }
       }
-      
-      const colorsContent = fs.readFileSync(colorsPath, 'utf8');
-      const colors = JSON.parse(colorsContent);
-      
-      const hasVietnameseRed = colorsContent.includes('#DA020E');
-      const hasVietnameseGold = colorsContent.includes('#FFCD00');
-      const hasTetColors = colorsContent.includes('tet') || colorsContent.includes('festive');
-      
+
+      const colorsContent = fs.readFileSync(colorsPath, 'utf8')
+      const colors = JSON.parse(colorsContent)
+
+      const hasVietnameseRed = colorsContent.includes('#DA020E')
+      const hasVietnameseGold = colorsContent.includes('#FFCD00')
+      const hasTetColors =
+        colorsContent.includes('tet') || colorsContent.includes('festive')
+
       return {
         passed: hasVietnameseRed && hasVietnameseGold && hasTetColors,
-        details: `Vietnamese red: ${hasVietnameseRed}, Gold: ${hasVietnameseGold}, Tết colors: ${hasTetColors}`
-      };
+        details: `Vietnamese red: ${hasVietnameseRed}, Gold: ${hasVietnameseGold}, Tết colors: ${hasTetColors}`,
+      }
     } catch (error) {
-      return { passed: false, details: `Error checking cultural colors: ${error.message}` };
+      return {
+        passed: false,
+        details: `Error checking cultural colors: ${error.message}`,
+      }
     }
   }
 
   checkBilingualSupport() {
     try {
-      const bilingualComponents = this.findFiles('components/', '.tsx').filter(file => {
-        const content = fs.readFileSync(file, 'utf8');
-        return content.includes('bilingual') || content.includes('BilingualText') || content.includes('getBilingualText');
-      });
-      
-      const hasBilingualUtils = fs.existsSync('lib/utils.ts') && 
-        fs.readFileSync('lib/utils.ts', 'utf8').includes('getBilingualText');
-      
+      const bilingualComponents = this.findFiles('components/', '.tsx').filter(
+        file => {
+          const content = fs.readFileSync(file, 'utf8')
+          return (
+            content.includes('bilingual') ||
+            content.includes('BilingualText') ||
+            content.includes('getBilingualText')
+          )
+        }
+      )
+
+      const hasBilingualUtils =
+        fs.existsSync('lib/utils.ts') &&
+        fs.readFileSync('lib/utils.ts', 'utf8').includes('getBilingualText')
+
       return {
         passed: bilingualComponents.length > 0 && hasBilingualUtils,
-        details: `Bilingual components: ${bilingualComponents.length}, Utils support: ${hasBilingualUtils}`
-      };
+        details: `Bilingual components: ${bilingualComponents.length}, Utils support: ${hasBilingualUtils}`,
+      }
     } catch (error) {
-      return { passed: false, details: `Error checking bilingual support: ${error.message}` };
+      return {
+        passed: false,
+        details: `Error checking bilingual support: ${error.message}`,
+      }
     }
   }
 
   async checkDesignTokens() {
-    console.log('🎨 Checking Design Token Usage...');
-    
+    console.log('🎨 Checking Design Token Usage...')
+
     try {
-      const tokensUsage = this.analyzeTokenUsage();
-      
+      const tokensUsage = this.analyzeTokenUsage()
+
       this.recordResult('Color Token Usage', {
-        passed: tokensUsage.colors >= this.standards.designTokens.colorTokenUsage,
-        details: `${(tokensUsage.colors * 100).toFixed(1)}% (target: ${this.standards.designTokens.colorTokenUsage * 100}%)`
-      });
-      
+        passed:
+          tokensUsage.colors >= this.standards.designTokens.colorTokenUsage,
+        details: `${(tokensUsage.colors * 100).toFixed(1)}% (target: ${this.standards.designTokens.colorTokenUsage * 100}%)`,
+      })
+
       this.recordResult('Spacing Token Usage', {
-        passed: tokensUsage.spacing >= this.standards.designTokens.spacingTokenUsage,
-        details: `${(tokensUsage.spacing * 100).toFixed(1)}% (target: ${this.standards.designTokens.spacingTokenUsage * 100}%)`
-      });
-      
+        passed:
+          tokensUsage.spacing >= this.standards.designTokens.spacingTokenUsage,
+        details: `${(tokensUsage.spacing * 100).toFixed(1)}% (target: ${this.standards.designTokens.spacingTokenUsage * 100}%)`,
+      })
+
       this.recordResult('Typography Token Usage', {
-        passed: tokensUsage.typography >= this.standards.designTokens.typographyTokenUsage,
-        details: `${(tokensUsage.typography * 100).toFixed(1)}% (target: ${this.standards.designTokens.typographyTokenUsage * 100}%)`
-      });
-      
+        passed:
+          tokensUsage.typography >=
+          this.standards.designTokens.typographyTokenUsage,
+        details: `${(tokensUsage.typography * 100).toFixed(1)}% (target: ${this.standards.designTokens.typographyTokenUsage * 100}%)`,
+      })
     } catch (error) {
       this.recordResult('Design Token Analysis', {
         passed: false,
-        details: `Error analyzing tokens: ${error.message}`
-      });
+        details: `Error analyzing tokens: ${error.message}`,
+      })
     }
-    
-    console.log('✅ Design token checks completed\n');
+
+    console.log('✅ Design token checks completed\n')
   }
 
   analyzeTokenUsage() {
     // Simplified token usage analysis
-    const componentFiles = this.findFiles('components/', '.tsx');
-    let totalClasses = 0;
-    let tokenBasedClasses = 0;
-    
+    const componentFiles = this.findFiles('components/', '.tsx')
+    let totalClasses = 0
+    let tokenBasedClasses = 0
+
     componentFiles.forEach(file => {
-      const content = fs.readFileSync(file, 'utf8');
-      
+      const content = fs.readFileSync(file, 'utf8')
+
       // Count Tailwind classes
-      const classMatches = content.match(/className="[^"]*"/g) || [];
+      const classMatches = content.match(/className="[^"]*"/g) || []
       classMatches.forEach(match => {
-        const classes = match.match(/\b[\w-]+\b/g) || [];
-        totalClasses += classes.length;
-        
+        const classes = match.match(/\b[\w-]+\b/g) || []
+        totalClasses += classes.length
+
         // Count token-based classes (simplified heuristic)
-        const tokenClasses = classes.filter(cls => 
-          cls.includes('vietnamese') || 
-          cls.includes('tet') || 
-          cls.includes('primary') ||
-          cls.includes('secondary') ||
-          cls.includes('xs') || cls.includes('sm') || cls.includes('md') || cls.includes('lg')
-        );
-        tokenBasedClasses += tokenClasses.length;
-      });
-    });
-    
-    const tokenUsageRatio = totalClasses > 0 ? tokenBasedClasses / totalClasses : 0;
-    
+        const tokenClasses = classes.filter(
+          cls =>
+            cls.includes('vietnamese') ||
+            cls.includes('tet') ||
+            cls.includes('primary') ||
+            cls.includes('secondary') ||
+            cls.includes('xs') ||
+            cls.includes('sm') ||
+            cls.includes('md') ||
+            cls.includes('lg')
+        )
+        tokenBasedClasses += tokenClasses.length
+      })
+    })
+
+    const tokenUsageRatio =
+      totalClasses > 0 ? tokenBasedClasses / totalClasses : 0
+
     return {
       colors: tokenUsageRatio,
       spacing: tokenUsageRatio,
-      typography: tokenUsageRatio
-    };
+      typography: tokenUsageRatio,
+    }
   }
 
   async checkPerformance() {
-    console.log('⚡ Checking Performance Metrics...');
-    
+    console.log('⚡ Checking Performance Metrics...')
+
     try {
       // Run Lighthouse CI for performance metrics
-      console.log('Running Lighthouse audit...');
-      const lighthouseResult = this.runLighthouse();
-      
+      console.log('Running Lighthouse audit...')
+      const lighthouseResult = this.runLighthouse()
+
       this.recordResult('Performance Score', {
         passed: lighthouseResult.performance >= 85,
-        details: `Score: ${lighthouseResult.performance}/100 (target: ≥85)`
-      });
-      
+        details: `Score: ${lighthouseResult.performance}/100 (target: ≥85)`,
+      })
+
       this.recordResult('Vietnamese Content Performance', {
         passed: lighthouseResult.accessibility >= 90,
-        details: `Accessibility score: ${lighthouseResult.accessibility}/100 (target: ≥90)`
-      });
-      
+        details: `Accessibility score: ${lighthouseResult.accessibility}/100 (target: ≥90)`,
+      })
     } catch (error) {
       this.recordResult('Performance Analysis', {
         passed: false,
-        details: `Error running performance tests: ${error.message}`
-      });
+        details: `Error running performance tests: ${error.message}`,
+      })
     }
-    
-    console.log('✅ Performance checks completed\n');
+
+    console.log('✅ Performance checks completed\n')
   }
 
   runLighthouse() {
@@ -287,115 +330,130 @@ class UIQualityGates {
         performance: Math.floor(Math.random() * 15) + 85, // 85-100
         accessibility: Math.floor(Math.random() * 10) + 90, // 90-100
         bestPractices: Math.floor(Math.random() * 10) + 90,
-        seo: Math.floor(Math.random() * 10) + 90
-      };
+        seo: Math.floor(Math.random() * 10) + 90,
+      }
     } catch (error) {
       return {
         performance: 0,
         accessibility: 0,
         bestPractices: 0,
-        seo: 0
-      };
+        seo: 0,
+      }
     }
   }
 
   async checkAccessibility() {
-    console.log('♿ Checking Accessibility Standards...');
-    
+    console.log('♿ Checking Accessibility Standards...')
+
     try {
       // Check for accessibility features in components
-      const a11yComponents = this.findFiles('components/', '.tsx').filter(file => {
-        const content = fs.readFileSync(file, 'utf8');
-        return content.includes('aria-') || 
-               content.includes('role=') || 
-               content.includes('tabIndex') ||
-               content.includes('accessibility');
-      });
-      
+      const a11yComponents = this.findFiles('components/', '.tsx').filter(
+        file => {
+          const content = fs.readFileSync(file, 'utf8')
+          return (
+            content.includes('aria-') ||
+            content.includes('role=') ||
+            content.includes('tabIndex') ||
+            content.includes('accessibility')
+          )
+        }
+      )
+
       this.recordResult('Accessibility Implementation', {
         passed: a11yComponents.length > 0,
-        details: `${a11yComponents.length} components with accessibility features`
-      });
-      
+        details: `${a11yComponents.length} components with accessibility features`,
+      })
+
       // Check for Vietnamese accessibility considerations
-      const vietnameseA11y = this.checkVietnameseAccessibility();
-      this.recordResult('Vietnamese Accessibility', vietnameseA11y);
-      
+      const vietnameseA11y = this.checkVietnameseAccessibility()
+      this.recordResult('Vietnamese Accessibility', vietnameseA11y)
     } catch (error) {
       this.recordResult('Accessibility Analysis', {
         passed: false,
-        details: `Error checking accessibility: ${error.message}`
-      });
+        details: `Error checking accessibility: ${error.message}`,
+      })
     }
-    
-    console.log('✅ Accessibility checks completed\n');
+
+    console.log('✅ Accessibility checks completed\n')
   }
 
   checkVietnameseAccessibility() {
     try {
-      const tokensPath = 'tokens/vietnamese.json';
+      const tokensPath = 'tokens/vietnamese.json'
       if (!fs.existsSync(tokensPath)) {
-        return { passed: false, details: 'Vietnamese tokens file not found' };
+        return { passed: false, details: 'Vietnamese tokens file not found' }
       }
-      
-      const vietnameseTokens = JSON.parse(fs.readFileSync(tokensPath, 'utf8'));
-      
-      const hasAccessibilitySection = vietnameseTokens.accessibility !== undefined;
-      const hasContrastInfo = hasAccessibilitySection && vietnameseTokens.accessibility.contrast !== undefined;
-      const hasReadabilityInfo = hasAccessibilitySection && vietnameseTokens.accessibility.readability !== undefined;
-      
+
+      const vietnameseTokens = JSON.parse(fs.readFileSync(tokensPath, 'utf8'))
+
+      const hasAccessibilitySection =
+        vietnameseTokens.accessibility !== undefined
+      const hasContrastInfo =
+        hasAccessibilitySection &&
+        vietnameseTokens.accessibility.contrast !== undefined
+      const hasReadabilityInfo =
+        hasAccessibilitySection &&
+        vietnameseTokens.accessibility.readability !== undefined
+
       return {
-        passed: hasAccessibilitySection && hasContrastInfo && hasReadabilityInfo,
-        details: `Accessibility tokens: ${hasAccessibilitySection}, Contrast: ${hasContrastInfo}, Readability: ${hasReadabilityInfo}`
-      };
+        passed:
+          hasAccessibilitySection && hasContrastInfo && hasReadabilityInfo,
+        details: `Accessibility tokens: ${hasAccessibilitySection}, Contrast: ${hasContrastInfo}, Readability: ${hasReadabilityInfo}`,
+      }
     } catch (error) {
-      return { passed: false, details: `Error checking Vietnamese accessibility: ${error.message}` };
+      return {
+        passed: false,
+        details: `Error checking Vietnamese accessibility: ${error.message}`,
+      }
     }
   }
 
   async checkVisualRegression() {
-    console.log('📸 Checking Visual Regression...');
-    
+    console.log('📸 Checking Visual Regression...')
+
     try {
       // Check if Storybook builds successfully
-      console.log('Building Storybook...');
-      execSync('npm run build-storybook', { stdio: 'pipe' });
-      
+      console.log('Building Storybook...')
+      execSync('npm run build-storybook', { stdio: 'pipe' })
+
       this.recordResult('Storybook Build', {
         passed: true,
-        details: 'Storybook built successfully'
-      });
-      
+        details: 'Storybook built successfully',
+      })
+
       // Check for Vietnamese stories
-      const storyFiles = this.findFiles('components/', '.stories.tsx');
+      const storyFiles = this.findFiles('components/', '.stories.tsx')
       const vietnameseStories = storyFiles.filter(file => {
-        const content = fs.readFileSync(file, 'utf8');
-        return content.includes('vietnamese') || content.includes('Vietnamese') || content.includes('Tết');
-      });
-      
+        const content = fs.readFileSync(file, 'utf8')
+        return (
+          content.includes('vietnamese') ||
+          content.includes('Vietnamese') ||
+          content.includes('Tết')
+        )
+      })
+
       this.recordResult('Vietnamese Stories', {
         passed: vietnameseStories.length > 0,
-        details: `${vietnameseStories.length} story files with Vietnamese content`
-      });
-      
+        details: `${vietnameseStories.length} story files with Vietnamese content`,
+      })
     } catch (error) {
       this.recordResult('Visual Regression', {
         passed: false,
-        details: `Error in visual regression tests: ${error.message}`
-      });
+        details: `Error in visual regression tests: ${error.message}`,
+      })
     }
-    
-    console.log('✅ Visual regression checks completed\n');
+
+    console.log('✅ Visual regression checks completed\n')
   }
 
   async generateReport() {
-    console.log('📊 Generating UI Quality Report...');
-    
-    const reportDir = 'reports/ui-quality';
+    console.log('📊 Generating UI Quality Report...')
+
+    const reportDir = 'reports/ui-quality'
     if (!fs.existsSync(reportDir)) {
-      fs.mkdirSync(reportDir, { recursive: true });
+      fs.mkdirSync(reportDir, { recursive: true })
     }
-    
+
     const report = {
       timestamp: new Date().toISOString(),
       summary: {
@@ -403,73 +461,89 @@ class UIQualityGates {
         passed: this.results.passed,
         failed: this.results.failed,
         warnings: this.results.warnings,
-        score: this.results.passed / (this.results.passed + this.results.failed) * 100
+        score:
+          (this.results.passed / (this.results.passed + this.results.failed)) *
+          100,
       },
       metrics: this.results.metrics,
       vietnamese: {
         compliance: this.calculateVietnameseCompliance(),
-        marketReadiness: this.assessMarketReadiness()
+        marketReadiness: this.assessMarketReadiness(),
       },
-      recommendations: this.generateRecommendations()
-    };
-    
+      recommendations: this.generateRecommendations(),
+    }
+
     fs.writeFileSync(
       path.join(reportDir, 'ui-quality-report.json'),
       JSON.stringify(report, null, 2)
-    );
-    
+    )
+
     // Generate markdown report
-    const markdownReport = this.generateMarkdownReport(report);
+    const markdownReport = this.generateMarkdownReport(report)
     fs.writeFileSync(
       path.join(reportDir, 'UI-QUALITY-REPORT.md'),
       markdownReport
-    );
-    
-    console.log(`📄 Report generated: ${reportDir}/UI-QUALITY-REPORT.md\n`);
+    )
+
+    console.log(`📄 Report generated: ${reportDir}/UI-QUALITY-REPORT.md\n`)
   }
 
   calculateVietnameseCompliance() {
-    const vietnameseChecks = Object.entries(this.results.metrics).filter(([key]) => 
-      key.includes('Vietnamese') || key.includes('VND') || key.includes('Bilingual')
-    );
-    
-    const passedVietnamese = vietnameseChecks.filter(([_, result]) => result.passed).length;
-    return vietnameseChecks.length > 0 ? (passedVietnamese / vietnameseChecks.length) * 100 : 0;
+    const vietnameseChecks = Object.entries(this.results.metrics).filter(
+      ([key]) =>
+        key.includes('Vietnamese') ||
+        key.includes('VND') ||
+        key.includes('Bilingual')
+    )
+
+    const passedVietnamese = vietnameseChecks.filter(
+      ([_, result]) => result.passed
+    ).length
+    return vietnameseChecks.length > 0
+      ? (passedVietnamese / vietnameseChecks.length) * 100
+      : 0
   }
 
   assessMarketReadiness() {
-    const compliance = this.calculateVietnameseCompliance();
-    const performanceScore = this.results.metrics['Performance Score']?.passed ? 85 : 60;
-    const accessibilityScore = this.results.metrics['Accessibility Implementation']?.passed ? 90 : 70;
-    
-    const overallScore = (compliance + performanceScore + accessibilityScore) / 3;
-    
-    if (overallScore >= 90) return 'Production Ready';
-    if (overallScore >= 80) return 'Near Production Ready';
-    if (overallScore >= 70) return 'Development Ready';
-    return 'Needs Improvement';
+    const compliance = this.calculateVietnameseCompliance()
+    const performanceScore = this.results.metrics['Performance Score']?.passed
+      ? 85
+      : 60
+    const accessibilityScore = this.results.metrics[
+      'Accessibility Implementation'
+    ]?.passed
+      ? 90
+      : 70
+
+    const overallScore =
+      (compliance + performanceScore + accessibilityScore) / 3
+
+    if (overallScore >= 90) return 'Production Ready'
+    if (overallScore >= 80) return 'Near Production Ready'
+    if (overallScore >= 70) return 'Development Ready'
+    return 'Needs Improvement'
   }
 
   generateRecommendations() {
-    const recommendations = [];
-    
+    const recommendations = []
+
     if (!this.results.metrics['Vietnamese Diacritics Support']?.passed) {
-      recommendations.push('Implement Vietnamese diacritics font support');
+      recommendations.push('Implement Vietnamese diacritics font support')
     }
-    
+
     if (!this.results.metrics['VND Currency Formatting']?.passed) {
-      recommendations.push('Add VND currency formatting utilities');
+      recommendations.push('Add VND currency formatting utilities')
     }
-    
+
     if (!this.results.metrics['Color Token Usage']?.passed) {
-      recommendations.push('Increase usage of design tokens for colors');
+      recommendations.push('Increase usage of design tokens for colors')
     }
-    
+
     if (!this.results.metrics['Performance Score']?.passed) {
-      recommendations.push('Optimize performance for Vietnamese market');
+      recommendations.push('Optimize performance for Vietnamese market')
     }
-    
-    return recommendations;
+
+    return recommendations
   }
 
   generateMarkdownReport(report) {
@@ -490,24 +564,38 @@ class UIQualityGates {
 
 **Compliance Score:** ${report.vietnamese.compliance.toFixed(1)}%
 
-${Object.entries(report.metrics).map(([check, result]) => 
-  check.includes('Vietnamese') || check.includes('VND') || check.includes('Bilingual') ?
-  `- **${check}:** ${result.passed ? '✅' : '❌'} ${result.details}` : ''
-).filter(Boolean).join('\n')}
+${Object.entries(report.metrics)
+  .map(([check, result]) =>
+    check.includes('Vietnamese') ||
+    check.includes('VND') ||
+    check.includes('Bilingual')
+      ? `- **${check}:** ${result.passed ? '✅' : '❌'} ${result.details}`
+      : ''
+  )
+  .filter(Boolean)
+  .join('\n')}
 
 ## 🎨 Design System Quality
 
-${Object.entries(report.metrics).map(([check, result]) => 
-  check.includes('Token') ?
-  `- **${check}:** ${result.passed ? '✅' : '❌'} ${result.details}` : ''
-).filter(Boolean).join('\n')}
+${Object.entries(report.metrics)
+  .map(([check, result]) =>
+    check.includes('Token')
+      ? `- **${check}:** ${result.passed ? '✅' : '❌'} ${result.details}`
+      : ''
+  )
+  .filter(Boolean)
+  .join('\n')}
 
 ## ⚡ Performance & Accessibility
 
-${Object.entries(report.metrics).map(([check, result]) => 
-  check.includes('Performance') || check.includes('Accessibility') ?
-  `- **${check}:** ${result.passed ? '✅' : '❌'} ${result.details}` : ''
-).filter(Boolean).join('\n')}
+${Object.entries(report.metrics)
+  .map(([check, result]) =>
+    check.includes('Performance') || check.includes('Accessibility')
+      ? `- **${check}:** ${result.passed ? '✅' : '❌'} ${result.details}`
+      : ''
+  )
+  .filter(Boolean)
+  .join('\n')}
 
 ## 🔧 Recommendations
 
@@ -515,75 +603,80 @@ ${report.recommendations.map(rec => `- ${rec}`).join('\n')}
 
 ---
 
-**🎯 Next Steps:** ${report.vietnamese.marketReadiness === 'Production Ready' ? 
-  'Ready for Vietnamese market deployment!' : 
-  'Address failed checks before production deployment.'}
-`;
+**🎯 Next Steps:** ${
+      report.vietnamese.marketReadiness === 'Production Ready'
+        ? 'Ready for Vietnamese market deployment!'
+        : 'Address failed checks before production deployment.'
+    }
+`
   }
 
   recordResult(checkName, result) {
-    this.results.metrics[checkName] = result;
-    
+    this.results.metrics[checkName] = result
+
     if (result.passed) {
-      this.results.passed++;
-      console.log(`  ✅ ${checkName}: ${result.details}`);
+      this.results.passed++
+      console.log(`  ✅ ${checkName}: ${result.details}`)
     } else {
-      this.results.failed++;
-      console.log(`  ❌ ${checkName}: ${result.details}`);
+      this.results.failed++
+      console.log(`  ❌ ${checkName}: ${result.details}`)
     }
   }
 
   printSummary() {
-    console.log('🎯 UI Quality Gates Summary');
-    console.log('================================');
-    console.log(`Total Checks: ${this.results.passed + this.results.failed}`);
-    console.log(`✅ Passed: ${this.results.passed}`);
-    console.log(`❌ Failed: ${this.results.failed}`);
-    console.log(`⚠️  Warnings: ${this.results.warnings}`);
-    
-    const score = (this.results.passed / (this.results.passed + this.results.failed)) * 100;
-    console.log(`📊 Quality Score: ${score.toFixed(1)}%`);
-    
-    const compliance = this.calculateVietnameseCompliance();
-    console.log(`🇻🇳 Vietnamese Compliance: ${compliance.toFixed(1)}%`);
-    
-    console.log(`🚀 Market Readiness: ${this.assessMarketReadiness()}\n`);
-    
+    console.log('🎯 UI Quality Gates Summary')
+    console.log('================================')
+    console.log(`Total Checks: ${this.results.passed + this.results.failed}`)
+    console.log(`✅ Passed: ${this.results.passed}`)
+    console.log(`❌ Failed: ${this.results.failed}`)
+    console.log(`⚠️  Warnings: ${this.results.warnings}`)
+
+    const score =
+      (this.results.passed / (this.results.passed + this.results.failed)) * 100
+    console.log(`📊 Quality Score: ${score.toFixed(1)}%`)
+
+    const compliance = this.calculateVietnameseCompliance()
+    console.log(`🇻🇳 Vietnamese Compliance: ${compliance.toFixed(1)}%`)
+
+    console.log(`🚀 Market Readiness: ${this.assessMarketReadiness()}\n`)
+
     if (this.results.failed === 0) {
-      console.log('🎉 All quality gates passed! Ready for deployment.');
+      console.log('🎉 All quality gates passed! Ready for deployment.')
     } else {
-      console.log('⚠️  Some quality gates failed. Please address issues before deployment.');
+      console.log(
+        '⚠️  Some quality gates failed. Please address issues before deployment.'
+      )
     }
   }
 
   findFiles(dir, extension) {
-    if (!fs.existsSync(dir)) return [];
-    
-    const files = [];
-    const items = fs.readdirSync(dir);
-    
+    if (!fs.existsSync(dir)) return []
+
+    const files = []
+    const items = fs.readdirSync(dir)
+
     for (const item of items) {
-      const fullPath = path.join(dir, item);
-      const stat = fs.statSync(fullPath);
-      
+      const fullPath = path.join(dir, item)
+      const stat = fs.statSync(fullPath)
+
       if (stat.isDirectory()) {
-        files.push(...this.findFiles(fullPath, extension));
+        files.push(...this.findFiles(fullPath, extension))
       } else if (fullPath.endsWith(extension)) {
-        files.push(fullPath);
+        files.push(fullPath)
       }
     }
-    
-    return files;
+
+    return files
   }
 }
 
 // Run quality gates if called directly
 if (require.main === module) {
-  const qualityGates = new UIQualityGates();
+  const qualityGates = new UIQualityGates()
   qualityGates.runQualityGates().catch(error => {
-    console.error('❌ Quality gates failed:', error);
-    process.exit(1);
-  });
+    console.error('❌ Quality gates failed:', error)
+    process.exit(1)
+  })
 }
 
-module.exports = UIQualityGates;
+module.exports = UIQualityGates

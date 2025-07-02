@@ -46,9 +46,7 @@ export default function RootLayout({
         <meta name="version" content="2.0.0-vNEXT" />
       </head>
       <body className="font-sans antialiased bg-default text-primary">
-        <ClientProviders>
-          {children}
-        </ClientProviders>
+        <ClientProviders>{children}</ClientProviders>
       </body>
     </html>
   )

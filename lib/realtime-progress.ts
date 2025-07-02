@@ -37,11 +37,14 @@ export class RealtimeProgressManager {
   }
 
   // Subscribe to progress updates for a specific job
-  subscribe(jobId: string, callback: (update: ProgressUpdate) => void): () => void {
+  subscribe(
+    jobId: string,
+    callback: (update: ProgressUpdate) => void
+  ): () => void {
     if (!this.subscribers.has(jobId)) {
       this.subscribers.set(jobId, new Set())
     }
-    
+
     this.subscribers.get(jobId)!.add(callback)
 
     // Send current progress if available
@@ -73,7 +76,10 @@ export class RealtimeProgressManager {
         try {
           callback(update)
         } catch (error) {
-          logger.error('Error in progress callback', { error, jobId: update.jobId })
+          logger.error('Error in progress callback', {
+            error,
+            jobId: update.jobId,
+          })
         }
       })
     }
@@ -110,18 +116,16 @@ export class RealtimeProgressManager {
         throw new Error('persistProgress should only be called on client-side')
       }
       const supabase = getBrowserClient()
-      
-      await supabase
-        .from('job_progress')
-        .upsert({
-          job_id: update.jobId,
-          user_id: update.userId,
-          status: update.status,
-          progress: update.progress,
-          message: update.message,
-          metadata: update.metadata,
-          updated_at: update.timestamp
-        })
+
+      await supabase.from('job_progress').upsert({
+        job_id: update.jobId,
+        user_id: update.userId,
+        status: update.status,
+        progress: update.progress,
+        message: update.message,
+        metadata: update.metadata,
+        updated_at: update.timestamp,
+      })
     } catch (error) {
       logger.error('Failed to persist progress to database', { error })
     }
@@ -135,7 +139,7 @@ export class RealtimeProgressManager {
         throw new Error('loadProgress should only be called on client-side')
       }
       const supabase = getBrowserClient()
-      
+
       const { data, error } = await supabase
         .from('job_progress')
         .select('*')
@@ -153,7 +157,7 @@ export class RealtimeProgressManager {
         progress: data.progress,
         message: data.message,
         metadata: data.metadata,
-        timestamp: data.updated_at
+        timestamp: data.updated_at,
       }
 
       this.progressUpdates.set(jobId, progress)
@@ -168,31 +172,43 @@ export class RealtimeProgressManager {
 // Helper functions for common progress updates
 export const ProgressHelpers = {
   // Create initial progress entry
-  createJob(jobId: string, userId: string, message: string = 'Job queued'): ProgressUpdate {
+  createJob(
+    jobId: string,
+    userId: string,
+    message: string = 'Job queued'
+  ): ProgressUpdate {
     return {
       jobId,
       userId,
       status: 'queued',
       progress: 0,
       message,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     }
   },
 
   // Update for document upload
-  documentUploaded(jobId: string, userId: string, fileName: string): ProgressUpdate {
+  documentUploaded(
+    jobId: string,
+    userId: string,
+    fileName: string
+  ): ProgressUpdate {
     return {
       jobId,
       userId,
       status: 'processing',
       progress: 10,
       message: `Document uploaded: ${fileName}`,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     }
   },
 
   // Update for parsing start
-  parsingStarted(jobId: string, userId: string, totalPages?: number): ProgressUpdate {
+  parsingStarted(
+    jobId: string,
+    userId: string,
+    totalPages?: number
+  ): ProgressUpdate {
     return {
       jobId,
       userId,
@@ -201,17 +217,17 @@ export const ProgressHelpers = {
       message: 'Parsing document content...',
       metadata: {
         totalPages,
-        currentStep: 'parsing'
+        currentStep: 'parsing',
       },
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     }
   },
 
   // Update for parsing progress
   parsingProgress(
-    jobId: string, 
-    userId: string, 
-    processedPages: number, 
+    jobId: string,
+    userId: string,
+    processedPages: number,
     totalPages: number
   ): ProgressUpdate {
     const progress = 20 + Math.floor((processedPages / totalPages) * 30) // 20-50%
@@ -224,14 +240,18 @@ export const ProgressHelpers = {
       metadata: {
         totalPages,
         processedPages,
-        currentStep: 'parsing'
+        currentStep: 'parsing',
       },
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     }
   },
 
   // Update for translation start
-  translationStarted(jobId: string, userId: string, textLength: number): ProgressUpdate {
+  translationStarted(
+    jobId: string,
+    userId: string,
+    textLength: number
+  ): ProgressUpdate {
     return {
       jobId,
       userId,
@@ -240,17 +260,17 @@ export const ProgressHelpers = {
       message: 'Starting translation...',
       metadata: {
         currentStep: 'translation',
-        estimatedTimeRemaining: Math.ceil(textLength / 1000) * 2 // Rough estimate
+        estimatedTimeRemaining: Math.ceil(textLength / 1000) * 2, // Rough estimate
       },
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     }
   },
 
   // Update for translation progress
   translationProgress(
-    jobId: string, 
-    userId: string, 
-    completedChunks: number, 
+    jobId: string,
+    userId: string,
+    completedChunks: number,
     totalChunks: number
   ): ProgressUpdate {
     const progress = 50 + Math.floor((completedChunks / totalChunks) * 40) // 50-90%
@@ -261,9 +281,9 @@ export const ProgressHelpers = {
       progress,
       message: `Translating chunk ${completedChunks} of ${totalChunks}`,
       metadata: {
-        currentStep: 'translation'
+        currentStep: 'translation',
       },
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     }
   },
 
@@ -277,9 +297,9 @@ export const ProgressHelpers = {
       message: 'Translation completed successfully!',
       metadata: {
         currentStep: 'completed',
-        resultUrl
+        resultUrl,
       },
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     }
   },
 
@@ -293,11 +313,11 @@ export const ProgressHelpers = {
       message: 'Translation failed',
       metadata: {
         currentStep: 'failed',
-        errorDetails: error
+        errorDetails: error,
       },
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     }
-  }
+  },
 }
 
 // Server-Sent Events handler
@@ -305,9 +325,9 @@ export function createSSEHandler(jobId: string, userId: string) {
   return (request: Request) => {
     // Verify user has access to this job
     // This should be implemented based on your auth system
-    
+
     const progressManager = RealtimeProgressManager.getInstance()
-    
+
     // Create SSE stream
     const stream = new ReadableStream({
       start(controller) {
@@ -315,18 +335,18 @@ export function createSSEHandler(jobId: string, userId: string) {
         const initialMessage = `data: ${JSON.stringify({
           type: 'connected',
           jobId,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         })}\n\n`
-        
+
         controller.enqueue(new TextEncoder().encode(initialMessage))
 
         // Subscribe to progress updates
-        const unsubscribe = progressManager.subscribe(jobId, (update) => {
+        const unsubscribe = progressManager.subscribe(jobId, update => {
           const message = `data: ${JSON.stringify({
             type: 'progress',
-            ...update
+            ...update,
           })}\n\n`
-          
+
           try {
             controller.enqueue(new TextEncoder().encode(message))
           } catch (error) {
@@ -339,9 +359,9 @@ export function createSSEHandler(jobId: string, userId: string) {
         if (currentProgress) {
           const message = `data: ${JSON.stringify({
             type: 'progress',
-            ...currentProgress
+            ...currentProgress,
           })}\n\n`
-          
+
           controller.enqueue(new TextEncoder().encode(message))
         }
 
@@ -356,9 +376,9 @@ export function createSSEHandler(jobId: string, userId: string) {
           try {
             const message = `data: ${JSON.stringify({
               type: 'keepalive',
-              timestamp: new Date().toISOString()
+              timestamp: new Date().toISOString(),
             })}\n\n`
-            
+
             controller.enqueue(new TextEncoder().encode(message))
           } catch (error) {
             clearInterval(keepAlive)
@@ -370,17 +390,17 @@ export function createSSEHandler(jobId: string, userId: string) {
         request.signal?.addEventListener('abort', () => {
           clearInterval(keepAlive)
         })
-      }
+      },
     })
 
     return new Response(stream, {
       headers: {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
+        Connection: 'keep-alive',
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Cache-Control'
-      }
+        'Access-Control-Allow-Headers': 'Cache-Control',
+      },
     })
   }
 }

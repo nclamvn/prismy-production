@@ -19,7 +19,7 @@ export const SUPPORTED_LANGUAGES: Language[] = [
     nativeName: 'English',
     flag: '🇺🇸',
     rtl: false,
-    locale: 'en-US'
+    locale: 'en-US',
   },
   {
     code: 'vi',
@@ -27,8 +27,8 @@ export const SUPPORTED_LANGUAGES: Language[] = [
     nativeName: 'Tiếng Việt',
     flag: '🇻🇳',
     rtl: false,
-    locale: 'vi-VN'
-  }
+    locale: 'vi-VN',
+  },
 ]
 
 export const DEFAULT_LANGUAGE = 'en'
@@ -47,8 +47,8 @@ export const translations = {
       documentation: 'Documentation',
       dashboard: 'Dashboard',
       settings: 'Settings',
-      logout: 'Logout'
-    }
+      logout: 'Logout',
+    },
   },
   vi: {
     common: {
@@ -61,29 +61,31 @@ export const translations = {
       documentation: 'Tài liệu',
       dashboard: 'Bảng điều khiển',
       settings: 'Cài đặt',
-      logout: 'Đăng xuất'
-    }
-  }
+      logout: 'Đăng xuất',
+    },
+  },
 }
 
 // Simple translation function
 export function t(key: string, lang: string = DEFAULT_LANGUAGE): string {
   const keys = key.split('.')
   let value: any = translations[lang as keyof typeof translations]
-  
+
   for (const k of keys) {
     value = value?.[k]
   }
-  
+
   return value || key
 }
 
 // Get user's preferred language
 export function getPreferredLanguage(): string {
   if (typeof window !== 'undefined') {
-    return localStorage.getItem('language') || 
-           navigator.language.split('-')[0] || 
-           DEFAULT_LANGUAGE
+    return (
+      localStorage.getItem('language') ||
+      navigator.language.split('-')[0] ||
+      DEFAULT_LANGUAGE
+    )
   }
   return DEFAULT_LANGUAGE
 }

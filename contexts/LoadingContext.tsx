@@ -129,7 +129,7 @@ export function GlobalLoadingIndicator() {
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50">
-      <div 
+      <div
         className="h-1 animate-pulse"
         style={{ backgroundColor: 'var(--notebooklm-primary)' }}
       ></div>
@@ -161,7 +161,7 @@ export function LoadingSpinner({
     const sizes = {
       sm: { width: '16px', height: '16px' },
       md: { width: '24px', height: '24px' },
-      lg: { width: '32px', height: '32px' }
+      lg: { width: '32px', height: '32px' },
     }
     return sizes[size]
   }
@@ -175,14 +175,14 @@ export function LoadingSpinner({
         style={{
           ...sizeStyles,
           borderColor: 'var(--surface-outline)',
-          borderTopColor: 'var(--notebooklm-primary)'
+          borderTopColor: 'var(--notebooklm-primary)',
         }}
       />
       {message && (
-        <span 
+        <span
           style={{
             color: 'var(--text-secondary)',
-            fontSize: 'var(--sys-body-small-size)'
+            fontSize: 'var(--sys-body-small-size)',
           }}
         >
           {message}

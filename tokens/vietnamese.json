@@ -9,14 +9,21 @@
     },
     "examples": {
       "small": "1.000 ₫",
-      "medium": "50.000 ₫", 
+      "medium": "50.000 ₫",
       "large": "1.000.000 ₫",
       "enterprise": "10.000.000 ₫"
     }
   },
   "typography": {
     "diacritics": {
-      "fontFamily": ["Inter", "Roboto", "Noto Sans", "system-ui", "-apple-system", "sans-serif"],
+      "fontFamily": [
+        "Inter",
+        "Roboto",
+        "Noto Sans",
+        "system-ui",
+        "-apple-system",
+        "sans-serif"
+      ],
       "fontFeatureSettings": "\"liga\" 1, \"kern\" 1",
       "textRendering": "optimizeLegibility",
       "fontKerning": "normal"
@@ -44,7 +51,7 @@
     },
     "festive": {
       "tetRed": "#DA020E",
-      "tetGold": "#FFCD00", 
+      "tetGold": "#FFCD00",
       "prosperity": "#FF6B35",
       "fortune": "#FFD700"
     }
@@ -52,7 +59,7 @@
   "content": {
     "common": {
       "welcome": "Chào mừng",
-      "hello": "Xin chào", 
+      "hello": "Xin chào",
       "thank_you": "Cảm ơn",
       "please": "Xin vui lòng",
       "sorry": "Xin lỗi"
@@ -78,7 +85,7 @@
       "structure": "{en} | {vi}",
       "examples": [
         "English | Tiếng Việt",
-        "Home | Trang chủ", 
+        "Home | Trang chủ",
         "Contact | Liên hệ"
       ]
     },

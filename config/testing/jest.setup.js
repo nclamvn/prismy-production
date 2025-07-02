@@ -89,10 +89,16 @@ global.Request = class MockRequest {
     this.headers = new Map()
     this.body = options.body
   }
-  
-  async json() { return {} }
-  async text() { return '' }
-  async formData() { return new FormData() }
+
+  async json() {
+    return {}
+  }
+  async text() {
+    return ''
+  }
+  async formData() {
+    return new FormData()
+  }
 }
 
 global.Response = class MockResponse {
@@ -101,9 +107,13 @@ global.Response = class MockResponse {
     this.status = options.status || 200
     this.headers = new Map()
   }
-  
-  async json() { return this.body }
-  async text() { return this.body }
+
+  async json() {
+    return this.body
+  }
+  async text() {
+    return this.body
+  }
 }
 
 // Mock environment variables
@@ -150,7 +160,7 @@ global.ResizeObserver = jest.fn(() => ({
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: jest.fn().mockImplementation((query) => ({
+  value: jest.fn().mockImplementation(query => ({
     matches: false,
     media: query,
     onchange: null,
@@ -180,7 +190,7 @@ jest.mock('uncrypto', () => ({
       importKey: jest.fn(),
       sign: jest.fn(),
       verify: jest.fn(),
-    }
+    },
   },
   getRandomValues: jest.fn(() => new Uint8Array(16)),
   randomUUID: jest.fn(() => 'test-uuid-1234'),
@@ -195,31 +205,33 @@ jest.mock('openai', () => {
           id: 'chatcmpl-test',
           created: Date.now(),
           model: 'gpt-4o-mini',
-          choices: [{ 
-            message: { content: 'Test response' },
-            finish_reason: 'stop'
-          }],
-          usage: { 
+          choices: [
+            {
+              message: { content: 'Test response' },
+              finish_reason: 'stop',
+            },
+          ],
+          usage: {
             prompt_tokens: 10,
             completion_tokens: 20,
-            total_tokens: 30
-          }
-        })
-      }
+            total_tokens: 30,
+          },
+        }),
+      },
     },
     embeddings: {
       create: jest.fn().mockResolvedValue({
         model: 'text-embedding-3-small',
         data: [{ embedding: Array(384).fill(0.1) }],
-        usage: { total_tokens: 50 }
-      })
-    }
+        usage: { total_tokens: 50 },
+      }),
+    },
   }))
-  
+
   return {
     __esModule: true,
     default: mockOpenAI,
-    OpenAI: mockOpenAI
+    OpenAI: mockOpenAI,
   }
 })
 
@@ -235,15 +247,15 @@ jest.mock('@anthropic-ai/sdk', () => {
         model: 'claude-3-5-haiku-20241022',
         stop_reason: 'end_turn',
         stop_sequence: null,
-        usage: { input_tokens: 10, output_tokens: 20 }
-      })
-    }
+        usage: { input_tokens: 10, output_tokens: 20 },
+      }),
+    },
   }))
-  
+
   return {
     __esModule: true,
     default: mockAnthropic,
-    Anthropic: mockAnthropic
+    Anthropic: mockAnthropic,
   }
 })
 

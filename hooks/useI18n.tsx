@@ -17,7 +17,7 @@ const I18nContext = createContext<I18nContextType | undefined>(undefined)
 
 const translations: Record<Locale, Translations> = {
   en,
-  vi
+  vi,
 }
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
@@ -45,23 +45,23 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
   const t = (key: string, params?: Record<string, string | number>) => {
     const keys = key.split('.')
     let value: any = translations[locale]
-    
+
     for (const k of keys) {
       value = value?.[k]
     }
-    
+
     if (typeof value !== 'string') {
       console.warn(`Translation key not found: ${key}`)
       return key
     }
-    
+
     // Replace parameters
     if (params) {
       return value.replace(/{(\w+)}/g, (match, param) => {
         return params[param]?.toString() || match
       })
     }
-    
+
     return value
   }
 

@@ -1,9 +1,9 @@
 import Stripe from 'stripe'
 
 // Server-side Stripe instance with environment check
-export const stripe = process.env.STRIPE_SECRET_KEY 
+export const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2023-10-16'
+      apiVersion: '2023-10-16',
     })
   : null
 
@@ -27,13 +27,13 @@ export const SUBSCRIPTION_PLANS = {
       '10 translations per month',
       'Basic translation quality',
       'Text translation only',
-      'Community support'
+      'Community support',
     ],
     limits: {
       translations: 10,
       documents: 0,
-      characters: 10000
-    }
+      characters: 10000,
+    },
   },
   standard: {
     name: 'Standard',
@@ -44,13 +44,13 @@ export const SUBSCRIPTION_PLANS = {
       'Enhanced accuracy',
       'Document translation',
       'Email support',
-      'Translation history'
+      'Translation history',
     ],
     limits: {
       translations: 50,
       documents: 10,
-      characters: 50000
-    }
+      characters: 50000,
+    },
   },
   premium: {
     name: 'Premium',
@@ -62,13 +62,13 @@ export const SUBSCRIPTION_PLANS = {
       'Unlimited documents',
       'Priority support',
       'Advanced analytics',
-      'Team collaboration'
+      'Team collaboration',
     ],
     limits: {
       translations: 200,
       documents: -1, // unlimited
-      characters: 200000
-    }
+      characters: 200000,
+    },
   },
   enterprise: {
     name: 'Enterprise',
@@ -80,14 +80,14 @@ export const SUBSCRIPTION_PLANS = {
       'Unlimited everything',
       'Dedicated support',
       'Custom integrations',
-      'SLA guarantee'
+      'SLA guarantee',
     ],
     limits: {
       translations: 1000,
       documents: -1, // unlimited
-      characters: 1000000
-    }
-  }
+      characters: 1000000,
+    },
+  },
 } as const
 
 export type SubscriptionPlan = keyof typeof SUBSCRIPTION_PLANS

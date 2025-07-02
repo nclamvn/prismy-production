@@ -2,17 +2,17 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useWorkspaceStore, type Document } from './hooks/useWorkspaceStore'
-import { 
-  Bot, 
-  Send, 
-  Loader, 
-  MessageCircle, 
+import {
+  Bot,
+  Send,
+  Loader,
+  MessageCircle,
   X,
   Sparkles,
   Copy,
   ThumbsUp,
   ThumbsDown,
-  Crown
+  Crown,
 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { UpgradeModal } from './UpgradeModal'
@@ -22,14 +22,9 @@ interface ChatPanelProps {
 }
 
 export function ChatPanel({ document }: ChatPanelProps) {
-  const { 
-    messages, 
-    ask, 
-    isTyping, 
-    credits,
-    setChatPanelOpen 
-  } = useWorkspaceStore()
-  
+  const { messages, ask, isTyping, credits, setChatPanelOpen } =
+    useWorkspaceStore()
+
   const [inputText, setInputText] = useState('')
   const [isMobile, setIsMobile] = useState(false)
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
@@ -65,7 +60,7 @@ export function ChatPanel({ document }: ChatPanelProps) {
     try {
       // Use the streaming ask method
       const stream = ask(document.id, message)
-      
+
       for await (const chunk of stream) {
         if (chunk.type === 'content') {
           // Streaming content is handled by the store
@@ -77,7 +72,7 @@ export function ChatPanel({ document }: ChatPanelProps) {
       }
     } catch (error) {
       console.error('Chat error:', error)
-      
+
       // Check if it's a credits error
       if (error instanceof Error && error.message.includes('credits')) {
         setShowUpgradeModal(true)
@@ -96,7 +91,7 @@ export function ChatPanel({ document }: ChatPanelProps) {
     'Summarize this document',
     'What are the key points?',
     'Translate specific sections',
-    'Explain technical terms'
+    'Explain technical terms',
   ]
 
   return (
@@ -119,8 +114,13 @@ export function ChatPanel({ document }: ChatPanelProps) {
           <div className="flex items-center space-x-2">
             {/* Credits Display */}
             <div className="flex items-center space-x-1 bg-bg-muted px-2 py-1 rounded-md">
-              <Crown size={12} className={credits > 5 ? 'text-accent-brand' : 'text-red-500'} />
-              <span className="text-xs font-medium text-primary">{credits}</span>
+              <Crown
+                size={12}
+                className={credits > 5 ? 'text-accent-brand' : 'text-red-500'}
+              />
+              <span className="text-xs font-medium text-primary">
+                {credits}
+              </span>
               {credits <= 5 && (
                 <button
                   onClick={() => setShowUpgradeModal(true)}
@@ -147,19 +147,16 @@ export function ChatPanel({ document }: ChatPanelProps) {
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {documentMessages.length === 0 ? (
-          <EmptyState 
+          <EmptyState
             suggestions={suggestedQuestions}
             onSuggestionClick={setInputText}
           />
         ) : (
           <>
-            {documentMessages.map((message) => (
-              <ChatMessage 
-                key={message.id} 
-                message={message}
-              />
+            {documentMessages.map(message => (
+              <ChatMessage key={message.id} message={message} />
             ))}
-            
+
             {isTyping && <TypingIndicator />}
           </>
         )}
@@ -173,7 +170,7 @@ export function ChatPanel({ document }: ChatPanelProps) {
             <textarea
               ref={inputRef}
               value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
+              onChange={e => setInputText(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Ask a question about this document..."
               disabled={isTyping}
@@ -182,7 +179,7 @@ export function ChatPanel({ document }: ChatPanelProps) {
               style={{ minHeight: '40px', maxHeight: '120px' }}
             />
           </div>
-          
+
           <Button
             onClick={handleSendMessage}
             disabled={!inputText.trim() || isTyping}
@@ -192,7 +189,7 @@ export function ChatPanel({ document }: ChatPanelProps) {
             <Send size={16} />
           </Button>
         </div>
-        
+
         <p className="text-xs text-muted mt-2">
           Press Enter to send, Shift+Enter for new line
         </p>
@@ -220,13 +217,14 @@ function EmptyState({ suggestions, onSuggestionClick }: EmptyStateProps) {
       <div className="w-16 h-16 bg-accent-brand-light rounded-full flex items-center justify-center mx-auto">
         <MessageCircle size={32} className="text-accent-brand" />
       </div>
-      
+
       <div>
         <h4 className="font-semibold text-primary mb-2">
           Ask me anything about this document
         </h4>
         <p className="text-sm text-secondary">
-          I can help you understand, summarize, or answer questions about the content.
+          I can help you understand, summarize, or answer questions about the
+          content.
         </p>
       </div>
 
@@ -272,14 +270,18 @@ function ChatMessage({ message }: ChatMessageProps) {
   const isUser = message.role === 'user'
 
   return (
-    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} space-x-2`}>
+    <div
+      className={`flex ${isUser ? 'justify-end' : 'justify-start'} space-x-2`}
+    >
       {!isUser && (
         <div className="w-8 h-8 bg-accent-brand rounded-full flex items-center justify-center flex-shrink-0">
           <Bot size={16} className="text-white" />
         </div>
       )}
 
-      <div className={`max-w-[80%] space-y-1 ${isUser ? 'items-end' : 'items-start'} flex flex-col`}>
+      <div
+        className={`max-w-[80%] space-y-1 ${isUser ? 'items-end' : 'items-start'} flex flex-col`}
+      >
         <div
           className={`px-3 py-2 rounded-lg ${
             isUser
@@ -292,7 +294,7 @@ function ChatMessage({ message }: ChatMessageProps) {
 
         <div className="flex items-center space-x-1 text-xs text-muted">
           <span>{message.timestamp.toLocaleTimeString()}</span>
-          
+
           {!isUser && (
             <div className="flex items-center space-x-1 ml-2">
               <button
@@ -302,14 +304,14 @@ function ChatMessage({ message }: ChatMessageProps) {
               >
                 <Copy size={12} />
               </button>
-              
+
               <button
                 className="p-1 hover:bg-bg-muted rounded transition-colors"
                 title="Good response"
               >
                 <ThumbsUp size={12} />
               </button>
-              
+
               <button
                 className="p-1 hover:bg-bg-muted rounded transition-colors"
                 title="Poor response"
@@ -337,12 +339,18 @@ function TypingIndicator() {
       <div className="w-8 h-8 bg-accent-brand rounded-full flex items-center justify-center">
         <Bot size={16} className="text-white" />
       </div>
-      
+
       <div className="bg-bg-muted border border-border-default rounded-lg px-3 py-2">
         <div className="flex space-x-1">
           <div className="w-2 h-2 bg-accent-brand rounded-full animate-bounce" />
-          <div className="w-2 h-2 bg-accent-brand rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
-          <div className="w-2 h-2 bg-accent-brand rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+          <div
+            className="w-2 h-2 bg-accent-brand rounded-full animate-bounce"
+            style={{ animationDelay: '0.1s' }}
+          />
+          <div
+            className="w-2 h-2 bg-accent-brand rounded-full animate-bounce"
+            style={{ animationDelay: '0.2s' }}
+          />
         </div>
       </div>
     </div>

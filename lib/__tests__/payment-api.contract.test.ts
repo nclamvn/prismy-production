@@ -3,75 +3,85 @@
  * Tests payment-service.ts with MSW mocked payment providers
  */
 
-import { 
-  PaymentService, 
+import {
+  PaymentService,
   UNIFIED_SUBSCRIPTION_PLANS,
   type SubscriptionPlan,
   type PaymentMethod,
-  type Currency 
+  type Currency,
 } from '../payments/payment-service'
 import { http, HttpResponse } from 'msw'
 import { server } from './mocks/server'
 
 // Mock Stripe API
 const stripeHandlers = [
-  http.post('https://api.stripe.com/v1/checkout/sessions', async ({ request }) => {
-    const authHeader = request.headers.get('Authorization')
-    
-    if (!authHeader || !authHeader.includes('sk_test_')) {
-      return HttpResponse.json(
-        { error: { message: 'Invalid API key' } },
-        { status: 401 }
-      )
+  http.post(
+    'https://api.stripe.com/v1/checkout/sessions',
+    async ({ request }) => {
+      const authHeader = request.headers.get('Authorization')
+
+      if (!authHeader || !authHeader.includes('sk_test_')) {
+        return HttpResponse.json(
+          { error: { message: 'Invalid API key' } },
+          { status: 401 }
+        )
+      }
+
+      const body = await request.text()
+      const params = new URLSearchParams(body)
+
+      return HttpResponse.json({
+        id: 'cs_test_' + Math.random().toString(36).substring(7),
+        object: 'checkout.session',
+        payment_url: 'https://checkout.stripe.com/pay/cs_test_example',
+        amount_total: parseInt(
+          params.get('line_items[0][price_data][unit_amount]') || '0'
+        ),
+        currency: params.get('line_items[0][price_data][currency]') || 'usd',
+        mode: params.get('mode') || 'subscription',
+        status: 'open',
+        url: 'https://checkout.stripe.com/pay/cs_test_example',
+      })
     }
+  ),
 
-    const body = await request.text()
-    const params = new URLSearchParams(body)
-    
-    return HttpResponse.json({
-      id: 'cs_test_' + Math.random().toString(36).substring(7),
-      object: 'checkout.session',
-      payment_url: 'https://checkout.stripe.com/pay/cs_test_example',
-      amount_total: parseInt(params.get('line_items[0][price_data][unit_amount]') || '0'),
-      currency: params.get('line_items[0][price_data][currency]') || 'usd',
-      mode: params.get('mode') || 'subscription',
-      status: 'open',
-      url: 'https://checkout.stripe.com/pay/cs_test_example'
-    })
-  }),
+  http.post(
+    'https://api.stripe.com/v1/webhook_endpoints',
+    async ({ request }) => {
+      const authHeader = request.headers.get('Authorization')
 
-  http.post('https://api.stripe.com/v1/webhook_endpoints', async ({ request }) => {
-    const authHeader = request.headers.get('Authorization')
-    
-    if (!authHeader) {
-      return HttpResponse.json(
-        { error: { message: 'Unauthorized' } },
-        { status: 401 }
-      )
+      if (!authHeader) {
+        return HttpResponse.json(
+          { error: { message: 'Unauthorized' } },
+          { status: 401 }
+        )
+      }
+
+      return HttpResponse.json({
+        id: 'we_' + Math.random().toString(36).substring(7),
+        object: 'webhook_endpoint',
+        enabled_events: ['checkout.session.completed'],
+        url: 'https://api.example.com/stripe/webhook',
+        status: 'enabled',
+      })
     }
-
-    return HttpResponse.json({
-      id: 'we_' + Math.random().toString(36).substring(7),
-      object: 'webhook_endpoint',
-      enabled_events: ['checkout.session.completed'],
-      url: 'https://api.example.com/stripe/webhook',
-      status: 'enabled'
-    })
-  })
+  ),
 ]
 
 // Mock VNPay API
 const vnpayHandlers = [
-  http.get('https://sandbox.vnpayment.vn/paymentv2/vpcpay.html', ({ request }) => {
-    const url = new URL(request.url)
-    const vnp_SecureHash = url.searchParams.get('vnp_SecureHash')
-    
-    if (!vnp_SecureHash) {
-      return HttpResponse.text('Invalid signature', { status: 400 })
-    }
+  http.get(
+    'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html',
+    ({ request }) => {
+      const url = new URL(request.url)
+      const vnp_SecureHash = url.searchParams.get('vnp_SecureHash')
 
-    // Simulate redirect to VNPay payment page
-    return HttpResponse.text(`
+      if (!vnp_SecureHash) {
+        return HttpResponse.text('Invalid signature', { status: 400 })
+      }
+
+      // Simulate redirect to VNPay payment page
+      return HttpResponse.text(`
       <html>
         <body>
           <h1>VNPay Payment Gateway</h1>
@@ -80,33 +90,37 @@ const vnpayHandlers = [
         </body>
       </html>
     `)
-  })
+    }
+  ),
 ]
 
 // Mock MoMo API
 const momoHandlers = [
-  http.post('https://test-payment.momo.vn/v2/gateway/api/create', async ({ request }) => {
-    const body = await request.json() as any
-    
-    if (!body.partnerCode || !body.requestId) {
-      return HttpResponse.json(
-        { resultCode: 99, message: 'Invalid request' },
-        { status: 400 }
-      )
-    }
+  http.post(
+    'https://test-payment.momo.vn/v2/gateway/api/create',
+    async ({ request }) => {
+      const body = (await request.json()) as any
 
-    return HttpResponse.json({
-      partnerCode: body.partnerCode,
-      requestId: body.requestId,
-      orderId: body.orderId,
-      amount: body.amount,
-      responseTime: Date.now(),
-      message: 'Success',
-      resultCode: 0,
-      payUrl: 'https://test-payment.momo.vn/pay/' + body.orderId,
-      qrCodeUrl: 'https://test-payment.momo.vn/qr/' + body.orderId
-    })
-  })
+      if (!body.partnerCode || !body.requestId) {
+        return HttpResponse.json(
+          { resultCode: 99, message: 'Invalid request' },
+          { status: 400 }
+        )
+      }
+
+      return HttpResponse.json({
+        partnerCode: body.partnerCode,
+        requestId: body.requestId,
+        orderId: body.orderId,
+        amount: body.amount,
+        responseTime: Date.now(),
+        message: 'Success',
+        resultCode: 0,
+        payUrl: 'https://test-payment.momo.vn/pay/' + body.orderId,
+        qrCodeUrl: 'https://test-payment.momo.vn/qr/' + body.orderId,
+      })
+    }
+  ),
 ]
 
 describe('Payment Service API Contract Tests', () => {
@@ -124,14 +138,14 @@ describe('Payment Service API Contract Tests', () => {
         tmnCode: 'TEST1234',
         hashSecret: 'SECRETKEY',
         url: 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html',
-        returnUrl: 'https://example.com/vnpay/return'
+        returnUrl: 'https://example.com/vnpay/return',
       },
       momoConfig: {
         partnerCode: 'MOMO_TEST',
         accessKey: 'TEST_ACCESS',
         secretKey: 'TEST_SECRET',
-        endpoint: 'https://test-payment.momo.vn/v2/gateway/api/create'
-      }
+        endpoint: 'https://test-payment.momo.vn/v2/gateway/api/create',
+      },
     })
   })
 
@@ -143,13 +157,13 @@ describe('Payment Service API Contract Tests', () => {
           priceVND: expect.any(Number),
           name: {
             en: expect.any(String),
-            vi: expect.any(String)
+            vi: expect.any(String),
           },
           limits: {
             translations: expect.any(Number),
             documents: expect.any(Number),
-            characters: expect.any(Number)
-          }
+            characters: expect.any(Number),
+          },
         })
 
         // Validate price consistency
@@ -165,14 +179,20 @@ describe('Payment Service API Contract Tests', () => {
 
     it('should have proper VND to USD conversion rates', () => {
       const { standard, premium, enterprise } = UNIFIED_SUBSCRIPTION_PLANS
-      
+
       // Check that VND prices are roughly 24,000x USD prices (approximate exchange rate)
       const expectedRate = 24000
       const tolerance = 0.1 // 10% tolerance
 
-      expect(standard.priceVND / standard.priceUSD).toBeCloseTo(expectedRate, -4)
+      expect(standard.priceVND / standard.priceUSD).toBeCloseTo(
+        expectedRate,
+        -4
+      )
       expect(premium.priceVND / premium.priceUSD).toBeCloseTo(expectedRate, -4)
-      expect(enterprise.priceVND / enterprise.priceUSD).toBeCloseTo(expectedRate, -4)
+      expect(enterprise.priceVND / enterprise.priceUSD).toBeCloseTo(
+        expectedRate,
+        -4
+      )
     })
   })
 
@@ -191,7 +211,7 @@ describe('Payment Service API Contract Tests', () => {
         id: expect.stringMatching(/^cs_test_/),
         payment_url: expect.stringMatching(/^https:\/\/checkout\.stripe\.com/),
         amount_total: 2999, // $29.99 in cents
-        currency: 'usd'
+        currency: 'usd',
       })
     })
 
@@ -199,11 +219,11 @@ describe('Payment Service API Contract Tests', () => {
       server.use(
         http.post('https://api.stripe.com/v1/checkout/sessions', () => {
           return HttpResponse.json(
-            { 
-              error: { 
+            {
+              error: {
                 type: 'invalid_request_error',
-                message: 'Invalid parameters' 
-              } 
+                message: 'Invalid parameters',
+              },
             },
             { status: 400 }
           )
@@ -235,7 +255,9 @@ describe('Payment Service API Contract Tests', () => {
         '192.168.1.1'
       )
 
-      expect(paymentUrl).toContain('https://sandbox.vnpayment.vn/paymentv2/vpcpay.html')
+      expect(paymentUrl).toContain(
+        'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html'
+      )
       expect(paymentUrl).toContain('vnp_Amount=71900000') // 719,000 VND in minor units
       expect(paymentUrl).toContain('vnp_OrderInfo=')
       expect(paymentUrl).toContain('vnp_SecureHash=')
@@ -246,7 +268,7 @@ describe('Payment Service API Contract Tests', () => {
         vnp_Amount: '71900000',
         vnp_BankCode: 'NCB',
         vnp_ResponseCode: '00',
-        vnp_SecureHash: 'dummy_hash'
+        vnp_SecureHash: 'dummy_hash',
       }
 
       // This would need proper hash generation in real implementation
@@ -271,8 +293,12 @@ describe('Payment Service API Contract Tests', () => {
       expect(result).toMatchObject({
         resultCode: 0,
         message: 'Success',
-        payUrl: expect.stringMatching(/^https:\/\/test-payment\.momo\.vn\/pay\//),
-        qrCodeUrl: expect.stringMatching(/^https:\/\/test-payment\.momo\.vn\/qr\//)
+        payUrl: expect.stringMatching(
+          /^https:\/\/test-payment\.momo\.vn\/pay\//
+        ),
+        qrCodeUrl: expect.stringMatching(
+          /^https:\/\/test-payment\.momo\.vn\/qr\//
+        ),
       })
     })
 
@@ -287,11 +313,7 @@ describe('Payment Service API Contract Tests', () => {
       )
 
       await expect(
-        paymentService.createMoMoPayment(
-          'premium',
-          'VND',
-          'order_123'
-        )
+        paymentService.createMoMoPayment('premium', 'VND', 'order_123')
       ).rejects.toThrow()
     })
   })
@@ -300,32 +322,35 @@ describe('Payment Service API Contract Tests', () => {
     it.each([
       ['stripe', 'USD'],
       ['vnpay', 'VND'],
-      ['momo', 'VND']
-    ] as const)('should support %s with %s currency', async (method, currency) => {
-      const result = await paymentService.processPayment(
-        'standard',
-        method,
-        currency,
-        'user_123'
-      )
+      ['momo', 'VND'],
+    ] as const)(
+      'should support %s with %s currency',
+      async (method, currency) => {
+        const result = await paymentService.processPayment(
+          'standard',
+          method,
+          currency,
+          'user_123'
+        )
 
-      expect(result).toHaveProperty('success')
-      expect(result).toHaveProperty('paymentUrl')
-    })
+        expect(result).toHaveProperty('success')
+        expect(result).toHaveProperty('paymentUrl')
+      }
+    )
 
     it('should validate payment method and currency compatibility', () => {
       // Stripe should work with USD
-      expect(() => 
+      expect(() =>
         paymentService.validatePaymentMethod('stripe', 'USD')
       ).not.toThrow()
 
       // VNPay should work with VND
-      expect(() => 
+      expect(() =>
         paymentService.validatePaymentMethod('vnpay', 'VND')
       ).not.toThrow()
 
       // VNPay should not work with USD
-      expect(() => 
+      expect(() =>
         paymentService.validatePaymentMethod('vnpay', 'USD')
       ).toThrow('VNPay only supports VND')
     })
@@ -338,30 +363,39 @@ describe('Payment Service API Contract Tests', () => {
       expect(status).toMatchObject({
         active: expect.any(Boolean),
         plan: expect.stringMatching(/free|standard|premium|enterprise/),
-        expiresAt: expect.any(String)
+        expiresAt: expect.any(String),
       })
     })
 
     it('should calculate usage limits correctly', () => {
-      const plans: SubscriptionPlan[] = ['free', 'standard', 'premium', 'enterprise']
-      
+      const plans: SubscriptionPlan[] = [
+        'free',
+        'standard',
+        'premium',
+        'enterprise',
+      ]
+
       plans.forEach(plan => {
         const limits = paymentService.getUsageLimits(plan)
-        
+
         expect(limits).toMatchObject({
           translations: expect.any(Number),
           documents: expect.any(Number),
-          characters: expect.any(Number)
+          characters: expect.any(Number),
         })
 
         // Higher tiers should have higher limits
         if (plans.indexOf(plan) > 0) {
           const prevPlan = plans[plans.indexOf(plan) - 1]
           const prevLimits = paymentService.getUsageLimits(prevPlan)
-          
-          expect(limits.translations).toBeGreaterThanOrEqual(prevLimits.translations)
+
+          expect(limits.translations).toBeGreaterThanOrEqual(
+            prevLimits.translations
+          )
           expect(limits.documents).toBeGreaterThanOrEqual(prevLimits.documents)
-          expect(limits.characters).toBeGreaterThanOrEqual(prevLimits.characters)
+          expect(limits.characters).toBeGreaterThanOrEqual(
+            prevLimits.characters
+          )
         }
       })
     })
@@ -378,10 +412,10 @@ describe('Payment Service API Contract Tests', () => {
             subscription: 'sub_123',
             metadata: {
               userId: 'user_123',
-              plan: 'premium'
-            }
-          }
-        }
+              plan: 'premium',
+            },
+          },
+        },
       }
 
       const result = await paymentService.handleStripeWebhook(
@@ -391,7 +425,7 @@ describe('Payment Service API Contract Tests', () => {
 
       expect(result).toMatchObject({
         success: true,
-        action: 'subscription_created'
+        action: 'subscription_created',
       })
     })
 
@@ -399,7 +433,7 @@ describe('Payment Service API Contract Tests', () => {
       const payload = JSON.stringify({ test: 'data' })
       const signature = 'invalid_signature'
 
-      expect(() => 
+      expect(() =>
         paymentService.verifyWebhookSignature(payload, signature, 'stripe')
       ).toThrow()
     })

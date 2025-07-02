@@ -24,13 +24,13 @@ export async function GET(_request: NextRequest) {
     )
 
     // Get the current user
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser()
 
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Fetch user credits using RLS-enabled query
@@ -42,7 +42,7 @@ export async function GET(_request: NextRequest) {
 
     if (creditsError) {
       console.error('Error fetching user credits:', creditsError)
-      
+
       // If no credits found, this might be a new user
       if (creditsError.code === 'PGRST116') {
         return NextResponse.json(
@@ -50,7 +50,7 @@ export async function GET(_request: NextRequest) {
           { status: 404 }
         )
       }
-      
+
       return NextResponse.json(
         { error: 'Failed to fetch credits' },
         { status: 500 }
@@ -64,10 +64,9 @@ export async function GET(_request: NextRequest) {
         credits_used: credits.credits_used,
         tier: credits.tier,
         created_at: credits.created_at,
-        updated_at: credits.updated_at
-      }
+        updated_at: credits.updated_at,
+      },
     })
-
   } catch (error) {
     console.error('Credits fetch error:', error)
     return NextResponse.json(

@@ -35,8 +35,8 @@
   "overrides": [
     {
       "files": [
-        "jest.config.js", 
-        "jest.setup.js", 
+        "jest.config.js",
+        "jest.setup.js",
         "jest.polyfills.js",
         "scripts/**/*.js",
         "config/**/*.js",

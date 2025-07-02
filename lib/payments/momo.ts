@@ -5,9 +5,14 @@ const MOMO_CONFIG = {
   partnerCode: process.env.MOMO_PARTNER_CODE || '',
   accessKey: process.env.MOMO_ACCESS_KEY || '',
   secretKey: process.env.MOMO_SECRET_KEY || '',
-  endpoint: process.env.MOMO_ENDPOINT || 'https://test-payment.momo.vn/v2/gateway/api/create',
-  redirectUrl: process.env.MOMO_REDIRECT_URL || 'http://localhost:3000/payment/momo/return',
-  ipnUrl: process.env.MOMO_IPN_URL || 'http://localhost:3000/api/payments/momo/ipn',
+  endpoint:
+    process.env.MOMO_ENDPOINT ||
+    'https://test-payment.momo.vn/v2/gateway/api/create',
+  redirectUrl:
+    process.env.MOMO_REDIRECT_URL ||
+    'http://localhost:3000/payment/momo/return',
+  ipnUrl:
+    process.env.MOMO_IPN_URL || 'http://localhost:3000/api/payments/momo/ipn',
 }
 
 // MoMo subscription plans in VND (same as VNPay)
@@ -22,13 +27,13 @@ export const MOMO_SUBSCRIPTION_PLANS = {
       'Chất lượng dịch thuật nâng cao',
       'Dịch tài liệu',
       'Hỗ trợ qua email',
-      'Lịch sử dịch thuật'
+      'Lịch sử dịch thuật',
     ],
     limits: {
       translations: 50,
       documents: 10,
-      characters: 50000
-    }
+      characters: 50000,
+    },
   },
   premium: {
     name: 'Gói Cao cấp',
@@ -41,13 +46,13 @@ export const MOMO_SUBSCRIPTION_PLANS = {
       'Không giới hạn tài liệu',
       'Hỗ trợ ưu tiên',
       'Phân tích nâng cao',
-      'Cộng tác nhóm'
+      'Cộng tác nhóm',
     ],
     limits: {
       translations: 200,
       documents: -1, // unlimited
-      characters: 200000
-    }
+      characters: 200000,
+    },
   },
   enterprise: {
     name: 'Gói Doanh nghiệp',
@@ -60,14 +65,14 @@ export const MOMO_SUBSCRIPTION_PLANS = {
       'Không giới hạn mọi thứ',
       'Hỗ trợ chuyên biệt',
       'Tích hợp tùy chỉnh',
-      'Đảm bảo SLA'
+      'Đảm bảo SLA',
     ],
     limits: {
       translations: 1000,
       documents: -1, // unlimited
-      characters: 1000000
-    }
-  }
+      characters: 1000000,
+    },
+  },
 } as const
 
 export type MoMoSubscriptionPlan = keyof typeof MOMO_SUBSCRIPTION_PLANS
@@ -95,7 +100,7 @@ export async function createMoMoPayment(
 
     // Create raw signature
     const rawSignature = `accessKey=${MOMO_CONFIG.accessKey}&amount=${amount}&extraData=${extraData}&ipnUrl=${MOMO_CONFIG.ipnUrl}&orderId=${orderId}&orderInfo=${orderInfo}&partnerCode=${MOMO_CONFIG.partnerCode}&redirectUrl=${MOMO_CONFIG.redirectUrl}&requestId=${requestId}&requestType=payWithMethod`
-    
+
     // Create signature
     const signature = crypto
       .createHmac('sha256', MOMO_CONFIG.secretKey)
@@ -180,7 +185,7 @@ export function verifyMoMoCallback(body: any): {
 
     // Create raw signature for verification
     const rawSignature = `accessKey=${MOMO_CONFIG.accessKey}&amount=${amount}&extraData=${extraData}&message=${message}&orderId=${orderId}&orderInfo=${orderInfo}&orderType=${orderType}&partnerCode=${partnerCode}&payType=${payType}&requestId=${requestId}&responseTime=${responseTime}&resultCode=${resultCode}&transId=${transId}`
-    
+
     // Verify signature
     const expectedSignature = crypto
       .createHmac('sha256', MOMO_CONFIG.secretKey)
@@ -225,7 +230,9 @@ export function generateMoMoOrderId(userId: string, planKey: string): string {
 }
 
 // Get plan by price ID
-export const getMoMoPlanByPriceId = (priceId: string): MoMoSubscriptionPlan | null => {
+export const getMoMoPlanByPriceId = (
+  priceId: string
+): MoMoSubscriptionPlan | null => {
   for (const [key, plan] of Object.entries(MOMO_SUBSCRIPTION_PLANS)) {
     if (plan.priceId === priceId) {
       return key as MoMoSubscriptionPlan

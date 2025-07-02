@@ -39,7 +39,9 @@ export function MarketingLayout({ children }: MarketingLayoutProps) {
     })
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
     })
 
@@ -113,17 +115,10 @@ export function MarketingLayout({ children }: MarketingLayoutProps) {
                 </>
               ) : (
                 <>
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    onClick={handleSignIn}
-                  >
+                  <Button variant="ghost" size="sm" onClick={handleSignIn}>
                     Sign In
                   </Button>
-                  <Button 
-                    size="sm"
-                    onClick={handleGetStarted}
-                  >
+                  <Button size="sm" onClick={handleGetStarted}>
                     Get Started
                   </Button>
                 </>

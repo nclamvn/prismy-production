@@ -20,8 +20,8 @@ if (!supabaseUrl || !supabaseServiceKey) {
 const supabase = createClient(supabaseUrl, supabaseServiceKey, {
   auth: {
     autoRefreshToken: false,
-    persistSession: false
-  }
+    persistSession: false,
+  },
 })
 
 async function checkAdminStatus() {
@@ -30,15 +30,17 @@ async function checkAdminStatus() {
   try {
     // 1. Kiểm tra users table structure
     console.log('1️⃣ Kiểm tra users table structure...')
-    const { data: usersTableInfo, error: tableError } = await supabase
-      .rpc('exec_sql', { 
+    const { data: usersTableInfo, error: tableError } = await supabase.rpc(
+      'exec_sql',
+      {
         sql: `
           SELECT column_name, data_type, is_nullable, column_default 
           FROM information_schema.columns 
           WHERE table_name = 'users' AND table_schema = 'public'
           ORDER BY ordinal_position;
-        `
-      })
+        `,
+      }
+    )
 
     if (tableError) {
       console.error('❌ Lỗi kiểm tra users table:', tableError.message)
@@ -46,35 +48,44 @@ async function checkAdminStatus() {
       console.log('✅ Users table structure:')
       if (usersTableInfo && usersTableInfo.length > 0) {
         usersTableInfo.forEach(col => {
-          console.log(`   - ${col.column_name}: ${col.data_type} ${col.is_nullable === 'NO' ? 'NOT NULL' : ''} ${col.column_default ? `DEFAULT ${col.column_default}` : ''}`)
+          console.log(
+            `   - ${col.column_name}: ${col.data_type} ${col.is_nullable === 'NO' ? 'NOT NULL' : ''} ${col.column_default ? `DEFAULT ${col.column_default}` : ''}`
+          )
         })
       } else {
         console.log('   ⚠️ Users table không tồn tại hoặc không có columns')
       }
     }
 
-    // 2. Kiểm tra user_profiles table structure 
+    // 2. Kiểm tra user_profiles table structure
     console.log('\n2️⃣ Kiểm tra user_profiles table structure...')
-    const { data: profilesTableInfo, error: profilesError } = await supabase
-      .rpc('exec_sql', { 
+    const { data: profilesTableInfo, error: profilesError } =
+      await supabase.rpc('exec_sql', {
         sql: `
           SELECT column_name, data_type, is_nullable, column_default 
           FROM information_schema.columns 
           WHERE table_name = 'user_profiles' AND table_schema = 'public'
           ORDER BY ordinal_position;
-        `
+        `,
       })
 
     if (profilesError) {
-      console.error('❌ Lỗi kiểm tra user_profiles table:', profilesError.message)
+      console.error(
+        '❌ Lỗi kiểm tra user_profiles table:',
+        profilesError.message
+      )
     } else {
       console.log('✅ User_profiles table structure:')
       if (profilesTableInfo && profilesTableInfo.length > 0) {
         profilesTableInfo.forEach(col => {
-          console.log(`   - ${col.column_name}: ${col.data_type} ${col.is_nullable === 'NO' ? 'NOT NULL' : ''} ${col.column_default ? `DEFAULT ${col.column_default}` : ''}`)
+          console.log(
+            `   - ${col.column_name}: ${col.data_type} ${col.is_nullable === 'NO' ? 'NOT NULL' : ''} ${col.column_default ? `DEFAULT ${col.column_default}` : ''}`
+          )
         })
       } else {
-        console.log('   ⚠️ User_profiles table không tồn tại hoặc không có columns')
+        console.log(
+          '   ⚠️ User_profiles table không tồn tại hoặc không có columns'
+        )
       }
     }
 
@@ -132,12 +143,19 @@ async function checkAdminStatus() {
       .eq('subscription_tier', 'enterprise')
 
     if (enterpriseError) {
-      console.error('❌ Lỗi kiểm tra enterprise users:', enterpriseError.message)
+      console.error(
+        '❌ Lỗi kiểm tra enterprise users:',
+        enterpriseError.message
+      )
     } else {
-      console.log(`✅ Tìm thấy ${enterpriseUsers?.length || 0} enterprise users:`)
+      console.log(
+        `✅ Tìm thấy ${enterpriseUsers?.length || 0} enterprise users:`
+      )
       if (enterpriseUsers && enterpriseUsers.length > 0) {
         enterpriseUsers.forEach((user, index) => {
-          console.log(`   ${index + 1}. ${user.full_name || 'No name'} (User ID: ${user.user_id})`)
+          console.log(
+            `   ${index + 1}. ${user.full_name || 'No name'} (User ID: ${user.user_id})`
+          )
         })
       } else {
         console.log('   📝 Chưa có enterprise users nào')
@@ -146,7 +164,8 @@ async function checkAdminStatus() {
 
     // 6. Kiểm tra auth.users table
     console.log('\n6️⃣ Kiểm tra Supabase auth users...')
-    const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers()
+    const { data: authUsers, error: authError } =
+      await supabase.auth.admin.listUsers()
 
     if (authError) {
       console.error('❌ Lỗi lấy auth users:', authError.message)
@@ -167,7 +186,7 @@ async function checkAdminStatus() {
 
     // 7. Recommendations
     console.log('\n📋 KHUYẾN NGHỊ:')
-    
+
     if (!adminUsers || adminUsers.length === 0) {
       console.log('🔧 Cần tạo admin user:')
       console.log('   1. Chạy: node scripts/create-admin-user.js <email>')
@@ -181,7 +200,6 @@ async function checkAdminStatus() {
     console.log('   1. Nếu không có admin → Tạo admin user')
     console.log('   2. Test admin panel tại /admin')
     console.log('   3. Kiểm tra pipeline output issues')
-
   } catch (error) {
     console.error('❌ Lỗi tổng quát:', error)
   }

@@ -15,7 +15,7 @@ export default defineConfig({
   expect: {
     timeout: 10000,
   },
-  
+
   // Enhanced reporting for Vietnamese market testing
   reporter: [
     ['html', { outputFolder: 'playwright-report' }],
@@ -23,7 +23,7 @@ export default defineConfig({
     ['junit', { outputFile: 'test-results/e2e-junit.xml' }],
     ...(process.env.CI ? [['github']] : [['list']]),
   ],
-  
+
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
     trace: 'on-first-retry',
@@ -41,7 +41,7 @@ export default defineConfig({
     // Desktop browsers for comprehensive Vietnamese UI testing
     {
       name: 'chromium-desktop',
-      use: { 
+      use: {
         ...devices['Desktop Chrome'],
         viewport: { width: 1280, height: 720 },
       },
@@ -49,7 +49,7 @@ export default defineConfig({
     },
     {
       name: 'firefox-desktop',
-      use: { 
+      use: {
         ...devices['Desktop Firefox'],
         viewport: { width: 1280, height: 720 },
       },
@@ -57,17 +57,17 @@ export default defineConfig({
     },
     {
       name: 'webkit-desktop',
-      use: { 
+      use: {
         ...devices['Desktop Safari'],
         viewport: { width: 1280, height: 720 },
       },
       testMatch: '**/translation-flows.spec.ts',
     },
-    
+
     // Mobile testing for Vietnamese mobile users
     {
       name: 'mobile-android',
-      use: { 
+      use: {
         ...devices['Pixel 5'],
         locale: 'vi-VN',
       },
@@ -75,13 +75,13 @@ export default defineConfig({
     },
     {
       name: 'mobile-ios',
-      use: { 
+      use: {
         ...devices['iPhone 12'],
         locale: 'vi-VN',
       },
       testMatch: '**/mobile-flows.spec.ts',
     },
-    
+
     // Vietnamese language specific testing
     {
       name: 'vietnamese-locale',
@@ -93,7 +93,7 @@ export default defineConfig({
       },
       testMatch: '**/localization.spec.ts',
     },
-    
+
     // Performance testing on slower connections (Vietnamese mobile networks)
     {
       name: 'slow-network',
@@ -119,7 +119,7 @@ export default defineConfig({
     stderr: 'pipe',
     stdout: 'pipe',
   },
-  
+
   // Global test configuration
   globalSetup: require.resolve('./tests/e2e/global-setup.ts'),
   globalTeardown: require.resolve('./tests/e2e/global-teardown.ts'),

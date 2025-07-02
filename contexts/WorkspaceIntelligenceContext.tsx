@@ -1,6 +1,13 @@
 'use client'
 
-import React, { createContext, useContext, useReducer, useEffect, useCallback, ReactNode } from 'react'
+import React, {
+  createContext,
+  useContext,
+  useReducer,
+  useEffect,
+  useCallback,
+  ReactNode,
+} from 'react'
 import { useAuth } from './AuthContext'
 import { useSSRSafeLanguage } from './SSRSafeLanguageContext'
 
@@ -17,7 +24,7 @@ import type {
   WorkspaceInsight,
   OperationInput,
   OperationOutput,
-  OperationError
+  OperationError,
 } from '../types/workspace'
 import type { User } from '../types/auth'
 import type { SupportedLanguage } from '../types'
@@ -29,14 +36,29 @@ type SuggestionType = SmartSuggestion['type']
 type ConnectionStatus = WorkspaceIntelligenceState['connectionStatus']
 
 // Strict action type definitions
-type WorkspaceIntelligenceAction = 
+type WorkspaceIntelligenceAction =
   | { type: 'SET_MODE'; payload: WorkspaceMode }
   | { type: 'ADD_ACTIVITY'; payload: Omit<Activity, 'id' | 'timestamp'> }
-  | { type: 'START_AI_OPERATION'; payload: Omit<AIOperation, 'id' | 'createdAt' | 'progress'> }
-  | { type: 'UPDATE_AI_OPERATION'; payload: { id: string; updates: Partial<AIOperation> } }
-  | { type: 'COMPLETE_AI_OPERATION'; payload: { id: string; output: OperationOutput } }
-  | { type: 'FAIL_AI_OPERATION'; payload: { id: string; error: OperationError } }
-  | { type: 'ADD_SUGGESTION'; payload: Omit<SmartSuggestion, 'id' | 'createdAt'> }
+  | {
+      type: 'START_AI_OPERATION'
+      payload: Omit<AIOperation, 'id' | 'createdAt' | 'progress'>
+    }
+  | {
+      type: 'UPDATE_AI_OPERATION'
+      payload: { id: string; updates: Partial<AIOperation> }
+    }
+  | {
+      type: 'COMPLETE_AI_OPERATION'
+      payload: { id: string; output: OperationOutput }
+    }
+  | {
+      type: 'FAIL_AI_OPERATION'
+      payload: { id: string; error: OperationError }
+    }
+  | {
+      type: 'ADD_SUGGESTION'
+      payload: Omit<SmartSuggestion, 'id' | 'createdAt'>
+    }
   | { type: 'REMOVE_SUGGESTION'; payload: string }
   | { type: 'APPLY_SUGGESTION'; payload: string }
   | { type: 'DISMISS_SUGGESTION'; payload: string }
@@ -58,12 +80,12 @@ type WorkspaceIntelligenceContextType = WorkspaceIntelligenceContextValue & {
   // Context management
   updateContext: (updates: Partial<WorkspaceContext>) => void
   getCurrentContext: () => WorkspaceContext
-  
+
   // Analytics & patterns
   getUserPatterns: () => UserPattern
   generateInsights: () => void
   getWorkflowEfficiency: () => number
-  
+
   // Real-time features
   syncWorkspace: () => Promise<void>
   getConnectionStatus: () => 'connected' | 'disconnected' | 'reconnecting'
@@ -85,108 +107,114 @@ function workspaceIntelligenceReducer(
         currentMode: action.payload,
         context: {
           ...state.context,
-          currentMode: action.payload
-        }
+          currentMode: action.payload,
+        },
       }
-      
+
     case 'ADD_ACTIVITY':
       const newActivity: Activity = {
         ...action.payload,
         id: `activity_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        timestamp: new Date()
+        timestamp: new Date(),
       }
-      
+
       return {
         ...state,
         activities: [newActivity, ...state.activities].slice(0, 100), // Keep last 100 activities
         context: {
           ...state.context,
-          lastActivity: newActivity
-        }
+          lastActivity: newActivity,
+        },
       }
-      
+
     case 'START_AI_OPERATION':
       const operation: AIOperation = {
         ...action.payload,
         id: `operation_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         startTime: new Date(),
         status: 'processing',
-        progress: 0
+        progress: 0,
       }
-      
+
       return {
         ...state,
         activeOperations: [...state.activeOperations, operation],
-        isProcessing: true
+        isProcessing: true,
       }
-      
+
     case 'UPDATE_AI_OPERATION':
       const updatedActiveOps = state.activeOperations.map(op =>
         op.id === action.payload.id ? { ...op, ...action.payload.updates } : op
       )
-      
+
       // Move completed operations to completed array
-      const completedOp = updatedActiveOps.find(op => 
-        op.id === action.payload.id && 
-        (op.status === 'completed' || op.status === 'error')
+      const completedOp = updatedActiveOps.find(
+        op =>
+          op.id === action.payload.id &&
+          (op.status === 'completed' || op.status === 'error')
       )
-      
+
       let newActiveOps = updatedActiveOps
       let newCompletedOps = state.completedOperations
-      
+
       if (completedOp) {
-        newActiveOps = updatedActiveOps.filter(op => op.id !== action.payload.id)
-        newCompletedOps = [completedOp, ...state.completedOperations].slice(0, 50) // Keep last 50
+        newActiveOps = updatedActiveOps.filter(
+          op => op.id !== action.payload.id
+        )
+        newCompletedOps = [completedOp, ...state.completedOperations].slice(
+          0,
+          50
+        ) // Keep last 50
       }
-      
+
       return {
         ...state,
         activeOperations: newActiveOps,
         completedOperations: newCompletedOps,
-        isProcessing: newActiveOps.length > 0
+        isProcessing: newActiveOps.length > 0,
       }
-      
+
     case 'ADD_SUGGESTION':
       const suggestion: SmartSuggestion = {
         ...action.payload,
-        id: `suggestion_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+        id: `suggestion_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       }
-      
+
       return {
         ...state,
-        suggestions: [suggestion, ...state.suggestions]
+        suggestions: [suggestion, ...state.suggestions],
       }
-      
+
     case 'REMOVE_SUGGESTION':
       return {
         ...state,
-        suggestions: state.suggestions.filter(s => s.id !== action.payload)
+        suggestions: state.suggestions.filter(s => s.id !== action.payload),
       }
-      
+
     case 'UPDATE_CONTEXT':
       return {
         ...state,
-        context: { ...state.context, ...action.payload }
+        context: { ...state.context, ...action.payload },
       }
-      
+
     case 'UPDATE_PATTERNS':
       return {
         ...state,
-        patterns: { ...state.patterns, ...action.payload }
+        patterns: { ...state.patterns, ...action.payload },
       }
-      
+
     case 'SET_CONNECTION_STATUS':
       return {
         ...state,
-        connectionStatus: action.payload
+        connectionStatus: action.payload,
       }
-      
+
     case 'SYNC_COMPLETE':
       return {
         ...state,
-        lastSync: action.payload.timestamp
+        lastSync: action.payload.timestamp,
       }
-      
+
     default:
       return state
   }
@@ -201,7 +229,7 @@ const initialState: WorkspaceIntelligenceState = {
   context: {
     currentMode: 'translation',
     activeDocuments: [],
-    recentTranslations: []
+    recentTranslations: [],
   },
   activities: [],
   patterns: {
@@ -209,7 +237,7 @@ const initialState: WorkspaceIntelligenceState = {
     commonWorkflows: [],
     usageTime: {},
     featureUsage: {},
-    lastAnalysis: new Date()
+    lastAnalysis: new Date(),
   },
   activeOperations: [],
   completedOperations: [],
@@ -217,14 +245,16 @@ const initialState: WorkspaceIntelligenceState = {
   insights: [],
   isProcessing: false,
   lastSync: new Date(),
-  connectionStatus: 'connected'
+  connectionStatus: 'connected',
 }
 
 // ============================================================================
 // CONTEXT CREATION
 // ============================================================================
 
-const WorkspaceIntelligenceContext = createContext<WorkspaceIntelligenceContextType | undefined>(undefined)
+const WorkspaceIntelligenceContext = createContext<
+  WorkspaceIntelligenceContextType | undefined
+>(undefined)
 
 // ============================================================================
 // PROVIDER COMPONENT
@@ -234,27 +264,35 @@ interface WorkspaceIntelligenceProviderProps {
   children: ReactNode
 }
 
-export function WorkspaceIntelligenceProvider({ children }: WorkspaceIntelligenceProviderProps) {
-  const [state, dispatch] = useReducer(workspaceIntelligenceReducer, initialState)
+export function WorkspaceIntelligenceProvider({
+  children,
+}: WorkspaceIntelligenceProviderProps) {
+  const [state, dispatch] = useReducer(
+    workspaceIntelligenceReducer,
+    initialState
+  )
   const { user } = useAuth()
   const { language } = useSSRSafeLanguage()
 
   // ========================================================================
   // MODE MANAGEMENT
   // ========================================================================
-  
-  const setMode = useCallback((mode: WorkspaceMode) => {
-    dispatch({ type: 'SET_MODE', payload: mode })
-    
-    // Track mode change activity
-    trackActivity({
-      type: 'navigation',
-      mode,
-      data: { previousMode: state.currentMode, newMode: mode },
-      success: true
-    })
-  }, [state.currentMode])
-  
+
+  const setMode = useCallback(
+    (mode: WorkspaceMode) => {
+      dispatch({ type: 'SET_MODE', payload: mode })
+
+      // Track mode change activity
+      trackActivity({
+        type: 'navigation',
+        mode,
+        data: { previousMode: state.currentMode, newMode: mode },
+        success: true,
+      })
+    },
+    [state.currentMode]
+  )
+
   const getPreviousMode = useCallback(() => {
     return state.previousMode
   }, [state.previousMode])
@@ -262,58 +300,76 @@ export function WorkspaceIntelligenceProvider({ children }: WorkspaceIntelligenc
   // ========================================================================
   // ACTIVITY TRACKING
   // ========================================================================
-  
-  const trackActivity = useCallback((activity: Omit<Activity, 'id' | 'timestamp'>) => {
-    dispatch({ type: 'ADD_ACTIVITY', payload: activity })
-    
-    // Update user patterns based on activity
-    const newUsageTime = { ...state.patterns.usageTime }
-    const modeKey = activity.mode
-    newUsageTime[modeKey] = (newUsageTime[modeKey] || 0) + (activity.duration || 1)
-    
-    const newFeatureUsage = { ...state.patterns.featureUsage }
-    const featureKey = activity.type
-    newFeatureUsage[featureKey] = (newFeatureUsage[featureKey] || 0) + 1
-    
-    dispatch({ 
-      type: 'UPDATE_PATTERNS', 
-      payload: { 
-        usageTime: newUsageTime,
-        featureUsage: newFeatureUsage
-      }
-    })
-  }, [state.patterns])
-  
-  const getRecentActivities = useCallback((limit = 10) => {
-    return state.activities.slice(0, limit)
-  }, [state.activities])
-  
-  const getActivitiesByType = useCallback((type: ActivityType) => {
-    return state.activities.filter(activity => activity.type === type)
-  }, [state.activities])
+
+  const trackActivity = useCallback(
+    (activity: Omit<Activity, 'id' | 'timestamp'>) => {
+      dispatch({ type: 'ADD_ACTIVITY', payload: activity })
+
+      // Update user patterns based on activity
+      const newUsageTime = { ...state.patterns.usageTime }
+      const modeKey = activity.mode
+      newUsageTime[modeKey] =
+        (newUsageTime[modeKey] || 0) + (activity.duration || 1)
+
+      const newFeatureUsage = { ...state.patterns.featureUsage }
+      const featureKey = activity.type
+      newFeatureUsage[featureKey] = (newFeatureUsage[featureKey] || 0) + 1
+
+      dispatch({
+        type: 'UPDATE_PATTERNS',
+        payload: {
+          usageTime: newUsageTime,
+          featureUsage: newFeatureUsage,
+        },
+      })
+    },
+    [state.patterns]
+  )
+
+  const getRecentActivities = useCallback(
+    (limit = 10) => {
+      return state.activities.slice(0, limit)
+    },
+    [state.activities]
+  )
+
+  const getActivitiesByType = useCallback(
+    (type: ActivityType) => {
+      return state.activities.filter(activity => activity.type === type)
+    },
+    [state.activities]
+  )
 
   // ========================================================================
   // AI OPERATIONS
   // ========================================================================
-  
-  const startAIOperation = useCallback((operation: Omit<AIOperation, 'id' | 'startTime' | 'status' | 'progress'>) => {
-    dispatch({ type: 'START_AI_OPERATION', payload: operation })
-    
-    // Track AI operation start
-    trackActivity({
-      type: 'ai_interaction',
-      mode: state.currentMode,
-      data: { operationType: operation.type, input: operation.input },
-      success: true
-    })
-    
-    return `operation_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-  }, [state.currentMode, trackActivity])
-  
-  const updateAIOperation = useCallback((id: string, updates: Partial<AIOperation>) => {
-    dispatch({ type: 'UPDATE_AI_OPERATION', payload: { id, updates } })
-  }, [])
-  
+
+  const startAIOperation = useCallback(
+    (
+      operation: Omit<AIOperation, 'id' | 'startTime' | 'status' | 'progress'>
+    ) => {
+      dispatch({ type: 'START_AI_OPERATION', payload: operation })
+
+      // Track AI operation start
+      trackActivity({
+        type: 'ai_interaction',
+        mode: state.currentMode,
+        data: { operationType: operation.type, input: operation.input },
+        success: true,
+      })
+
+      return `operation_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    },
+    [state.currentMode, trackActivity]
+  )
+
+  const updateAIOperation = useCallback(
+    (id: string, updates: Partial<AIOperation>) => {
+      dispatch({ type: 'UPDATE_AI_OPERATION', payload: { id, updates } })
+    },
+    []
+  )
+
   const getActiveOperations = useCallback(() => {
     return state.activeOperations
   }, [state.activeOperations])
@@ -321,28 +377,34 @@ export function WorkspaceIntelligenceProvider({ children }: WorkspaceIntelligenc
   // ========================================================================
   // SMART SUGGESTIONS
   // ========================================================================
-  
-  const addSuggestion = useCallback((suggestion: Omit<SmartSuggestion, 'id'>) => {
-    dispatch({ type: 'ADD_SUGGESTION', payload: suggestion })
-  }, [])
-  
+
+  const addSuggestion = useCallback(
+    (suggestion: Omit<SmartSuggestion, 'id'>) => {
+      dispatch({ type: 'ADD_SUGGESTION', payload: suggestion })
+    },
+    []
+  )
+
   const removeSuggestion = useCallback((id: string) => {
     dispatch({ type: 'REMOVE_SUGGESTION', payload: id })
   }, [])
-  
-  const getSuggestionsByPriority = useCallback((priority?: 'low' | 'medium' | 'high') => {
-    if (!priority) return state.suggestions
-    return state.suggestions.filter(s => s.priority === priority)
-  }, [state.suggestions])
+
+  const getSuggestionsByPriority = useCallback(
+    (priority?: 'low' | 'medium' | 'high') => {
+      if (!priority) return state.suggestions
+      return state.suggestions.filter(s => s.priority === priority)
+    },
+    [state.suggestions]
+  )
 
   // ========================================================================
   // CONTEXT MANAGEMENT
   // ========================================================================
-  
+
   const updateContext = useCallback((updates: Partial<WorkspaceContext>) => {
     dispatch({ type: 'UPDATE_CONTEXT', payload: updates })
   }, [])
-  
+
   const getCurrentContext = useCallback(() => {
     return state.context
   }, [state.context])
@@ -350,36 +412,38 @@ export function WorkspaceIntelligenceProvider({ children }: WorkspaceIntelligenc
   // ========================================================================
   // ANALYTICS & PATTERNS
   // ========================================================================
-  
+
   const getUserPatterns = useCallback(() => {
     return state.patterns
   }, [state.patterns])
-  
+
   const generateInsights = useCallback(() => {
     // Generate insights based on user patterns and activities
     // This would typically call an AI service or analytics engine
     console.log('Generating insights based on user patterns:', state.patterns)
   }, [state.patterns])
-  
+
   const getWorkflowEfficiency = useCallback(() => {
     // Calculate workflow efficiency based on activities and patterns
     const totalActivities = state.activities.length
     const successfulActivities = state.activities.filter(a => a.success).length
-    return totalActivities > 0 ? (successfulActivities / totalActivities) * 100 : 0
+    return totalActivities > 0
+      ? (successfulActivities / totalActivities) * 100
+      : 0
   }, [state.activities])
 
   // ========================================================================
   // REAL-TIME FEATURES
   // ========================================================================
-  
+
   const syncWorkspace = useCallback(async () => {
     dispatch({ type: 'SET_CONNECTION_STATUS', payload: 'reconnecting' })
-    
+
     try {
       // Sync workspace state with server
       // This would typically send current state to server and receive updates
       await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate API call
-      
+
       dispatch({ type: 'SET_CONNECTION_STATUS', payload: 'connected' })
       dispatch({ type: 'SYNC_COMPLETE', payload: { timestamp: new Date() } })
     } catch (error) {
@@ -387,7 +451,7 @@ export function WorkspaceIntelligenceProvider({ children }: WorkspaceIntelligenc
       console.error('Workspace sync failed:', error)
     }
   }, [])
-  
+
   const getConnectionStatus = useCallback(() => {
     return state.connectionStatus
   }, [state.connectionStatus])
@@ -395,7 +459,7 @@ export function WorkspaceIntelligenceProvider({ children }: WorkspaceIntelligenc
   // ========================================================================
   // EFFECTS
   // ========================================================================
-  
+
   // Auto-sync workspace periodically
   useEffect(() => {
     const interval = setInterval(() => {
@@ -403,10 +467,10 @@ export function WorkspaceIntelligenceProvider({ children }: WorkspaceIntelligenc
         syncWorkspace()
       }
     }, 30000) // Sync every 30 seconds
-    
+
     return () => clearInterval(interval)
   }, [state.connectionStatus, syncWorkspace])
-  
+
   // Generate contextual suggestions based on current mode and activity
   useEffect(() => {
     const generateContextualSuggestions = () => {
@@ -417,7 +481,7 @@ export function WorkspaceIntelligenceProvider({ children }: WorkspaceIntelligenc
           removeSuggestion(suggestion.id)
         }
       })
-      
+
       // Generate new suggestions based on current context
       if (state.currentMode === 'translation' && state.activities.length > 0) {
         const recentTranslations = getActivitiesByType('translation')
@@ -429,54 +493,61 @@ export function WorkspaceIntelligenceProvider({ children }: WorkspaceIntelligenc
             action: () => setMode('documents'),
             priority: 'medium',
             context: { source: 'usage_pattern' },
-            expires: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
+            expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
           })
         }
       }
     }
-    
+
     const timeout = setTimeout(generateContextualSuggestions, 2000)
     return () => clearTimeout(timeout)
-  }, [state.currentMode, state.activities.length, addSuggestion, removeSuggestion, getActivitiesByType, setMode])
+  }, [
+    state.currentMode,
+    state.activities.length,
+    addSuggestion,
+    removeSuggestion,
+    getActivitiesByType,
+    setMode,
+  ])
 
   // ========================================================================
   // CONTEXT VALUE
   // ========================================================================
-  
+
   const contextValue: WorkspaceIntelligenceContextType = {
     state,
-    
+
     // Mode management
     setMode,
     getPreviousMode,
-    
+
     // Activity tracking
     trackActivity,
     getRecentActivities,
     getActivitiesByType,
-    
+
     // AI operations
     startAIOperation,
     updateAIOperation,
     getActiveOperations,
-    
+
     // Smart suggestions
     addSuggestion,
     removeSuggestion,
     getSuggestionsByPriority,
-    
+
     // Context management
     updateContext,
     getCurrentContext,
-    
+
     // Analytics & patterns
     getUserPatterns,
     generateInsights,
     getWorkflowEfficiency,
-    
+
     // Real-time features
     syncWorkspace,
-    getConnectionStatus
+    getConnectionStatus,
   }
 
   return (
@@ -493,7 +564,9 @@ export function WorkspaceIntelligenceProvider({ children }: WorkspaceIntelligenc
 export function useWorkspaceIntelligence() {
   const context = useContext(WorkspaceIntelligenceContext)
   if (context === undefined) {
-    throw new Error('useWorkspaceIntelligence must be used within a WorkspaceIntelligenceProvider')
+    throw new Error(
+      'useWorkspaceIntelligence must be used within a WorkspaceIntelligenceProvider'
+    )
   }
   return context
 }

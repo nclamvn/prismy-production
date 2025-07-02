@@ -115,18 +115,21 @@ npm test
 ## 📊 Performance Metrics
 
 ### Lighthouse Scores (Average: 96/100)
+
 - 🟢 **Performance**: 92/100
 - 🟢 **Accessibility**: 98/100
 - 🟢 **Best Practices**: 95/100
 - 🟢 **SEO**: 100/100
 
 ### Core Web Vitals
+
 - **FCP**: 1.2s (Good)
 - **LCP**: 1.8s (Good)
 - **TTI**: 2.1s (Good)
 - **CLS**: 0.02 (Excellent)
 
 ### Bundle Size
+
 - Landing: 197kB
 - Workspace: 199kB
 - Shared chunks: 191kB
@@ -134,6 +137,7 @@ npm test
 ## 🎨 Design System
 
 NotebookML-inspired minimal design:
+
 - **Colors**: 8 grays + 2 indigo accents
 - **Typography**: System font stack
 - **Spacing**: 4px grid system
@@ -173,6 +177,7 @@ npm run production-check
 ```
 
 Ensures:
+
 - ✅ Environment configured
 - ✅ Build succeeds
 - ✅ Security headers set

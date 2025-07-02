@@ -3,6 +3,7 @@
 ## Overview
 
 Prismy supports multiple payment methods to serve both international and Vietnamese domestic markets:
+
 - **International Payments**: Stripe (Visa/Mastercard worldwide)
 - **Vietnamese Payments**: VNPay (domestic cards/banking) and MoMo (mobile wallet)
 - **Multi-Currency**: USD for international, VND for Vietnamese market
@@ -12,20 +13,24 @@ Prismy supports multiple payment methods to serve both international and Vietnam
 ### 1. Stripe Dashboard Setup
 
 #### Create Stripe Account
+
 1. Go to [stripe.com](https://stripe.com) and create an account
 2. Complete business verification if required
 3. Note your account ID for reference
 
 #### Create Products and Prices
+
 Create the following products with monthly pricing:
 
 1. **Standard Plan**
+
    - Product name: "Prismy Standard"
    - Price: $9.99/month
    - Copy the Price ID (starts with `price_`)
 
 2. **Premium Plan**
-   - Product name: "Prismy Premium" 
+
+   - Product name: "Prismy Premium"
    - Price: $29.99/month
    - Copy the Price ID
 
@@ -35,6 +40,7 @@ Create the following products with monthly pricing:
    - Copy the Price ID
 
 #### Get API Keys
+
 1. Go to Developers → API Keys
 2. Copy your **Publishable key** (starts with `pk_`)
 3. Copy your **Secret key** (starts with `sk_`)
@@ -42,12 +48,13 @@ Create the following products with monthly pricing:
 ### 2. Webhook Configuration
 
 #### Create Webhook Endpoint
+
 1. In Stripe Dashboard, go to Developers → Webhooks
 2. Click "Add endpoint"
 3. Set endpoint URL: `https://your-domain.com/api/stripe/webhooks`
 4. Select these events:
    - `customer.subscription.created`
-   - `customer.subscription.updated` 
+   - `customer.subscription.updated`
    - `customer.subscription.deleted`
    - `invoice.payment_succeeded`
    - `invoice.payment_failed`
@@ -58,6 +65,7 @@ Create the following products with monthly pricing:
 ### VNPay Integration (Domestic Cards & Internet Banking)
 
 #### 1. Register with VNPay
+
 1. Visit [VNPay Merchant Portal](https://vnpay.vn)
 2. Register for a merchant account
 3. Complete business verification
@@ -68,13 +76,17 @@ Create the following products with monthly pricing:
    - Legal representative ID
 
 #### 2. Get VNPay Credentials
+
 After approval, you'll receive:
+
 - **TMN Code**: Terminal/Merchant code
 - **Hash Secret**: For signature verification
 - **API URLs**: Sandbox and production endpoints
 
 #### 3. Test VNPay Integration
+
 Use these test cards in sandbox:
+
 - **Successful Payment**: 9704198526191432198 (NCB Bank)
 - **Insufficient Funds**: 9704198526191432199
 - **Invalid Card**: 1234567890123456
@@ -82,6 +94,7 @@ Use these test cards in sandbox:
 ### MoMo Integration (Mobile Wallet)
 
 #### 1. Register with MoMo
+
 1. Visit [MoMo Business Portal](https://business.momo.vn)
 2. Create business account
 3. Complete KYB (Know Your Business) verification
@@ -91,12 +104,15 @@ Use these test cards in sandbox:
    - Legal representative documents
 
 #### 2. Get MoMo Credentials
+
 After approval, you'll receive:
+
 - **Partner Code**: Your unique partner identifier
 - **Access Key**: API access key
 - **Secret Key**: For signature generation
 
 #### 3. Test MoMo Integration
+
 1. Download MoMo app on your phone
 2. Create test account with test phone number
 3. Use sandbox environment for testing
@@ -140,6 +156,7 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ## Database Schema
 
 ### Payment Transactions Table
+
 ```sql
 payment_transactions (
   id UUID PRIMARY KEY,
@@ -163,26 +180,31 @@ Run the database migration in `supabase-stripe-migration.sql` to create all requ
 ## Pricing Structure
 
 ### International Pricing (USD)
+
 - **Standard**: $9.99/month (50 translations)
 - **Premium**: $29.99/month (200 translations)
 - **Enterprise**: $99.99/month (1000 translations)
 
 ### Vietnamese Pricing (VND)
+
 - **Standard**: 239,000 VND/month (50 translations)
 - **Premium**: 719,000 VND/month (200 translations)
 - **Enterprise**: 2,399,000 VND/month (1000 translations)
 
-*Note: VND prices are optimized for Vietnamese purchasing power and include psychological pricing considerations.*
+_Note: VND prices are optimized for Vietnamese purchasing power and include psychological pricing considerations._
 
 ## Testing Payment Flows
 
 ### Stripe Test Cards
+
 - **Success**: 4242 4242 4242 4242
 - **Declined**: 4000 0000 0000 0002
 - **Requires authentication**: 4000 0025 0000 3155
 
 ### VNPay Test Scenarios
+
 1. **Successful Card Payment**:
+
    - Use test card: 9704198526191432198
    - Bank: NCB (National Citizen Bank)
    - OTP: 123456
@@ -192,7 +214,9 @@ Run the database migration in `supabase-stripe-migration.sql` to create all requ
    - Use demo credentials provided by VNPay
 
 ### MoMo Test Scenarios
+
 1. **Wallet Payment**:
+
    - Use test phone number: 0999999999
    - Test PIN: 111111
 
@@ -203,21 +227,25 @@ Run the database migration in `supabase-stripe-migration.sql` to create all requ
 ## Security Considerations
 
 ### Stripe Security
+
 - **Webhook Verification**: All webhooks verified with signing secrets
 - **PCI Compliance**: Stripe handles all card data securely
 - **HTTPS Only**: All communications must use HTTPS
 
 ### VNPay Security
+
 - **Signature Verification**: All requests/responses signed with SHA512
 - **IP Whitelisting**: Configure allowed IPs in VNPay dashboard
 - **Hash Secret Protection**: Never expose hash secret in client-side code
 
 ### MoMo Security
+
 - **HMAC-SHA256**: All requests signed with HMAC-SHA256
 - **Request Validation**: Verify all callback signatures
 - **Partner Code Protection**: Keep partner credentials secure
 
 ### General Security
+
 - **Environment Variables**: Store all credentials in environment variables
 - **Database Security**: Use Row Level Security (RLS) for payment transactions
 - **Audit Trail**: Log all payment attempts and results
@@ -226,6 +254,7 @@ Run the database migration in `supabase-stripe-migration.sql` to create all requ
 ## Production Deployment
 
 ### Pre-Production Checklist
+
 - [ ] Stripe account approved and verified
 - [ ] VNPay merchant account approved and verified
 - [ ] MoMo business account approved and verified
@@ -235,6 +264,7 @@ Run the database migration in `supabase-stripe-migration.sql` to create all requ
 - [ ] Prepare customer support for payment issues
 
 ### Production Environment Variables
+
 ```env
 # Production Stripe
 STRIPE_PUBLISHABLE_KEY=pk_live_your_live_publishable_key
@@ -257,6 +287,7 @@ NEXT_PUBLIC_SITE_URL=https://prismy.vn
 ## API Endpoints
 
 The payment system includes these API routes:
+
 - `/api/stripe/create-checkout` - Creates Stripe Checkout session
 - `/api/stripe/create-portal` - Creates billing portal session
 - `/api/stripe/webhooks` - Handles Stripe webhook events
@@ -268,16 +299,19 @@ The payment system includes these API routes:
 ## Troubleshooting
 
 ### Common Stripe Issues
+
 - **Invalid price ID**: Verify price IDs match Stripe dashboard
 - **Webhook signature verification failed**: Check webhook secret
 - **Checkout session creation fails**: Verify secret key and authentication
 
 ### Common VNPay Issues
+
 - **Invalid Signature**: Check hash secret and parameter order
 - **Transaction Timeout**: Increase timeout in VNPay dashboard
 - **Currency Mismatch**: Ensure all amounts are in VND (xu units)
 
 ### Common MoMo Issues
+
 - **Partner Code Error**: Verify partner code is correct
 - **Signature Mismatch**: Check secret key and signature generation
 - **QR Code Expiry**: QR codes expire after 10 minutes
@@ -285,14 +319,17 @@ The payment system includes these API routes:
 ## Support Resources
 
 ### Stripe Resources
+
 - **Documentation**: [stripe.com/docs](https://stripe.com/docs)
 - **Support**: Available 24/7 via dashboard
 
 ### VNPay Resources
+
 - **Technical Documentation**: [VNPay Developer Portal](https://sandbox.vnpayment.vn/apis/)
 - **Merchant Support**: support@vnpay.vn
 
 ### MoMo Resources
+
 - **Developer Documentation**: [MoMo Developer Portal](https://developers.momo.vn/)
 - **Business Support**: business@momo.vn
 

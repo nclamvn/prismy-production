@@ -4,9 +4,14 @@ import crypto from 'crypto'
 const VNPAY_CONFIG = {
   vnp_TmnCode: process.env.VNPAY_TMN_CODE || '',
   vnp_HashSecret: process.env.VNPAY_HASH_SECRET || '',
-  vnp_Url: process.env.VNPAY_URL || 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html',
-  vnp_ReturnUrl: process.env.VNPAY_RETURN_URL || 'http://localhost:3000/payment/vnpay/return',
-  vnp_IpnUrl: process.env.VNPAY_IPN_URL || 'http://localhost:3000/api/payments/vnpay/ipn',
+  vnp_Url:
+    process.env.VNPAY_URL ||
+    'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html',
+  vnp_ReturnUrl:
+    process.env.VNPAY_RETURN_URL ||
+    'http://localhost:3000/payment/vnpay/return',
+  vnp_IpnUrl:
+    process.env.VNPAY_IPN_URL || 'http://localhost:3000/api/payments/vnpay/ipn',
 }
 
 // VNPay subscription plans in VND
@@ -21,13 +26,13 @@ export const VNPAY_SUBSCRIPTION_PLANS = {
       'Chất lượng dịch thuật nâng cao',
       'Dịch tài liệu',
       'Hỗ trợ qua email',
-      'Lịch sử dịch thuật'
+      'Lịch sử dịch thuật',
     ],
     limits: {
       translations: 50,
       documents: 10,
-      characters: 50000
-    }
+      characters: 50000,
+    },
   },
   premium: {
     name: 'Gói Cao cấp',
@@ -40,13 +45,13 @@ export const VNPAY_SUBSCRIPTION_PLANS = {
       'Không giới hạn tài liệu',
       'Hỗ trợ ưu tiên',
       'Phân tích nâng cao',
-      'Cộng tác nhóm'
+      'Cộng tác nhóm',
     ],
     limits: {
       translations: 200,
       documents: -1, // unlimited
-      characters: 200000
-    }
+      characters: 200000,
+    },
   },
   enterprise: {
     name: 'Gói Doanh nghiệp',
@@ -59,14 +64,14 @@ export const VNPAY_SUBSCRIPTION_PLANS = {
       'Không giới hạn mọi thứ',
       'Hỗ trợ chuyên biệt',
       'Tích hợp tùy chỉnh',
-      'Đảm bảo SLA'
+      'Đảm bảo SLA',
     ],
     limits: {
       translations: 1000,
       documents: -1, // unlimited
-      characters: 1000000
-    }
-  }
+      characters: 1000000,
+    },
+  },
 } as const
 
 export type VNPaySubscriptionPlan = keyof typeof VNPAY_SUBSCRIPTION_PLANS
@@ -83,11 +88,11 @@ export const formatVND = (price: number): string => {
 function sortObject(obj: Record<string, any>): Record<string, any> {
   const sorted: Record<string, any> = {}
   const keys = Object.keys(obj).sort()
-  
+
   keys.forEach(key => {
     sorted[key] = obj[key]
   })
-  
+
   return sorted
 }
 
@@ -101,8 +106,12 @@ export function createVNPayPaymentUrl(
   planKey: string
 ): string {
   const date = new Date()
-  const createDate = date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, '').replace('T', '')
-  
+  const createDate = date
+    .toISOString()
+    .replace(/[-:]/g, '')
+    .replace(/\.\d{3}Z$/, '')
+    .replace('T', '')
+
   let vnp_Params: Record<string, any> = {
     vnp_Version: '2.1.0',
     vnp_Command: 'pay',
@@ -144,16 +153,17 @@ export function createVNPayPaymentUrl(
 
   // Create query string
   const signData = new URLSearchParams(vnp_Params).toString()
-  
+
   // Create secure hash
   const hmac = crypto.createHmac('sha512', VNPAY_CONFIG.vnp_HashSecret)
   const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex')
-  
+
   vnp_Params.vnp_SecureHash = signed
 
   // Build final URL
-  const paymentUrl = VNPAY_CONFIG.vnp_Url + '?' + new URLSearchParams(vnp_Params).toString()
-  
+  const paymentUrl =
+    VNPAY_CONFIG.vnp_Url + '?' + new URLSearchParams(vnp_Params).toString()
+
   return paymentUrl
 }
 
@@ -172,11 +182,11 @@ export function verifyVNPayCallback(vnp_Params: Record<string, any>): {
   // Sort parameters
   const sortedParams = sortObject(vnp_Params)
   const signData = new URLSearchParams(sortedParams).toString()
-  
+
   // Verify signature
   const hmac = crypto.createHmac('sha512', VNPAY_CONFIG.vnp_HashSecret)
   const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex')
-  
+
   const isValid = signed === secureHash
 
   return {
@@ -196,7 +206,9 @@ export function generateOrderId(userId: string, planKey: string): string {
 }
 
 // Get plan by price ID
-export const getVNPayPlanByPriceId = (priceId: string): VNPaySubscriptionPlan | null => {
+export const getVNPayPlanByPriceId = (
+  priceId: string
+): VNPaySubscriptionPlan | null => {
   for (const [key, plan] of Object.entries(VNPAY_SUBSCRIPTION_PLANS)) {
     if (plan.priceId === priceId) {
       return key as VNPaySubscriptionPlan

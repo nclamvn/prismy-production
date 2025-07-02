@@ -28,7 +28,10 @@ interface ErrorBoundaryProps {
   showReportDialog?: boolean
 }
 
-export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+export class ErrorBoundary extends Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
   private resetTimeoutId: number | null = null
 
   constructor(props: ErrorBoundaryProps) {
@@ -38,19 +41,24 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       hasError: false,
       error: null,
       errorId: null,
-      errorInfo: null
+      errorInfo: null,
     }
   }
 
   static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
     return {
       hasError: true,
-      error
+      error,
     }
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    const { onError, level = 'component', name = 'Unknown', showReportDialog = false } = this.props
+    const {
+      onError,
+      level = 'component',
+      name = 'Unknown',
+      showReportDialog = false,
+    } = this.props
 
     // Log error locally
     logger.error('Error boundary caught error', {
@@ -58,7 +66,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       errorInfo,
       componentStack: errorInfo.componentStack,
       level,
-      name
+      name,
     })
 
     // Track error with Sentry
@@ -67,20 +75,20 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       tags: {
         errorBoundary: name,
         errorLevel: level,
-        component: name
+        component: name,
       },
       extra: {
         componentStack: errorInfo.componentStack,
         errorBoundaryLevel: level,
-        props: this.sanitizeProps(this.props)
+        props: this.sanitizeProps(this.props),
       },
-      fingerprint: [`error-boundary-${name}`, error.name, error.message]
+      fingerprint: [`error-boundary-${name}`, error.name, error.message],
     })
 
     // Update state with error details
     this.setState({
       errorId,
-      errorInfo
+      errorInfo,
     })
 
     // Call custom error handler
@@ -93,10 +101,14 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     }
 
     // Show Sentry report dialog for critical errors
-    if (showReportDialog && level === 'critical' && typeof window !== 'undefined') {
+    if (
+      showReportDialog &&
+      level === 'critical' &&
+      typeof window !== 'undefined'
+    ) {
       import('@sentry/nextjs').then(({ showReportDialog }) => {
         showReportDialog({
-          eventId: errorId || undefined
+          eventId: errorId || undefined,
         })
       })
     }
@@ -129,7 +141,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     return {
       ...sanitized,
       hasChildren: !!children,
-      hasOnError: !!onError
+      hasOnError: !!onError,
     }
   }
 
@@ -150,7 +162,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       hasError: false,
       error: null,
       errorId: null,
-      errorInfo: null
+      errorInfo: null,
     })
   }
 
@@ -160,11 +172,11 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
   private reportProblem = () => {
     const { errorId } = this.state
-    
+
     if (errorId && typeof window !== 'undefined') {
       import('@sentry/nextjs').then(({ showReportDialog }) => {
         showReportDialog({
-          eventId: errorId
+          eventId: errorId,
         })
       })
     }
@@ -172,7 +184,12 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
   render() {
     const { hasError, error, errorId } = this.state
-    const { children, fallback, level = 'component', name = 'Component' } = this.props
+    const {
+      children,
+      fallback,
+      level = 'component',
+      name = 'Component',
+    } = this.props
 
     if (hasError) {
       // Use custom fallback if provided
@@ -187,28 +204,46 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     return children
   }
 
-  private renderErrorUI(error: Error | null, errorId: string | null, level: string, name: string) {
+  private renderErrorUI(
+    error: Error | null,
+    errorId: string | null,
+    level: string,
+    name: string
+  ) {
     if (level === 'critical' || level === 'page') {
       return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50">
           <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
             <div className="mb-6">
               <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                <svg
+                  className="w-8 h-8 text-red-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.082 16.5c-.77.833.192 2.5 1.732 2.5z"
+                  />
                 </svg>
               </div>
               <h1 className="text-2xl font-bold text-gray-900 mb-2">
                 Something went wrong
               </h1>
               <p className="text-gray-600 mb-6">
-                We're sorry, but something unexpected happened. Please try refreshing the page.
+                We're sorry, but something unexpected happened. Please try
+                refreshing the page.
               </p>
             </div>
 
             {process.env.NODE_ENV === 'development' && error && (
               <div className="mb-6 p-4 bg-gray-100 rounded-lg text-left">
-                <h3 className="font-semibold text-gray-800 mb-2">Error Details (Development)</h3>
+                <h3 className="font-semibold text-gray-800 mb-2">
+                  Error Details (Development)
+                </h3>
                 <p className="text-sm text-gray-700 font-mono break-all">
                   {error.message}
                 </p>
@@ -227,7 +262,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
               >
                 Refresh Page
               </button>
-              
+
               {errorId && (
                 <button
                   onClick={this.reportProblem}
@@ -236,7 +271,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                   Report Problem
                 </button>
               )}
-              
+
               <Link
                 href="/"
                 className="block w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors"
@@ -254,18 +289,26 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
         <div className="flex items-start">
           <div className="flex-shrink-0">
-            <svg className="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            <svg
+              className="w-5 h-5 text-red-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.082 16.5c-.77.833.192 2.5 1.732 2.5z"
+              />
             </svg>
           </div>
           <div className="ml-3 flex-1">
-            <h3 className="text-sm font-medium text-red-800">
-              {name} Error
-            </h3>
+            <h3 className="text-sm font-medium text-red-800">{name} Error</h3>
             <p className="text-sm text-red-700 mt-1">
               This component encountered an error and will retry automatically.
             </p>
-            
+
             {process.env.NODE_ENV === 'development' && error && (
               <details className="mt-2">
                 <summary className="text-xs text-red-600 cursor-pointer">
@@ -276,7 +319,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                 </pre>
               </details>
             )}
-            
+
             <div className="mt-3">
               <button
                 onClick={this.resetError}
@@ -308,13 +351,15 @@ export function withErrorBoundary<P extends object>(
 }
 
 // Specialized error boundaries for different use cases
-export const PageErrorBoundary: React.FC<{ children: ReactNode }> = ({ children }) => (
+export const PageErrorBoundary: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => (
   <ErrorBoundary level="page" name="Page" showReportDialog={true}>
     {children}
   </ErrorBoundary>
 )
 
-export const ComponentErrorBoundary: React.FC<{ 
+export const ComponentErrorBoundary: React.FC<{
   children: ReactNode
   name?: string
 }> = ({ children, name = 'Component' }) => (
@@ -323,7 +368,9 @@ export const ComponentErrorBoundary: React.FC<{
   </ErrorBoundary>
 )
 
-export const CriticalErrorBoundary: React.FC<{ children: ReactNode }> = ({ children }) => (
+export const CriticalErrorBoundary: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => (
   <ErrorBoundary level="critical" name="Critical" showReportDialog={true}>
     {children}
   </ErrorBoundary>

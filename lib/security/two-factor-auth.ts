@@ -37,13 +37,16 @@ export class TwoFactorAuthManager {
   /**
    * Generate 2FA setup data for a user
    */
-  async setupTwoFactor(userId: string, userEmail: string): Promise<TwoFactorSetup> {
+  async setupTwoFactor(
+    userId: string,
+    userEmail: string
+  ): Promise<TwoFactorSetup> {
     try {
       // Generate secret
       const secret = speakeasy.generateSecret({
         name: `Prismy (${userEmail})`,
         issuer: 'Prismy Translation Platform',
-        length: 32
+        length: 32,
       })
 
       // Generate QR code URL
@@ -53,16 +56,14 @@ export class TwoFactorAuthManager {
       const backupCodes = this.generateBackupCodes()
 
       // Store in database
-      const { error } = await supabase
-        .from('user_two_factor')
-        .upsert({
-          user_id: userId,
-          secret: secret.base32,
-          backup_codes: backupCodes.map(code => this.hashBackupCode(code)),
-          is_enabled: false,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        })
+      const { error } = await supabase.from('user_two_factor').upsert({
+        user_id: userId,
+        secret: secret.base32,
+        backup_codes: backupCodes.map(code => this.hashBackupCode(code)),
+        is_enabled: false,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
 
       if (error) throw error
 
@@ -72,9 +73,8 @@ export class TwoFactorAuthManager {
         secret: secret.base32!,
         qrCodeUrl,
         backupCodes,
-        userId
+        userId,
       }
-
     } catch (error) {
       logger.error('Failed to setup 2FA', { error, userId })
       throw new Error('Failed to setup two-factor authentication')
@@ -106,7 +106,7 @@ export class TwoFactorAuthManager {
         secret: twoFactorData.secret,
         encoding: 'base32',
         token,
-        window: 2 // Allow 60 seconds before/after for clock drift
+        window: 2, // Allow 60 seconds before/after for clock drift
       })
 
       if (!isValid) {
@@ -120,7 +120,7 @@ export class TwoFactorAuthManager {
         .update({
           is_enabled: true,
           enabled_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq('user_id', userId)
 
@@ -129,12 +129,11 @@ export class TwoFactorAuthManager {
       // Log security event
       await this.logSecurityEvent(userId, 'two_factor_enabled', {
         success: true,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       })
 
       logger.info('2FA enabled successfully', { userId })
       return true
-
     } catch (error) {
       logger.error('Failed to enable 2FA', { error, userId })
       throw error
@@ -153,7 +152,9 @@ export class TwoFactorAuthManager {
         .single()
 
       if (error || !twoFactorData || !twoFactorData.is_enabled) {
-        logger.warn('2FA verification attempted but not enabled', { userId: verification.userId })
+        logger.warn('2FA verification attempted but not enabled', {
+          userId: verification.userId,
+        })
         return false
       }
 
@@ -164,7 +165,7 @@ export class TwoFactorAuthManager {
         // Verify backup code
         const hashedToken = this.hashBackupCode(verification.token)
         const backupCodes = twoFactorData.backup_codes || []
-        
+
         if (backupCodes.includes(hashedToken)) {
           isValid = true
           usedBackupCode = hashedToken
@@ -175,7 +176,7 @@ export class TwoFactorAuthManager {
           secret: twoFactorData.secret,
           encoding: 'base32',
           token: verification.token,
-          window: 2
+          window: 2,
         })
       }
 
@@ -183,7 +184,7 @@ export class TwoFactorAuthManager {
         // Update last used timestamp
         const updates: any = {
           last_used_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         }
 
         // Remove used backup code
@@ -193,9 +194,9 @@ export class TwoFactorAuthManager {
           )
           updates.backup_codes = remainingCodes
 
-          logger.info('Backup code used for 2FA', { 
+          logger.info('Backup code used for 2FA', {
             userId: verification.userId,
-            remainingCodes: remainingCodes.length 
+            remainingCodes: remainingCodes.length,
           })
         }
 
@@ -205,11 +206,15 @@ export class TwoFactorAuthManager {
           .eq('user_id', verification.userId)
 
         // Log successful verification
-        await this.logSecurityEvent(verification.userId, 'two_factor_verified', {
-          method: verification.isBackupCode ? 'backup_code' : 'totp',
-          success: true,
-          timestamp: new Date().toISOString()
-        })
+        await this.logSecurityEvent(
+          verification.userId,
+          'two_factor_verified',
+          {
+            method: verification.isBackupCode ? 'backup_code' : 'totp',
+            success: true,
+            timestamp: new Date().toISOString(),
+          }
+        )
 
         return true
       }
@@ -218,14 +223,16 @@ export class TwoFactorAuthManager {
       await this.logSecurityEvent(verification.userId, 'two_factor_failed', {
         method: verification.isBackupCode ? 'backup_code' : 'totp',
         success: false,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       })
 
       logger.warn('2FA verification failed', { userId: verification.userId })
       return false
-
     } catch (error) {
-      logger.error('Failed to verify 2FA', { error, userId: verification.userId })
+      logger.error('Failed to verify 2FA', {
+        error,
+        userId: verification.userId,
+      })
       return false
     }
   }
@@ -237,7 +244,7 @@ export class TwoFactorAuthManager {
     try {
       // Verify current token before disabling
       const isValid = await this.verifyTwoFactor({ userId, token })
-      
+
       if (!isValid) {
         return false
       }
@@ -248,7 +255,7 @@ export class TwoFactorAuthManager {
         .update({
           is_enabled: false,
           disabled_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq('user_id', userId)
 
@@ -257,12 +264,11 @@ export class TwoFactorAuthManager {
       // Log security event
       await this.logSecurityEvent(userId, 'two_factor_disabled', {
         success: true,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       })
 
       logger.info('2FA disabled', { userId })
       return true
-
     } catch (error) {
       logger.error('Failed to disable 2FA', { error, userId })
       throw error
@@ -272,11 +278,14 @@ export class TwoFactorAuthManager {
   /**
    * Generate new backup codes
    */
-  async regenerateBackupCodes(userId: string, token: string): Promise<string[]> {
+  async regenerateBackupCodes(
+    userId: string,
+    token: string
+  ): Promise<string[]> {
     try {
       // Verify current token
       const isValid = await this.verifyTwoFactor({ userId, token })
-      
+
       if (!isValid) {
         throw new Error('Invalid 2FA token')
       }
@@ -289,7 +298,7 @@ export class TwoFactorAuthManager {
         .from('user_two_factor')
         .update({
           backup_codes: backupCodes.map(code => this.hashBackupCode(code)),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq('user_id', userId)
 
@@ -298,12 +307,11 @@ export class TwoFactorAuthManager {
       // Log security event
       await this.logSecurityEvent(userId, 'backup_codes_regenerated', {
         success: true,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       })
 
       logger.info('Backup codes regenerated', { userId })
       return backupCodes
-
     } catch (error) {
       logger.error('Failed to regenerate backup codes', { error, userId })
       throw error
@@ -321,12 +329,12 @@ export class TwoFactorAuthManager {
         .eq('user_id', userId)
         .single()
 
-      if (error && error.code !== 'PGRST116') { // Not found is okay
+      if (error && error.code !== 'PGRST116') {
+        // Not found is okay
         throw error
       }
 
       return data?.is_enabled || false
-
     } catch (error) {
       logger.error('Failed to check 2FA status', { error, userId })
       return false
@@ -356,7 +364,7 @@ export class TwoFactorAuthManager {
       if (!data) {
         return {
           enabled: false,
-          hasBackupCodes: false
+          hasBackupCodes: false,
         }
       }
 
@@ -364,14 +372,13 @@ export class TwoFactorAuthManager {
         enabled: data.is_enabled || false,
         hasBackupCodes: (data.backup_codes?.length || 0) > 0,
         backupCodesRemaining: data.backup_codes?.length || 0,
-        lastUsed: data.last_used_at ? new Date(data.last_used_at) : undefined
+        lastUsed: data.last_used_at ? new Date(data.last_used_at) : undefined,
       }
-
     } catch (error) {
       logger.error('Failed to get 2FA status', { error, userId })
       return {
         enabled: false,
-        hasBackupCodes: false
+        hasBackupCodes: false,
       }
     }
   }
@@ -381,7 +388,7 @@ export class TwoFactorAuthManager {
    */
   private generateBackupCodes(count: number = 8): string[] {
     const codes: string[] = []
-    
+
     for (let i = 0; i < count; i++) {
       // Generate 8-character alphanumeric code
       const code = randomBytes(4).toString('hex').toUpperCase()
@@ -414,7 +421,7 @@ export class TwoFactorAuthManager {
         p_resource_id: null,
         p_metadata: metadata,
         p_ip_address: null,
-        p_user_agent: null
+        p_user_agent: null,
       })
     } catch (error) {
       logger.error('Failed to log security event', { error, operation, userId })

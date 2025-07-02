@@ -17,26 +17,29 @@ describe('Helpers', () => {
         }
         return chunks
       },
-      
+
       flatten: <T>(array: T[][]): T[] => {
         return array.reduce((flat, item) => flat.concat(item), [])
       },
-      
+
       unique: <T>(array: T[]): T[] => {
         return Array.from(new Set(array))
       },
-      
+
       shuffle: <T>(array: T[]): T[] => {
         const shuffled = [...array]
         for (let i = shuffled.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+          const j = Math.floor(Math.random() * (i + 1))
+          ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
         }
         return shuffled
       },
-      
+
       // Object helpers
-      pick: <T extends object, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> => {
+      pick: <T extends object, K extends keyof T>(
+        obj: T,
+        keys: K[]
+      ): Pick<T, K> => {
         const result = {} as Pick<T, K>
         keys.forEach(key => {
           if (key in obj) {
@@ -45,27 +48,31 @@ describe('Helpers', () => {
         })
         return result
       },
-      
-      omit: <T extends object, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> => {
+
+      omit: <T extends object, K extends keyof T>(
+        obj: T,
+        keys: K[]
+      ): Omit<T, K> => {
         const result = { ...obj }
         keys.forEach(key => {
           delete result[key]
         })
         return result
       },
-      
+
       deepClone: <T>(obj: T): T => {
         if (obj === null || typeof obj !== 'object') return obj
         if (obj instanceof Date) return new Date(obj.getTime()) as any
-        if (obj instanceof Array) return obj.map(item => helpers.deepClone(item)) as any
-        
+        if (obj instanceof Array)
+          return obj.map(item => helpers.deepClone(item)) as any
+
         const cloned = {} as T
         for (const key in obj) {
           cloned[key] = helpers.deepClone(obj[key])
         }
         return cloned
       },
-      
+
       deepMerge: (target: any, source: any): any => {
         const output = { ...target }
         if (helpers.isObject(target) && helpers.isObject(source)) {
@@ -83,12 +90,12 @@ describe('Helpers', () => {
         }
         return output
       },
-      
+
       // String helpers
       capitalize: (str: string): string => {
         return str.charAt(0).toUpperCase() + str.slice(1)
       },
-      
+
       camelCase: (str: string): string => {
         return str
           .replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => {
@@ -96,58 +103,62 @@ describe('Helpers', () => {
           })
           .replace(/\s+/g, '')
       },
-      
+
       kebabCase: (str: string): string => {
         return str
           .replace(/([a-z])([A-Z])/g, '$1-$2')
           .replace(/\s+/g, '-')
           .toLowerCase()
       },
-      
+
       snakeCase: (str: string): string => {
         return str
           .replace(/([a-z])([A-Z])/g, '$1_$2')
           .replace(/\s+/g, '_')
           .toLowerCase()
       },
-      
+
       // Number helpers
       clamp: (num: number, min: number, max: number): number => {
         return Math.min(Math.max(num, min), max)
       },
-      
+
       randomInt: (min: number, max: number): number => {
         return Math.floor(Math.random() * (max - min + 1)) + min
       },
-      
+
       round: (num: number, decimals: number = 0): number => {
         return Math.round(num * Math.pow(10, decimals)) / Math.pow(10, decimals)
       },
-      
+
       // Date helpers
       addDays: (date: Date, days: number): Date => {
         const result = new Date(date)
         result.setDate(result.getDate() + days)
         return result
       },
-      
+
       formatDate: (date: Date, format: string = 'YYYY-MM-DD'): string => {
         const year = date.getFullYear()
         const month = String(date.getMonth() + 1).padStart(2, '0')
         const day = String(date.getDate()).padStart(2, '0')
-        
+
         return format
           .replace('YYYY', String(year))
           .replace('MM', month)
           .replace('DD', day)
       },
-      
+
       // Async helpers
       sleep: (ms: number): Promise<void> => {
         return new Promise(resolve => setTimeout(resolve, ms))
       },
-      
-      retry: async <T>(fn: () => Promise<T>, retries: number = 3, delay: number = 1000): Promise<T> => {
+
+      retry: async <T>(
+        fn: () => Promise<T>,
+        retries: number = 3,
+        delay: number = 1000
+      ): Promise<T> => {
         try {
           return await fn()
         } catch (error) {
@@ -156,13 +167,13 @@ describe('Helpers', () => {
           return helpers.retry(fn, retries - 1, delay * 2)
         }
       },
-      
+
       // Validation helpers
       isEmail: (email: string): boolean => {
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         return re.test(email)
       },
-      
+
       isURL: (url: string): boolean => {
         try {
           new URL(url)
@@ -171,38 +182,45 @@ describe('Helpers', () => {
           return false
         }
       },
-      
+
       isObject: (obj: any): boolean => {
         return obj !== null && typeof obj === 'object' && !Array.isArray(obj)
       },
-      
+
       isEmpty: (value: any): boolean => {
         if (value == null) return true
-        if (typeof value === 'string' || Array.isArray(value)) return value.length === 0
+        if (typeof value === 'string' || Array.isArray(value))
+          return value.length === 0
         if (typeof value === 'object') return Object.keys(value).length === 0
         return false
       },
-      
+
       // Function helpers
-      debounce: <T extends (...args: any[]) => any>(fn: T, delay: number): T => {
+      debounce: <T extends (...args: any[]) => any>(
+        fn: T,
+        delay: number
+      ): T => {
         let timeoutId: NodeJS.Timeout
         return ((...args: Parameters<T>) => {
           clearTimeout(timeoutId)
           timeoutId = setTimeout(() => fn(...args), delay)
         }) as T
       },
-      
-      throttle: <T extends (...args: any[]) => any>(fn: T, limit: number): T => {
+
+      throttle: <T extends (...args: any[]) => any>(
+        fn: T,
+        limit: number
+      ): T => {
         let inThrottle = false
         return ((...args: Parameters<T>) => {
           if (!inThrottle) {
             fn(...args)
             inThrottle = true
-            setTimeout(() => inThrottle = false, limit)
+            setTimeout(() => (inThrottle = false), limit)
           }
         }) as T
       },
-      
+
       memoize: <T extends (...args: any[]) => any>(fn: T): T => {
         const cache = new Map()
         return ((...args: Parameters<T>) => {
@@ -214,7 +232,7 @@ describe('Helpers', () => {
           cache.set(key, result)
           return result
         }) as T
-      }
+      },
     }
   })
 
@@ -222,7 +240,11 @@ describe('Helpers', () => {
     describe('chunk', () => {
       it('should chunk array into specified size', () => {
         const arr = [1, 2, 3, 4, 5, 6]
-        expect(helpers.chunk(arr, 2)).toEqual([[1, 2], [3, 4], [5, 6]])
+        expect(helpers.chunk(arr, 2)).toEqual([
+          [1, 2],
+          [3, 4],
+          [5, 6],
+        ])
       })
 
       it('should handle uneven chunks', () => {
@@ -286,7 +308,7 @@ describe('Helpers', () => {
       it('should shuffle array', () => {
         const arr = [1, 2, 3, 4, 5]
         const shuffled = helpers.shuffle(arr)
-        
+
         expect(shuffled).toHaveLength(5)
         expect(shuffled.sort()).toEqual([1, 2, 3, 4, 5])
         // Not checking exact order as it's random
@@ -295,7 +317,7 @@ describe('Helpers', () => {
       it('should not modify original array', () => {
         const arr = [1, 2, 3]
         const shuffled = helpers.shuffle(arr)
-        
+
         expect(arr).toEqual([1, 2, 3])
         expect(shuffled).not.toBe(arr)
       })
@@ -349,7 +371,7 @@ describe('Helpers', () => {
       it('should deep clone objects', () => {
         const obj = { a: 1, b: { c: 2, d: { e: 3 } } }
         const cloned = helpers.deepClone(obj)
-        
+
         expect(cloned).toEqual(obj)
         expect(cloned).not.toBe(obj)
         expect(cloned.b).not.toBe(obj.b)
@@ -359,7 +381,7 @@ describe('Helpers', () => {
       it('should clone arrays', () => {
         const arr = [1, [2, 3], { a: 4 }]
         const cloned = helpers.deepClone(arr)
-        
+
         expect(cloned).toEqual(arr)
         expect(cloned).not.toBe(arr)
         expect(cloned[1]).not.toBe(arr[1])
@@ -369,7 +391,7 @@ describe('Helpers', () => {
       it('should clone dates', () => {
         const date = new Date('2024-01-01')
         const cloned = helpers.deepClone(date)
-        
+
         expect(cloned).toEqual(date)
         expect(cloned).not.toBe(date)
       })
@@ -386,22 +408,22 @@ describe('Helpers', () => {
       it('should deep merge objects', () => {
         const target = { a: 1, b: { c: 2 } }
         const source = { b: { d: 3 }, e: 4 }
-        
+
         expect(helpers.deepMerge(target, source)).toEqual({
           a: 1,
           b: { c: 2, d: 3 },
-          e: 4
+          e: 4,
         })
       })
 
       it('should override primitive values', () => {
         const target = { a: 1, b: 2 }
         const source = { b: 3, c: 4 }
-        
+
         expect(helpers.deepMerge(target, source)).toEqual({
           a: 1,
           b: 3,
-          c: 4
+          c: 4,
         })
       })
 
@@ -586,14 +608,14 @@ describe('Helpers', () => {
 
       it('should throw after max retries', async () => {
         const fn = jest.fn(() => Promise.reject(new Error('Always fails')))
-        
+
         await expect(helpers.retry(fn, 2, 10)).rejects.toThrow('Always fails')
         expect(fn).toHaveBeenCalledTimes(3) // Initial + 2 retries
       })
 
       it('should succeed on first try', async () => {
         const fn = jest.fn(() => Promise.resolve('Success'))
-        
+
         const result = await helpers.retry(fn, 3, 10)
         expect(result).toBe('Success')
         expect(fn).toHaveBeenCalledTimes(1)

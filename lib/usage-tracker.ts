@@ -55,8 +55,13 @@ class UsageTracker {
         allowed: false,
         reason: 'User profile not found',
         remaining: { translations: 0, documents: 0, characters: 0 },
-        usage: { translations: 0, documents: 0, characters: 0, lastReset: new Date() },
-        plan: 'free'
+        usage: {
+          translations: 0,
+          documents: 0,
+          characters: 0,
+          lastReset: new Date(),
+        },
+        plan: 'free',
       }
     }
 
@@ -65,7 +70,7 @@ class UsageTracker {
 
     // Get current usage stats
     const currentUsage = await this.getCurrentUsage(request.userId)
-    
+
     // Check if user needs usage reset
     const needsReset = this.shouldResetUsage(profile.usage_reset_date)
     if (needsReset) {
@@ -76,13 +81,18 @@ class UsageTracker {
     }
 
     // Calculate new usage after this request
-    const newTranslations = currentUsage.translations + (request.type === 'translation' ? 1 : 0)
+    const newTranslations =
+      currentUsage.translations + (request.type === 'translation' ? 1 : 0)
     const newDocuments = currentUsage.documents + (request.documents || 0)
     const newCharacters = currentUsage.characters + request.characters
 
     // Check quotas
     const quotaCheck = this.checkQuotas(
-      { translations: newTranslations, documents: newDocuments, characters: newCharacters },
+      {
+        translations: newTranslations,
+        documents: newDocuments,
+        characters: newCharacters,
+      },
       planLimits
     )
 
@@ -92,7 +102,7 @@ class UsageTracker {
         reason: quotaCheck.reason,
         remaining: this.calculateRemaining(currentUsage, planLimits),
         usage: currentUsage,
-        plan
+        plan,
       }
     }
 
@@ -104,17 +114,26 @@ class UsageTracker {
       translations: newTranslations,
       documents: newDocuments,
       characters: newCharacters,
-      lastReset: currentUsage.lastReset
+      lastReset: currentUsage.lastReset,
     })
 
     return {
       allowed: true,
       remaining: this.calculateRemaining(
-        { translations: newTranslations, documents: newDocuments, characters: newCharacters },
+        {
+          translations: newTranslations,
+          documents: newDocuments,
+          characters: newCharacters,
+        },
         planLimits
       ),
-      usage: { translations: newTranslations, documents: newDocuments, characters: newCharacters, lastReset: currentUsage.lastReset },
-      plan
+      usage: {
+        translations: newTranslations,
+        documents: newDocuments,
+        characters: newCharacters,
+        lastReset: currentUsage.lastReset,
+      },
+      plan,
     }
   }
 
@@ -157,8 +176,10 @@ class UsageTracker {
     const usage: UsageStats = {
       translations: translations?.length || 0,
       documents: documents?.length || 0,
-      characters: translations?.reduce((sum, t) => sum + (t.character_count || 0), 0) || 0,
-      lastReset: new Date(resetDate)
+      characters:
+        translations?.reduce((sum, t) => sum + (t.character_count || 0), 0) ||
+        0,
+      lastReset: new Date(resetDate),
     }
 
     // Cache the result
@@ -174,20 +195,18 @@ class UsageTracker {
     const supabase = createRouteHandlerClient({ cookies })
 
     // Insert into translation_history for tracking
-    await supabase
-      .from('translation_history')
-      .insert({
-        user_id: request.userId,
-        type: request.type,
-        character_count: request.characters,
-        metadata: request.metadata,
-        created_at: new Date().toISOString()
-      })
+    await supabase.from('translation_history').insert({
+      user_id: request.userId,
+      type: request.type,
+      character_count: request.characters,
+      metadata: request.metadata,
+      created_at: new Date().toISOString(),
+    })
 
     // Update user_profiles usage count
     await supabase.rpc('increment_usage_count', {
       user_uuid: request.userId,
-      characters: request.characters
+      characters: request.characters,
     })
   }
 
@@ -199,9 +218,10 @@ class UsageTracker {
 
     const resetDate = new Date(lastReset)
     const now = new Date()
-    
+
     // Reset monthly (if last reset was more than 30 days ago)
-    const daysSinceReset = (now.getTime() - resetDate.getTime()) / (1000 * 60 * 60 * 24)
+    const daysSinceReset =
+      (now.getTime() - resetDate.getTime()) / (1000 * 60 * 60 * 24)
     return daysSinceReset >= 30
   }
 
@@ -215,7 +235,7 @@ class UsageTracker {
       .from('user_profiles')
       .update({
         usage_count: 0,
-        usage_reset_date: new Date().toISOString()
+        usage_reset_date: new Date().toISOString(),
       })
       .eq('user_id', userId)
 
@@ -231,10 +251,13 @@ class UsageTracker {
     limits: { translations: number; documents: number; characters: number }
   ): { allowed: boolean; reason?: string } {
     // Check translation limit
-    if (limits.translations !== -1 && usage.translations > limits.translations) {
+    if (
+      limits.translations !== -1 &&
+      usage.translations > limits.translations
+    ) {
       return {
         allowed: false,
-        reason: `Translation limit exceeded (${limits.translations} per month)`
+        reason: `Translation limit exceeded (${limits.translations} per month)`,
       }
     }
 
@@ -242,7 +265,7 @@ class UsageTracker {
     if (limits.documents !== -1 && usage.documents > limits.documents) {
       return {
         allowed: false,
-        reason: `Document limit exceeded (${limits.documents} per month)`
+        reason: `Document limit exceeded (${limits.documents} per month)`,
       }
     }
 
@@ -250,7 +273,7 @@ class UsageTracker {
     if (limits.characters !== -1 && usage.characters > limits.characters) {
       return {
         allowed: false,
-        reason: `Character limit exceeded (${limits.characters.toLocaleString()} per month)`
+        reason: `Character limit exceeded (${limits.characters.toLocaleString()} per month)`,
       }
     }
 
@@ -265,9 +288,18 @@ class UsageTracker {
     limits: { translations: number; documents: number; characters: number }
   ) {
     return {
-      translations: limits.translations === -1 ? -1 : Math.max(0, limits.translations - usage.translations),
-      documents: limits.documents === -1 ? -1 : Math.max(0, limits.documents - usage.documents),
-      characters: limits.characters === -1 ? -1 : Math.max(0, limits.characters - usage.characters)
+      translations:
+        limits.translations === -1
+          ? -1
+          : Math.max(0, limits.translations - usage.translations),
+      documents:
+        limits.documents === -1
+          ? -1
+          : Math.max(0, limits.documents - usage.documents),
+      characters:
+        limits.characters === -1
+          ? -1
+          : Math.max(0, limits.characters - usage.characters),
     }
   }
 
@@ -297,9 +329,18 @@ class UsageTracker {
 
     // Calculate usage percentages
     const percentage = {
-      translations: limits.translations === -1 ? 0 : (current.translations / limits.translations) * 100,
-      documents: limits.documents === -1 ? 0 : (current.documents / limits.documents) * 100,
-      characters: limits.characters === -1 ? 0 : (current.characters / limits.characters) * 100
+      translations:
+        limits.translations === -1
+          ? 0
+          : (current.translations / limits.translations) * 100,
+      documents:
+        limits.documents === -1
+          ? 0
+          : (current.documents / limits.documents) * 100,
+      characters:
+        limits.characters === -1
+          ? 0
+          : (current.characters / limits.characters) * 100,
     }
 
     return {
@@ -307,7 +348,7 @@ class UsageTracker {
       limits,
       remaining,
       percentage,
-      plan
+      plan,
     }
   }
 
@@ -328,4 +369,3 @@ class UsageTracker {
 
 // Export singleton instance
 export const usageTracker = new UsageTracker()
-

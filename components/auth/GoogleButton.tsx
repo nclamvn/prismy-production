@@ -32,7 +32,7 @@ export function GoogleButton() {
     try {
       // Get the intended redirect URL from search params or default to /app
       const redirectTo = searchParams.get('next') || '/app'
-      
+
       // 🚨 ULTRA DEBUG: Log everything about OAuth initiation
       console.log('🚨 [GOOGLE OAUTH] Initiating OAuth flow:', {
         timestamp: new Date().toISOString(),
@@ -41,30 +41,30 @@ export function GoogleButton() {
         windowHref: window.location.href,
         searchParams: Object.fromEntries(searchParams.entries()),
         supabaseUrl: supabase.supabaseUrl,
-        supabaseKey: supabase.supabaseKey.substring(0, 20) + '...'
+        supabaseKey: supabase.supabaseKey.substring(0, 20) + '...',
       })
-      
+
       // Build callback URL with intended redirect as query param
       const callbackUrl = new URL('/auth/callback', window.location.origin)
       callbackUrl.searchParams.set('redirectTo', redirectTo)
-      
+
       console.log('🚨 [GOOGLE OAUTH] Built callback URL:', {
         callbackUrl: callbackUrl.toString(),
         origin: window.location.origin,
         pathname: callbackUrl.pathname,
-        search: callbackUrl.search
+        search: callbackUrl.search,
       })
 
       console.log('🚨 [GOOGLE OAUTH] Calling supabase.auth.signInWithOAuth...')
-      
+
       const oauthResult = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: callbackUrl.toString(),
           queryParams: {
             access_type: 'offline',
-            prompt: 'consent'
-          }
+            prompt: 'consent',
+          },
         },
       })
 
@@ -72,31 +72,35 @@ export function GoogleButton() {
         hasData: !!oauthResult.data,
         hasError: !!oauthResult.error,
         error: oauthResult.error,
-        data: oauthResult.data
+        data: oauthResult.data,
       })
 
       if (oauthResult.error) {
         throw oauthResult.error
       }
 
-      console.log('🚨 [GOOGLE OAUTH] OAuth initiated successfully, should redirect to Google...')
-      
+      console.log(
+        '🚨 [GOOGLE OAUTH] OAuth initiated successfully, should redirect to Google...'
+      )
+
       // Clear timeout since OAuth call succeeded
       clearTimeout(loadingTimeout)
-      
+
       // Note: User should be redirected to Google at this point
       // If we reach here without redirect, something is wrong
       setTimeout(() => {
-        console.log('🚨 [GOOGLE OAUTH] WARNING: No redirect occurred after OAuth call')
+        console.log(
+          '🚨 [GOOGLE OAUTH] WARNING: No redirect occurred after OAuth call'
+        )
         setIsLoading(false)
         setError('OAuth did not redirect - please try again')
       }, 3000)
-      
     } catch (err) {
       console.error('🚨 [GOOGLE OAUTH] Error during OAuth initiation:', err)
       clearTimeout(loadingTimeout)
-      
-      const errorMessage = err instanceof Error ? err.message : 'Failed to sign in with Google'
+
+      const errorMessage =
+        err instanceof Error ? err.message : 'Failed to sign in with Google'
       setError(errorMessage)
       toast.error('Google sign-in failed', {
         description: errorMessage,
@@ -123,11 +127,7 @@ export function GoogleButton() {
         {isLoading ? (
           <Loader2 className="h-5 w-5 mr-3 animate-spin" />
         ) : (
-          <svg
-            className="h-5 w-5 mr-3"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
+          <svg className="h-5 w-5 mr-3" viewBox="0 0 24 24" aria-hidden="true">
             <path
               d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
               fill="currentColor"

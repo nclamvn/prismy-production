@@ -32,20 +32,23 @@ export function DocumentUpload({ onDocumentUploaded }: DocumentUploadProps) {
         size: file.size,
         type: file.type,
         uploadedAt: new Date(),
-        status: 'uploading'
+        status: 'uploading',
       }
 
       setDocuments(prev => [...prev, document])
 
       // Simulate upload process
-      setTimeout(() => {
-        setDocuments(prev =>
-          prev.map(doc =>
-            doc.id === document.id ? { ...doc, status: 'ready' } : doc
+      setTimeout(
+        () => {
+          setDocuments(prev =>
+            prev.map(doc =>
+              doc.id === document.id ? { ...doc, status: 'ready' } : doc
+            )
           )
-        )
-        onDocumentUploaded?.(document)
-      }, 1000 + Math.random() * 2000)
+          onDocumentUploaded?.(document)
+        },
+        1000 + Math.random() * 2000
+      )
     }
 
     setIsProcessing(false)
@@ -130,19 +133,26 @@ export function DocumentUpload({ onDocumentUploaded }: DocumentUploadProps) {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <div className="flex items-center justify-center w-8 h-8">
-                      {doc.type.includes('pdf') ? <FileText size={20} className="text-accent-brand" /> : 
-                       doc.type.includes('doc') ? <FileEdit size={20} className="text-accent-brand" /> : 
-                       <Clipboard size={20} className="text-accent-brand" />}
+                      {doc.type.includes('pdf') ? (
+                        <FileText size={20} className="text-accent-brand" />
+                      ) : doc.type.includes('doc') ? (
+                        <FileEdit size={20} className="text-accent-brand" />
+                      ) : (
+                        <Clipboard size={20} className="text-accent-brand" />
+                      )}
                     </div>
                     <div>
                       <div className="font-medium text-primary">{doc.name}</div>
                       <div className="text-sm text-muted">
-                        {formatFileSize(doc.size)} • {doc.uploadedAt.toLocaleTimeString()}
+                        {formatFileSize(doc.size)} •{' '}
+                        {doc.uploadedAt.toLocaleTimeString()}
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <span className={`text-sm font-medium ${getStatusColor(doc.status)}`}>
+                    <span
+                      className={`text-sm font-medium ${getStatusColor(doc.status)}`}
+                    >
                       {getStatusText(doc.status)}
                     </span>
                     {doc.status === 'ready' && (
@@ -166,7 +176,8 @@ export function DocumentUpload({ onDocumentUploaded }: DocumentUploadProps) {
             No documents uploaded yet
           </h3>
           <p className="text-muted">
-            Upload your first document to get started with AI-powered translation
+            Upload your first document to get started with AI-powered
+            translation
           </p>
         </div>
       )}

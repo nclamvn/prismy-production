@@ -8,11 +8,11 @@
 const mockTranslateInstance = {
   translate: jest.fn(),
   detect: jest.fn(),
-  getLanguages: jest.fn()
+  getLanguages: jest.fn(),
 }
 
 jest.mock('@google-cloud/translate/build/src/v2', () => ({
-  Translate: jest.fn(() => mockTranslateInstance)
+  Translate: jest.fn(() => mockTranslateInstance),
 }))
 
 // Mock translation cache modules
@@ -20,8 +20,8 @@ jest.mock('../translation-cache', () => ({
   translationCache: {
     get: jest.fn(),
     set: jest.fn(),
-    clear: jest.fn()
-  }
+    clear: jest.fn(),
+  },
 }))
 
 jest.mock('../redis-translation-cache', () => ({
@@ -29,31 +29,32 @@ jest.mock('../redis-translation-cache', () => ({
     get: jest.fn(),
     set: jest.fn(),
     getCachedLanguages: jest.fn(),
-    cacheLanguages: jest.fn()
-  }
+    cacheLanguages: jest.fn(),
+  },
 }))
 
 // Mock fs for file system operations
 jest.mock('fs', () => ({
-  existsSync: jest.fn()
+  existsSync: jest.fn(),
 }))
 
 describe('Translation Service', () => {
   let PrismyTranslationService: any
   let translationService: any
   const mockCache = require('../translation-cache').translationCache
-  const mockRedisCache = require('../redis-translation-cache').redisTranslationCache
+  const mockRedisCache =
+    require('../redis-translation-cache').redisTranslationCache
   const mockFs = require('fs')
 
   beforeAll(() => {
     // Set up environment variables
     process.env.GOOGLE_TRANSLATE_API_KEY = 'test-api-key'
     process.env.GOOGLE_CLOUD_PROJECT_ID = 'test-project'
-    
+
     // Mock console methods to avoid noise in tests
     jest.spyOn(console, 'log').mockImplementation()
     jest.spyOn(console, 'error').mockImplementation()
-    
+
     // Import after setting up mocks
     const module = require('../translation-service')
     PrismyTranslationService = module.PrismyTranslationService
@@ -77,22 +78,24 @@ describe('Translation Service', () => {
     it('should handle service account file authentication', () => {
       process.env.GOOGLE_CLOUD_KEY_FILE = '/path/to/service-account.json'
       mockFs.existsSync.mockReturnValue(true)
-      
+
       const service = new PrismyTranslationService()
       expect(service).toBeDefined()
-      
+
       delete process.env.GOOGLE_CLOUD_KEY_FILE
     })
 
     it('should throw error when no credentials provided', () => {
       const originalApiKey = process.env.GOOGLE_TRANSLATE_API_KEY
       const originalProjectId = process.env.GOOGLE_CLOUD_PROJECT_ID
-      
+
       delete process.env.GOOGLE_TRANSLATE_API_KEY
       delete process.env.GOOGLE_CLOUD_PROJECT_ID
-      
-      expect(() => new PrismyTranslationService()).toThrow('Google Cloud Translation API credentials not configured')
-      
+
+      expect(() => new PrismyTranslationService()).toThrow(
+        'Google Cloud Translation API credentials not configured'
+      )
+
       process.env.GOOGLE_TRANSLATE_API_KEY = originalApiKey
       process.env.GOOGLE_CLOUD_PROJECT_ID = originalProjectId
     })
@@ -100,10 +103,10 @@ describe('Translation Service', () => {
     it('should handle invalid service account file path', () => {
       process.env.GOOGLE_CLOUD_KEY_FILE = '/invalid/path/service-account.json'
       mockFs.existsSync.mockReturnValue(false)
-      
+
       const service = new PrismyTranslationService()
       expect(service).toBeDefined()
-      
+
       delete process.env.GOOGLE_CLOUD_KEY_FILE
     })
   })
@@ -113,15 +116,15 @@ describe('Translation Service', () => {
       mockTranslateInstance.translate.mockResolvedValue([
         'Xin chào thế giới',
         {
-          detectedSourceLanguage: 'en'
-        }
+          detectedSourceLanguage: 'en',
+        },
       ])
 
       const result = await translationService.translateText({
         text: 'Hello world',
         sourceLang: 'en',
         targetLang: 'vi',
-        qualityTier: 'standard'
+        qualityTier: 'standard',
       })
 
       expect(result.translatedText).toBe('Xin chào thế giới')
@@ -136,40 +139,43 @@ describe('Translation Service', () => {
       mockTranslateInstance.translate.mockResolvedValue([
         'Xin chào thế giới',
         {
-          detectedSourceLanguage: 'en'
-        }
+          detectedSourceLanguage: 'en',
+        },
       ])
 
       const result = await translationService.translateText({
         text: 'Hello world',
         sourceLang: 'auto',
         targetLang: 'vi',
-        qualityTier: 'standard'
+        qualityTier: 'standard',
       })
 
       expect(result.detectedSourceLanguage).toBe('en')
       expect(result.sourceLang).toBe('en')
-      expect(mockTranslateInstance.translate).toHaveBeenCalledWith('Hello world', {
-        from: undefined,
-        to: 'vi',
-        format: 'text',
-        model: 'base'
-      })
+      expect(mockTranslateInstance.translate).toHaveBeenCalledWith(
+        'Hello world',
+        {
+          from: undefined,
+          to: 'vi',
+          format: 'text',
+          model: 'base',
+        }
+      )
     })
 
     it('should handle array response from Google Translate', async () => {
       mockTranslateInstance.translate.mockResolvedValue([
         ['Xin chào thế giới'],
         {
-          detectedSourceLanguage: 'en'
-        }
+          detectedSourceLanguage: 'en',
+        },
       ])
 
       const result = await translationService.translateText({
         text: 'Hello world',
         sourceLang: 'en',
         targetLang: 'vi',
-        qualityTier: 'standard'
+        qualityTier: 'standard',
       })
 
       expect(result.translatedText).toBe('Xin chào thế giới')
@@ -181,9 +187,9 @@ describe('Translation Service', () => {
         sourceLang: 'en',
         targetLang: 'vi',
         confidence: 0.95,
-        qualityScore: 0.9
+        qualityScore: 0.9,
       }
-      
+
       mockRedisCache.get.mockResolvedValue(cachedResult)
 
       const result = await translationService.translateText({
@@ -191,7 +197,7 @@ describe('Translation Service', () => {
         sourceLang: 'en',
         targetLang: 'vi',
         qualityTier: 'standard',
-        abTestVariant: 'cache_enabled'
+        abTestVariant: 'cache_enabled',
       })
 
       expect(result.translatedText).toBe('Cached translation')
@@ -205,9 +211,9 @@ describe('Translation Service', () => {
         sourceLang: 'en',
         targetLang: 'vi',
         confidence: 0.95,
-        qualityScore: 0.9
+        qualityScore: 0.9,
       }
-      
+
       mockRedisCache.get.mockResolvedValue(null)
       mockCache.get.mockReturnValue(cachedResult)
 
@@ -216,7 +222,7 @@ describe('Translation Service', () => {
         sourceLang: 'en',
         targetLang: 'vi',
         qualityTier: 'standard',
-        abTestVariant: 'cache_enabled'
+        abTestVariant: 'cache_enabled',
       })
 
       expect(result.translatedText).toBe('Memory cached translation')
@@ -228,8 +234,8 @@ describe('Translation Service', () => {
       mockTranslateInstance.translate.mockResolvedValue([
         'Fresh translation',
         {
-          detectedSourceLanguage: 'en'
-        }
+          detectedSourceLanguage: 'en',
+        },
       ])
 
       await translationService.translateText({
@@ -237,7 +243,7 @@ describe('Translation Service', () => {
         sourceLang: 'en',
         targetLang: 'vi',
         qualityTier: 'standard',
-        abTestVariant: 'cache_enabled'
+        abTestVariant: 'cache_enabled',
       })
 
       expect(mockRedisCache.set).toHaveBeenCalledWith(
@@ -245,7 +251,7 @@ describe('Translation Service', () => {
         'en',
         'vi',
         expect.objectContaining({
-          translatedText: 'Fresh translation'
+          translatedText: 'Fresh translation',
         }),
         'standard'
       )
@@ -256,19 +262,19 @@ describe('Translation Service', () => {
         'vi',
         'standard',
         expect.objectContaining({
-          translatedText: 'Fresh translation'
+          translatedText: 'Fresh translation',
         })
       )
     })
 
     it('should skip cache when A/B test variant is cache_disabled', async () => {
       mockRedisCache.get.mockResolvedValue({
-        translatedText: 'Cached translation'
+        translatedText: 'Cached translation',
       })
 
       mockTranslateInstance.translate.mockResolvedValue([
         'Fresh translation',
-        { detectedSourceLanguage: 'en' }
+        { detectedSourceLanguage: 'en' },
       ])
 
       const result = await translationService.translateText({
@@ -276,7 +282,7 @@ describe('Translation Service', () => {
         sourceLang: 'en',
         targetLang: 'vi',
         qualityTier: 'standard',
-        abTestVariant: 'cache_disabled'
+        abTestVariant: 'cache_disabled',
       })
 
       expect(result.translatedText).toBe('Fresh translation')
@@ -287,7 +293,7 @@ describe('Translation Service', () => {
     it('should skip cache for auto language detection', async () => {
       mockTranslateInstance.translate.mockResolvedValue([
         'Translation without cache',
-        { detectedSourceLanguage: 'en' }
+        { detectedSourceLanguage: 'en' },
       ])
 
       await translationService.translateText({
@@ -295,7 +301,7 @@ describe('Translation Service', () => {
         sourceLang: 'auto',
         targetLang: 'vi',
         qualityTier: 'standard',
-        abTestVariant: 'cache_enabled'
+        abTestVariant: 'cache_enabled',
       })
 
       expect(mockRedisCache.get).not.toHaveBeenCalled()
@@ -306,96 +312,109 @@ describe('Translation Service', () => {
     it('should use correct model for premium quality', async () => {
       mockTranslateInstance.translate.mockResolvedValue([
         'Premium translation',
-        { detectedSourceLanguage: 'en' }
+        { detectedSourceLanguage: 'en' },
       ])
 
       await translationService.translateText({
         text: 'Hello world',
         sourceLang: 'en',
         targetLang: 'vi',
-        qualityTier: 'premium'
+        qualityTier: 'premium',
       })
 
-      expect(mockTranslateInstance.translate).toHaveBeenCalledWith('Hello world', {
-        from: 'en',
-        to: 'vi',
-        format: 'text',
-        model: 'nmt'
-      })
+      expect(mockTranslateInstance.translate).toHaveBeenCalledWith(
+        'Hello world',
+        {
+          from: 'en',
+          to: 'vi',
+          format: 'text',
+          model: 'nmt',
+        }
+      )
     })
 
     it('should use correct model for enterprise quality', async () => {
       mockTranslateInstance.translate.mockResolvedValue([
         'Enterprise translation',
-        { detectedSourceLanguage: 'en' }
+        { detectedSourceLanguage: 'en' },
       ])
 
       await translationService.translateText({
         text: 'Hello world',
         sourceLang: 'en',
         targetLang: 'vi',
-        qualityTier: 'enterprise'
+        qualityTier: 'enterprise',
       })
 
-      expect(mockTranslateInstance.translate).toHaveBeenCalledWith('Hello world', {
-        from: 'en',
-        to: 'vi',
-        format: 'text',
-        model: 'nmt'
-      })
+      expect(mockTranslateInstance.translate).toHaveBeenCalledWith(
+        'Hello world',
+        {
+          from: 'en',
+          to: 'vi',
+          format: 'text',
+          model: 'nmt',
+        }
+      )
     })
 
     it('should use base model for free quality', async () => {
       mockTranslateInstance.translate.mockResolvedValue([
         'Free translation',
-        { detectedSourceLanguage: 'en' }
+        { detectedSourceLanguage: 'en' },
       ])
 
       await translationService.translateText({
         text: 'Hello world',
         sourceLang: 'en',
         targetLang: 'vi',
-        qualityTier: 'free'
+        qualityTier: 'free',
       })
 
-      expect(mockTranslateInstance.translate).toHaveBeenCalledWith('Hello world', {
-        from: 'en',
-        to: 'vi',
-        format: 'text',
-        model: 'base'
-      })
+      expect(mockTranslateInstance.translate).toHaveBeenCalledWith(
+        'Hello world',
+        {
+          from: 'en',
+          to: 'vi',
+          format: 'text',
+          model: 'base',
+        }
+      )
     })
 
     it('should calculate quality scores based on tier', async () => {
       mockTranslateInstance.translate.mockResolvedValue([
         'Test translation',
-        { detectedSourceLanguage: 'en' }
+        { detectedSourceLanguage: 'en' },
       ])
 
       const freeResult = await translationService.translateText({
         text: 'Hello world',
         sourceLang: 'en',
         targetLang: 'vi',
-        qualityTier: 'free'
+        qualityTier: 'free',
       })
 
       const enterpriseResult = await translationService.translateText({
         text: 'Hello world',
         sourceLang: 'en',
         targetLang: 'vi',
-        qualityTier: 'enterprise'
+        qualityTier: 'enterprise',
       })
 
-      expect(enterpriseResult.qualityScore).toBeGreaterThan(freeResult.qualityScore)
+      expect(enterpriseResult.qualityScore).toBeGreaterThan(
+        freeResult.qualityScore
+      )
     })
   })
 
   describe('Language Detection', () => {
     it('should detect language successfully', async () => {
-      mockTranslateInstance.detect.mockResolvedValue([{
-        language: 'en',
-        confidence: 0.95
-      }])
+      mockTranslateInstance.detect.mockResolvedValue([
+        {
+          language: 'en',
+          confidence: 0.95,
+        },
+      ])
 
       const result = await translationService.detectLanguage('Hello world')
 
@@ -406,7 +425,7 @@ describe('Translation Service', () => {
     it('should handle array response from detect', async () => {
       mockTranslateInstance.detect.mockResolvedValue([
         { language: 'en', confidence: 0.95 },
-        { language: 'fr', confidence: 0.05 }
+        { language: 'fr', confidence: 0.05 },
       ])
 
       const result = await translationService.detectLanguage('Hello world')
@@ -415,7 +434,9 @@ describe('Translation Service', () => {
     })
 
     it('should return unknown on detection error', async () => {
-      mockTranslateInstance.detect.mockRejectedValue(new Error('Detection failed'))
+      mockTranslateInstance.detect.mockRejectedValue(
+        new Error('Detection failed')
+      )
 
       const result = await translationService.detectLanguage('Hello world')
 
@@ -428,7 +449,7 @@ describe('Translation Service', () => {
       const languages = [
         { code: 'en', name: 'English' },
         { code: 'vi', name: 'Vietnamese' },
-        { code: 'fr', name: 'French' }
+        { code: 'fr', name: 'French' },
       ]
 
       mockTranslateInstance.getLanguages.mockResolvedValue([languages])
@@ -443,7 +464,7 @@ describe('Translation Service', () => {
     it('should use cached languages when available', async () => {
       const cachedLanguages = [
         { code: 'en', name: 'English' },
-        { code: 'vi', name: 'Vietnamese' }
+        { code: 'vi', name: 'Vietnamese' },
       ]
 
       mockRedisCache.getCachedLanguages.mockResolvedValue(cachedLanguages)
@@ -456,13 +477,18 @@ describe('Translation Service', () => {
 
     it('should return fallback languages on API error', async () => {
       mockRedisCache.getCachedLanguages.mockResolvedValue(null)
-      mockTranslateInstance.getLanguages.mockRejectedValue(new Error('API Error'))
+      mockTranslateInstance.getLanguages.mockRejectedValue(
+        new Error('API Error')
+      )
 
       const result = await translationService.getSupportedLanguages()
 
       expect(result).toHaveLength(13) // Fallback languages count
       expect(result[0]).toEqual({ code: 'en', name: 'English' })
-      expect(result.find(lang => lang.code === 'vi')).toEqual({ code: 'vi', name: 'Vietnamese' })
+      expect(result.find(lang => lang.code === 'vi')).toEqual({
+        code: 'vi',
+        name: 'Vietnamese',
+      })
     })
   })
 
@@ -470,12 +496,14 @@ describe('Translation Service', () => {
     it('should handle translation API errors', async () => {
       mockTranslateInstance.translate.mockRejectedValue(new Error('API Error'))
 
-      await expect(translationService.translateText({
-        text: 'Hello world',
-        sourceLang: 'en',
-        targetLang: 'vi',
-        qualityTier: 'standard'
-      })).rejects.toThrow('Translation failed: API Error')
+      await expect(
+        translationService.translateText({
+          text: 'Hello world',
+          sourceLang: 'en',
+          targetLang: 'vi',
+          qualityTier: 'standard',
+        })
+      ).rejects.toThrow('Translation failed: API Error')
     })
 
     it('should handle cache errors gracefully during read', async () => {
@@ -489,7 +517,7 @@ describe('Translation Service', () => {
 
       mockTranslateInstance.translate.mockResolvedValue([
         'Translation after cache error',
-        { detectedSourceLanguage: 'en' }
+        { detectedSourceLanguage: 'en' },
       ])
 
       const result = await translationService.translateText({
@@ -497,7 +525,7 @@ describe('Translation Service', () => {
         sourceLang: 'en',
         targetLang: 'vi',
         qualityTier: 'standard',
-        abTestVariant: 'cache_enabled'
+        abTestVariant: 'cache_enabled',
       })
 
       expect(result.translatedText).toBe('Translation after cache error')
@@ -507,7 +535,7 @@ describe('Translation Service', () => {
       // Reset read cache operations first
       mockRedisCache.get.mockResolvedValue(null)
       mockCache.get.mockReturnValue(null)
-      
+
       // Set up write errors
       mockRedisCache.set.mockRejectedValue(new Error('Cache write error'))
       mockCache.set.mockImplementation(() => {
@@ -516,7 +544,7 @@ describe('Translation Service', () => {
 
       mockTranslateInstance.translate.mockResolvedValue([
         'Translation with cache write error',
-        { detectedSourceLanguage: 'en' }
+        { detectedSourceLanguage: 'en' },
       ])
 
       // Should not throw error, just continue without caching
@@ -525,7 +553,7 @@ describe('Translation Service', () => {
         sourceLang: 'en',
         targetLang: 'vi',
         qualityTier: 'standard',
-        abTestVariant: 'cache_enabled'
+        abTestVariant: 'cache_enabled',
       })
 
       expect(result.translatedText).toBe('Translation with cache write error')
@@ -536,14 +564,14 @@ describe('Translation Service', () => {
     it('should calculate higher confidence for simple text', async () => {
       mockTranslateInstance.translate.mockResolvedValue([
         'Simple translation',
-        { detectedSourceLanguage: 'en' }
+        { detectedSourceLanguage: 'en' },
       ])
 
       const result = await translationService.translateText({
         text: 'Hello',
         sourceLang: 'en',
         targetLang: 'vi',
-        qualityTier: 'standard'
+        qualityTier: 'standard',
       })
 
       expect(result.confidence).toBeGreaterThan(0.8)
@@ -552,15 +580,16 @@ describe('Translation Service', () => {
     it('should calculate lower confidence for complex text with special characters', async () => {
       mockTranslateInstance.translate.mockResolvedValue([
         'Complex translation',
-        { detectedSourceLanguage: 'en' }
+        { detectedSourceLanguage: 'en' },
       ])
 
-      const complexText = 'Hello! @user: check this URL: https://example.com/path?param=value&other=123. How are you?'
+      const complexText =
+        'Hello! @user: check this URL: https://example.com/path?param=value&other=123. How are you?'
       const result = await translationService.translateText({
         text: complexText,
         sourceLang: 'en',
         targetLang: 'vi',
-        qualityTier: 'standard'
+        qualityTier: 'standard',
       })
 
       expect(result.confidence).toBeDefined()
@@ -570,7 +599,7 @@ describe('Translation Service', () => {
     it('should handle very long text in confidence calculation', async () => {
       mockTranslateInstance.translate.mockResolvedValue([
         'Long translation',
-        { detectedSourceLanguage: 'en' }
+        { detectedSourceLanguage: 'en' },
       ])
 
       const longText = 'This is a very long text. '.repeat(100)
@@ -578,7 +607,7 @@ describe('Translation Service', () => {
         text: longText,
         sourceLang: 'en',
         targetLang: 'vi',
-        qualityTier: 'standard'
+        qualityTier: 'standard',
       })
 
       expect(result.confidence).toBeDefined()
@@ -590,25 +619,27 @@ describe('Translation Service', () => {
     it('should validate connection on initialization', async () => {
       mockTranslateInstance.translate.mockResolvedValueOnce([
         'Xin chào',
-        { detectedSourceLanguage: 'en' }
+        { detectedSourceLanguage: 'en' },
       ])
 
       const service = new PrismyTranslationService()
-      
+
       // Validation is called asynchronously, so we need to wait
       await new Promise(resolve => setTimeout(resolve, 50))
-      
+
       expect(mockTranslateInstance.translate).toHaveBeenCalledWith('Hello', {
         to: 'vi',
-        from: 'en'
+        from: 'en',
       })
     })
 
     it('should handle validation errors gracefully', async () => {
-      mockTranslateInstance.translate.mockRejectedValueOnce(new Error('Validation failed'))
+      mockTranslateInstance.translate.mockRejectedValueOnce(
+        new Error('Validation failed')
+      )
 
       const service = new PrismyTranslationService()
-      
+
       // Should not throw, just log error
       expect(service).toBeDefined()
     })
@@ -618,14 +649,14 @@ describe('Translation Service', () => {
     it('should handle null/undefined metadata gracefully', async () => {
       mockTranslateInstance.translate.mockResolvedValue([
         'Translation without metadata',
-        null
+        null,
       ])
 
       const result = await translationService.translateText({
         text: 'Hello world',
         sourceLang: 'en',
         targetLang: 'vi',
-        qualityTier: 'standard'
+        qualityTier: 'standard',
       })
 
       expect(result.translatedText).toBe('Translation without metadata')
@@ -636,14 +667,14 @@ describe('Translation Service', () => {
     it('should handle empty string translation', async () => {
       mockTranslateInstance.translate.mockResolvedValue([
         '',
-        { detectedSourceLanguage: 'en' }
+        { detectedSourceLanguage: 'en' },
       ])
 
       const result = await translationService.translateText({
         text: 'Hello world',
         sourceLang: 'en',
         targetLang: 'vi',
-        qualityTier: 'standard'
+        qualityTier: 'standard',
       })
 
       expect(result.translatedText).toBe('')
@@ -652,23 +683,26 @@ describe('Translation Service', () => {
     it('should handle undefined quality tier gracefully', async () => {
       mockTranslateInstance.translate.mockResolvedValue([
         'Default quality translation',
-        { detectedSourceLanguage: 'en' }
+        { detectedSourceLanguage: 'en' },
       ])
 
       const result = await translationService.translateText({
         text: 'Hello world',
         sourceLang: 'en',
-        targetLang: 'vi'
+        targetLang: 'vi',
         // qualityTier is undefined, should default to 'standard'
       })
 
       expect(result.translatedText).toBe('Default quality translation')
-      expect(mockTranslateInstance.translate).toHaveBeenCalledWith('Hello world', {
-        from: 'en',
-        to: 'vi',
-        format: 'text',
-        model: 'base' // Should use 'base' for 'standard' tier
-      })
+      expect(mockTranslateInstance.translate).toHaveBeenCalledWith(
+        'Hello world',
+        {
+          from: 'en',
+          to: 'vi',
+          format: 'text',
+          model: 'base', // Should use 'base' for 'standard' tier
+        }
+      )
     })
   })
 })

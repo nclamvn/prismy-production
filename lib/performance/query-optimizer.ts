@@ -3,7 +3,10 @@
  * Query analysis, optimization suggestions, and automatic improvements
  */
 
-import { createClientComponentClient, createServerComponentClient } from '@/lib/supabase'
+import {
+  createClientComponentClient,
+  createServerComponentClient,
+} from '@/lib/supabase'
 import { cookies } from 'next/headers'
 import { performanceMonitor } from './performance-monitor'
 import { cacheManager } from '../cache/cache-manager'
@@ -33,7 +36,13 @@ export interface QueryAnalysis {
 }
 
 export interface QueryIssue {
-  type: 'missing_index' | 'full_table_scan' | 'n_plus_one' | 'large_result_set' | 'inefficient_join' | 'suboptimal_where'
+  type:
+    | 'missing_index'
+    | 'full_table_scan'
+    | 'n_plus_one'
+    | 'large_result_set'
+    | 'inefficient_join'
+    | 'suboptimal_where'
   severity: 'low' | 'medium' | 'high' | 'critical'
   description: string
   impact: number // 1-10 scale
@@ -41,7 +50,13 @@ export interface QueryIssue {
 }
 
 export interface OptimizationSuggestion {
-  type: 'add_index' | 'rewrite_query' | 'add_cache' | 'partition_table' | 'denormalize' | 'use_materialized_view'
+  type:
+    | 'add_index'
+    | 'rewrite_query'
+    | 'add_cache'
+    | 'partition_table'
+    | 'denormalize'
+    | 'use_materialized_view'
   priority: number // 1-10 scale
   description: string
   estimated_improvement: number // percentage
@@ -59,7 +74,10 @@ export interface IndexSuggestion {
 
 export class QueryOptimizer {
   private static instance: QueryOptimizer
-  private queryStats = new Map<string, Array<{ time: number; timestamp: Date }>>()
+  private queryStats = new Map<
+    string,
+    Array<{ time: number; timestamp: Date }>
+  >()
   private slowQueries = new Map<string, QueryAnalysis>()
 
   private constructor() {
@@ -76,7 +94,10 @@ export class QueryOptimizer {
   /**
    * Analyze and optimize a query
    */
-  async optimizeQuery(query: string, params?: any[]): Promise<{
+  async optimizeQuery(
+    query: string,
+    params?: any[]
+  ): Promise<{
     optimizedQuery: string
     analysis: QueryAnalysis
     useCache: boolean
@@ -93,7 +114,7 @@ export class QueryOptimizer {
           optimizedQuery: query,
           analysis: cached.analysis,
           useCache: true,
-          cacheKey
+          cacheKey,
         }
       }
 
@@ -110,15 +131,14 @@ export class QueryOptimizer {
         optimizedQuery,
         analysis,
         useCache: shouldCache,
-        cacheKey: shouldCache ? cacheKey : undefined
+        cacheKey: shouldCache ? cacheKey : undefined,
       }
-
     } catch (error) {
       logger.error('Query optimization failed', { error, query })
       return {
         optimizedQuery: query,
         analysis: this.createBasicAnalysis(query),
-        useCache: false
+        useCache: false,
       }
     }
   }
@@ -146,13 +166,13 @@ export class QueryOptimizer {
         const cached = await cacheManager.get<T>(optimization.cacheKey)
         if (cached) {
           const executionTime = performance.now() - startTime
-          
+
           performanceMonitor.recordMetric({
             name: 'database_query_time',
             value: executionTime,
             unit: 'milliseconds',
             tags: { cached: 'true', optimized: 'true' },
-            dimensions: { query: query.substring(0, 100) }
+            dimensions: { query: query.substring(0, 100) },
           })
 
           return { data: cached, fromCache: true, executionTime }
@@ -163,7 +183,7 @@ export class QueryOptimizer {
       const supabase = getSupabaseClient()
       const { data, error } = await supabase.rpc('execute_optimized_query', {
         query_text: optimization.optimizedQuery,
-        query_params: params || []
+        query_params: params || [],
       })
 
       if (error) throw error
@@ -175,16 +195,16 @@ export class QueryOptimizer {
         name: 'database_query_time',
         value: executionTime,
         unit: 'milliseconds',
-        tags: { 
-          cached: 'false', 
+        tags: {
+          cached: 'false',
           optimized: optimization.optimizedQuery !== query ? 'true' : 'false',
-          efficiency: optimization.analysis.efficiency.toString()
+          efficiency: optimization.analysis.efficiency.toString(),
         },
-        dimensions: { 
+        dimensions: {
           query: query.substring(0, 100),
           issues_count: optimization.analysis.issues.length,
-          suggestions_count: optimization.analysis.suggestions.length
-        }
+          suggestions_count: optimization.analysis.suggestions.length,
+        },
       })
 
       // Cache result if recommended
@@ -192,7 +212,7 @@ export class QueryOptimizer {
         await cacheManager.set(optimization.cacheKey, data, {
           ttl: options.cacheTTL || 3600,
           tags: options.tags || ['database'],
-          maxSize: options.maxCacheSize
+          maxSize: options.maxCacheSize,
         })
       }
 
@@ -205,7 +225,6 @@ export class QueryOptimizer {
       }
 
       return { data, fromCache: false, executionTime }
-
     } catch (error) {
       const executionTime = performance.now() - startTime
 
@@ -214,10 +233,14 @@ export class QueryOptimizer {
         value: executionTime,
         unit: 'milliseconds',
         tags: { cached: 'false', optimized: 'false', status: 'error' },
-        dimensions: { query: query.substring(0, 100), error: error.message }
+        dimensions: { query: query.substring(0, 100), error: error.message },
       })
 
-      logger.error('Optimized query execution failed', { error, query, executionTime })
+      logger.error('Optimized query execution failed', {
+        error,
+        query,
+        executionTime,
+      })
       throw error
     }
   }
@@ -225,7 +248,9 @@ export class QueryOptimizer {
   /**
    * Get index suggestions for improving performance
    */
-  async getIndexSuggestions(organizationId?: string): Promise<IndexSuggestion[]> {
+  async getIndexSuggestions(
+    organizationId?: string
+  ): Promise<IndexSuggestion[]> {
     try {
       // Analyze slow queries to suggest indexes
       const suggestions: IndexSuggestion[] = []
@@ -236,12 +261,12 @@ export class QueryOptimizer {
       }
 
       // Get database-specific index suggestions
-      const dbSuggestions = await this.getDatabaseIndexSuggestions(organizationId)
+      const dbSuggestions =
+        await this.getDatabaseIndexSuggestions(organizationId)
       suggestions.push(...dbSuggestions)
 
       // Deduplicate and prioritize
       return this.prioritizeIndexSuggestions(suggestions)
-
     } catch (error) {
       logger.error('Failed to get index suggestions', { error })
       return []
@@ -273,7 +298,7 @@ export class QueryOptimizer {
       averageExecutionTime: totalQueries > 0 ? totalTime / totalQueries : 0,
       slowQueries,
       cachedQueries: 0, // Would be tracked by cache manager
-      optimizedQueries: 0 // Would be tracked separately
+      optimizedQueries: 0, // Would be tracked separately
     }
   }
 
@@ -306,9 +331,13 @@ export class QueryOptimizer {
 
       // Calculate metrics
       const totalSlowQueries = this.slowQueries.size
-      const averageImprovement = allSuggestions.length > 0 
-        ? allSuggestions.reduce((sum, s) => sum + s.estimated_improvement, 0) / allSuggestions.length 
-        : 0
+      const averageImprovement =
+        allSuggestions.length > 0
+          ? allSuggestions.reduce(
+              (sum, s) => sum + s.estimated_improvement,
+              0
+            ) / allSuggestions.length
+          : 0
       const suggestedIndexes = indexSuggestions.length
       const estimatedCostSavings = this.calculateCostSavings(allSuggestions)
 
@@ -326,13 +355,12 @@ export class QueryOptimizer {
           totalSlowQueries,
           averageImprovement,
           suggestedIndexes,
-          estimatedCostSavings
+          estimatedCostSavings,
         },
         topIssues,
         topSuggestions,
-        indexSuggestions: indexSuggestions.slice(0, 5)
+        indexSuggestions: indexSuggestions.slice(0, 5),
       }
-
     } catch (error) {
       logger.error('Failed to generate optimization report', { error })
       throw error
@@ -342,7 +370,10 @@ export class QueryOptimizer {
   /**
    * Analyze a query for performance issues
    */
-  private async analyzeQuery(query: string, params?: any[]): Promise<QueryAnalysis> {
+  private async analyzeQuery(
+    query: string,
+    params?: any[]
+  ): Promise<QueryAnalysis> {
     try {
       // This would typically use EXPLAIN ANALYZE or similar
       // For now, we'll use heuristic analysis
@@ -355,9 +386,10 @@ export class QueryOptimizer {
         issues.push({
           type: 'large_result_set',
           severity: 'medium',
-          description: 'Query selects all columns which may return unnecessary data',
+          description:
+            'Query selects all columns which may return unnecessary data',
           impact: 6,
-          affected_tables: this.extractTables(query)
+          affected_tables: this.extractTables(query),
         })
 
         suggestions.push({
@@ -366,17 +398,21 @@ export class QueryOptimizer {
           description: 'Select only required columns instead of using SELECT *',
           estimated_improvement: 20,
           implementation: 'Replace SELECT * with specific column names',
-          cost: 'low'
+          cost: 'low',
         })
       }
 
-      if (!query.toLowerCase().includes('limit') && query.toLowerCase().includes('select')) {
+      if (
+        !query.toLowerCase().includes('limit') &&
+        query.toLowerCase().includes('select')
+      ) {
         issues.push({
           type: 'large_result_set',
           severity: 'medium',
-          description: 'Query has no LIMIT clause and may return excessive rows',
+          description:
+            'Query has no LIMIT clause and may return excessive rows',
           impact: 5,
-          affected_tables: this.extractTables(query)
+          affected_tables: this.extractTables(query),
         })
 
         suggestions.push({
@@ -385,34 +421,42 @@ export class QueryOptimizer {
           description: 'Add LIMIT clause to restrict result set size',
           estimated_improvement: 30,
           implementation: 'Add LIMIT clause with appropriate value',
-          cost: 'low'
+          cost: 'low',
         })
       }
 
-      if (query.toLowerCase().includes('where') && query.toLowerCase().includes('like')) {
+      if (
+        query.toLowerCase().includes('where') &&
+        query.toLowerCase().includes('like')
+      ) {
         const likePattern = /'%[^%]*%'/g
         if (likePattern.test(query)) {
           issues.push({
             type: 'inefficient_join',
             severity: 'high',
-            description: 'LIKE query with leading wildcard prevents index usage',
+            description:
+              'LIKE query with leading wildcard prevents index usage',
             impact: 8,
-            affected_tables: this.extractTables(query)
+            affected_tables: this.extractTables(query),
           })
 
           suggestions.push({
             type: 'add_index',
             priority: 8,
-            description: 'Consider full-text search or trigram indexes for text search',
+            description:
+              'Consider full-text search or trigram indexes for text search',
             estimated_improvement: 50,
             implementation: 'CREATE INDEX USING gin(column gin_trgm_ops)',
-            cost: 'medium'
+            cost: 'medium',
           })
         }
       }
 
       // Calculate efficiency score
-      const efficiency = Math.max(0, 100 - (issues.reduce((sum, issue) => sum + issue.impact, 0) * 5))
+      const efficiency = Math.max(
+        0,
+        100 - issues.reduce((sum, issue) => sum + issue.impact, 0) * 5
+      )
 
       return {
         query,
@@ -421,9 +465,8 @@ export class QueryOptimizer {
         rowsExamined: 0, // Would be measured during execution
         efficiency,
         issues,
-        suggestions
+        suggestions,
       }
-
     } catch (error) {
       logger.error('Query analysis failed', { error, query })
       return this.createBasicAnalysis(query)
@@ -433,7 +476,10 @@ export class QueryOptimizer {
   /**
    * Generate optimized version of query
    */
-  private generateOptimizedQuery(query: string, analysis: QueryAnalysis): string {
+  private generateOptimizedQuery(
+    query: string,
+    analysis: QueryAnalysis
+  ): string {
     let optimizedQuery = query
 
     // Apply simple optimizations based on suggestions
@@ -443,7 +489,7 @@ export class QueryOptimizer {
           // This would need more sophisticated parsing in production
           // For now, just flag that optimization is possible
         }
-        
+
         if (suggestion.description.includes('LIMIT')) {
           if (!optimizedQuery.toLowerCase().includes('limit')) {
             optimizedQuery += ' LIMIT 1000' // Default limit
@@ -461,10 +507,10 @@ export class QueryOptimizer {
   private shouldCacheQuery(analysis: QueryAnalysis): boolean {
     // Cache if query is expensive and likely to be repeated
     if (analysis.executionTime > 500) return true
-    
+
     // Cache if query has high efficiency (stable results)
     if (analysis.efficiency > 80) return true
-    
+
     // Cache read-only queries
     if (analysis.query.toLowerCase().trim().startsWith('select')) return true
 
@@ -477,7 +523,9 @@ export class QueryOptimizer {
   private generateCacheKey(query: string, params?: any[]): string {
     const normalizedQuery = query.replace(/\s+/g, ' ').trim().toLowerCase()
     const paramsStr = params ? JSON.stringify(params) : ''
-    return `query:${Buffer.from(normalizedQuery + paramsStr).toString('base64').slice(0, 50)}`
+    return `query:${Buffer.from(normalizedQuery + paramsStr)
+      .toString('base64')
+      .slice(0, 50)}`
   }
 
   /**
@@ -486,10 +534,10 @@ export class QueryOptimizer {
   private extractTables(query: string): string[] {
     const fromMatch = query.match(/from\s+([a-zA-Z_][a-zA-Z0-9_]*)/gi)
     const joinMatch = query.match(/join\s+([a-zA-Z_][a-zA-Z0-9_]*)/gi)
-    
+
     const tables = [
       ...(fromMatch || []).map(m => m.split(/\s+/)[1]),
-      ...(joinMatch || []).map(m => m.split(/\s+/)[1])
+      ...(joinMatch || []).map(m => m.split(/\s+/)[1]),
     ]
 
     return [...new Set(tables.filter(Boolean))]
@@ -498,26 +546,31 @@ export class QueryOptimizer {
   /**
    * Analyze query for potential indexes
    */
-  private analyzeForIndexes(query: string, analysis: QueryAnalysis): IndexSuggestion[] {
+  private analyzeForIndexes(
+    query: string,
+    analysis: QueryAnalysis
+  ): IndexSuggestion[] {
     const suggestions: IndexSuggestion[] = []
 
     // Look for WHERE clauses that could benefit from indexes
     const whereMatch = query.match(/where\s+([^;]+)/i)
     if (whereMatch) {
       const whereClause = whereMatch[1]
-      const columnMatches = whereClause.match(/([a-zA-Z_][a-zA-Z0-9_]*)\s*[=<>]/g)
-      
+      const columnMatches = whereClause.match(
+        /([a-zA-Z_][a-zA-Z0-9_]*)\s*[=<>]/g
+      )
+
       if (columnMatches) {
         const columns = columnMatches.map(m => m.split(/\s*[=<>]/)[0])
         const tables = this.extractTables(query)
-        
+
         if (tables.length > 0 && columns.length > 0) {
           suggestions.push({
             table: tables[0], // Simplified - would need better parsing
             columns,
             type: 'btree',
             reasoning: 'WHERE clause filtering could benefit from index',
-            estimated_improvement: 40
+            estimated_improvement: 40,
           })
         }
       }
@@ -529,7 +582,9 @@ export class QueryOptimizer {
   /**
    * Get database-specific index suggestions
    */
-  private async getDatabaseIndexSuggestions(organizationId?: string): Promise<IndexSuggestion[]> {
+  private async getDatabaseIndexSuggestions(
+    organizationId?: string
+  ): Promise<IndexSuggestion[]> {
     try {
       // This would query database statistics to suggest indexes
       // For now, return common suggestions
@@ -539,15 +594,15 @@ export class QueryOptimizer {
           columns: ['created_at'],
           type: 'btree',
           reasoning: 'Frequently queried by date range',
-          estimated_improvement: 30
+          estimated_improvement: 30,
         },
         {
           table: 'translations',
           columns: ['status', 'created_at'],
           type: 'btree',
           reasoning: 'Composite index for status filtering with date ordering',
-          estimated_improvement: 45
-        }
+          estimated_improvement: 45,
+        },
       ]
     } catch (error) {
       logger.error('Failed to get database index suggestions', { error })
@@ -558,16 +613,23 @@ export class QueryOptimizer {
   /**
    * Prioritize index suggestions
    */
-  private prioritizeIndexSuggestions(suggestions: IndexSuggestion[]): IndexSuggestion[] {
+  private prioritizeIndexSuggestions(
+    suggestions: IndexSuggestion[]
+  ): IndexSuggestion[] {
     // Remove duplicates and sort by estimated improvement
-    const unique = suggestions.filter((suggestion, index, self) =>
-      index === self.findIndex(s => 
-        s.table === suggestion.table && 
-        JSON.stringify(s.columns) === JSON.stringify(suggestion.columns)
-      )
+    const unique = suggestions.filter(
+      (suggestion, index, self) =>
+        index ===
+        self.findIndex(
+          s =>
+            s.table === suggestion.table &&
+            JSON.stringify(s.columns) === JSON.stringify(suggestion.columns)
+        )
     )
 
-    return unique.sort((a, b) => b.estimated_improvement - a.estimated_improvement)
+    return unique.sort(
+      (a, b) => b.estimated_improvement - a.estimated_improvement
+    )
   }
 
   /**
@@ -576,7 +638,8 @@ export class QueryOptimizer {
   private calculateCostSavings(suggestions: OptimizationSuggestion[]): number {
     // Simplified calculation - would be more sophisticated in production
     return suggestions.reduce((total, suggestion) => {
-      const savings = suggestion.estimated_improvement * suggestion.priority * 0.1
+      const savings =
+        suggestion.estimated_improvement * suggestion.priority * 0.1
       return total + savings
     }, 0)
   }
@@ -586,7 +649,7 @@ export class QueryOptimizer {
    */
   private trackQueryStats(query: string, executionTime: number): void {
     const normalizedQuery = query.replace(/\s+/g, ' ').trim().slice(0, 100)
-    
+
     if (!this.queryStats.has(normalizedQuery)) {
       this.queryStats.set(normalizedQuery, [])
     }
@@ -611,7 +674,7 @@ export class QueryOptimizer {
       rowsExamined: 0,
       efficiency: 50,
       issues: [],
-      suggestions: []
+      suggestions: [],
     }
   }
 
@@ -620,20 +683,23 @@ export class QueryOptimizer {
    */
   private startQueryMonitoring(): void {
     // Clean up old statistics every hour
-    setInterval(() => {
-      const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000)
-      
-      for (const [query, stats] of this.queryStats.entries()) {
-        const recentStats = stats.filter(stat => stat.timestamp > oneHourAgo)
-        if (recentStats.length === 0) {
-          this.queryStats.delete(query)
-        } else {
-          this.queryStats.set(query, recentStats)
-        }
-      }
+    setInterval(
+      () => {
+        const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000)
 
-      logger.debug('Cleaned up old query statistics')
-    }, 60 * 60 * 1000)
+        for (const [query, stats] of this.queryStats.entries()) {
+          const recentStats = stats.filter(stat => stat.timestamp > oneHourAgo)
+          if (recentStats.length === 0) {
+            this.queryStats.delete(query)
+          } else {
+            this.queryStats.set(query, recentStats)
+          }
+        }
+
+        logger.debug('Cleaned up old query statistics')
+      },
+      60 * 60 * 1000
+    )
   }
 }
 

@@ -60,13 +60,13 @@ export interface UserInteractionMetrics {
   timestamp: Date
 }
 
-export type PerformanceCategory = 
-  | 'rendering' 
-  | 'network' 
-  | 'memory' 
-  | 'bundle' 
-  | 'interaction' 
-  | 'animation' 
+export type PerformanceCategory =
+  | 'rendering'
+  | 'network'
+  | 'memory'
+  | 'bundle'
+  | 'interaction'
+  | 'animation'
   | 'ai_processing'
 
 // Performance thresholds and budgets
@@ -79,14 +79,62 @@ export interface PerformanceBudget {
 }
 
 const DEFAULT_BUDGETS: PerformanceBudget[] = [
-  { category: 'rendering', metric: 'renderTime', threshold: 16, unit: 'ms', action: 'warn' },
-  { category: 'rendering', metric: 'mountTime', threshold: 100, unit: 'ms', action: 'error' },
-  { category: 'network', metric: 'requestDuration', threshold: 3000, unit: 'ms', action: 'warn' },
-  { category: 'network', metric: 'responseSize', threshold: 1048576, unit: 'bytes', action: 'warn' },
-  { category: 'memory', metric: 'heapUsed', threshold: 52428800, unit: 'bytes', action: 'error' },
-  { category: 'bundle', metric: 'chunkSize', threshold: 524288, unit: 'bytes', action: 'warn' },
-  { category: 'interaction', metric: 'responseTime', threshold: 100, unit: 'ms', action: 'warn' },
-  { category: 'ai_processing', metric: 'processingTime', threshold: 5000, unit: 'ms', action: 'warn' }
+  {
+    category: 'rendering',
+    metric: 'renderTime',
+    threshold: 16,
+    unit: 'ms',
+    action: 'warn',
+  },
+  {
+    category: 'rendering',
+    metric: 'mountTime',
+    threshold: 100,
+    unit: 'ms',
+    action: 'error',
+  },
+  {
+    category: 'network',
+    metric: 'requestDuration',
+    threshold: 3000,
+    unit: 'ms',
+    action: 'warn',
+  },
+  {
+    category: 'network',
+    metric: 'responseSize',
+    threshold: 1048576,
+    unit: 'bytes',
+    action: 'warn',
+  },
+  {
+    category: 'memory',
+    metric: 'heapUsed',
+    threshold: 52428800,
+    unit: 'bytes',
+    action: 'error',
+  },
+  {
+    category: 'bundle',
+    metric: 'chunkSize',
+    threshold: 524288,
+    unit: 'bytes',
+    action: 'warn',
+  },
+  {
+    category: 'interaction',
+    metric: 'responseTime',
+    threshold: 100,
+    unit: 'ms',
+    action: 'warn',
+  },
+  {
+    category: 'ai_processing',
+    metric: 'processingTime',
+    threshold: 5000,
+    unit: 'ms',
+    action: 'warn',
+  },
 ]
 
 // Performance monitoring system
@@ -109,10 +157,12 @@ export class AdvancedPerformanceMonitor {
   }
 
   // Start performance monitoring
-  public startMonitoring(options: {
-    samplingRate?: number
-    onViolation?: (violation: PerformanceBudgetViolation) => void
-  } = {}): void {
+  public startMonitoring(
+    options: {
+      samplingRate?: number
+      onViolation?: (violation: PerformanceBudgetViolation) => void
+    } = {}
+  ): void {
     this.isMonitoring = true
     this.samplingRate = options.samplingRate ?? 1.0
     this.onViolation = options.onViolation
@@ -143,7 +193,7 @@ export class AdvancedPerformanceMonitor {
 
     const fullMetric: PerformanceMetric = {
       ...metric,
-      timestamp: new Date()
+      timestamp: new Date(),
     }
 
     const categoryMetrics = this.metrics.get(metric.category) || []
@@ -163,7 +213,7 @@ export class AdvancedPerformanceMonitor {
 
     this.componentMetrics.set(metrics.componentName, {
       ...metrics,
-      lastUpdate: new Date()
+      lastUpdate: new Date(),
     })
 
     // Check component-specific budgets
@@ -217,7 +267,7 @@ export class AdvancedPerformanceMonitor {
       interactions: this.getInteractionSummary(),
       violations: this.getRecentViolations(),
       recommendations: this.generateRecommendations(),
-      timestamp: new Date()
+      timestamp: new Date(),
     }
   }
 
@@ -229,7 +279,7 @@ export class AdvancedPerformanceMonitor {
       networkActivity: this.getCurrentNetworkActivity(),
       cpuUsage: this.getCurrentCPUUsage(),
       renderTime: this.getAverageRenderTime(),
-      timestamp: new Date()
+      timestamp: new Date(),
     }
   }
 
@@ -245,7 +295,7 @@ export class AdvancedPerformanceMonitor {
       optimizations,
       score: this.calculateOverallScore(),
       confidence: this.calculateAnalysisConfidence(),
-      timestamp: new Date()
+      timestamp: new Date(),
     }
   }
 
@@ -266,8 +316,8 @@ export class AdvancedPerformanceMonitor {
         actions: [
           'Consider memoization with React.memo',
           'Optimize re-renders with useMemo/useCallback',
-          'Split into smaller components'
-        ]
+          'Split into smaller components',
+        ],
       })
     })
 
@@ -284,8 +334,8 @@ export class AdvancedPerformanceMonitor {
         actions: [
           'Implement code splitting',
           'Remove unused dependencies',
-          'Enable tree shaking'
-        ]
+          'Enable tree shaking',
+        ],
       })
     })
 
@@ -302,12 +352,15 @@ export class AdvancedPerformanceMonitor {
         actions: [
           'Enable response caching',
           'Implement request debouncing',
-          'Optimize response size'
-        ]
+          'Optimize response size',
+        ],
       })
     })
 
-    return suggestions.sort((a, b) => this.priorityWeight(b.priority) - this.priorityWeight(a.priority))
+    return suggestions.sort(
+      (a, b) =>
+        this.priorityWeight(b.priority) - this.priorityWeight(a.priority)
+    )
   }
 
   // Export performance data
@@ -317,7 +370,7 @@ export class AdvancedPerformanceMonitor {
         exportDate: new Date(),
         monitoringDuration: this.getMonitoringDuration(),
         samplingRate: this.samplingRate,
-        totalMetrics: this.getTotalMetricsCount()
+        totalMetrics: this.getTotalMetricsCount(),
       },
       metrics: Object.fromEntries(this.metrics),
       components: Object.fromEntries(this.componentMetrics),
@@ -325,7 +378,7 @@ export class AdvancedPerformanceMonitor {
       bundles: Object.fromEntries(this.bundleMetrics),
       interactions: this.interactionMetrics,
       budgets: this.budgets,
-      summary: this.getPerformanceSummary()
+      summary: this.getPerformanceSummary(),
     }
   }
 
@@ -335,7 +388,7 @@ export class AdvancedPerformanceMonitor {
 
     // Navigation timing observer
     if ('PerformanceObserver' in window) {
-      const navObserver = new PerformanceObserver((list) => {
+      const navObserver = new PerformanceObserver(list => {
         list.getEntries().forEach(entry => {
           if (entry.entryType === 'navigation') {
             this.processNavigationEntry(entry as PerformanceNavigationTiming)
@@ -345,7 +398,7 @@ export class AdvancedPerformanceMonitor {
       this.observers.set('navigation', navObserver)
 
       // Resource timing observer
-      const resourceObserver = new PerformanceObserver((list) => {
+      const resourceObserver = new PerformanceObserver(list => {
         list.getEntries().forEach(entry => {
           if (entry.entryType === 'resource') {
             this.processResourceEntry(entry as PerformanceResourceTiming)
@@ -355,7 +408,7 @@ export class AdvancedPerformanceMonitor {
       this.observers.set('resource', resourceObserver)
 
       // Paint timing observer
-      const paintObserver = new PerformanceObserver((list) => {
+      const paintObserver = new PerformanceObserver(list => {
         list.getEntries().forEach(entry => {
           if (entry.entryType === 'paint') {
             this.processPaintEntry(entry)
@@ -365,7 +418,7 @@ export class AdvancedPerformanceMonitor {
       this.observers.set('paint', paintObserver)
 
       // Layout shift observer
-      const layoutObserver = new PerformanceObserver((list) => {
+      const layoutObserver = new PerformanceObserver(list => {
         list.getEntries().forEach(entry => {
           if (entry.entryType === 'layout-shift') {
             this.processLayoutShiftEntry(entry)
@@ -383,7 +436,7 @@ export class AdvancedPerformanceMonitor {
       value: entry.loadEventEnd - entry.navigationStart,
       unit: 'ms',
       category: 'rendering',
-      severity: 'medium'
+      severity: 'medium',
     })
 
     this.recordMetric({
@@ -392,7 +445,7 @@ export class AdvancedPerformanceMonitor {
       value: entry.responseStart - entry.navigationStart,
       unit: 'ms',
       category: 'network',
-      severity: 'medium'
+      severity: 'medium',
     })
   }
 
@@ -405,7 +458,7 @@ export class AdvancedPerformanceMonitor {
       responseSize: entry.transferSize || 0,
       cacheHit: entry.transferSize === 0 && entry.decodedBodySize > 0,
       retryCount: 0,
-      timestamp: new Date(entry.startTime)
+      timestamp: new Date(entry.startTime),
     })
   }
 
@@ -416,7 +469,7 @@ export class AdvancedPerformanceMonitor {
       value: entry.startTime,
       unit: 'ms',
       category: 'rendering',
-      severity: entry.name === 'first-contentful-paint' ? 'high' : 'medium'
+      severity: entry.name === 'first-contentful-paint' ? 'high' : 'medium',
     })
   }
 
@@ -427,7 +480,7 @@ export class AdvancedPerformanceMonitor {
       value: entry.value,
       unit: 'score',
       category: 'rendering',
-      severity: entry.value > 0.1 ? 'high' : 'low'
+      severity: entry.value > 0.1 ? 'high' : 'low',
     })
   }
 
@@ -443,7 +496,7 @@ export class AdvancedPerformanceMonitor {
           value: memory.usedJSHeapSize,
           unit: 'bytes',
           category: 'memory',
-          severity: memory.usedJSHeapSize > 50 * 1024 * 1024 ? 'high' : 'low'
+          severity: memory.usedJSHeapSize > 50 * 1024 * 1024 ? 'high' : 'low',
         })
       }
     }
@@ -457,27 +510,30 @@ export class AdvancedPerformanceMonitor {
       const originalFetch = window.fetch
       window.fetch = async (...args) => {
         const startTime = performance.now()
-        const url = args[0] instanceof Request ? args[0].url : args[0].toString()
-        
+        const url =
+          args[0] instanceof Request ? args[0].url : args[0].toString()
+
         try {
           const response = await originalFetch(...args)
           const endTime = performance.now()
-          
+
           this.recordNetworkMetrics({
             requestId: `fetch-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
             url,
             method: args[1]?.method || 'GET',
             duration: endTime - startTime,
-            responseSize: parseInt(response.headers.get('content-length') || '0'),
+            responseSize: parseInt(
+              response.headers.get('content-length') || '0'
+            ),
             cacheHit: response.headers.get('x-cache') === 'HIT',
             retryCount: 0,
-            timestamp: new Date()
+            timestamp: new Date(),
           })
-          
+
           return response
         } catch (error) {
           const endTime = performance.now()
-          
+
           this.recordNetworkMetrics({
             requestId: `fetch-error-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
             url,
@@ -487,9 +543,9 @@ export class AdvancedPerformanceMonitor {
             cacheHit: false,
             retryCount: 0,
             errorType: error instanceof Error ? error.name : 'Unknown',
-            timestamp: new Date()
+            timestamp: new Date(),
           })
-          
+
           throw error
         }
       }
@@ -500,22 +556,25 @@ export class AdvancedPerformanceMonitor {
     if (typeof window === 'undefined') return
 
     // Monitor click interactions
-    document.addEventListener('click', (event) => {
+    document.addEventListener('click', event => {
       const startTime = performance.now()
       const target = event.target as Element
-      
+
       // Use requestAnimationFrame to measure response time
       requestAnimationFrame(() => {
         const responseTime = performance.now() - startTime
-        
+
         this.recordInteractionMetrics({
           interactionId: `click-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           type: 'click',
-          target: target.tagName + (target.id ? `#${target.id}` : '') + (target.className ? `.${target.className.split(' ')[0]}` : ''),
+          target:
+            target.tagName +
+            (target.id ? `#${target.id}` : '') +
+            (target.className ? `.${target.className.split(' ')[0]}` : ''),
           duration: 0,
           responseTime,
           successful: true,
-          timestamp: new Date()
+          timestamp: new Date(),
         })
       })
     })
@@ -532,7 +591,7 @@ export class AdvancedPerformanceMonitor {
           duration: 0,
           responseTime: 16, // Assume 60fps target
           successful: true,
-          timestamp: new Date()
+          timestamp: new Date(),
         })
       }, 100)
     })
@@ -543,9 +602,10 @@ export class AdvancedPerformanceMonitor {
   }
 
   private checkBudgetViolation(metric: PerformanceMetric): void {
-    const budget = this.budgets.find(b => 
-      b.category === metric.category && 
-      b.metric === metric.name.toLowerCase().replace(/\s+/g, '')
+    const budget = this.budgets.find(
+      b =>
+        b.category === metric.category &&
+        b.metric === metric.name.toLowerCase().replace(/\s+/g, '')
     )
 
     if (budget && metric.value > budget.threshold) {
@@ -553,7 +613,7 @@ export class AdvancedPerformanceMonitor {
         metric,
         budget,
         severity: budget.action,
-        timestamp: new Date()
+        timestamp: new Date(),
       }
 
       this.onViolation?.(violation)
@@ -569,7 +629,7 @@ export class AdvancedPerformanceMonitor {
         unit: 'ms',
         category: 'rendering',
         severity: metrics.renderTime > 100 ? 'critical' : 'high',
-        metadata: { componentName: metrics.componentName }
+        metadata: { componentName: metrics.componentName },
       })
     }
   }
@@ -583,7 +643,7 @@ export class AdvancedPerformanceMonitor {
         unit: 'ms',
         category: 'network',
         severity: 'high',
-        metadata: { url: metrics.url }
+        metadata: { url: metrics.url },
       })
     }
   }
@@ -597,7 +657,7 @@ export class AdvancedPerformanceMonitor {
         unit: 'bytes',
         category: 'bundle',
         severity: 'medium',
-        metadata: { chunkName: metrics.chunkName }
+        metadata: { chunkName: metrics.chunkName },
       })
     }
   }
@@ -611,16 +671,18 @@ export class AdvancedPerformanceMonitor {
         unit: 'ms',
         category: 'interaction',
         severity: 'medium',
-        metadata: { interactionType: metrics.type, target: metrics.target }
+        metadata: { interactionType: metrics.type, target: metrics.target },
       })
     }
   }
 
   private emitMetricEvent(metric: PerformanceMetric): void {
     if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('performance-metric', { 
-        detail: metric 
-      }))
+      window.dispatchEvent(
+        new CustomEvent('performance-metric', {
+          detail: metric,
+        })
+      )
     }
   }
 
@@ -631,7 +693,7 @@ export class AdvancedPerformanceMonitor {
       network: 0.25,
       memory: 0.2,
       interaction: 0.15,
-      bundle: 0.1
+      bundle: 0.1,
     }
 
     let totalScore = 0
@@ -639,7 +701,10 @@ export class AdvancedPerformanceMonitor {
 
     Object.entries(categories).forEach(([category, stats]) => {
       const weight = weights[category as keyof typeof weights] || 0.1
-      const score = this.calculateCategoryScore(category as PerformanceCategory, stats)
+      const score = this.calculateCategoryScore(
+        category as PerformanceCategory,
+        stats
+      )
       totalScore += score * weight
       totalWeight += weight
     })
@@ -647,38 +712,49 @@ export class AdvancedPerformanceMonitor {
     return totalWeight > 0 ? Math.round(totalScore / totalWeight) : 0
   }
 
-  private calculateCategoryScore(category: PerformanceCategory, stats: any): number {
+  private calculateCategoryScore(
+    category: PerformanceCategory,
+    stats: any
+  ): number {
     // Simple scoring algorithm - can be enhanced
     const violationRatio = stats.violations / Math.max(stats.total, 1)
-    return Math.max(0, 100 - (violationRatio * 100))
+    return Math.max(0, 100 - violationRatio * 100)
   }
 
   private getCategoryMetrics(): Record<string, any> {
     const result: Record<string, any> = {}
 
     this.metrics.forEach((metrics, category) => {
-      const recent = metrics.filter(m => 
-        Date.now() - m.timestamp.getTime() < 60000 // Last minute
+      const recent = metrics.filter(
+        m => Date.now() - m.timestamp.getTime() < 60000 // Last minute
       )
 
       result[category] = {
         total: recent.length,
-        average: recent.length > 0 ? recent.reduce((sum, m) => sum + m.value, 0) / recent.length : 0,
-        violations: recent.filter(m => m.severity === 'high' || m.severity === 'critical').length,
-        trend: this.calculateTrend(metrics)
+        average:
+          recent.length > 0
+            ? recent.reduce((sum, m) => sum + m.value, 0) / recent.length
+            : 0,
+        violations: recent.filter(
+          m => m.severity === 'high' || m.severity === 'critical'
+        ).length,
+        trend: this.calculateTrend(metrics),
       }
     })
 
     return result
   }
 
-  private calculateTrend(metrics: PerformanceMetric[]): 'improving' | 'stable' | 'degrading' {
+  private calculateTrend(
+    metrics: PerformanceMetric[]
+  ): 'improving' | 'stable' | 'degrading' {
     if (metrics.length < 10) return 'stable'
 
     const recent = metrics.slice(-5)
     const older = metrics.slice(-10, -5)
 
-    const recentAvg = recent.reduce((sum, m) => sum + m.value, 0) / recent.length
+    const recentAvg =
+      recent.reduce((sum, m) => sum + m.value, 0) / recent.length
     const olderAvg = older.reduce((sum, m) => sum + m.value, 0) / older.length
 
     const change = (recentAvg - olderAvg) / olderAvg
@@ -692,21 +768,26 @@ export class AdvancedPerformanceMonitor {
     const components = Array.from(this.componentMetrics.values())
     return {
       total: components.length,
-      slowest: components.sort((a, b) => b.renderTime - a.renderTime).slice(0, 5),
-      averageRenderTime: components.reduce((sum, c) => sum + c.renderTime, 0) / components.length || 0
+      slowest: components
+        .sort((a, b) => b.renderTime - a.renderTime)
+        .slice(0, 5),
+      averageRenderTime:
+        components.reduce((sum, c) => sum + c.renderTime, 0) /
+          components.length || 0,
     }
   }
 
   private getNetworkSummary(): any {
-    const recent = this.networkMetrics.filter(m => 
-      Date.now() - m.timestamp.getTime() < 300000 // Last 5 minutes
+    const recent = this.networkMetrics.filter(
+      m => Date.now() - m.timestamp.getTime() < 300000 // Last 5 minutes
     )
 
     return {
       totalRequests: recent.length,
-      averageDuration: recent.reduce((sum, r) => sum + r.duration, 0) / recent.length || 0,
+      averageDuration:
+        recent.reduce((sum, r) => sum + r.duration, 0) / recent.length || 0,
       cacheHitRate: recent.filter(r => r.cacheHit).length / recent.length || 0,
-      errorRate: recent.filter(r => r.errorType).length / recent.length || 0
+      errorRate: recent.filter(r => r.errorType).length / recent.length || 0,
     }
   }
 
@@ -715,19 +796,21 @@ export class AdvancedPerformanceMonitor {
     return {
       totalBundles: bundles.length,
       totalSize: bundles.reduce((sum, b) => sum + b.size, 0),
-      averageLoadTime: bundles.reduce((sum, b) => sum + b.loadTime, 0) / bundles.length || 0
+      averageLoadTime:
+        bundles.reduce((sum, b) => sum + b.loadTime, 0) / bundles.length || 0,
     }
   }
 
   private getInteractionSummary(): any {
-    const recent = this.interactionMetrics.filter(m => 
-      Date.now() - m.timestamp.getTime() < 300000 // Last 5 minutes
+    const recent = this.interactionMetrics.filter(
+      m => Date.now() - m.timestamp.getTime() < 300000 // Last 5 minutes
     )
 
     return {
       totalInteractions: recent.length,
-      averageResponseTime: recent.reduce((sum, i) => sum + i.responseTime, 0) / recent.length || 0,
-      successRate: recent.filter(i => i.successful).length / recent.length || 0
+      averageResponseTime:
+        recent.reduce((sum, i) => sum + i.responseTime, 0) / recent.length || 0,
+      successRate: recent.filter(i => i.successful).length / recent.length || 0,
     }
   }
 
@@ -738,7 +821,7 @@ export class AdvancedPerformanceMonitor {
 
   private generateRecommendations(): string[] {
     const recommendations: string[] = []
-    
+
     // Add recommendations based on current metrics
     const componentMetrics = this.getComponentSummary()
     if (componentMetrics.averageRenderTime > 16) {
@@ -774,7 +857,11 @@ export class AdvancedPerformanceMonitor {
   }
 
   private getCurrentMemoryUsage(): number {
-    if (typeof window !== 'undefined' && 'performance' in window && 'memory' in performance) {
+    if (
+      typeof window !== 'undefined' &&
+      'performance' in window &&
+      'memory' in performance
+    ) {
       return (performance as any).memory.usedJSHeapSize
     }
     return 0
@@ -792,7 +879,10 @@ export class AdvancedPerformanceMonitor {
 
   private getAverageRenderTime(): number {
     const components = Array.from(this.componentMetrics.values())
-    return components.reduce((sum, c) => sum + c.renderTime, 0) / components.length || 0
+    return (
+      components.reduce((sum, c) => sum + c.renderTime, 0) /
+        components.length || 0
+    )
   }
 
   private calculateAnalysisConfidence(): number {
@@ -820,11 +910,16 @@ export class AdvancedPerformanceMonitor {
 
   private priorityWeight(priority: string): number {
     switch (priority) {
-      case 'critical': return 4
-      case 'high': return 3
-      case 'medium': return 2
-      case 'low': return 1
-      default: return 0
+      case 'critical':
+        return 4
+      case 'high':
+        return 3
+      case 'medium':
+        return 2
+      case 'low':
+        return 1
+      default:
+        return 0
     }
   }
 
@@ -834,7 +929,10 @@ export class AdvancedPerformanceMonitor {
   }
 
   private getTotalMetricsCount(): number {
-    return Array.from(this.metrics.values()).reduce((sum, arr) => sum + arr.length, 0)
+    return Array.from(this.metrics.values()).reduce(
+      (sum, arr) => sum + arr.length,
+      0
+    )
   }
 
   private startCleanupInterval(): void {

@@ -9,7 +9,7 @@ beforeAll(() => {
   process.env = {
     ...originalEnv,
     NODE_ENV: 'test',
-    GOOGLE_TRANSLATE_API_KEY: 'test-api-key'
+    GOOGLE_TRANSLATE_API_KEY: 'test-api-key',
   }
 })
 
@@ -20,8 +20,8 @@ afterAll(() => {
 // Mock translation service
 jest.mock('../translation-service', () => ({
   translationService: {
-    translateText: jest.fn()
-  }
+    translateText: jest.fn(),
+  },
 }))
 
 describe('Chunked Translation Service', () => {
@@ -50,7 +50,8 @@ describe('Chunked Translation Service', () => {
     })
 
     it('should handle overlap between chunks', () => {
-      const text = 'Word1 Word2 Word3 Word4 Word5 Word6 Word7 Word8 Word9 Word10'
+      const text =
+        'Word1 Word2 Word3 Word4 Word5 Word6 Word7 Word8 Word9 Word10'
       const chunks = chunkedTranslationService.chunkText(text, 30, 10)
 
       expect(chunks.length).toBeGreaterThan(1)
@@ -59,7 +60,8 @@ describe('Chunked Translation Service', () => {
     })
 
     it('should respect sentence boundaries', () => {
-      const text = 'First sentence. Second sentence. Third sentence. Fourth sentence.'
+      const text =
+        'First sentence. Second sentence. Third sentence. Fourth sentence.'
       const chunks = chunkedTranslationService.chunkText(text, 30, 0)
 
       // Should try to break at sentence boundaries
@@ -87,7 +89,10 @@ describe('Chunked Translation Service', () => {
 
   describe('Optimal Chunking Settings', () => {
     it('should return appropriate settings for short text', () => {
-      const settings = chunkedTranslationService.getOptimalChunkingSettings('Short text', 'vi')
+      const settings = chunkedTranslationService.getOptimalChunkingSettings(
+        'Short text',
+        'vi'
+      )
 
       expect(settings.chunkSize).toBeGreaterThan(0)
       expect(settings.overlap).toBeGreaterThanOrEqual(0)
@@ -96,7 +101,10 @@ describe('Chunked Translation Service', () => {
 
     it('should return appropriate settings for long text', () => {
       const longText = 'A'.repeat(10000)
-      const settings = chunkedTranslationService.getOptimalChunkingSettings(longText, 'vi')
+      const settings = chunkedTranslationService.getOptimalChunkingSettings(
+        longText,
+        'vi'
+      )
 
       expect(settings.chunkSize).toBeGreaterThan(0)
       expect(settings.overlap).toBeGreaterThan(0)
@@ -104,10 +112,19 @@ describe('Chunked Translation Service', () => {
 
     it('should consider target language characteristics', () => {
       const text = 'Test text for language-specific chunking'
-      
-      const enSettings = chunkedTranslationService.getOptimalChunkingSettings(text, 'en')
-      const zhSettings = chunkedTranslationService.getOptimalChunkingSettings(text, 'zh')
-      const viSettings = chunkedTranslationService.getOptimalChunkingSettings(text, 'vi')
+
+      const enSettings = chunkedTranslationService.getOptimalChunkingSettings(
+        text,
+        'en'
+      )
+      const zhSettings = chunkedTranslationService.getOptimalChunkingSettings(
+        text,
+        'zh'
+      )
+      const viSettings = chunkedTranslationService.getOptimalChunkingSettings(
+        text,
+        'vi'
+      )
 
       expect(enSettings).toBeDefined()
       expect(zhSettings).toBeDefined()
@@ -116,7 +133,10 @@ describe('Chunked Translation Service', () => {
 
     it('should handle HTML content', () => {
       const htmlText = '<p>Paragraph 1</p><p>Paragraph 2</p><div>Content</div>'
-      const settings = chunkedTranslationService.getOptimalChunkingSettings(htmlText, 'vi')
+      const settings = chunkedTranslationService.getOptimalChunkingSettings(
+        htmlText,
+        'vi'
+      )
 
       expect(settings.preserveFormatting).toBe(true)
       expect(settings.chunkSize).toBeGreaterThan(0)
@@ -124,7 +144,10 @@ describe('Chunked Translation Service', () => {
 
     it('should handle code content', () => {
       const codeText = 'function test() { return "code"; }'
-      const settings = chunkedTranslationService.getOptimalChunkingSettings(codeText, 'vi')
+      const settings = chunkedTranslationService.getOptimalChunkingSettings(
+        codeText,
+        'vi'
+      )
 
       expect(settings.preserveFormatting).toBe(true)
     })
@@ -132,20 +155,21 @@ describe('Chunked Translation Service', () => {
 
   describe('Large Text Translation', () => {
     it('should translate large text successfully', async () => {
-      const largeText = 'Paragraph 1. '.repeat(100) + 'Paragraph 2. '.repeat(100)
-      
+      const largeText =
+        'Paragraph 1. '.repeat(100) + 'Paragraph 2. '.repeat(100)
+
       mockTranslationService.translateText
         .mockResolvedValueOnce({
           translatedText: 'Đoạn 1. '.repeat(100),
           detectedSourceLanguage: 'en',
           confidence: 0.95,
-          qualityScore: 0.9
+          qualityScore: 0.9,
         })
         .mockResolvedValueOnce({
           translatedText: 'Đoạn 2. '.repeat(100),
           detectedSourceLanguage: 'en',
           confidence: 0.95,
-          qualityScore: 0.9
+          qualityScore: 0.9,
         })
 
       const result = await chunkedTranslationService.translateLargeText({
@@ -156,8 +180,8 @@ describe('Chunked Translation Service', () => {
         chunkingOptions: {
           chunkSize: 1000,
           overlap: 100,
-          preserveFormatting: false
-        }
+          preserveFormatting: false,
+        },
       })
 
       expect(result.translatedText).toContain('Đoạn')
@@ -172,11 +196,11 @@ describe('Chunked Translation Service', () => {
       mockTranslationService.translateText
         .mockResolvedValueOnce({
           translatedText: 'Translated chunk 1',
-          detectedSourceLanguage: 'en'
+          detectedSourceLanguage: 'en',
         })
         .mockResolvedValueOnce({
           translatedText: 'Translated chunk 2',
-          detectedSourceLanguage: 'en'
+          detectedSourceLanguage: 'en',
         })
 
       await chunkedTranslationService.translateLargeText({
@@ -187,9 +211,9 @@ describe('Chunked Translation Service', () => {
         chunkingOptions: {
           chunkSize: 500,
           overlap: 50,
-          preserveFormatting: false
+          preserveFormatting: false,
         },
-        onProgress: progressCallback
+        onProgress: progressCallback,
       })
 
       expect(progressCallback).toHaveBeenCalledWith(
@@ -197,7 +221,7 @@ describe('Chunked Translation Service', () => {
           completedChunks: expect.any(Number),
           totalChunks: expect.any(Number),
           percentage: expect.any(Number),
-          estimatedTimeRemaining: expect.any(Number)
+          estimatedTimeRemaining: expect.any(Number),
         })
       )
     })
@@ -208,21 +232,23 @@ describe('Chunked Translation Service', () => {
       mockTranslationService.translateText
         .mockResolvedValueOnce({
           translatedText: 'Translated chunk 1',
-          detectedSourceLanguage: 'en'
+          detectedSourceLanguage: 'en',
         })
         .mockRejectedValueOnce(new Error('Translation failed'))
 
-      await expect(chunkedTranslationService.translateLargeText({
-        text: largeText,
-        sourceLang: 'en',
-        targetLang: 'vi',
-        qualityTier: 'standard',
-        chunkingOptions: {
-          chunkSize: 500,
-          overlap: 50,
-          preserveFormatting: false
-        }
-      })).rejects.toThrow('Chunked translation failed')
+      await expect(
+        chunkedTranslationService.translateLargeText({
+          text: largeText,
+          sourceLang: 'en',
+          targetLang: 'vi',
+          qualityTier: 'standard',
+          chunkingOptions: {
+            chunkSize: 500,
+            overlap: 50,
+            preserveFormatting: false,
+          },
+        })
+      ).rejects.toThrow('Chunked translation failed')
     })
 
     it('should preserve formatting when requested', async () => {
@@ -230,7 +256,7 @@ describe('Chunked Translation Service', () => {
 
       mockTranslationService.translateText.mockResolvedValue({
         translatedText: '<p>Đoạn văn đã dịch</p>',
-        detectedSourceLanguage: 'en'
+        detectedSourceLanguage: 'en',
       })
 
       const result = await chunkedTranslationService.translateLargeText({
@@ -241,8 +267,8 @@ describe('Chunked Translation Service', () => {
         chunkingOptions: {
           chunkSize: 1000,
           overlap: 100,
-          preserveFormatting: true
-        }
+          preserveFormatting: true,
+        },
       })
 
       expect(result.translatedText).toContain('<p>')
@@ -258,8 +284,8 @@ describe('Chunked Translation Service', () => {
         chunkingOptions: {
           chunkSize: 1000,
           overlap: 100,
-          preserveFormatting: false
-        }
+          preserveFormatting: false,
+        },
       })
 
       expect(result.translatedText).toBe('')
@@ -272,13 +298,13 @@ describe('Chunked Translation Service', () => {
       const chunks = [
         { translatedText: 'First chunk', metadata: { index: 0 } },
         { translatedText: 'Second chunk', metadata: { index: 1 } },
-        { translatedText: 'Third chunk', metadata: { index: 2 } }
+        { translatedText: 'Third chunk', metadata: { index: 2 } },
       ]
 
       const merged = chunkedTranslationService.mergeTranslatedChunks(chunks, {
         chunkSize: 1000,
         overlap: 100,
-        preserveFormatting: false
+        preserveFormatting: false,
       })
 
       expect(merged).toContain('First chunk')
@@ -289,13 +315,13 @@ describe('Chunked Translation Service', () => {
     it('should handle overlap removal when merging', () => {
       const chunks = [
         { translatedText: 'First part shared', metadata: { index: 0 } },
-        { translatedText: 'shared Second part', metadata: { index: 1 } }
+        { translatedText: 'shared Second part', metadata: { index: 1 } },
       ]
 
       const merged = chunkedTranslationService.mergeTranslatedChunks(chunks, {
         chunkSize: 1000,
         overlap: 6, // 'shared' is 6 characters
-        preserveFormatting: false
+        preserveFormatting: false,
       })
 
       // Should not duplicate 'shared'
@@ -306,13 +332,13 @@ describe('Chunked Translation Service', () => {
     it('should preserve formatting during merge', () => {
       const chunks = [
         { translatedText: '<p>First paragraph</p>', metadata: { index: 0 } },
-        { translatedText: '<p>Second paragraph</p>', metadata: { index: 1 } }
+        { translatedText: '<p>Second paragraph</p>', metadata: { index: 1 } },
       ]
 
       const merged = chunkedTranslationService.mergeTranslatedChunks(chunks, {
         chunkSize: 1000,
         overlap: 0,
-        preserveFormatting: true
+        preserveFormatting: true,
       })
 
       expect(merged).toContain('<p>First paragraph</p>')
@@ -323,13 +349,13 @@ describe('Chunked Translation Service', () => {
       const chunks = [
         { translatedText: 'First chunk', metadata: { index: 0 } },
         { translatedText: '', metadata: { index: 1 } },
-        { translatedText: 'Third chunk', metadata: { index: 2 } }
+        { translatedText: 'Third chunk', metadata: { index: 2 } },
       ]
 
       const merged = chunkedTranslationService.mergeTranslatedChunks(chunks, {
         chunkSize: 1000,
         overlap: 0,
-        preserveFormatting: false
+        preserveFormatting: false,
       })
 
       expect(merged).toContain('First chunk')
@@ -343,21 +369,21 @@ describe('Chunked Translation Service', () => {
       const chunkResults = [
         { qualityScore: 0.9, confidence: 0.95 },
         { qualityScore: 0.85, confidence: 0.9 },
-        { qualityScore: 0.88, confidence: 0.92 }
+        { qualityScore: 0.88, confidence: 0.92 },
       ]
 
-      const overallScore = chunkedTranslationService.calculateOverallQuality(chunkResults)
+      const overallScore =
+        chunkedTranslationService.calculateOverallQuality(chunkResults)
 
       expect(overallScore).toBeGreaterThan(0.8)
       expect(overallScore).toBeLessThanOrEqual(1.0)
     })
 
     it('should handle single chunk quality', () => {
-      const chunkResults = [
-        { qualityScore: 0.9, confidence: 0.95 }
-      ]
+      const chunkResults = [{ qualityScore: 0.9, confidence: 0.95 }]
 
-      const overallScore = chunkedTranslationService.calculateOverallQuality(chunkResults)
+      const overallScore =
+        chunkedTranslationService.calculateOverallQuality(chunkResults)
 
       expect(overallScore).toBeCloseTo(0.9, 2)
     })
@@ -371,10 +397,11 @@ describe('Chunked Translation Service', () => {
     it('should weight quality by chunk size', () => {
       const chunkResults = [
         { qualityScore: 0.9, confidence: 0.95, chunkSize: 1000 },
-        { qualityScore: 0.5, confidence: 0.6, chunkSize: 100 }
+        { qualityScore: 0.5, confidence: 0.6, chunkSize: 100 },
       ]
 
-      const overallScore = chunkedTranslationService.calculateOverallQuality(chunkResults)
+      const overallScore =
+        chunkedTranslationService.calculateOverallQuality(chunkResults)
 
       // Should be closer to 0.9 since that chunk is much larger
       expect(overallScore).toBeGreaterThan(0.8)
@@ -389,7 +416,7 @@ describe('Chunked Translation Service', () => {
         .mockRejectedValueOnce(new Error('Temporary failure'))
         .mockResolvedValueOnce({
           translatedText: 'Translated after retry',
-          detectedSourceLanguage: 'en'
+          detectedSourceLanguage: 'en',
         })
 
       const result = await chunkedTranslationService.translateLargeText({
@@ -400,9 +427,9 @@ describe('Chunked Translation Service', () => {
         chunkingOptions: {
           chunkSize: 1000,
           overlap: 100,
-          preserveFormatting: false
+          preserveFormatting: false,
         },
-        maxRetries: 1
+        maxRetries: 1,
       })
 
       expect(result.translatedText).toBe('Translated after retry')
@@ -412,21 +439,24 @@ describe('Chunked Translation Service', () => {
     it('should fail after max retries', async () => {
       const largeText = 'Test chunk. '.repeat(50)
 
-      mockTranslationService.translateText
-        .mockRejectedValue(new Error('Persistent failure'))
+      mockTranslationService.translateText.mockRejectedValue(
+        new Error('Persistent failure')
+      )
 
-      await expect(chunkedTranslationService.translateLargeText({
-        text: largeText,
-        sourceLang: 'en',
-        targetLang: 'vi',
-        qualityTier: 'standard',
-        chunkingOptions: {
-          chunkSize: 1000,
-          overlap: 100,
-          preserveFormatting: false
-        },
-        maxRetries: 2
-      })).rejects.toThrow('Chunked translation failed')
+      await expect(
+        chunkedTranslationService.translateLargeText({
+          text: largeText,
+          sourceLang: 'en',
+          targetLang: 'vi',
+          qualityTier: 'standard',
+          chunkingOptions: {
+            chunkSize: 1000,
+            overlap: 100,
+            preserveFormatting: false,
+          },
+          maxRetries: 2,
+        })
+      ).rejects.toThrow('Chunked translation failed')
 
       expect(mockTranslationService.translateText).toHaveBeenCalledTimes(3) // Initial + 2 retries
     })
@@ -434,13 +464,15 @@ describe('Chunked Translation Service', () => {
 
   describe('Performance Optimization', () => {
     it('should process chunks in parallel when safe', async () => {
-      const largeText = 'Independent chunk 1. Independent chunk 2. Independent chunk 3.'
+      const largeText =
+        'Independent chunk 1. Independent chunk 2. Independent chunk 3.'
 
-      mockTranslationService.translateText
-        .mockImplementation(async ({ text }) => ({
+      mockTranslationService.translateText.mockImplementation(
+        async ({ text }) => ({
           translatedText: `Translated: ${text}`,
-          detectedSourceLanguage: 'en'
-        }))
+          detectedSourceLanguage: 'en',
+        })
+      )
 
       const startTime = Date.now()
 
@@ -452,9 +484,9 @@ describe('Chunked Translation Service', () => {
         chunkingOptions: {
           chunkSize: 20,
           overlap: 0,
-          preserveFormatting: false
+          preserveFormatting: false,
         },
-        parallelProcessing: true
+        parallelProcessing: true,
       })
 
       const endTime = Date.now()
@@ -467,11 +499,12 @@ describe('Chunked Translation Service', () => {
     it('should process chunks sequentially when overlap exists', async () => {
       const largeText = 'Chunk with overlap. Overlap continues here.'
 
-      mockTranslationService.translateText
-        .mockImplementation(async ({ text }) => ({
+      mockTranslationService.translateText.mockImplementation(
+        async ({ text }) => ({
           translatedText: `Translated: ${text}`,
-          detectedSourceLanguage: 'en'
-        }))
+          detectedSourceLanguage: 'en',
+        })
+      )
 
       await chunkedTranslationService.translateLargeText({
         text: largeText,
@@ -481,9 +514,9 @@ describe('Chunked Translation Service', () => {
         chunkingOptions: {
           chunkSize: 20,
           overlap: 5,
-          preserveFormatting: false
+          preserveFormatting: false,
         },
-        parallelProcessing: true
+        parallelProcessing: true,
       })
 
       // Should still work correctly even with overlap
@@ -495,11 +528,12 @@ describe('Chunked Translation Service', () => {
     it('should handle very large texts without memory issues', async () => {
       const veryLargeText = 'Large text chunk. '.repeat(10000) // ~180KB
 
-      mockTranslationService.translateText
-        .mockImplementation(async ({ text }) => ({
+      mockTranslationService.translateText.mockImplementation(
+        async ({ text }) => ({
           translatedText: text.replace(/Large/g, 'Lớn'),
-          detectedSourceLanguage: 'en'
-        }))
+          detectedSourceLanguage: 'en',
+        })
+      )
 
       const result = await chunkedTranslationService.translateLargeText({
         text: veryLargeText,
@@ -509,8 +543,8 @@ describe('Chunked Translation Service', () => {
         chunkingOptions: {
           chunkSize: 2000,
           overlap: 100,
-          preserveFormatting: false
-        }
+          preserveFormatting: false,
+        },
       })
 
       expect(result.translatedText).toContain('Lớn')
@@ -522,7 +556,7 @@ describe('Chunked Translation Service', () => {
 
       mockTranslationService.translateText.mockResolvedValue({
         translatedText: 'Cleaned up translation',
-        detectedSourceLanguage: 'en'
+        detectedSourceLanguage: 'en',
       })
 
       await chunkedTranslationService.translateLargeText({
@@ -533,8 +567,8 @@ describe('Chunked Translation Service', () => {
         chunkingOptions: {
           chunkSize: 1000,
           overlap: 100,
-          preserveFormatting: false
-        }
+          preserveFormatting: false,
+        },
       })
 
       // After processing, internal state should be clean

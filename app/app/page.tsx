@@ -4,18 +4,18 @@ import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import { useWorkspaceStore } from './hooks/useWorkspaceStore'
 import { useAuth } from '@/hooks/useAuth'
-import { 
-  FileText, 
-  History, 
-  Crown, 
-  HelpCircle, 
-  Menu, 
+import {
+  FileText,
+  History,
+  Crown,
+  HelpCircle,
+  Menu,
   X,
   Globe,
   Rocket,
   User,
   LogOut,
-  Settings
+  Settings,
 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { CreditsBadge } from '@/components/auth/CreditsBadge'
@@ -36,17 +36,17 @@ import { ChatPanel } from './ChatPanel'
 export const dynamic = 'force-dynamic'
 
 export default function WorkspacePage() {
-  const { 
-    sidebarCollapsed, 
-    setSidebarCollapsed, 
-    tier, 
+  const {
+    sidebarCollapsed,
+    setSidebarCollapsed,
+    tier,
     setTier,
     chatPanelOpen,
     setChatPanelOpen,
     documents,
-    activeDocumentId 
+    activeDocumentId,
   } = useWorkspaceStore()
-  
+
   const { user, signOut, credits, loading: authLoading } = useAuth()
   const [isMobile, setIsMobile] = useState(false)
   const [mounted, setMounted] = useState(false)
@@ -100,7 +100,7 @@ export default function WorkspacePage() {
           >
             <Menu size={20} />
           </button>
-          
+
           <div className="flex items-center space-x-2">
             <Rocket size={24} className="text-accent-brand" />
             <span className="font-semibold text-primary">Prismy</span>
@@ -128,9 +128,9 @@ export default function WorkspacePage() {
                 aria-label="User menu"
               >
                 <Avatar className="h-8 w-8">
-                  <AvatarImage 
-                    src={user?.user_metadata?.avatar_url} 
-                    alt={user?.email || 'User avatar'} 
+                  <AvatarImage
+                    src={user?.user_metadata?.avatar_url}
+                    alt={user?.email || 'User avatar'}
                   />
                   <AvatarFallback>
                     {user?.email?.charAt(0).toUpperCase() || <User size={16} />}
@@ -172,25 +172,28 @@ export default function WorkspacePage() {
 
       <div className="flex-1 flex overflow-hidden">
         {/* Sidebar */}
-        <aside className={`
+        <aside
+          className={`
           flex-shrink-0 bg-surface border-r border-border-default transition-all duration-200
-          ${isMobile 
-            ? sidebarCollapsed 
-              ? '-translate-x-full w-0' 
-              : 'absolute inset-y-0 left-0 z-50 w-64' 
-            : sidebarCollapsed 
-              ? 'w-16' 
-              : 'w-64'
+          ${
+            isMobile
+              ? sidebarCollapsed
+                ? '-translate-x-full w-0'
+                : 'absolute inset-y-0 left-0 z-50 w-64'
+              : sidebarCollapsed
+                ? 'w-16'
+                : 'w-64'
           }
-        `}>
+        `}
+        >
           {/* Mobile backdrop */}
           {isMobile && !sidebarCollapsed && (
-            <div 
+            <div
               className="fixed inset-0 bg-bg-overlay z-40"
               onClick={() => setSidebarCollapsed(true)}
             />
           )}
-          
+
           <nav className="relative z-50 h-full bg-surface p-3 space-y-2">
             {/* Close button for mobile */}
             {isMobile && (
@@ -209,23 +212,25 @@ export default function WorkspacePage() {
               active={!activeDocumentId}
               collapsed={sidebarCollapsed}
             />
-            
+
             <SidebarItem
               icon={<History size={20} />}
               label="History"
               collapsed={sidebarCollapsed}
               count={documents.length}
             />
-            
+
             <div className="pt-4 border-t border-border-muted">
               <SidebarItem
                 icon={<Crown size={20} />}
                 label="Billing"
                 collapsed={sidebarCollapsed}
                 badge={tier === 'free' ? 'pro' : undefined}
-                onClick={() => {/* Open billing */}}
+                onClick={() => {
+                  /* Open billing */
+                }}
               />
-              
+
               <SidebarItem
                 icon={<HelpCircle size={20} />}
                 label="Help"
@@ -257,17 +262,20 @@ export default function WorkspacePage() {
 
             {/* Chat Panel */}
             {activeDocument && (
-              <div className={`
+              <div
+                className={`
                 flex-shrink-0 border-l border-border-default transition-all duration-200
-                ${isMobile 
-                  ? chatPanelOpen 
-                    ? 'absolute inset-y-0 right-0 z-40 w-full bg-surface' 
-                    : 'w-0 overflow-hidden'
-                  : chatPanelOpen 
-                    ? 'w-80' 
-                    : 'w-0 overflow-hidden'
+                ${
+                  isMobile
+                    ? chatPanelOpen
+                      ? 'absolute inset-y-0 right-0 z-40 w-full bg-surface'
+                      : 'w-0 overflow-hidden'
+                    : chatPanelOpen
+                      ? 'w-80'
+                      : 'w-0 overflow-hidden'
                 }
-              `}>
+              `}
+              >
                 <ChatPanel document={activeDocument} />
               </div>
             )}
@@ -292,23 +300,24 @@ interface SidebarItemProps {
   onClick?: () => void
 }
 
-function SidebarItem({ 
-  icon, 
-  label, 
-  active = false, 
-  collapsed = false, 
-  count, 
-  badge, 
-  onClick 
+function SidebarItem({
+  icon,
+  label,
+  active = false,
+  collapsed = false,
+  count,
+  badge,
+  onClick,
 }: SidebarItemProps) {
   return (
     <button
       onClick={onClick}
       className={`
         w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors
-        ${active 
-          ? 'bg-accent-brand-light text-accent-brand' 
-          : 'text-secondary hover:bg-bg-muted hover:text-primary'
+        ${
+          active
+            ? 'bg-accent-brand-light text-accent-brand'
+            : 'text-secondary hover:bg-bg-muted hover:text-primary'
         }
         ${collapsed ? 'justify-center' : ''}
       `}
@@ -355,7 +364,7 @@ function DropZoneOverlay() {
     const handleDrop = async (e: DragEvent) => {
       e.preventDefault()
       setIsDragOver(false)
-      
+
       const files = Array.from(e.dataTransfer?.files || [])
       if (files.length > 0) {
         try {
@@ -387,9 +396,7 @@ function DropZoneOverlay() {
         <h3 className="text-xl font-semibold text-primary mb-2">
           Drop files anywhere to upload
         </h3>
-        <p className="text-secondary">
-          PDF, DOCX, and TXT files supported
-        </p>
+        <p className="text-secondary">PDF, DOCX, and TXT files supported</p>
       </div>
     </div>
   )

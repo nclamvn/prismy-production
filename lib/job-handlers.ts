@@ -5,7 +5,10 @@
 
 import PgBoss from 'pg-boss'
 import { logger } from '@/lib/logger'
-import { RealtimeProgressManager, ProgressHelpers } from '@/lib/realtime-progress'
+import {
+  RealtimeProgressManager,
+  ProgressHelpers,
+} from '@/lib/realtime-progress'
 import { createServiceRoleClient } from '@/lib/supabase'
 
 // Always use service role client for server-side job processing
@@ -78,14 +81,19 @@ export interface ExportJobData extends BaseJobData {
 const progressManager = RealtimeProgressManager.getInstance()
 
 export class JobHandlers {
-  
   // Document Processing Handler
-  static async handleDocumentProcessing(job: PgBoss.Job<DocumentProcessingJobData>) {
+  static async handleDocumentProcessing(
+    job: PgBoss.Job<DocumentProcessingJobData>
+  ) {
     const { data } = job
     const { jobId, userId, documentUrl, documentType, options } = data
 
     try {
-      logger.info('Starting document processing', { jobId, userId, documentType })
+      logger.info('Starting document processing', {
+        jobId,
+        userId,
+        documentType,
+      })
 
       // Update progress: starting
       progressManager.updateProgress(
@@ -98,22 +106,24 @@ export class JobHandlers {
         {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
-            'Content-Type': 'application/json'
+            Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             jobId,
             userId,
             documentUrl,
             documentType,
-            processingOptions: options
-          })
+            processingOptions: options,
+          }),
         }
       )
 
       if (!response.ok) {
         const errorText = await response.text()
-        throw new Error(`Edge function failed: ${response.statusText} - ${errorText}`)
+        throw new Error(
+          `Edge function failed: ${response.statusText} - ${errorText}`
+        )
       }
 
       const result = await response.json()
@@ -128,15 +138,18 @@ export class JobHandlers {
         documentType,
         documentSize: result.metadata?.size || 0,
         pages: result.pages || 0,
-        processingTime: Date.now() - new Date(job.createdon).getTime()
+        processingTime: Date.now() - new Date(job.createdon).getTime(),
       })
 
       logger.info('Document processing completed', { jobId, userId })
       return result
-
     } catch (error: any) {
-      logger.error('Document processing failed', { jobId, userId, error: error.message })
-      
+      logger.error('Document processing failed', {
+        jobId,
+        userId,
+        error: error.message,
+      })
+
       // Update progress: failed
       progressManager.updateProgress(
         ProgressHelpers.failed(jobId, userId, error.message)
@@ -149,10 +162,23 @@ export class JobHandlers {
   // Translation Handler
   static async handleTranslation(job: PgBoss.Job<TranslationJobData>) {
     const { data } = job
-    const { jobId, userId, text, sourceLang, targetLang, qualityTier, options } = data
+    const {
+      jobId,
+      userId,
+      text,
+      sourceLang,
+      targetLang,
+      qualityTier,
+      options,
+    } = data
 
     try {
-      logger.info('Starting translation', { jobId, userId, sourceLang, targetLang })
+      logger.info('Starting translation', {
+        jobId,
+        userId,
+        sourceLang,
+        targetLang,
+      })
 
       // Update progress: starting
       progressManager.updateProgress(
@@ -162,7 +188,9 @@ export class JobHandlers {
       // Validate text length
       const maxLength = options?.maxLength || 50000
       if (text.length > maxLength) {
-        throw new Error(`Text exceeds maximum length of ${maxLength} characters`)
+        throw new Error(
+          `Text exceeds maximum length of ${maxLength} characters`
+        )
       }
 
       // Perform translation
@@ -173,15 +201,13 @@ export class JobHandlers {
         targetLang,
         qualityTier,
         preserveFormatting: options?.preserveFormatting,
-        glossary: options?.glossary
+        glossary: options?.glossary,
       })
 
       const processingTime = Date.now() - startTime
 
       // Update progress: completed
-      progressManager.updateProgress(
-        ProgressHelpers.completed(jobId, userId)
-      )
+      progressManager.updateProgress(ProgressHelpers.completed(jobId, userId))
 
       // Track usage for billing
       await JobHandlers.trackUsage(userId, 'translation', text.length, {
@@ -192,15 +218,18 @@ export class JobHandlers {
         processingTime,
         provider: result.metadata?.provider,
         model: result.metadata?.model,
-        cost: result.metadata?.cost
+        cost: result.metadata?.cost,
       })
 
       logger.info('Translation completed', { jobId, userId, processingTime })
       return result
-
     } catch (error: any) {
-      logger.error('Translation failed', { jobId, userId, error: error.message })
-      
+      logger.error('Translation failed', {
+        jobId,
+        userId,
+        error: error.message,
+      })
+
       // Update progress: failed
       progressManager.updateProgress(
         ProgressHelpers.failed(jobId, userId, error.message)
@@ -211,12 +240,18 @@ export class JobHandlers {
   }
 
   // Batch Translation Handler
-  static async handleBatchTranslation(job: PgBoss.Job<BatchTranslationJobData>) {
+  static async handleBatchTranslation(
+    job: PgBoss.Job<BatchTranslationJobData>
+  ) {
     const { data } = job
     const { jobId, userId, documents, batchOptions } = data
 
     try {
-      logger.info('Starting batch translation', { jobId, userId, documentCount: documents.length })
+      logger.info('Starting batch translation', {
+        jobId,
+        userId,
+        documentCount: documents.length,
+      })
 
       const results = []
       const totalDocuments = documents.length
@@ -224,7 +259,7 @@ export class JobHandlers {
 
       for (let i = 0; i < totalDocuments; i++) {
         const doc = documents[i]
-        
+
         try {
           // Update progress for each document
           progressManager.updateProgress({
@@ -233,7 +268,7 @@ export class JobHandlers {
             status: 'processing',
             progress: Math.floor((i / totalDocuments) * 100),
             message: `Processing document ${i + 1} of ${totalDocuments}`,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           })
 
           // Process individual translation
@@ -243,50 +278,54 @@ export class JobHandlers {
             targetLang: doc.targetLang,
             qualityTier: doc.qualityTier,
             preserveFormatting: doc.options?.preserveFormatting,
-            glossary: doc.options?.glossary
+            glossary: doc.options?.glossary,
           })
 
           results.push({
             originalJobId: doc.jobId,
             success: true,
-            result: translationResult
+            result: translationResult,
           })
-
         } catch (docError: any) {
           const errorInfo = {
             originalJobId: doc.jobId,
             success: false,
-            error: docError.message
+            error: docError.message,
           }
-          
+
           errors.push(errorInfo)
           results.push(errorInfo)
 
           // Stop on error if configured
           if (batchOptions?.stopOnError) {
-            throw new Error(`Batch stopped due to error in document ${i + 1}: ${docError.message}`)
+            throw new Error(
+              `Batch stopped due to error in document ${i + 1}: ${docError.message}`
+            )
           }
         }
       }
 
       // Update progress: completed
-      progressManager.updateProgress(
-        ProgressHelpers.completed(jobId, userId)
-      )
+      progressManager.updateProgress(ProgressHelpers.completed(jobId, userId))
 
       // Track batch usage
-      await JobHandlers.trackUsage(userId, 'batch_translation', documents.length, {
-        totalDocuments: documents.length,
-        successfulDocuments: results.filter(r => r.success).length,
-        failedDocuments: errors.length,
-        processingTime: Date.now() - new Date(job.createdon).getTime()
-      })
+      await JobHandlers.trackUsage(
+        userId,
+        'batch_translation',
+        documents.length,
+        {
+          totalDocuments: documents.length,
+          successfulDocuments: results.filter(r => r.success).length,
+          failedDocuments: errors.length,
+          processingTime: Date.now() - new Date(job.createdon).getTime(),
+        }
+      )
 
-      logger.info('Batch translation completed', { 
-        jobId, 
-        userId, 
+      logger.info('Batch translation completed', {
+        jobId,
+        userId,
         successful: results.filter(r => r.success).length,
-        failed: errors.length
+        failed: errors.length,
       })
 
       return {
@@ -295,13 +334,16 @@ export class JobHandlers {
           total: totalDocuments,
           successful: results.filter(r => r.success).length,
           failed: errors.length,
-          errors: errors.slice(0, 10) // Limit error details
-        }
+          errors: errors.slice(0, 10), // Limit error details
+        },
       }
-
     } catch (error: any) {
-      logger.error('Batch translation failed', { jobId, userId, error: error.message })
-      
+      logger.error('Batch translation failed', {
+        jobId,
+        userId,
+        error: error.message,
+      })
+
       progressManager.updateProgress(
         ProgressHelpers.failed(jobId, userId, error.message)
       )
@@ -325,7 +367,7 @@ export class JobHandlers {
         status: 'processing',
         progress: 20,
         message: 'Starting OCR processing...',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       })
 
       // For now, simulate OCR processing
@@ -335,28 +377,29 @@ export class JobHandlers {
         confidence: 0.95,
         language: options?.language || 'en',
         blocks: [],
-        tables: options?.extractTables ? [] : undefined
+        tables: options?.extractTables ? [] : undefined,
       }
 
       // Update progress: completed
-      progressManager.updateProgress(
-        ProgressHelpers.completed(jobId, userId)
-      )
+      progressManager.updateProgress(ProgressHelpers.completed(jobId, userId))
 
       // Track usage
       await JobHandlers.trackUsage(userId, 'ocr_processing', 1, {
         imageType,
         language: options?.language,
         extractTables: options?.extractTables,
-        processingTime: Date.now() - new Date(job.createdon).getTime()
+        processingTime: Date.now() - new Date(job.createdon).getTime(),
       })
 
       logger.info('OCR processing completed', { jobId, userId })
       return mockResult
-
     } catch (error: any) {
-      logger.error('OCR processing failed', { jobId, userId, error: error.message })
-      
+      logger.error('OCR processing failed', {
+        jobId,
+        userId,
+        error: error.message,
+      })
+
       progressManager.updateProgress(
         ProgressHelpers.failed(jobId, userId, error.message)
       )
@@ -371,7 +414,12 @@ export class JobHandlers {
     const { jobId, userId, dataType, format, filters, options } = data
 
     try {
-      logger.info('Starting export generation', { jobId, userId, dataType, format })
+      logger.info('Starting export generation', {
+        jobId,
+        userId,
+        dataType,
+        format,
+      })
 
       // Update progress: starting
       progressManager.updateProgress({
@@ -380,12 +428,12 @@ export class JobHandlers {
         status: 'processing',
         progress: 10,
         message: 'Preparing export data...',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       })
 
       // Fetch data based on type and filters
       let exportData: any[] = []
-      
+
       switch (dataType) {
         case 'translation':
           const { data: translations } = await getSupabaseClient()
@@ -394,7 +442,7 @@ export class JobHandlers {
             .eq('user_id', userId)
             .order('created_at', { ascending: false })
             .limit(filters?.limit || 1000)
-          
+
           exportData = translations || []
           break
 
@@ -405,7 +453,7 @@ export class JobHandlers {
             .eq('user_id', userId)
             .order('created_at', { ascending: false })
             .limit(filters?.limit || 1000)
-          
+
           exportData = documents || []
           break
 
@@ -414,9 +462,13 @@ export class JobHandlers {
             .from('usage_logs')
             .select('*')
             .eq('user_id', userId)
-            .gte('created_at', filters?.startDate || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
+            .gte(
+              'created_at',
+              filters?.startDate ||
+                new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+            )
             .order('created_at', { ascending: false })
-          
+
           exportData = usage || []
           break
       }
@@ -428,7 +480,7 @@ export class JobHandlers {
         status: 'processing',
         progress: 70,
         message: `Generating ${format.toUpperCase()} file...`,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       })
 
       // For now, simulate file generation
@@ -439,7 +491,7 @@ export class JobHandlers {
         format,
         recordCount: exportData.length,
         fileSize: Math.floor(exportData.length * 0.5), // Simulate file size
-        generatedAt: new Date().toISOString()
+        generatedAt: new Date().toISOString(),
       }
 
       // Update progress: completed
@@ -453,15 +505,22 @@ export class JobHandlers {
         format,
         recordCount: exportData.length,
         fileSize: exportResult.fileSize,
-        processingTime: Date.now() - new Date(job.createdon).getTime()
+        processingTime: Date.now() - new Date(job.createdon).getTime(),
       })
 
-      logger.info('Export generation completed', { jobId, userId, recordCount: exportData.length })
+      logger.info('Export generation completed', {
+        jobId,
+        userId,
+        recordCount: exportData.length,
+      })
       return exportResult
-
     } catch (error: any) {
-      logger.error('Export generation failed', { jobId, userId, error: error.message })
-      
+      logger.error('Export generation failed', {
+        jobId,
+        userId,
+        error: error.message,
+      })
+
       progressManager.updateProgress(
         ProgressHelpers.failed(jobId, userId, error.message)
       )
@@ -478,15 +537,13 @@ export class JobHandlers {
     metadata?: any
   ): Promise<void> {
     try {
-      const { error } = await getSupabaseClient()
-        .from('usage_logs')
-        .insert({
-          user_id: userId,
-          event_type: eventType,
-          quantity,
-          metadata,
-          created_at: new Date().toISOString()
-        })
+      const { error } = await getSupabaseClient().from('usage_logs').insert({
+        user_id: userId,
+        event_type: eventType,
+        quantity,
+        metadata,
+        created_at: new Date().toISOString(),
+      })
 
       if (error) {
         logger.error('Failed to track usage', { error, userId, eventType })

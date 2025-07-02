@@ -40,14 +40,14 @@ export class DocumentService {
   }
 
   async processDocument(
-    file: File, 
+    file: File,
     userId: string,
     sourceLanguage = 'auto'
   ): Promise<DocumentProcessingResult> {
     try {
       // Extract text based on file type
       let extractedText = ''
-      let metadata: any = {
+      const metadata: any = {
         fileType: file.type,
         fileSize: file.size,
         wordCount: 0,
@@ -73,7 +73,9 @@ export class DocumentService {
 
       // Calculate text statistics
       metadata.characterCount = extractedText.length
-      metadata.wordCount = extractedText.split(/\s+/).filter(word => word.length > 0).length
+      metadata.wordCount = extractedText
+        .split(/\s+/)
+        .filter(word => word.length > 0).length
 
       // Detect language if not specified
       if (sourceLanguage === 'auto') {
@@ -102,7 +104,9 @@ export class DocumentService {
       }
     } catch (error) {
       console.error('Document processing error:', error)
-      throw new Error(error instanceof Error ? error.message : 'Document processing failed')
+      throw new Error(
+        error instanceof Error ? error.message : 'Document processing failed'
+      )
     }
   }
 
@@ -110,16 +114,18 @@ export class DocumentService {
     return await file.text()
   }
 
-  private async extractTextFromPdf(file: File): Promise<{ text: string; pageCount: number }> {
+  private async extractTextFromPdf(
+    file: File
+  ): Promise<{ text: string; pageCount: number }> {
     // For PDF processing, we'll use a simple fallback
     // In production, you'd want to use a proper PDF parser like pdf-parse
     try {
       const arrayBuffer = await file.arrayBuffer()
-      
+
       // Simple PDF text extraction (this is a placeholder)
       // You should implement proper PDF parsing here
       const text = 'PDF text extraction requires proper implementation'
-      
+
       return {
         text,
         pageCount: 1,
@@ -134,11 +140,11 @@ export class DocumentService {
     // In production, you'd want to use a proper DOCX parser like mammoth
     try {
       const arrayBuffer = await file.arrayBuffer()
-      
+
       // Simple DOCX text extraction (this is a placeholder)
       // You should implement proper DOCX parsing here
       const text = 'DOCX text extraction requires proper implementation'
-      
+
       return text
     } catch (error) {
       throw new Error('DOCX processing failed')
@@ -173,7 +179,7 @@ export class DocumentService {
   }
 
   async translateDocument(
-    documentId: string, 
+    documentId: string,
     targetLanguage: string,
     userId: string
   ): Promise<DocumentTranslationResult> {
@@ -245,7 +251,9 @@ export class DocumentService {
       })
 
       console.error('Document translation error:', error)
-      throw new Error(error instanceof Error ? error.message : 'Document translation failed')
+      throw new Error(
+        error instanceof Error ? error.message : 'Document translation failed'
+      )
     }
   }
 
@@ -267,7 +275,10 @@ export class DocumentService {
     return data
   }
 
-  async getDocument(documentId: string, userId: string): Promise<Document | null> {
+  async getDocument(
+    documentId: string,
+    userId: string
+  ): Promise<Document | null> {
     if (!this.client) {
       throw new Error('Database client not available')
     }
@@ -290,8 +301,8 @@ export class DocumentService {
   }
 
   async updateDocument(
-    documentId: string, 
-    userId: string, 
+    documentId: string,
+    userId: string,
     updates: DocumentUpdate
   ): Promise<Document> {
     if (!this.client) {
@@ -373,13 +384,15 @@ export class DocumentService {
 
     const totalDocuments = data.length
     const totalSize = data.reduce((sum, doc) => sum + doc.file_size, 0)
-    
+
     const processingStatus: Record<string, number> = {}
     const languageBreakdown: Record<string, number> = {}
 
     data.forEach(doc => {
-      processingStatus[doc.processing_status] = (processingStatus[doc.processing_status] || 0) + 1
-      languageBreakdown[doc.source_language] = (languageBreakdown[doc.source_language] || 0) + 1
+      processingStatus[doc.processing_status] =
+        (processingStatus[doc.processing_status] || 0) + 1
+      languageBreakdown[doc.source_language] =
+        (languageBreakdown[doc.source_language] || 0) + 1
     })
 
     return {

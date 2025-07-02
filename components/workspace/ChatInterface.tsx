@@ -19,10 +19,10 @@ interface ChatInterfaceProps {
   onNewMessage?: (message: ChatMessage) => void
 }
 
-export function ChatInterface({ 
-  documentName, 
+export function ChatInterface({
+  documentName,
   documentContent,
-  onNewMessage 
+  onNewMessage,
 }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [inputText, setInputText] = useState('')
@@ -46,7 +46,7 @@ export function ChatInterface({
         content: `Hi! I'm your AI assistant. I can help you understand, analyze, and work with your document "${documentName}". What would you like to know?`,
         role: 'assistant',
         timestamp: new Date(),
-        documentContext: documentName
+        documentContext: documentName,
       }
       setMessages([welcomeMessage])
     }
@@ -60,7 +60,7 @@ export function ChatInterface({
       content: inputText,
       role: 'user',
       timestamp: new Date(),
-      documentContext: documentName
+      documentContext: documentName,
     }
 
     setMessages(prev => [...prev, userMessage])
@@ -69,29 +69,32 @@ export function ChatInterface({
     onNewMessage?.(userMessage)
 
     // Simulate AI response
-    setTimeout(() => {
-      const responses = [
-        `Based on the document "${documentName || 'your document'}", I can see that ${inputText.toLowerCase().includes('summary') ? 'this is a comprehensive document with key insights' : inputText.toLowerCase().includes('translate') ? 'translation services are available for this content' : 'there are several important points to consider'}.`,
-        
-        `Here's what I found in the document: ${documentContent ? documentContent.substring(0, 100) + '...' : 'The content contains relevant information that addresses your question.'} Would you like me to elaborate on any specific section?`,
-        
-        `Great question! ${inputText.toLowerCase().includes('how') ? 'Let me walk you through the process step by step' : inputText.toLowerCase().includes('what') ? 'Here are the key points you should know' : 'I can help you with that'}. ${documentName ? `In "${documentName}", ` : ''}this relates to the core concepts we're discussing.`,
-        
-        `I understand you're asking about "${inputText}". ${documentContent ? 'From the document content, ' : ''}I can provide insights on this topic. Would you like me to focus on any particular aspect?`
-      ]
+    setTimeout(
+      () => {
+        const responses = [
+          `Based on the document "${documentName || 'your document'}", I can see that ${inputText.toLowerCase().includes('summary') ? 'this is a comprehensive document with key insights' : inputText.toLowerCase().includes('translate') ? 'translation services are available for this content' : 'there are several important points to consider'}.`,
 
-      const aiMessage: ChatMessage = {
-        id: `msg-${Date.now()}-ai`,
-        content: responses[Math.floor(Math.random() * responses.length)],
-        role: 'assistant',
-        timestamp: new Date(),
-        documentContext: documentName
-      }
+          `Here's what I found in the document: ${documentContent ? documentContent.substring(0, 100) + '...' : 'The content contains relevant information that addresses your question.'} Would you like me to elaborate on any specific section?`,
 
-      setMessages(prev => [...prev, aiMessage])
-      setIsTyping(false)
-      onNewMessage?.(aiMessage)
-    }, 1000 + Math.random() * 2000)
+          `Great question! ${inputText.toLowerCase().includes('how') ? 'Let me walk you through the process step by step' : inputText.toLowerCase().includes('what') ? 'Here are the key points you should know' : 'I can help you with that'}. ${documentName ? `In "${documentName}", ` : ''}this relates to the core concepts we're discussing.`,
+
+          `I understand you're asking about "${inputText}". ${documentContent ? 'From the document content, ' : ''}I can provide insights on this topic. Would you like me to focus on any particular aspect?`,
+        ]
+
+        const aiMessage: ChatMessage = {
+          id: `msg-${Date.now()}-ai`,
+          content: responses[Math.floor(Math.random() * responses.length)],
+          role: 'assistant',
+          timestamp: new Date(),
+          documentContext: documentName,
+        }
+
+        setMessages(prev => [...prev, aiMessage])
+        setIsTyping(false)
+        onNewMessage?.(aiMessage)
+      },
+      1000 + Math.random() * 2000
+    )
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -106,12 +109,12 @@ export function ChatInterface({
   }
 
   const suggestedQuestions = [
-    "Can you summarize this document?",
-    "What are the key points?",
-    "Translate this to Vietnamese",
-    "Explain the main concepts",
-    "Find important dates and numbers",
-    "What questions can I ask about this?"
+    'Can you summarize this document?',
+    'What are the key points?',
+    'Translate this to Vietnamese',
+    'Explain the main concepts',
+    'Find important dates and numbers',
+    'What questions can I ask about this?',
   ]
 
   return (
@@ -133,7 +136,7 @@ export function ChatInterface({
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((message) => (
+        {messages.map(message => (
           <div
             key={message.id}
             className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
@@ -146,9 +149,11 @@ export function ChatInterface({
               }`}
             >
               <div className="text-sm">{message.content}</div>
-              <div className={`text-xs mt-1 ${
-                message.role === 'user' ? 'text-white/70' : 'text-muted'
-              }`}>
+              <div
+                className={`text-xs mt-1 ${
+                  message.role === 'user' ? 'text-white/70' : 'text-muted'
+                }`}
+              >
                 {formatTime(message.timestamp)}
               </div>
             </div>
@@ -161,8 +166,14 @@ export function ChatInterface({
               <div className="flex items-center space-x-1">
                 <div className="flex space-x-1">
                   <div className="w-2 h-2 bg-muted rounded-full animate-bounce" />
-                  <div className="w-2 h-2 bg-muted rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
-                  <div className="w-2 h-2 bg-muted rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+                  <div
+                    className="w-2 h-2 bg-muted rounded-full animate-bounce"
+                    style={{ animationDelay: '0.1s' }}
+                  />
+                  <div
+                    className="w-2 h-2 bg-muted rounded-full animate-bounce"
+                    style={{ animationDelay: '0.2s' }}
+                  />
                 </div>
                 <span className="text-xs text-muted ml-2">AI is typing...</span>
               </div>
@@ -199,13 +210,13 @@ export function ChatInterface({
           <Input
             ref={inputRef}
             value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
+            onChange={e => setInputText(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Ask me anything about your document..."
             disabled={isTyping}
             className="flex-1"
           />
-          <Button 
+          <Button
             onClick={handleSendMessage}
             disabled={!inputText.trim() || isTyping}
           >

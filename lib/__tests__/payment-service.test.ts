@@ -24,18 +24,18 @@ jest.mock('@/lib/stripe', () => ({
   SUBSCRIPTION_PLANS: {
     standard: { priceId: 'price_standard_stripe' },
     premium: { priceId: 'price_premium_stripe' },
-    enterprise: { priceId: 'price_enterprise_stripe' }
-  }
+    enterprise: { priceId: 'price_enterprise_stripe' },
+  },
 }))
 
 jest.mock('../payments/vnpay', () => ({
   VNPAY_SUBSCRIPTION_PLANS: {},
-  formatVND: (amount: number) => `${amount.toLocaleString('vi-VN')} ₫`
+  formatVND: (amount: number) => `${amount.toLocaleString('vi-VN')} ₫`,
 }))
 
 jest.mock('../payments/momo', () => ({
   MOMO_SUBSCRIPTION_PLANS: {},
-  formatVND: (amount: number) => `${amount.toLocaleString('vi-VN')} ₫`
+  formatVND: (amount: number) => `${amount.toLocaleString('vi-VN')} ₫`,
 }))
 
 describe('Payment Service', () => {
@@ -48,43 +48,47 @@ describe('Payment Service', () => {
       ['free', 0, 0, 10, 0, 10000],
       ['standard', 9.99, 239000, 50, 10, 50000],
       ['premium', 29.99, 719000, 200, -1, 200000],
-      ['enterprise', 99.99, 2399000, 1000, -1, 1000000]
-    ])('Plan: %s', (planKey, priceUSD, priceVND, translations, documents, characters) => {
-      const plan = UNIFIED_SUBSCRIPTION_PLANS[planKey as UnifiedSubscriptionPlan]
+      ['enterprise', 99.99, 2399000, 1000, -1, 1000000],
+    ])(
+      'Plan: %s',
+      (planKey, priceUSD, priceVND, translations, documents, characters) => {
+        const plan =
+          UNIFIED_SUBSCRIPTION_PLANS[planKey as UnifiedSubscriptionPlan]
 
-      it(`should have correct pricing for ${planKey}`, () => {
-        expect(plan.priceUSD).toBe(priceUSD)
-        expect(plan.priceVND).toBe(priceVND)
-      })
+        it(`should have correct pricing for ${planKey}`, () => {
+          expect(plan.priceUSD).toBe(priceUSD)
+          expect(plan.priceVND).toBe(priceVND)
+        })
 
-      it(`should have correct limits for ${planKey}`, () => {
-        expect(plan.limits.translations).toBe(translations)
-        expect(plan.limits.documents).toBe(documents)
-        expect(plan.limits.characters).toBe(characters)
-      })
+        it(`should have correct limits for ${planKey}`, () => {
+          expect(plan.limits.translations).toBe(translations)
+          expect(plan.limits.documents).toBe(documents)
+          expect(plan.limits.characters).toBe(characters)
+        })
 
-      it(`should have bilingual names for ${planKey}`, () => {
-        expect(plan.name).toBeDefined()
-        expect(plan.nameVi).toBeDefined()
-        expect(typeof plan.name).toBe('string')
-        expect(typeof plan.nameVi).toBe('string')
-      })
+        it(`should have bilingual names for ${planKey}`, () => {
+          expect(plan.name).toBeDefined()
+          expect(plan.nameVi).toBeDefined()
+          expect(typeof plan.name).toBe('string')
+          expect(typeof plan.nameVi).toBe('string')
+        })
 
-      it(`should have bilingual features for ${planKey}`, () => {
-        expect(Array.isArray(plan.features)).toBe(true)
-        expect(Array.isArray(plan.featuresVi)).toBe(true)
-        expect(plan.features.length).toBeGreaterThan(0)
-        expect(plan.featuresVi.length).toBe(plan.features.length)
-      })
+        it(`should have bilingual features for ${planKey}`, () => {
+          expect(Array.isArray(plan.features)).toBe(true)
+          expect(Array.isArray(plan.featuresVi)).toBe(true)
+          expect(plan.features.length).toBeGreaterThan(0)
+          expect(plan.featuresVi.length).toBe(plan.features.length)
+        })
 
-      it(`should have monthly period for ${planKey}`, () => {
-        expect(plan.period).toBe('monthly')
-      })
-    })
+        it(`should have monthly period for ${planKey}`, () => {
+          expect(plan.period).toBe('monthly')
+        })
+      }
+    )
 
     it('should have payment gateway IDs for paid plans', () => {
       const paidPlans = ['standard', 'premium', 'enterprise'] as const
-      
+
       paidPlans.forEach(planKey => {
         const plan = UNIFIED_SUBSCRIPTION_PLANS[planKey] as any
         expect(plan.stripeId).toBeDefined()
@@ -109,7 +113,7 @@ describe('Payment Service', () => {
       [2399000, 'VND', '2.399.000 ₫'],
       [9.99, 'USD', '$9.99'],
       [29.99, 'USD', '$29.99'],
-      [99.99, 'USD', '$99.99']
+      [99.99, 'USD', '$99.99'],
     ])('Amount: %s %s', (amount, currency, expected) => {
       it(`should format ${amount} ${currency} as ${expected}`, () => {
         const result = formatPrice(amount, currency as Currency)
@@ -140,10 +144,13 @@ describe('Payment Service', () => {
       ['vnpay', 'vi', 'Thẻ nội địa / Internet Banking'],
       ['vnpay', 'en', 'Domestic Cards / Internet Banking'],
       ['momo', 'vi', 'Ví MoMo'],
-      ['momo', 'en', 'MoMo Wallet']
+      ['momo', 'en', 'MoMo Wallet'],
     ])('Method: %s, Language: %s', (method, language, expected) => {
       it(`should return "${expected}" for ${method} in ${language}`, () => {
-        const result = getPaymentMethodName(method as PaymentMethod, language as 'vi' | 'en')
+        const result = getPaymentMethodName(
+          method as PaymentMethod,
+          language as 'vi' | 'en'
+        )
         expect(result).toBe(expected)
       })
     })
@@ -186,7 +193,7 @@ describe('Payment Service', () => {
     describe.each([
       ['stripe', 'CreditCard'],
       ['vnpay', 'Building2'],
-      ['momo', 'Wallet']
+      ['momo', 'Wallet'],
     ])('Method: %s', (method, expectedIcon) => {
       it(`should return ${expectedIcon} icon for ${method}`, () => {
         const result = getPaymentMethodIconType(method as PaymentMethod)
@@ -214,10 +221,13 @@ describe('Payment Service', () => {
       ['premium', 'momo', 'momo_premium'],
       ['enterprise', 'stripe', 'price_enterprise_stripe'],
       ['enterprise', 'vnpay', 'vnpay_enterprise'],
-      ['enterprise', 'momo', 'momo_enterprise']
+      ['enterprise', 'momo', 'momo_enterprise'],
     ])('Plan: %s, Method: %s', (planKey, method, expectedId) => {
       it(`should return ${expectedId} for ${planKey} + ${method}`, () => {
-        const result = getPlanId(planKey as UnifiedSubscriptionPlan, method as PaymentMethod)
+        const result = getPlanId(
+          planKey as UnifiedSubscriptionPlan,
+          method as PaymentMethod
+        )
         expect(result).toBe(expectedId)
       })
     })
@@ -254,23 +264,35 @@ describe('Payment Service', () => {
       ['free', false, false, false],
       ['standard', true, true, true],
       ['premium', true, true, true],
-      ['enterprise', true, true, true]
-    ])('Plan: %s', (planKey, stripeSupported, vnpaySupported, momoSupported) => {
-      it(`should correctly identify Stripe support for ${planKey}`, () => {
-        const result = isPaymentMethodSupported(planKey as UnifiedSubscriptionPlan, 'stripe')
-        expect(result).toBe(stripeSupported)
-      })
+      ['enterprise', true, true, true],
+    ])(
+      'Plan: %s',
+      (planKey, stripeSupported, vnpaySupported, momoSupported) => {
+        it(`should correctly identify Stripe support for ${planKey}`, () => {
+          const result = isPaymentMethodSupported(
+            planKey as UnifiedSubscriptionPlan,
+            'stripe'
+          )
+          expect(result).toBe(stripeSupported)
+        })
 
-      it(`should correctly identify VNPay support for ${planKey}`, () => {
-        const result = isPaymentMethodSupported(planKey as UnifiedSubscriptionPlan, 'vnpay')
-        expect(result).toBe(vnpaySupported)
-      })
+        it(`should correctly identify VNPay support for ${planKey}`, () => {
+          const result = isPaymentMethodSupported(
+            planKey as UnifiedSubscriptionPlan,
+            'vnpay'
+          )
+          expect(result).toBe(vnpaySupported)
+        })
 
-      it(`should correctly identify MoMo support for ${planKey}`, () => {
-        const result = isPaymentMethodSupported(planKey as UnifiedSubscriptionPlan, 'momo')
-        expect(result).toBe(momoSupported)
-      })
-    })
+        it(`should correctly identify MoMo support for ${planKey}`, () => {
+          const result = isPaymentMethodSupported(
+            planKey as UnifiedSubscriptionPlan,
+            'momo'
+          )
+          expect(result).toBe(momoSupported)
+        })
+      }
+    )
 
     it('should handle edge cases gracefully', () => {
       expect(isPaymentMethodSupported('free', 'stripe')).toBe(false)
@@ -288,15 +310,19 @@ describe('Payment Service', () => {
     describe.each([
       ['standard', ['vnpay', 'momo', 'stripe']],
       ['premium', ['vnpay', 'momo', 'stripe']],
-      ['enterprise', ['vnpay', 'momo', 'stripe']]
+      ['enterprise', ['vnpay', 'momo', 'stripe']],
     ])('Plan: %s', (planKey, expectedMethods) => {
       it(`should return all payment methods for ${planKey}`, () => {
-        const methods = getSupportedPaymentMethods(planKey as UnifiedSubscriptionPlan)
+        const methods = getSupportedPaymentMethods(
+          planKey as UnifiedSubscriptionPlan
+        )
         expect(methods).toEqual(expectedMethods)
       })
 
       it(`should prioritize Vietnamese methods for ${planKey}`, () => {
-        const methods = getSupportedPaymentMethods(planKey as UnifiedSubscriptionPlan)
+        const methods = getSupportedPaymentMethods(
+          planKey as UnifiedSubscriptionPlan
+        )
         expect(methods[0]).toBe('vnpay')
         expect(methods[1]).toBe('momo')
       })
@@ -317,13 +343,18 @@ describe('Payment Service', () => {
     })
 
     it('should handle invalid payment methods gracefully', () => {
-      const result = isPaymentMethodSupported('standard', 'invalid' as PaymentMethod)
+      const result = isPaymentMethodSupported(
+        'standard',
+        'invalid' as PaymentMethod
+      )
       expect(result).toBe(false)
     })
 
     it('should handle undefined values gracefully', () => {
       expect(() => formatPrice(0, undefined as any)).not.toThrow()
-      expect(() => getPaymentMethodName('stripe', undefined as any)).not.toThrow()
+      expect(() =>
+        getPaymentMethodName('stripe', undefined as any)
+      ).not.toThrow()
     })
 
     it('should handle negative amounts in price formatting', () => {
@@ -347,7 +378,12 @@ describe('Payment Service', () => {
     it('should have correct TypeScript types', () => {
       const methods: PaymentMethod[] = ['stripe', 'vnpay', 'momo']
       const currencies: Currency[] = ['USD', 'VND']
-      const plans: UnifiedSubscriptionPlan[] = ['free', 'standard', 'premium', 'enterprise']
+      const plans: UnifiedSubscriptionPlan[] = [
+        'free',
+        'standard',
+        'premium',
+        'enterprise',
+      ]
 
       // Type checks - these should compile without errors
       expect(methods.length).toBe(3)
@@ -359,7 +395,7 @@ describe('Payment Service', () => {
       // Attempt to modify the plans object should not affect original
       const originalStandard = UNIFIED_SUBSCRIPTION_PLANS.standard
       const copyStandard = { ...originalStandard }
-      
+
       expect(originalStandard).toEqual(copyStandard)
     })
 
@@ -391,7 +427,7 @@ describe('Payment Service', () => {
     it('should have logical pricing progression', () => {
       const plans = Object.values(UNIFIED_SUBSCRIPTION_PLANS)
       const prices = plans.map(plan => plan.priceUSD).sort((a, b) => a - b)
-      
+
       // Prices should be in ascending order: free < standard < premium < enterprise
       expect(prices).toEqual([0, 9.99, 29.99, 99.99])
     })
@@ -414,8 +450,10 @@ describe('Payment Service', () => {
     })
 
     it('should have reasonable USD to VND exchange rates', () => {
-      const plans = Object.values(UNIFIED_SUBSCRIPTION_PLANS).filter(plan => plan.priceUSD > 0)
-      
+      const plans = Object.values(UNIFIED_SUBSCRIPTION_PLANS).filter(
+        plan => plan.priceUSD > 0
+      )
+
       plans.forEach(plan => {
         const exchangeRate = plan.priceVND / plan.priceUSD
         // Exchange rate should be reasonable (around 23,000-25,000 VND per USD)
@@ -426,7 +464,7 @@ describe('Payment Service', () => {
 
     it('should provide value progression in features', () => {
       const plans = ['free', 'standard', 'premium', 'enterprise'] as const
-      
+
       plans.forEach(planKey => {
         const plan = UNIFIED_SUBSCRIPTION_PLANS[planKey]
         expect(plan.features.length).toBeGreaterThan(0)
@@ -434,8 +472,11 @@ describe('Payment Service', () => {
       })
 
       // Higher tier plans should have more features
-      expect(UNIFIED_SUBSCRIPTION_PLANS.enterprise.features.length)
-        .toBeGreaterThanOrEqual(UNIFIED_SUBSCRIPTION_PLANS.premium.features.length)
+      expect(
+        UNIFIED_SUBSCRIPTION_PLANS.enterprise.features.length
+      ).toBeGreaterThanOrEqual(
+        UNIFIED_SUBSCRIPTION_PLANS.premium.features.length
+      )
     })
   })
 })

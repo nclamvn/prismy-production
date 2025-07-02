@@ -9,7 +9,12 @@ import { errorTracker } from './mock-sentry'
 
 export type AlertSeverity = 'low' | 'medium' | 'high' | 'critical'
 export type AlertChannel = 'slack' | 'email' | 'sms' | 'webhook' | 'pagerduty'
-export type AlertCategory = 'error' | 'performance' | 'security' | 'business' | 'infrastructure'
+export type AlertCategory =
+  | 'error'
+  | 'performance'
+  | 'security'
+  | 'business'
+  | 'infrastructure'
 
 export interface Alert {
   id: string
@@ -83,8 +88,8 @@ class AlertManager {
         cooldown: 300, // 5 minutes
         escalation: {
           levels: [['slack'], ['email'], ['pagerduty']],
-          intervals: [300, 600, 1200] // 5min, 10min, 20min
-        }
+          intervals: [300, 600, 1200], // 5min, 10min, 20min
+        },
       },
       {
         id: 'critical-error',
@@ -97,8 +102,8 @@ class AlertManager {
         cooldown: 0, // No cooldown for critical errors
         escalation: {
           levels: [['slack', 'email'], ['pagerduty']],
-          intervals: [60, 300] // 1min, 5min
-        }
+          intervals: [60, 300], // 1min, 5min
+        },
       },
       {
         id: 'slow-response-time',
@@ -121,8 +126,8 @@ class AlertManager {
         cooldown: 300,
         escalation: {
           levels: [['slack'], ['email']],
-          intervals: [300, 900] // 5min, 15min
-        }
+          intervals: [300, 900], // 5min, 15min
+        },
       },
       {
         id: 'security-breach',
@@ -135,8 +140,8 @@ class AlertManager {
         cooldown: 0,
         escalation: {
           levels: [['slack', 'email', 'pagerduty']],
-          intervals: [0] // Immediate
-        }
+          intervals: [0], // Immediate
+        },
       },
       {
         id: 'high-memory-usage',
@@ -147,7 +152,7 @@ class AlertManager {
         channels: ['slack'],
         enabled: true,
         cooldown: 900, // 15 minutes
-      }
+      },
     ]
 
     defaultRules.forEach(rule => {
@@ -163,18 +168,20 @@ class AlertManager {
           webhookUrl: process.env.SLACK_WEBHOOK_URL,
           channel: process.env.SLACK_ALERT_CHANNEL || '#alerts',
           username: 'Prismy Alerts',
-          iconEmoji: ':warning:'
+          iconEmoji: ':warning:',
         },
-        enabled: !!process.env.SLACK_WEBHOOK_URL
+        enabled: !!process.env.SLACK_WEBHOOK_URL,
       },
       {
         type: 'email' as AlertChannel,
         config: {
           to: process.env.ALERT_EMAIL_TO?.split(',') || [],
           from: process.env.ALERT_EMAIL_FROM || 'alerts@prismy.ai',
-          subject: 'Prismy Alert'
+          subject: 'Prismy Alert',
         },
-        enabled: !!(process.env.ALERT_EMAIL_TO && process.env.ALERT_EMAIL_API_KEY)
+        enabled: !!(
+          process.env.ALERT_EMAIL_TO && process.env.ALERT_EMAIL_API_KEY
+        ),
       },
       {
         type: 'webhook' as AlertChannel,
@@ -183,19 +190,21 @@ class AlertManager {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': process.env.ALERT_WEBHOOK_TOKEN ? `Bearer ${process.env.ALERT_WEBHOOK_TOKEN}` : undefined
-          }
+            Authorization: process.env.ALERT_WEBHOOK_TOKEN
+              ? `Bearer ${process.env.ALERT_WEBHOOK_TOKEN}`
+              : undefined,
+          },
         },
-        enabled: !!process.env.ALERT_WEBHOOK_URL
+        enabled: !!process.env.ALERT_WEBHOOK_URL,
       },
       {
         type: 'pagerduty' as AlertChannel,
         config: {
           routingKey: process.env.PAGERDUTY_ROUTING_KEY,
-          apiUrl: 'https://events.pagerduty.com/v2/enqueue'
+          apiUrl: 'https://events.pagerduty.com/v2/enqueue',
         },
-        enabled: !!process.env.PAGERDUTY_ROUTING_KEY
-      }
+        enabled: !!process.env.PAGERDUTY_ROUTING_KEY,
+      },
     ]
 
     channels.forEach(channel => {
@@ -222,7 +231,7 @@ class AlertManager {
       timestamp,
       resolved: false,
       metadata,
-      escalationLevel: 0
+      escalationLevel: 0,
     }
 
     // Check for suppression
@@ -245,7 +254,7 @@ class AlertManager {
     if (ruleId) {
       const rule = this.alertRules.get(ruleId)
       if (rule && rule.cooldown > 0) {
-        this.cooldowns.set(ruleId, Date.now() + (rule.cooldown * 1000))
+        this.cooldowns.set(ruleId, Date.now() + rule.cooldown * 1000)
       }
     }
 
@@ -262,19 +271,22 @@ class AlertManager {
       tags: {
         alertId,
         severity,
-        category
+        category,
       },
       extra: {
         alert,
-        metadata
-      }
+        metadata,
+      },
     })
 
     logger.info('Alert created', { alertId, title, severity, category })
     return alertId
   }
 
-  public async resolveAlert(alertId: string, resolvedBy?: string): Promise<boolean> {
+  public async resolveAlert(
+    alertId: string,
+    resolvedBy?: string
+  ): Promise<boolean> {
     const alert = this.alerts.get(alertId)
     if (!alert || alert.resolved) {
       return false
@@ -301,7 +313,10 @@ class AlertManager {
     for (const [ruleId, rule] of this.alertRules) {
       if (!rule.enabled) continue
 
-      if (rule.category === alert.category && rule.severity === alert.severity) {
+      if (
+        rule.category === alert.category &&
+        rule.severity === alert.severity
+      ) {
         return ruleId
       }
     }
@@ -325,14 +340,17 @@ class AlertManager {
     const rule = ruleId ? this.alertRules.get(ruleId) : null
     const channels = rule?.channels || ['slack']
 
-    const sendPromises = channels.map(channelType => 
+    const sendPromises = channels.map(channelType =>
       this.sendToChannel(channelType, alert)
     )
 
     await Promise.allSettled(sendPromises)
   }
 
-  private async sendToChannel(channelType: AlertChannel, alert: Alert): Promise<void> {
+  private async sendToChannel(
+    channelType: AlertChannel,
+    alert: Alert
+  ): Promise<void> {
     const channel = this.channels.get(channelType)
     if (!channel || !channel.enabled) {
       return
@@ -356,10 +374,10 @@ class AlertManager {
           logger.warn('Unknown alert channel type', { channelType })
       }
     } catch (error) {
-      logger.error('Failed to send alert to channel', { 
-        error, 
-        channelType, 
-        alertId: alert.id 
+      logger.error('Failed to send alert to channel', {
+        error,
+        channelType,
+        alertId: alert.id,
       })
     }
   }
@@ -375,44 +393,46 @@ class AlertManager {
       icon_emoji: config.iconEmoji,
       channel: config.channel,
       text: `${emoji} ${alert.title}`,
-      attachments: [{
-        color,
-        fields: [
-          {
-            title: 'Severity',
-            value: alert.severity.toUpperCase(),
-            short: true
-          },
-          {
-            title: 'Category',
-            value: alert.category,
-            short: true
-          },
-          {
-            title: 'Time',
-            value: new Date(alert.timestamp).toLocaleString(),
-            short: true
-          },
-          {
-            title: 'Alert ID',
-            value: alert.id,
-            short: true
-          },
-          {
-            title: 'Message',
-            value: alert.message,
-            short: false
-          }
-        ],
-        footer: 'Prismy Alert System',
-        ts: Math.floor(new Date(alert.timestamp).getTime() / 1000)
-      }]
+      attachments: [
+        {
+          color,
+          fields: [
+            {
+              title: 'Severity',
+              value: alert.severity.toUpperCase(),
+              short: true,
+            },
+            {
+              title: 'Category',
+              value: alert.category,
+              short: true,
+            },
+            {
+              title: 'Time',
+              value: new Date(alert.timestamp).toLocaleString(),
+              short: true,
+            },
+            {
+              title: 'Alert ID',
+              value: alert.id,
+              short: true,
+            },
+            {
+              title: 'Message',
+              value: alert.message,
+              short: false,
+            },
+          ],
+          footer: 'Prismy Alert System',
+          ts: Math.floor(new Date(alert.timestamp).getTime() / 1000),
+        },
+      ],
     }
 
     await fetch(config.webhookUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     })
   }
 
@@ -428,13 +448,13 @@ class AlertManager {
     const payload = {
       type: 'alert',
       alert,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     }
 
     await fetch(config.url, {
       method: config.method || 'POST',
       headers: config.headers,
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     })
   }
 
@@ -455,19 +475,22 @@ class AlertManager {
         custom_details: {
           message: alert.message,
           metadata: alert.metadata,
-          timestamp: alert.timestamp
-        }
-      }
+          timestamp: alert.timestamp,
+        },
+      },
     }
 
     await fetch(config.apiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     })
   }
 
-  private async sendResolutionNotification(alert: Alert, resolvedBy?: string): Promise<void> {
+  private async sendResolutionNotification(
+    alert: Alert,
+    resolvedBy?: string
+  ): Promise<void> {
     const slackChannel = this.channels.get('slack')
     if (!slackChannel || !slackChannel.enabled) return
 
@@ -476,39 +499,41 @@ class AlertManager {
       icon_emoji: ':white_check_mark:',
       channel: slackChannel.config.channel,
       text: `✅ Alert Resolved: ${alert.title}`,
-      attachments: [{
-        color: 'good',
-        fields: [
-          {
-            title: 'Alert ID',
-            value: alert.id,
-            short: true
-          },
-          {
-            title: 'Resolved By',
-            value: resolvedBy || 'System',
-            short: true
-          },
-          {
-            title: 'Resolution Time',
-            value: new Date().toLocaleString(),
-            short: true
-          },
-          {
-            title: 'Duration',
-            value: this.calculateDuration(alert.timestamp),
-            short: true
-          }
-        ],
-        footer: 'Prismy Alert System'
-      }]
+      attachments: [
+        {
+          color: 'good',
+          fields: [
+            {
+              title: 'Alert ID',
+              value: alert.id,
+              short: true,
+            },
+            {
+              title: 'Resolved By',
+              value: resolvedBy || 'System',
+              short: true,
+            },
+            {
+              title: 'Resolution Time',
+              value: new Date().toLocaleString(),
+              short: true,
+            },
+            {
+              title: 'Duration',
+              value: this.calculateDuration(alert.timestamp),
+              short: true,
+            },
+          ],
+          footer: 'Prismy Alert System',
+        },
+      ],
     }
 
     try {
       await fetch(slackChannel.config.webhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       })
     } catch (error) {
       logger.error('Failed to send resolution notification', { error })
@@ -527,9 +552,9 @@ class AlertManager {
 
       alert.escalationLevel = level
       const channels = rule.escalation!.levels[level]
-      
+
       // Send escalated alert
-      const sendPromises = channels.map(channelType => 
+      const sendPromises = channels.map(channelType =>
         this.sendEscalatedAlert(alert, channelType, level)
       )
 
@@ -545,16 +570,23 @@ class AlertManager {
 
     // Start escalation
     if (rule.escalation.intervals[0] > 0) {
-      const timer = setTimeout(() => escalateAlert(0), rule.escalation.intervals[0] * 1000)
+      const timer = setTimeout(
+        () => escalateAlert(0),
+        rule.escalation.intervals[0] * 1000
+      )
       this.escalationTimers.set(alertId, timer)
     }
   }
 
-  private async sendEscalatedAlert(alert: Alert, channelType: AlertChannel, level: number): Promise<void> {
+  private async sendEscalatedAlert(
+    alert: Alert,
+    channelType: AlertChannel,
+    level: number
+  ): Promise<void> {
     const escalatedAlert = {
       ...alert,
       title: `🚨 ESCALATED (Level ${level + 1}): ${alert.title}`,
-      message: `This alert has been escalated to level ${level + 1}.\n\n${alert.message}`
+      message: `This alert has been escalated to level ${level + 1}.\n\n${alert.message}`,
     }
 
     await this.sendToChannel(channelType, escalatedAlert)
@@ -562,21 +594,31 @@ class AlertManager {
 
   private getSeverityColor(severity: AlertSeverity): string {
     switch (severity) {
-      case 'low': return '#36a64f'
-      case 'medium': return '#ffcc00'
-      case 'high': return '#ff6600'
-      case 'critical': return '#ff0000'
-      default: return '#808080'
+      case 'low':
+        return '#36a64f'
+      case 'medium':
+        return '#ffcc00'
+      case 'high':
+        return '#ff6600'
+      case 'critical':
+        return '#ff0000'
+      default:
+        return '#808080'
     }
   }
 
   private getSeverityEmoji(severity: AlertSeverity): string {
     switch (severity) {
-      case 'low': return '🟢'
-      case 'medium': return '🟡'
-      case 'high': return '🟠'
-      case 'critical': return '🔴'
-      default: return '⚪'
+      case 'low':
+        return '🟢'
+      case 'medium':
+        return '🟡'
+      case 'high':
+        return '🟠'
+      case 'critical':
+        return '🔴'
+      default:
+        return '⚪'
     }
   }
 
@@ -632,7 +674,10 @@ class AlertManager {
   }
 
   // Convenience methods for specific alert types
-  public async createErrorAlert(error: Error, context?: Record<string, any>): Promise<string> {
+  public async createErrorAlert(
+    error: Error,
+    context?: Record<string, any>
+  ): Promise<string> {
     return this.createAlert(
       `Application Error: ${error.name}`,
       error.message,
@@ -642,7 +687,11 @@ class AlertManager {
     )
   }
 
-  public async createPerformanceAlert(metric: string, value: number, threshold: number): Promise<string> {
+  public async createPerformanceAlert(
+    metric: string,
+    value: number,
+    threshold: number
+  ): Promise<string> {
     return this.createAlert(
       `Performance Issue: ${metric}`,
       `${metric} is ${value}, exceeding threshold of ${threshold}`,
@@ -652,7 +701,10 @@ class AlertManager {
     )
   }
 
-  public async createSecurityAlert(incident: string, details: Record<string, any>): Promise<string> {
+  public async createSecurityAlert(
+    incident: string,
+    details: Record<string, any>
+  ): Promise<string> {
     return this.createAlert(
       `Security Incident: ${incident}`,
       `Security incident detected: ${incident}`,

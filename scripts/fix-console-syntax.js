@@ -8,7 +8,7 @@ const filesToFix = [
   'lib/supabase.ts',
   'app/api/documents/analyze/route.ts',
   'app/api/documents/chat/route.ts',
-  'app/api/documents/process-chunked/route.ts'
+  'app/api/documents/process-chunked/route.ts',
 ]
 
 const patterns = [
@@ -19,13 +19,13 @@ const patterns = [
       // Check if the previous line contains an incomplete console.log
       const lines = fullText.split('\n')
       const currentLine = lines[lineIndex]
-      
+
       // If this looks like an orphaned string with closing paren, remove it
       if (currentLine.trim().match(/^['"`][^'"`]*['"`]\s*\)\s*$/)) {
         return ''
       }
       return match
-    }
+    },
   },
   // Pattern for incomplete object properties after console.log
   {
@@ -33,44 +33,41 @@ const patterns = [
     fix: (match, fullText, lineIndex) => {
       const lines = fullText.split('\n')
       const currentLine = lines[lineIndex]
-      
+
       // Check if this is a dangling property from a removed console.log
       if (currentLine.trim().startsWith(',') && currentLine.includes(':')) {
         return ''
       }
       return match
-    }
-  }
+    },
+  },
 ]
 
 function fixFile(filePath) {
   const fullPath = path.join(process.cwd(), filePath)
-  
+
   if (!fs.existsSync(fullPath)) {
     console.log(`❌ File not found: ${filePath}`)
     return false
   }
-  
+
   let content = fs.readFileSync(fullPath, 'utf8')
   const originalContent = content
-  let fixes = 0
-  
+  const fixes = 0
+
   // Manual fixes for specific patterns
-  
+
   // Fix useSmartNavigation.ts
   if (filePath.includes('useSmartNavigation.ts')) {
     content = content.replace(
       /\s*'🌐 SmartNavigation: Window location available, current:',\s*window\.location\.href\s*\)/g,
       ''
     )
-    
+
     // Check for other broken patterns
-    content = content.replace(
-      /^\s*['"`][^'"`]*['"`]\s*\)\s*$/gm,
-      ''
-    )
+    content = content.replace(/^\s*['"`][^'"`]*['"`]\s*\)\s*$/gm, '')
   }
-  
+
   // Fix supabase.ts
   if (filePath.includes('supabase.ts')) {
     content = content.replace(
@@ -78,7 +75,7 @@ function fixFile(filePath) {
       ''
     )
   }
-  
+
   // Fix analyze/route.ts
   if (filePath.includes('analyze/route.ts')) {
     content = content.replace(
@@ -86,15 +83,15 @@ function fixFile(filePath) {
       ''
     )
   }
-  
-  // Fix chat/route.ts  
+
+  // Fix chat/route.ts
   if (filePath.includes('chat/route.ts')) {
     content = content.replace(
       /,\s*questionType,\s*responseLength: response\.length,\s*confidence,\s*sourcesFound: sources\.length,\s*suggestionsProvided: suggestions\.length,/g,
       ''
     )
   }
-  
+
   // Fix process-chunked/route.ts
   if (filePath.includes('process-chunked/route.ts')) {
     content = content.replace(
@@ -102,13 +99,13 @@ function fixFile(filePath) {
       ''
     )
   }
-  
+
   // General cleanup of orphaned lines
   content = content.replace(/^\s*,\s*[a-zA-Z_$][a-zA-Z0-9_$]*:.*$/gm, '')
   content = content.replace(/^\s*\}\)\s*$/gm, '')
   content = content.replace(/^\s*\)\s*$/gm, '')
   content = content.replace(/^\s*['"`][^'"`]*['"`]\s*$/gm, '')
-  
+
   if (content !== originalContent) {
     fs.writeFileSync(fullPath, content)
     console.log(`✅ Fixed syntax errors in ${filePath}`)

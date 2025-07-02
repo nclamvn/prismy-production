@@ -19,8 +19,8 @@ if (!supabaseUrl || !supabaseServiceKey) {
 const supabase = createClient(supabaseUrl, supabaseServiceKey, {
   auth: {
     autoRefreshToken: false,
-    persistSession: false
-  }
+    persistSession: false,
+  },
 })
 
 async function createAdminUser(emailParam) {
@@ -28,8 +28,9 @@ async function createAdminUser(emailParam) {
 
   try {
     // Lấy tất cả auth users
-    const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers()
-    
+    const { data: authUsers, error: authError } =
+      await supabase.auth.admin.listUsers()
+
     if (authError) {
       console.error('❌ Lỗi lấy auth users:', authError.message)
       return
@@ -62,7 +63,9 @@ async function createAdminUser(emailParam) {
       return
     }
 
-    console.log(`🎯 Sẽ tạo admin cho user: ${targetUser.email} (ID: ${targetUser.id})`)
+    console.log(
+      `🎯 Sẽ tạo admin cho user: ${targetUser.email} (ID: ${targetUser.id})`
+    )
 
     // 1. Kiểm tra user đã tồn tại trong users table chưa
     const { data: existingUser, error: checkError } = await supabase
@@ -78,13 +81,13 @@ async function createAdminUser(emailParam) {
 
     if (existingUser) {
       console.log('📝 User đã tồn tại trong users table')
-      
+
       // Update role thành admin
       const { data: updatedUser, error: updateError } = await supabase
         .from('users')
-        .update({ 
+        .update({
           role: 'admin',
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq('id', targetUser.id)
         .select()
@@ -98,10 +101,9 @@ async function createAdminUser(emailParam) {
       console.log('✅ Đã update user thành admin!')
       console.log(`   Email: ${existingUser.email}`)
       console.log(`   Role: ${updatedUser.role}`)
-      
     } else {
       console.log('📝 User chưa có trong users table, sẽ tạo mới')
-      
+
       // Tạo user mới với admin role
       const { data: newUser, error: createError } = await supabase
         .from('users')
@@ -112,7 +114,7 @@ async function createAdminUser(emailParam) {
           trial_credits: 50000, // Cho admin nhiều credits
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
-          last_seen: new Date().toISOString()
+          last_seen: new Date().toISOString(),
         })
         .select()
         .single()
@@ -140,7 +142,7 @@ async function createAdminUser(emailParam) {
     } else if (profile) {
       console.log('✅ User_profiles đã tồn tại')
       console.log(`   Subscription tier: ${profile.subscription_tier}`)
-      
+
       // Đảm bảo subscription_tier là enterprise cho admin
       if (profile.subscription_tier !== 'enterprise') {
         const { error: updateProfileError } = await supabase
@@ -149,14 +151,17 @@ async function createAdminUser(emailParam) {
           .eq('user_id', targetUser.id)
 
         if (updateProfileError) {
-          console.warn('⚠️ Không thể update subscription_tier:', updateProfileError.message)
+          console.warn(
+            '⚠️ Không thể update subscription_tier:',
+            updateProfileError.message
+          )
         } else {
           console.log('✅ Đã update subscription_tier thành enterprise')
         }
       }
     } else {
       console.log('📝 Tạo user_profiles cho admin...')
-      
+
       const { error: createProfileError } = await supabase
         .from('user_profiles')
         .insert({
@@ -167,7 +172,7 @@ async function createAdminUser(emailParam) {
           usage_count: 0,
           usage_reset_date: new Date().toISOString(),
           created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
 
       if (createProfileError) {
@@ -179,7 +184,7 @@ async function createAdminUser(emailParam) {
 
     // 3. Test admin access
     console.log('\n🧪 TEST ADMIN ACCESS...')
-    
+
     const { data: testAdmin, error: testError } = await supabase
       .from('users')
       .select('id, email, role')
@@ -199,7 +204,6 @@ async function createAdminUser(emailParam) {
     console.log('   1. Đăng nhập với email:', targetUser.email)
     console.log('   2. Truy cập admin panel: /admin')
     console.log('   3. Kiểm tra admin dashboard hoạt động')
-
   } catch (error) {
     console.error('❌ Lỗi tổng quát:', error)
   }

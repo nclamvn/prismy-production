@@ -5,7 +5,10 @@
 
 import PgBoss from 'pg-boss'
 import { logger } from '@/lib/logger'
-import { RealtimeProgressManager, ProgressHelpers } from '@/lib/realtime-progress'
+import {
+  RealtimeProgressManager,
+  ProgressHelpers,
+} from '@/lib/realtime-progress'
 import { getPgBossInstance } from '@/lib/pg-boss-setup'
 
 // Job types
@@ -14,7 +17,7 @@ export enum JobType {
   TRANSLATION = 'translation',
   BATCH_TRANSLATION = 'batch-translation',
   OCR_PROCESSING = 'ocr-processing',
-  EXPORT_GENERATION = 'export-generation'
+  EXPORT_GENERATION = 'export-generation',
 }
 
 // Job priority levels
@@ -22,7 +25,7 @@ export enum JobPriority {
   LOW = 0,
   NORMAL = 5,
   HIGH = 10,
-  CRITICAL = 20
+  CRITICAL = 20,
 }
 
 // Job data interfaces
@@ -145,24 +148,27 @@ export class JobQueueManager {
       throw new Error('Job queue not initialized')
     }
 
-    const jobId = await this.boss.send(
-      JobType.DOCUMENT_PROCESSING,
-      data,
-      {
-        priority,
-        retryLimit: 3,
-        retryDelay: 60, // 1 minute
-        retryBackoff: true,
-        expireInSeconds: 3600, // 1 hour
-      }
-    )
+    const jobId = await this.boss.send(JobType.DOCUMENT_PROCESSING, data, {
+      priority,
+      retryLimit: 3,
+      retryDelay: 60, // 1 minute
+      retryBackoff: true,
+      expireInSeconds: 3600, // 1 hour
+    })
 
     // Create initial progress entry
     this.progressManager.updateProgress(
-      ProgressHelpers.createJob(data.jobId, data.userId, 'Document processing queued')
+      ProgressHelpers.createJob(
+        data.jobId,
+        data.userId,
+        'Document processing queued'
+      )
     )
 
-    logger.info('Document processing job queued', { jobId, userId: data.userId })
+    logger.info('Document processing job queued', {
+      jobId,
+      userId: data.userId,
+    })
     return jobId || data.jobId
   }
 
@@ -175,17 +181,13 @@ export class JobQueueManager {
       throw new Error('Job queue not initialized')
     }
 
-    const jobId = await this.boss.send(
-      JobType.TRANSLATION,
-      data,
-      {
-        priority,
-        retryLimit: 3,
-        retryDelay: 30,
-        retryBackoff: true,
-        expireInSeconds: 1800, // 30 minutes
-      }
-    )
+    const jobId = await this.boss.send(JobType.TRANSLATION, data, {
+      priority,
+      retryLimit: 3,
+      retryDelay: 30,
+      retryBackoff: true,
+      expireInSeconds: 1800, // 30 minutes
+    })
 
     // Create initial progress entry
     this.progressManager.updateProgress(
@@ -212,21 +214,21 @@ export class JobQueueManager {
       throw new Error('Job queue not initialized')
     }
 
-    const jobId = await this.boss.send(
-      JobType.EXPORT_GENERATION,
-      data,
-      {
-        priority,
-        retryLimit: 2,
-        retryDelay: 120, // 2 minutes
-        retryBackoff: true,
-        expireInSeconds: 1800, // 30 minutes
-      }
-    )
+    const jobId = await this.boss.send(JobType.EXPORT_GENERATION, data, {
+      priority,
+      retryLimit: 2,
+      retryDelay: 120, // 2 minutes
+      retryBackoff: true,
+      expireInSeconds: 1800, // 30 minutes
+    })
 
     // Create initial progress entry
     this.progressManager.updateProgress(
-      ProgressHelpers.createJob(data.jobId, data.userId, 'Export generation queued')
+      ProgressHelpers.createJob(
+        data.jobId,
+        data.userId,
+        'Export generation queued'
+      )
     )
 
     logger.info('Export generation job queued', { jobId, userId: data.userId })
@@ -263,7 +265,7 @@ export class JobQueueManager {
       this.boss.getQueueSize(JobType.DOCUMENT_PROCESSING),
       this.boss.getQueueSize(JobType.TRANSLATION),
       this.boss.getQueueSize(JobType.BATCH_TRANSLATION),
-      this.boss.getQueueSize(JobType.OCR_PROCESSING)
+      this.boss.getQueueSize(JobType.OCR_PROCESSING),
     ])
 
     return {
@@ -271,7 +273,7 @@ export class JobQueueManager {
       translation: stats[1],
       batchTranslation: stats[2],
       ocrProcessing: stats[3],
-      total: stats.reduce((sum, count) => sum + count, 0)
+      total: stats.reduce((sum, count) => sum + count, 0),
     }
   }
 

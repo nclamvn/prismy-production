@@ -13,30 +13,35 @@ const supabase = createServiceRoleClient()
 
 async function setupAgentDatabase() {
   console.log('🚀 Setting up Prismy Agent Database...')
-  
+
   try {
     // Read the migration SQL file
-    const migrationPath = join(process.cwd(), 'database', 'migrations', '20241225000001_create_agent_system_tables.sql')
+    const migrationPath = join(
+      process.cwd(),
+      'database',
+      'migrations',
+      '20241225000001_create_agent_system_tables.sql'
+    )
     const migrationSQL = readFileSync(migrationPath, 'utf8')
-    
+
     console.log('📝 Executing database migration...')
-    
+
     // Execute the migration
     const { error } = await supabase.rpc('exec_sql', { sql: migrationSQL })
-    
+
     if (error) {
       console.error('❌ Migration failed:', error)
       throw error
     }
-    
+
     console.log('✅ Database migration completed successfully')
-    
+
     // Verify the setup by checking if tables exist
     console.log('🔍 Verifying database setup...')
-    
+
     const tables = [
       'document_agents',
-      'agent_memory_events', 
+      'agent_memory_events',
       'agent_memory_patterns',
       'agent_task_results',
       'agent_collaborations',
@@ -46,26 +51,26 @@ async function setupAgentDatabase() {
       'agent_performance_metrics',
       'swarm_metrics',
       'agent_knowledge_base',
-      'knowledge_sharing_events'
+      'knowledge_sharing_events',
     ]
-    
+
     for (const table of tables) {
       const { data, error } = await supabase
         .from(table)
         .select('count(*)')
         .limit(1)
-      
+
       if (error) {
         console.error(`❌ Table ${table} not accessible:`, error.message)
       } else {
         console.log(`✅ Table ${table} ready`)
       }
     }
-    
+
     // Test agent creation
     console.log('🧪 Testing agent system...')
     await testAgentSystem()
-    
+
     console.log('🎉 Prismy Agent Database setup completed successfully!')
     console.log('')
     console.log('📊 Your autonomous agent system is now ready with:')
@@ -80,7 +85,6 @@ async function setupAgentDatabase() {
     console.log('   1. Configure AI providers (OpenAI, Anthropic)')
     console.log('   2. Upload documents to create autonomous agents')
     console.log('   3. Monitor agent dashboard for swarm activity')
-    
   } catch (error) {
     console.error('❌ Database setup failed:', error)
     process.exit(1)
@@ -91,7 +95,7 @@ async function testAgentSystem() {
   try {
     // Create a test user (using a fixed UUID for testing)
     const testUserId = '00000000-0000-0000-0000-000000000001'
-    
+
     // Test agent creation
     const { data: testAgent, error: agentError } = await supabase
       .from('document_agents')
@@ -106,17 +110,17 @@ async function testAgentSystem() {
         specialty: 'General document assistance',
         specialty_vi: 'Hỗ trợ tài liệu tổng quát',
         avatar: '🤖',
-        status: 'active'
+        status: 'active',
       })
       .select()
       .single()
-    
+
     if (agentError) {
       throw agentError
     }
-    
+
     console.log('✅ Test agent created successfully')
-    
+
     // Test memory event
     const { error: memoryError } = await supabase
       .from('agent_memory_events')
@@ -124,15 +128,15 @@ async function testAgentSystem() {
         agent_id: testAgent.id,
         event_type: 'test_event',
         event_data: { message: 'Database setup test' },
-        importance: 0.5
+        importance: 0.5,
       })
-    
+
     if (memoryError) {
       throw memoryError
     }
-    
+
     console.log('✅ Test memory event created successfully')
-    
+
     // Test collaboration
     const { data: testCollab, error: collabError } = await supabase
       .from('agent_collaborations')
@@ -141,24 +145,26 @@ async function testAgentSystem() {
         objective: 'Database setup test collaboration',
         participant_ids: [testAgent.id],
         status: 'completed',
-        completed_at: new Date().toISOString()
+        completed_at: new Date().toISOString(),
       })
       .select()
       .single()
-    
+
     if (collabError) {
       throw collabError
     }
-    
+
     console.log('✅ Test collaboration created successfully')
-    
+
     // Clean up test data
     await supabase.from('agent_collaborations').delete().eq('id', testCollab.id)
-    await supabase.from('agent_memory_events').delete().eq('agent_id', testAgent.id)
+    await supabase
+      .from('agent_memory_events')
+      .delete()
+      .eq('agent_id', testAgent.id)
     await supabase.from('document_agents').delete().eq('id', testAgent.id)
-    
+
     console.log('✅ Test data cleaned up')
-    
   } catch (error) {
     console.error('❌ Agent system test failed:', error)
     throw error
@@ -168,24 +174,31 @@ async function testAgentSystem() {
 // Alternative setup using direct SQL execution
 async function setupWithDirectSQL() {
   console.log('🔄 Attempting direct SQL execution...')
-  
+
   try {
-    const migrationPath = join(process.cwd(), 'database', 'migrations', '20241225000001_create_agent_system_tables.sql')
+    const migrationPath = join(
+      process.cwd(),
+      'database',
+      'migrations',
+      '20241225000001_create_agent_system_tables.sql'
+    )
     const migrationSQL = readFileSync(migrationPath, 'utf8')
-    
+
     // Split SQL into individual statements
     const statements = migrationSQL
       .split(';')
       .map(stmt => stmt.trim())
       .filter(stmt => stmt.length > 0 && !stmt.startsWith('--'))
-    
+
     console.log(`📝 Executing ${statements.length} SQL statements...`)
-    
+
     for (let i = 0; i < statements.length; i++) {
       const statement = statements[i]
       if (statement.trim()) {
         try {
-          const { error } = await supabase.rpc('exec_sql', { sql: statement + ';' })
+          const { error } = await supabase.rpc('exec_sql', {
+            sql: statement + ';',
+          })
           if (error) {
             console.warn(`⚠️  Statement ${i + 1} warning:`, error.message)
           } else {
@@ -196,9 +209,8 @@ async function setupWithDirectSQL() {
         }
       }
     }
-    
+
     console.log('✅ Direct SQL execution completed')
-    
   } catch (error) {
     console.error('❌ Direct SQL execution failed:', error)
     throw error

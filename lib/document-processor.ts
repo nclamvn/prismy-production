@@ -173,7 +173,8 @@ export class DocumentProcessor {
         // Convert each row to text
         worksheet.eachRow((row, rowNumber) => {
           const values = row.values as any[]
-          if (values && values.length > 1) { // Skip empty rows, values[0] is undefined
+          if (values && values.length > 1) {
+            // Skip empty rows, values[0] is undefined
             const cellValues = values.slice(1).map(cell => String(cell || ''))
             if (cellValues.some(cell => cell !== '')) {
               extractedText += cellValues.join(' | ') + '\n'

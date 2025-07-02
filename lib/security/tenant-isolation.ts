@@ -42,7 +42,8 @@ export class TenantIsolationManager {
       // Get user profile with organization info
       const { data: profile, error } = await supabase
         .from('user_profiles')
-        .select(`
+        .select(
+          `
           *,
           organization_members!inner(
             organization_id,
@@ -54,7 +55,8 @@ export class TenantIsolationManager {
             subscription_tier,
             security_settings
           )
-        `)
+        `
+        )
         .eq('user_id', userId)
         .single()
 
@@ -71,7 +73,7 @@ export class TenantIsolationManager {
           userId,
           role: 'owner',
           permissions: ['read', 'write', 'delete'],
-          subscriptionTier: subscription?.subscription_tier || 'free'
+          subscriptionTier: subscription?.subscription_tier || 'free',
         }
       }
 
@@ -83,9 +85,8 @@ export class TenantIsolationManager {
         organizationId: orgMember.organization_id,
         role: orgMember.role,
         permissions: orgMember.permissions || [],
-        subscriptionTier: organization.subscription_tier
+        subscriptionTier: organization.subscription_tier,
       }
-
     } catch (error) {
       logger.error('Failed to create tenant context', { error, userId })
       throw new Error('Unable to establish secure tenant context')
@@ -120,18 +121,17 @@ export class TenantIsolationManager {
           organizationId: context.organizationId,
           resourceType,
           resourceId,
-          operation
+          operation,
         })
       }
 
       return hasAccess
-
     } catch (error) {
       logger.error('Resource access validation failed', {
         error,
         context,
         resourceType,
-        resourceId
+        resourceId,
       })
       return false
     }
@@ -145,12 +145,14 @@ export class TenantIsolationManager {
       owner: ['read', 'write', 'delete', 'admin'],
       admin: ['read', 'write', 'delete', 'admin'],
       member: ['read', 'write'],
-      viewer: ['read']
+      viewer: ['read'],
     }
 
     const allowedOperations = rolePermissions[context.role] || []
-    return allowedOperations.includes(operation) || 
-           context.permissions.includes(operation)
+    return (
+      allowedOperations.includes(operation) ||
+      context.permissions.includes(operation)
+    )
   }
 
   /**
@@ -162,11 +164,11 @@ export class TenantIsolationManager {
     resourceId: string
   ): Promise<boolean> {
     const accessCheckers = {
-      'document': this.checkDocumentAccess.bind(this),
-      'translation': this.checkTranslationAccess.bind(this),
-      'project': this.checkProjectAccess.bind(this),
-      'usage_log': this.checkUsageLogAccess.bind(this),
-      'billing': this.checkBillingAccess.bind(this)
+      document: this.checkDocumentAccess.bind(this),
+      translation: this.checkTranslationAccess.bind(this),
+      project: this.checkProjectAccess.bind(this),
+      usage_log: this.checkUsageLogAccess.bind(this),
+      billing: this.checkBillingAccess.bind(this),
     }
 
     const checker = accessCheckers[resourceType]
@@ -199,10 +201,12 @@ export class TenantIsolationManager {
     }
 
     // Organization member
-    return document.organization_id === context.organizationId ||
-           (document.visibility === 'organization' && 
-            document.organization_id === context.organizationId) ||
-           (document.user_id === context.userId)
+    return (
+      document.organization_id === context.organizationId ||
+      (document.visibility === 'organization' &&
+        document.organization_id === context.organizationId) ||
+      document.user_id === context.userId
+    )
   }
 
   /**
@@ -250,7 +254,10 @@ export class TenantIsolationManager {
     if (project.user_id === context.userId) return true
 
     // Organization check
-    if (context.organizationId && project.organization_id === context.organizationId) {
+    if (
+      context.organizationId &&
+      project.organization_id === context.organizationId
+    ) {
       return true
     }
 
@@ -278,8 +285,11 @@ export class TenantIsolationManager {
     if (!log) return false
 
     // Only owner or admin can view usage logs
-    return log.user_id === context.userId || 
-           (context.role === 'admin' || context.role === 'owner')
+    return (
+      log.user_id === context.userId ||
+      context.role === 'admin' ||
+      context.role === 'owner'
+    )
   }
 
   /**
@@ -315,7 +325,7 @@ export class TenantIsolationManager {
   async applyDynamicRLS(context: TenantContext): Promise<void> {
     try {
       const policies = this.generateDynamicPolicies(context)
-      
+
       for (const policy of policies) {
         await this.createOrUpdatePolicy(policy)
       }
@@ -323,9 +333,8 @@ export class TenantIsolationManager {
       logger.info('Dynamic RLS policies applied', {
         userId: context.userId,
         organizationId: context.organizationId,
-        policiesCount: policies.length
+        policiesCount: policies.length,
       })
-
     } catch (error) {
       logger.error('Failed to apply dynamic RLS', { error, context })
       throw error
@@ -347,8 +356,8 @@ export class TenantIsolationManager {
         conditions: [
           `organization_id = '${context.organizationId}'`,
           `user_id = auth.uid()`,
-          `visibility IN ('public', 'organization')`
-        ]
+          `visibility IN ('public', 'organization')`,
+        ],
       })
 
       policies.push({
@@ -357,8 +366,8 @@ export class TenantIsolationManager {
         policy: `org_translation_access_${context.organizationId}`,
         conditions: [
           `user_id = auth.uid()`,
-          `organization_id = '${context.organizationId}'`
-        ]
+          `organization_id = '${context.organizationId}'`,
+        ],
       })
     }
 
@@ -368,7 +377,7 @@ export class TenantIsolationManager {
         table: 'usage_logs',
         operation: 'SELECT',
         policy: `viewer_usage_restriction_${context.userId}`,
-        conditions: [`user_id = auth.uid()`]
+        conditions: [`user_id = auth.uid()`],
       })
     }
 
@@ -380,8 +389,8 @@ export class TenantIsolationManager {
         policy: `free_tier_limit_${context.userId}`,
         conditions: [
           `user_id = auth.uid()`,
-          `(SELECT COUNT(*) FROM documents WHERE user_id = auth.uid()) < 10`
-        ]
+          `(SELECT COUNT(*) FROM documents WHERE user_id = auth.uid()) < 10`,
+        ],
       })
     }
 
@@ -401,21 +410,22 @@ export class TenantIsolationManager {
 
     try {
       await supabase.rpc('execute_sql', { sql: policySQL })
-      
+
       // Track active policies
       if (!this.activePolicies.has(policy.table)) {
         this.activePolicies.set(policy.table, [])
       }
-      
+
       const tablePolicies = this.activePolicies.get(policy.table)!
-      const existingIndex = tablePolicies.findIndex(p => p.policy === policy.policy)
-      
+      const existingIndex = tablePolicies.findIndex(
+        p => p.policy === policy.policy
+      )
+
       if (existingIndex >= 0) {
         tablePolicies[existingIndex] = policy
       } else {
         tablePolicies.push(policy)
       }
-
     } catch (error) {
       logger.error('Failed to create/update policy', { error, policy })
     }
@@ -427,8 +437,9 @@ export class TenantIsolationManager {
   async cleanupInactivePolicies(): Promise<void> {
     try {
       // Get all active policies from database
-      const { data: dbPolicies } = await supabase
-        .rpc('get_row_security_policies')
+      const { data: dbPolicies } = await supabase.rpc(
+        'get_row_security_policies'
+      )
 
       if (!dbPolicies) return
 
@@ -439,20 +450,20 @@ export class TenantIsolationManager {
 
       // Drop policies that are no longer active
       for (const dbPolicy of dbPolicies) {
-        if (!activePolicyNames.has(dbPolicy.policyname) && 
-            dbPolicy.policyname.includes('_')) {
-          
+        if (
+          !activePolicyNames.has(dbPolicy.policyname) &&
+          dbPolicy.policyname.includes('_')
+        ) {
           await supabase.rpc('execute_sql', {
-            sql: `DROP POLICY IF EXISTS "${dbPolicy.policyname}" ON ${dbPolicy.tablename}`
+            sql: `DROP POLICY IF EXISTS "${dbPolicy.policyname}" ON ${dbPolicy.tablename}`,
           })
 
-          logger.info('Dropped inactive policy', { 
+          logger.info('Dropped inactive policy', {
             policy: dbPolicy.policyname,
-            table: dbPolicy.tablename
+            table: dbPolicy.tablename,
           })
         }
       }
-
     } catch (error) {
       logger.error('Failed to cleanup inactive policies', { error })
     }
@@ -482,9 +493,8 @@ export class TenantIsolationManager {
         metadata,
         ip_address: metadata?.ipAddress,
         user_agent: metadata?.userAgent,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       })
-
     } catch (error) {
       logger.error('Failed to log security audit', { error })
     }

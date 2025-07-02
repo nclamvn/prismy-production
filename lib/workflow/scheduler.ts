@@ -46,7 +46,7 @@ export class WorkflowScheduler {
 
   async stop(): Promise<void> {
     this.isRunning = false
-    
+
     // Clear all scheduled jobs
     for (const timeout of this.scheduledJobs.values()) {
       clearTimeout(timeout)
@@ -60,10 +60,12 @@ export class WorkflowScheduler {
     try {
       const { data: schedules, error } = await supabase
         .from('workflow_schedules')
-        .select(`
+        .select(
+          `
           *,
           workflow_rules(id, name, enabled)
-        `)
+        `
+        )
         .eq('enabled', true)
 
       if (error) throw error
@@ -74,8 +76,9 @@ export class WorkflowScheduler {
         }
       }
 
-      logger.info('Loaded workflow schedules', { count: schedules?.length || 0 })
-
+      logger.info('Loaded workflow schedules', {
+        count: schedules?.length || 0,
+      })
     } catch (error) {
       logger.error('Failed to load schedules', { error })
     }
@@ -98,10 +101,12 @@ export class WorkflowScheduler {
       // Get jobs that are due to run
       const { data: dueJobs, error } = await supabase
         .from('workflow_schedules')
-        .select(`
+        .select(
+          `
           *,
           workflow_rules(id, name, enabled)
-        `)
+        `
+        )
         .eq('enabled', true)
         .lte('next_run_at', now.toISOString())
 
@@ -112,7 +117,6 @@ export class WorkflowScheduler {
           await this.executeScheduledJob(job)
         }
       }
-
     } catch (error) {
       logger.error('Failed to check scheduled jobs', { error })
     }
@@ -128,7 +132,7 @@ export class WorkflowScheduler {
         {
           scheduledJob: true,
           scheduleId: job.id,
-          executedAt: new Date().toISOString()
+          executedAt: new Date().toISOString(),
         },
         'schedule'
       )
@@ -138,18 +142,18 @@ export class WorkflowScheduler {
         .from('workflow_schedules')
         .update({
           execution_count: (job as any).execution_count + 1,
-          last_run_at: new Date().toISOString()
+          last_run_at: new Date().toISOString(),
         })
         .eq('id', job.id)
 
       // Calculate next run time
       const nextRunAt = this.calculateNextRun(job)
-      
+
       if (nextRunAt) {
         await supabase
           .from('workflow_schedules')
           .update({
-            next_run_at: nextRunAt.toISOString()
+            next_run_at: nextRunAt.toISOString(),
           })
           .eq('id', job.id)
 
@@ -167,14 +171,13 @@ export class WorkflowScheduler {
         scheduleId: job.id,
         workflowId: job.workflowId,
         executionId,
-        nextRun: nextRunAt?.toISOString()
+        nextRun: nextRunAt?.toISOString(),
       })
-
     } catch (error) {
       logger.error('Failed to execute scheduled job', {
         error,
         scheduleId: job.id,
-        workflowId: job.workflowId
+        workflowId: job.workflowId,
       })
     }
   }
@@ -207,7 +210,7 @@ export class WorkflowScheduler {
       scheduleId: job.id,
       workflowId: job.workflowId,
       nextRun: job.nextRunAt.toISOString(),
-      delay: `${Math.round(delay / 1000)}s`
+      delay: `${Math.round(delay / 1000)}s`,
     })
   }
 
@@ -235,23 +238,39 @@ export class WorkflowScheduler {
     }
   }
 
-  private calculateCronNext(cronExpression: string, timezone: string): Date | null {
+  private calculateCronNext(
+    cronExpression: string,
+    timezone: string
+  ): Date | null {
     try {
       // Simple cron parser - in production, use a proper cron library
-      const [minute, hour, dayOfMonth, month, dayOfWeek] = cronExpression.split(' ')
-      
+      const [minute, hour, dayOfMonth, month, dayOfWeek] =
+        cronExpression.split(' ')
+
       const now = new Date()
       const next = new Date(now)
 
       // Simplified cron calculation for common patterns
-      if (minute === '0' && hour === '0' && dayOfMonth === '*' && month === '*' && dayOfWeek === '*') {
+      if (
+        minute === '0' &&
+        hour === '0' &&
+        dayOfMonth === '*' &&
+        month === '*' &&
+        dayOfWeek === '*'
+      ) {
         // Daily at midnight
         next.setHours(0, 0, 0, 0)
         next.setDate(next.getDate() + 1)
         return next
       }
 
-      if (minute === '0' && hour !== '*' && dayOfMonth === '*' && month === '*' && dayOfWeek === '*') {
+      if (
+        minute === '0' &&
+        hour !== '*' &&
+        dayOfMonth === '*' &&
+        month === '*' &&
+        dayOfWeek === '*'
+      ) {
         // Hourly at specific hour
         const targetHour = parseInt(hour)
         next.setHours(targetHour, 0, 0, 0)
@@ -263,9 +282,10 @@ export class WorkflowScheduler {
 
       // For complex cron expressions, use a proper cron library
       // This is a simplified implementation
-      logger.warn('Complex cron expression not fully supported', { cronExpression })
+      logger.warn('Complex cron expression not fully supported', {
+        cronExpression,
+      })
       return null
-
     } catch (error) {
       logger.error('Failed to parse cron expression', { error, cronExpression })
       return null
@@ -286,7 +306,7 @@ export class WorkflowScheduler {
         scheduleConfig,
         nextRunAt: new Date(),
         timezone,
-        enabled: true
+        enabled: true,
       })
 
       if (!nextRunAt) {
@@ -302,7 +322,7 @@ export class WorkflowScheduler {
           next_run_at: nextRunAt.toISOString(),
           timezone,
           enabled: true,
-          execution_count: 0
+          execution_count: 0,
         })
         .select('id')
         .single()
@@ -319,18 +339,17 @@ export class WorkflowScheduler {
         scheduleConfig,
         nextRunAt,
         timezone,
-        enabled: true
+        enabled: true,
       })
 
       logger.info('Schedule created', {
         scheduleId,
         workflowId,
         scheduleType,
-        nextRun: nextRunAt.toISOString()
+        nextRun: nextRunAt.toISOString(),
       })
 
       return scheduleId
-
     } catch (error) {
       logger.error('Failed to create schedule', { error, workflowId })
       throw error
@@ -350,7 +369,7 @@ export class WorkflowScheduler {
         .from('workflow_schedules')
         .update({
           ...updates,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq('id', scheduleId)
 
@@ -377,7 +396,6 @@ export class WorkflowScheduler {
       }
 
       logger.info('Schedule updated', { scheduleId, updates })
-
     } catch (error) {
       logger.error('Failed to update schedule', { error, scheduleId })
       throw error
@@ -402,7 +420,6 @@ export class WorkflowScheduler {
       if (error) throw error
 
       logger.info('Schedule deleted', { scheduleId })
-
     } catch (error) {
       logger.error('Failed to delete schedule', { error, scheduleId })
       throw error

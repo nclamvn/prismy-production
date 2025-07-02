@@ -29,8 +29,8 @@ export function useMobile(): MobileDetection {
       isAndroid: false,
       isSafari: false,
       isChrome: false,
-      isFirefox: false
-    }
+      isFirefox: false,
+    },
   })
 
   useEffect(() => {
@@ -56,7 +56,8 @@ export function useMobile(): MobileDetection {
       const isDesktop = width >= 1024
 
       // Touch device detection
-      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+      const isTouchDevice =
+        'ontouchstart' in window || navigator.maxTouchPoints > 0
 
       // Orientation detection
       const orientation = height > width ? 'portrait' : 'landscape'
@@ -80,13 +81,13 @@ export function useMobile(): MobileDetection {
           isAndroid,
           isSafari,
           isChrome,
-          isFirefox
-        }
+          isFirefox,
+        },
       })
     }
 
     detectDevice()
-    
+
     // Listen for resize and orientation changes
     const handleResize = () => detectDevice()
     const handleOrientationChange = () => {
@@ -116,7 +117,7 @@ export function useDeviceOrientation() {
     alpha: null,
     beta: null,
     gamma: null,
-    supported: false
+    supported: false,
   })
 
   useEffect(() => {
@@ -127,14 +128,14 @@ export function useDeviceOrientation() {
         alpha: event.alpha,
         beta: event.beta,
         gamma: event.gamma,
-        supported: true
+        supported: true,
       })
     }
 
     // Check if device orientation is supported
     if ('DeviceOrientationEvent' in window) {
       window.addEventListener('deviceorientation', handleDeviceOrientation)
-      
+
       return () => {
         window.removeEventListener('deviceorientation', handleDeviceOrientation)
       }
@@ -151,8 +152,8 @@ export function useNetworkStatus() {
       effectiveType: '4g',
       downlink: 10,
       rtt: 100,
-      saveData: false
-    } as any
+      saveData: false,
+    } as any,
   })
 
   useEffect(() => {
@@ -161,7 +162,7 @@ export function useNetworkStatus() {
     const updateOnlineStatus = () => {
       setNetworkStatus(prev => ({
         ...prev,
-        isOnline: navigator.onLine
+        isOnline: navigator.onLine,
       }))
     }
 
@@ -174,8 +175,8 @@ export function useNetworkStatus() {
             effectiveType: connection.effectiveType || '4g',
             downlink: connection.downlink || 10,
             rtt: connection.rtt || 100,
-            saveData: connection.saveData || false
-          }
+            saveData: connection.saveData || false,
+          },
         }))
       }
     }
@@ -194,7 +195,7 @@ export function useNetworkStatus() {
     return () => {
       window.removeEventListener('online', updateOnlineStatus)
       window.removeEventListener('offline', updateOnlineStatus)
-      
+
       if ('connection' in navigator) {
         const connection = (navigator as any).connection
         connection.removeEventListener('change', updateConnectionInfo)
@@ -218,13 +219,13 @@ export function useVibration() {
     warning: [200],
     notification: [50, 50, 50],
     selection: [25],
-    longPress: [75]
+    longPress: [75],
   }
 
   return {
     vibrate,
     patterns: vibratePattern,
-    isSupported: 'vibrate' in navigator
+    isSupported: 'vibrate' in navigator,
   }
 }
 
@@ -236,7 +237,9 @@ export function useWakeLock() {
     if (!isSupported) return false
 
     try {
-      const wakeLockSentinel = await (navigator as any).wakeLock.request('screen')
+      const wakeLockSentinel = await (navigator as any).wakeLock.request(
+        'screen'
+      )
       setWakeLock(wakeLockSentinel)
       return true
     } catch (error) {
@@ -264,6 +267,6 @@ export function useWakeLock() {
     requestWakeLock,
     releaseWakeLock,
     isActive: !!wakeLock,
-    isSupported
+    isSupported,
   }
 }

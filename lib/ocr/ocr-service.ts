@@ -48,7 +48,7 @@ class OCRService {
     enableTextDetection: true,
     enableDocumentTextDetection: true,
     enableHandwritingDetection: false,
-    preprocessImage: true
+    preprocessImage: true,
   }
 
   /**
@@ -67,10 +67,12 @@ class OCRService {
           return {
             ...result,
             processingTime: Date.now() - startTime,
-            method: 'google-vision'
+            method: 'google-vision',
           }
         }
-        console.log(`[OCR Service] Google Vision confidence too low (${result.confidence})`)
+        console.log(
+          `[OCR Service] Google Vision confidence too low (${result.confidence})`
+        )
       }
     } catch (error) {
       console.warn('[OCR Service] Google Vision failed:', error)
@@ -83,7 +85,7 @@ class OCRService {
       return {
         ...result,
         processingTime: Date.now() - startTime,
-        method: 'tesseract'
+        method: 'tesseract',
       }
     } catch (error) {
       console.error('[OCR Service] Tesseract.js failed:', error)
@@ -96,32 +98,43 @@ class OCRService {
   /**
    * Google Vision API processing
    */
-  private async processWithGoogleVision(file: File, options: OCROptions): Promise<OCRResult> {
+  private async processWithGoogleVision(
+    file: File,
+    options: OCROptions
+  ): Promise<OCRResult> {
     // Convert file to base64
     const base64Data = await this.fileToBase64(file)
-    
+
     const requestBody = {
-      requests: [{
-        image: {
-          content: base64Data.split(',')[1] // Remove data:image/... prefix
+      requests: [
+        {
+          image: {
+            content: base64Data.split(',')[1], // Remove data:image/... prefix
+          },
+          features: [
+            ...(options.enableTextDetection
+              ? [{ type: 'TEXT_DETECTION' }]
+              : []),
+            ...(options.enableDocumentTextDetection
+              ? [{ type: 'DOCUMENT_TEXT_DETECTION' }]
+              : []),
+            ...(options.enableHandwritingDetection
+              ? [{ type: 'HANDWRITING_OCR' }]
+              : []),
+          ],
+          imageContext: {
+            languageHints: options.languages || ['en', 'vi'],
+          },
         },
-        features: [
-          ...(options.enableTextDetection ? [{ type: 'TEXT_DETECTION' }] : []),
-          ...(options.enableDocumentTextDetection ? [{ type: 'DOCUMENT_TEXT_DETECTION' }] : []),
-          ...(options.enableHandwritingDetection ? [{ type: 'HANDWRITING_OCR' }] : [])
-        ],
-        imageContext: {
-          languageHints: options.languages || ['en', 'vi']
-        }
-      }]
+      ],
     }
 
     const response = await fetch('/api/ocr/google-vision', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(requestBody)
+      body: JSON.stringify(requestBody),
     })
 
     if (!response.ok) {
@@ -129,13 +142,15 @@ class OCRService {
     }
 
     const data = await response.json()
-    
+
     if (!data.responses?.[0]?.fullTextAnnotation?.text) {
       throw new Error('No text detected by Google Vision')
     }
 
     const textAnnotation = data.responses[0].fullTextAnnotation
-    const blocks = this.parseGoogleVisionBlocks(data.responses[0].textAnnotations)
+    const blocks = this.parseGoogleVisionBlocks(
+      data.responses[0].textAnnotations
+    )
 
     return {
       text: textAnnotation.text,
@@ -143,34 +158,40 @@ class OCRService {
       language: this.detectLanguage(textAnnotation.text),
       blocks,
       processingTime: 0, // Will be set by caller
-      method: 'google-vision' as const
+      method: 'google-vision' as const,
     }
   }
 
   /**
    * Tesseract.js processing
    */
-  private async processWithTesseract(file: File, options: OCROptions): Promise<OCRResult> {
+  private async processWithTesseract(
+    file: File,
+    options: OCROptions
+  ): Promise<OCRResult> {
     try {
       // Import Tesseract.js dynamically to avoid SSR issues
       const Tesseract = await import('tesseract.js')
-      
-      const worker = await Tesseract.createWorker(options.languages?.join('+') || 'eng+vie')
-      
+
+      const worker = await Tesseract.createWorker(
+        options.languages?.join('+') || 'eng+vie'
+      )
+
       try {
         // Preprocess image if enabled
-        const processedFile = options.preprocessImage ? 
-          await this.preprocessImage(file) : file
+        const processedFile = options.preprocessImage
+          ? await this.preprocessImage(file)
+          : file
 
         const result = await worker.recognize(processedFile)
-        
+
         return {
           text: result.data.text,
           confidence: result.data.confidence / 100, // Convert to 0-1 scale
           language: this.detectLanguage(result.data.text),
           blocks: this.parseTesseractBlocks(result.data.blocks),
           processingTime: 0, // Will be set by caller
-          method: 'tesseract' as const
+          method: 'tesseract' as const,
         }
       } finally {
         await worker.terminate()
@@ -184,15 +205,18 @@ class OCRService {
   /**
    * Fallback processing when all OCR methods fail
    */
-  private async fallbackProcessing(file: File, startTime: number): Promise<OCRResult> {
+  private async fallbackProcessing(
+    file: File,
+    startTime: number
+  ): Promise<OCRResult> {
     console.warn('[OCR Service] All OCR methods failed, using fallback')
-    
+
     return {
       text: `[OCR processing failed for ${file.name}. Please try with a clearer image or different format.]`,
       confidence: 0,
       language: 'unknown',
       processingTime: Date.now() - startTime,
-      method: 'fallback'
+      method: 'fallback',
     }
   }
 
@@ -201,8 +225,9 @@ class OCRService {
    */
   private isGoogleVisionAvailable(): boolean {
     return !!(
-      process.env.GOOGLE_CLOUD_PROJECT_ID && 
-      (process.env.GOOGLE_CLOUD_KEY_FILE || process.env.GOOGLE_APPLICATION_CREDENTIALS)
+      process.env.GOOGLE_CLOUD_PROJECT_ID &&
+      (process.env.GOOGLE_CLOUD_KEY_FILE ||
+        process.env.GOOGLE_APPLICATION_CREDENTIALS)
     )
   }
 
@@ -223,13 +248,13 @@ class OCRService {
    */
   private parseGoogleVisionBlocks(textAnnotations: any[]): TextBlock[] {
     if (!textAnnotations || textAnnotations.length < 2) return []
-    
+
     // Skip first annotation (full text) and process individual blocks
     return textAnnotations.slice(1).map(annotation => ({
       text: annotation.description,
       confidence: annotation.confidence || 0.8,
       boundingBox: this.parseGoogleVisionBoundingBox(annotation.boundingPoly),
-      language: this.detectLanguage(annotation.description)
+      language: this.detectLanguage(annotation.description),
     }))
   }
 
@@ -251,7 +276,7 @@ class OCRService {
       x: minX,
       y: minY,
       width: maxX - minX,
-      height: maxY - minY
+      height: maxY - minY,
     }
   }
 
@@ -260,21 +285,22 @@ class OCRService {
    */
   private parseTesseractBlocks(blocks: any[]): TextBlock[] {
     if (!blocks) return []
-    
-    return blocks.flatMap(block => 
-      block.paragraphs?.flatMap((para: any) =>
-        para.words?.map((word: any) => ({
-          text: word.text,
-          confidence: word.confidence / 100,
-          boundingBox: {
-            x: word.bbox.x0,
-            y: word.bbox.y0,
-            width: word.bbox.x1 - word.bbox.x0,
-            height: word.bbox.y1 - word.bbox.y0
-          },
-          language: this.detectLanguage(word.text)
-        }))
-      ) || []
+
+    return blocks.flatMap(
+      block =>
+        block.paragraphs?.flatMap((para: any) =>
+          para.words?.map((word: any) => ({
+            text: word.text,
+            confidence: word.confidence / 100,
+            boundingBox: {
+              x: word.bbox.x0,
+              y: word.bbox.y0,
+              width: word.bbox.x1 - word.bbox.x0,
+              height: word.bbox.y1 - word.bbox.y0,
+            },
+            language: this.detectLanguage(word.text),
+          }))
+        ) || []
     )
   }
 
@@ -283,10 +309,10 @@ class OCRService {
    */
   private calculateGoogleVisionConfidence(textAnnotation: any): number {
     if (!textAnnotation.pages) return 0.8
-    
+
     let totalConfidence = 0
     let blockCount = 0
-    
+
     textAnnotation.pages.forEach((page: any) => {
       page.blocks?.forEach((block: any) => {
         if (block.confidence !== undefined) {
@@ -295,7 +321,7 @@ class OCRService {
         }
       })
     })
-    
+
     return blockCount > 0 ? totalConfidence / blockCount : 0.8
   }
 
@@ -304,23 +330,39 @@ class OCRService {
    */
   private detectLanguage(text: string): string {
     if (!text) return 'unknown'
-    
+
     // Vietnamese diacritics pattern
-    const vietnamesePattern = /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i
-    
+    const vietnamesePattern =
+      /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i
+
     if (vietnamesePattern.test(text)) {
       return 'vi'
     }
-    
+
     // Simple heuristic for English vs other languages
-    const englishWords = ['the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by']
+    const englishWords = [
+      'the',
+      'and',
+      'or',
+      'but',
+      'in',
+      'on',
+      'at',
+      'to',
+      'for',
+      'of',
+      'with',
+      'by',
+    ]
     const words = text.toLowerCase().split(/\s+/)
-    const englishWordCount = words.filter(word => englishWords.includes(word)).length
-    
+    const englishWordCount = words.filter(word =>
+      englishWords.includes(word)
+    ).length
+
     if (englishWordCount > words.length * 0.1) {
       return 'en'
     }
-    
+
     return 'unknown'
   }
 
@@ -358,16 +400,16 @@ class OCRService {
         averageConfidence: 0,
         methodDistribution: {},
         languageDistribution: {},
-        averageProcessingTime: 0
+        averageProcessingTime: 0,
       }
     }
 
     const totalConfidence = results.reduce((sum, r) => sum + r.confidence, 0)
     const totalTime = results.reduce((sum, r) => sum + r.processingTime, 0)
-    
+
     const methodDist: Record<string, number> = {}
     const langDist: Record<string, number> = {}
-    
+
     results.forEach(result => {
       methodDist[result.method] = (methodDist[result.method] || 0) + 1
       langDist[result.language] = (langDist[result.language] || 0) + 1
@@ -377,7 +419,7 @@ class OCRService {
       averageConfidence: totalConfidence / results.length,
       methodDistribution: methodDist,
       languageDistribution: langDist,
-      averageProcessingTime: totalTime / results.length
+      averageProcessingTime: totalTime / results.length,
     }
   }
 }

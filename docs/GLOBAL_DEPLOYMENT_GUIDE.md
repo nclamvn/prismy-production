@@ -1,11 +1,13 @@
 # 🌍 GLOBAL DEPLOYMENT GUIDE
 
 ## Overview
+
 This guide covers the global deployment and edge optimization setup for Prismy's production infrastructure with worldwide performance optimization.
 
 ## 🚀 Global Architecture
 
 ### Core Components
+
 - **CloudFront CDN** - Global content delivery with 400+ edge locations
 - **Lambda@Edge** - Serverless functions running at edge locations
 - **Route 53** - Global DNS with health checks and failover
@@ -13,6 +15,7 @@ This guide covers the global deployment and edge optimization setup for Prismy's
 - **S3 Global Acceleration** - Optimized uploads via edge locations
 
 ### Geographic Distribution
+
 ```
 Primary Region: us-west-2 (Oregon)
 Secondary Regions:
@@ -24,6 +27,7 @@ Secondary Regions:
 ## 🌐 CloudFront Configuration
 
 ### Distribution Setup
+
 ```hcl
 # Main CloudFront distribution with multiple origins
 Origins:
@@ -34,14 +38,16 @@ Origins:
 ```
 
 ### Cache Behaviors
-| Path Pattern | Cache TTL | Headers Forwarded | Notes |
-|--------------|-----------|-------------------|-------|
-| `/` | 5 minutes | All auth headers | Main application |
-| `/static/*` | 1 year | None | Static assets |
-| `/api/*` | No cache | All | API endpoints |
-| `/locales/*` | 1 hour | Accept-Language | Translation files |
+
+| Path Pattern | Cache TTL | Headers Forwarded | Notes             |
+| ------------ | --------- | ----------------- | ----------------- |
+| `/`          | 5 minutes | All auth headers  | Main application  |
+| `/static/*`  | 1 year    | None              | Static assets     |
+| `/api/*`     | No cache  | All               | API endpoints     |
+| `/locales/*` | 1 hour    | Accept-Language   | Translation files |
 
 ### Edge Functions
+
 - **Authentication** (`edge-auth.js`) - JWT validation at edge
 - **Security Headers** (`edge-security-headers.js`) - CSP and security headers
 - **Bot Detection** - Automated bot filtering
@@ -51,6 +57,7 @@ Origins:
 ## 🔧 Deployment Steps
 
 ### 1. Prerequisites
+
 ```bash
 # Ensure AWS CLI is configured for multiple regions
 aws configure list-profiles
@@ -61,6 +68,7 @@ terraform validate
 ```
 
 ### 2. Certificate Setup (Required for HTTPS)
+
 ```bash
 # Request certificate in us-east-1 for CloudFront
 aws acm request-certificate \
@@ -72,6 +80,7 @@ aws acm request-certificate \
 ```
 
 ### 3. Deploy Global Infrastructure
+
 ```bash
 # Initialize Terraform with global backend
 terraform init
@@ -84,6 +93,7 @@ terraform apply -var-file="global.tfvars"
 ```
 
 ### 4. Configure Domain DNS
+
 ```bash
 # Get CloudFront distribution domain
 CLOUDFRONT_DOMAIN=$(terraform output cloudfront_domain_name)
@@ -95,6 +105,7 @@ aws route53 change-resource-record-sets \
 ```
 
 ### 5. Deploy Lambda@Edge Functions
+
 ```bash
 # Functions are automatically deployed with Terraform
 # Verify deployment in CloudFront console
@@ -105,17 +116,20 @@ aws cloudfront list-distributions \
 ## 🌍 Multi-Region Setup
 
 ### Primary Region (us-west-2)
+
 - Main application servers
 - Primary database
 - File storage
 - Monitoring stack
 
 ### Secondary Regions
+
 - **us-east-1**: Lambda@Edge functions, Route 53 health checks
 - **eu-west-1**: Read replicas, European data residency
 - **ap-southeast-1**: Read replicas, Asian users
 
 ### Cross-Region Replication
+
 ```hcl
 # Database read replicas
 resource "aws_db_instance" "eu_replica" {
@@ -138,6 +152,7 @@ resource "aws_s3_bucket_replication_configuration" "global" {
 ## 📊 Performance Optimization
 
 ### Caching Strategy
+
 ```
 Static Assets (CSS, JS, Images):
 ├── CloudFront: 1 year cache
@@ -156,16 +171,18 @@ API Responses:
 ```
 
 ### Image Optimization
+
 ```javascript
 // Lambda@Edge image optimization
-const optimizeImage = (request) => {
-  const { width, quality, format } = request.querystring;
+const optimizeImage = request => {
+  const { width, quality, format } = request.querystring
   // Resize and optimize images at edge
-  return optimizedImageResponse;
-};
+  return optimizedImageResponse
+}
 ```
 
 ### Content Compression
+
 - **Gzip/Brotli** enabled for text content
 - **WebP conversion** for images in supported browsers
 - **Minification** for CSS and JavaScript
@@ -173,36 +190,41 @@ const optimizeImage = (request) => {
 ## 🔒 Security Configuration
 
 ### Edge Security Headers
+
 ```javascript
 // Comprehensive security headers at edge
 const securityHeaders = {
   'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
-  'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline'",
+  'Content-Security-Policy':
+    "default-src 'self'; script-src 'self' 'unsafe-inline'",
   'X-Frame-Options': 'DENY',
   'X-Content-Type-Options': 'nosniff',
-  'Referrer-Policy': 'strict-origin-when-cross-origin'
-};
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+}
 ```
 
 ### WAF Rules
+
 - **Rate limiting**: 1000 requests/5min per IP
 - **Geographic blocking**: Configurable country list
 - **SQL injection protection**: Pattern-based detection
 - **XSS protection**: Request body scanning
 
 ### Authentication at Edge
+
 ```javascript
 // JWT validation without origin round-trip
-const validateJWT = (token) => {
+const validateJWT = token => {
   // Validate signature and expiration
   // Add user context to request headers
-  return { valid: true, user: payload };
-};
+  return { valid: true, user: payload }
+}
 ```
 
 ## 📈 Monitoring & Analytics
 
 ### CloudWatch Dashboards
+
 ```
 Global Performance Dashboard:
 ├── Request volume by region
@@ -213,39 +235,42 @@ Global Performance Dashboard:
 ```
 
 ### Real User Monitoring (RUM)
+
 ```javascript
 // CloudWatch RUM integration
 const rumConfig = {
   sessionSampleRate: 0.1,
   guestRoleArn: 'arn:aws:iam::account:role/RUM-Monitor',
   identityPoolId: 'us-west-2:uuid',
-  endpoint: 'https://dataplane.rum.us-west-2.amazonaws.com'
-};
+  endpoint: 'https://dataplane.rum.us-west-2.amazonaws.com',
+}
 ```
 
 ### Performance Budgets
-| Metric | Target | Alert Threshold |
-|--------|--------|-----------------|
-| First Contentful Paint | < 1.5s | > 2s |
-| Largest Contentful Paint | < 2.5s | > 3s |
-| First Input Delay | < 100ms | > 300ms |
-| Cumulative Layout Shift | < 0.1 | > 0.25 |
-| Total Blocking Time | < 300ms | > 600ms |
+
+| Metric                   | Target  | Alert Threshold |
+| ------------------------ | ------- | --------------- |
+| First Contentful Paint   | < 1.5s  | > 2s            |
+| Largest Contentful Paint | < 2.5s  | > 3s            |
+| First Input Delay        | < 100ms | > 300ms         |
+| Cumulative Layout Shift  | < 0.1   | > 0.25          |
+| Total Blocking Time      | < 300ms | > 600ms         |
 
 ## 🌐 Geographic Routing
 
 ### Route 53 Configuration
+
 ```hcl
 # Geolocation-based routing
 resource "aws_route53_record" "us" {
   zone_id = aws_route53_zone.main.zone_id
   name    = "app.prismy.com"
   type    = "A"
-  
+
   geolocation_routing_policy {
     continent = "NA"
   }
-  
+
   alias {
     name    = aws_cloudfront_distribution.us.domain_name
     zone_id = aws_cloudfront_distribution.us.hosted_zone_id
@@ -254,17 +279,18 @@ resource "aws_route53_record" "us" {
 ```
 
 ### Latency-Based Routing
+
 ```hcl
 # Automatic routing to lowest latency region
 resource "aws_route53_record" "latency" {
   zone_id = aws_route53_zone.main.zone_id
   name    = "api.prismy.com"
   type    = "A"
-  
+
   latency_routing_policy {
     region = var.aws_region
   }
-  
+
   health_check_id = aws_route53_health_check.main.id
 }
 ```
@@ -272,6 +298,7 @@ resource "aws_route53_record" "latency" {
 ## 🔄 Disaster Recovery
 
 ### Failover Configuration
+
 ```hcl
 # Primary-secondary failover
 resource "aws_route53_record" "primary" {
@@ -289,6 +316,7 @@ resource "aws_route53_record" "secondary" {
 ```
 
 ### Health Checks
+
 ```bash
 # Multi-region health monitoring
 Health Check Endpoints:
@@ -305,22 +333,24 @@ Thresholds:
 ## 📱 Mobile Optimization
 
 ### Device-Specific Optimization
+
 ```javascript
 // Lambda@Edge mobile detection
-const optimizeForMobile = (request) => {
-  const userAgent = request.headers['user-agent'][0].value;
-  const isMobile = /Mobile|Android|iPhone/i.test(userAgent);
-  
+const optimizeForMobile = request => {
+  const userAgent = request.headers['user-agent'][0].value
+  const isMobile = /Mobile|Android|iPhone/i.test(userAgent)
+
   if (isMobile) {
     // Route to mobile-optimized origin
-    request.origin.custom.domainName = 'mobile-api.prismy.com';
+    request.origin.custom.domainName = 'mobile-api.prismy.com'
   }
-  
-  return request;
-};
+
+  return request
+}
 ```
 
 ### Progressive Web App (PWA)
+
 - **Service Worker** caching strategy
 - **App Shell** architecture
 - **Push notifications** via web standards
@@ -330,6 +360,7 @@ const optimizeForMobile = (request) => {
 ### Common Issues
 
 #### 1. CloudFront Cache Issues
+
 ```bash
 # Invalidate CloudFront cache
 aws cloudfront create-invalidation \
@@ -342,6 +373,7 @@ curl -I https://app.prismy.com \
 ```
 
 #### 2. Lambda@Edge Function Errors
+
 ```bash
 # View Lambda@Edge logs (in each region)
 aws logs describe-log-groups \
@@ -350,6 +382,7 @@ aws logs describe-log-groups \
 ```
 
 #### 3. Route 53 Health Check Failures
+
 ```bash
 # Check health check status
 aws route53 get-health-check \
@@ -366,6 +399,7 @@ aws cloudwatch get-metric-statistics \
 ```
 
 #### 4. Certificate Issues
+
 ```bash
 # Verify certificate status
 aws acm describe-certificate \
@@ -381,6 +415,7 @@ aws cloudfront get-distribution-config \
 ## 📊 Performance Testing
 
 ### Load Testing
+
 ```bash
 # Global load testing with Artillery
 artillery run --config global-load-test.yml
@@ -396,29 +431,33 @@ done
 ```
 
 ### Synthetic Monitoring
+
 ```javascript
 // CloudWatch Synthetics canary
-const synthetics = require('Synthetics');
+const synthetics = require('Synthetics')
 
 const apiCanary = async function () {
   const response = await synthetics.executeStep('checkHomepage', async () => {
-    return await synthetics.getPage().goto('https://app.prismy.com');
-  });
-  
+    return await synthetics.getPage().goto('https://app.prismy.com')
+  })
+
   await synthetics.executeStep('checkApiHealth', async () => {
-    const apiResponse = await synthetics.getPage().goto('https://app.prismy.com/api/health');
-    return apiResponse;
-  });
-};
+    const apiResponse = await synthetics
+      .getPage()
+      .goto('https://app.prismy.com/api/health')
+    return apiResponse
+  })
+}
 
 exports.handler = async () => {
-  return await synthetics.executeStep('apiCanary', apiCanary);
-};
+  return await synthetics.executeStep('apiCanary', apiCanary)
+}
 ```
 
 ## 🎯 Optimization Checklist
 
 ### Pre-Deployment
+
 - [ ] SSL certificate deployed in us-east-1
 - [ ] DNS records configured
 - [ ] Lambda@Edge functions tested
@@ -426,6 +465,7 @@ exports.handler = async () => {
 - [ ] Health checks configured
 
 ### Post-Deployment
+
 - [ ] Cache hit rates > 80%
 - [ ] Global response times < 200ms
 - [ ] Error rates < 0.1%
@@ -433,6 +473,7 @@ exports.handler = async () => {
 - [ ] Mobile performance optimized
 
 ### Ongoing Monitoring
+
 - [ ] Weekly performance reports
 - [ ] Monthly cost optimization review
 - [ ] Quarterly security assessment

@@ -20,9 +20,9 @@ describe('Logger', () => {
           timestamp,
           level,
           message,
-          ...meta
+          ...meta,
         }
-        
+
         switch (level) {
           case 'error':
             console.error(JSON.stringify(logEntry))
@@ -46,7 +46,7 @@ describe('Logger', () => {
         logger.log('error', message, {
           error: error?.message || error,
           stack: error?.stack,
-          ...meta
+          ...meta,
         })
       },
       warn: (message: string, meta?: any) => {
@@ -61,7 +61,7 @@ describe('Logger', () => {
       setLevel: (level: string) => {
         logger.level = level
       },
-      level: 'info'
+      level: 'info',
     }
   })
 
@@ -84,7 +84,7 @@ describe('Logger', () => {
   describe('Basic Logging', () => {
     it('should log info messages', () => {
       logger.info('Test info message')
-      
+
       expect(consoleInfoSpy).toHaveBeenCalled()
       const logOutput = consoleInfoSpy.mock.calls[0][0]
       expect(logOutput).toContain('info')
@@ -93,7 +93,7 @@ describe('Logger', () => {
 
     it('should log error messages', () => {
       logger.error('Test error message')
-      
+
       expect(consoleErrorSpy).toHaveBeenCalled()
       const logOutput = consoleErrorSpy.mock.calls[0][0]
       expect(logOutput).toContain('error')
@@ -102,7 +102,7 @@ describe('Logger', () => {
 
     it('should log warning messages', () => {
       logger.warn('Test warning message')
-      
+
       expect(consoleWarnSpy).toHaveBeenCalled()
       const logOutput = consoleWarnSpy.mock.calls[0][0]
       expect(logOutput).toContain('warn')
@@ -112,25 +112,25 @@ describe('Logger', () => {
     it('should log debug messages in development', () => {
       const originalEnv = process.env.NODE_ENV
       process.env.NODE_ENV = 'development'
-      
+
       logger.debug('Test debug message')
-      
+
       expect(consoleDebugSpy).toHaveBeenCalled()
       const logOutput = consoleDebugSpy.mock.calls[0][0]
       expect(logOutput).toContain('debug')
       expect(logOutput).toContain('Test debug message')
-      
+
       process.env.NODE_ENV = originalEnv
     })
 
     it('should not log debug messages in production', () => {
       const originalEnv = process.env.NODE_ENV
       process.env.NODE_ENV = 'production'
-      
+
       logger.debug('Test debug message')
-      
+
       expect(consoleDebugSpy).not.toHaveBeenCalled()
-      
+
       process.env.NODE_ENV = originalEnv
     })
   })
@@ -139,7 +139,7 @@ describe('Logger', () => {
     it('should log error with Error object', () => {
       const error = new Error('Test error')
       logger.error('Error occurred', error)
-      
+
       expect(consoleErrorSpy).toHaveBeenCalled()
       const logOutput = consoleErrorSpy.mock.calls[0][0]
       expect(logOutput).toContain('Test error')
@@ -149,7 +149,7 @@ describe('Logger', () => {
     it('should log error with stack trace', () => {
       const error = new Error('Test error with stack')
       logger.error('Stack trace test', error)
-      
+
       const logOutput = consoleErrorSpy.mock.calls[0][0]
       const parsed = JSON.parse(logOutput)
       expect(parsed.stack).toBeDefined()
@@ -159,11 +159,11 @@ describe('Logger', () => {
       const customError = {
         code: 'CUSTOM_ERROR',
         message: 'Custom error message',
-        details: { field: 'value' }
+        details: { field: 'value' },
       }
-      
+
       logger.error('Custom error occurred', customError)
-      
+
       expect(consoleErrorSpy).toHaveBeenCalled()
       const logOutput = consoleErrorSpy.mock.calls[0][0]
       expect(logOutput).toContain('Custom error message')
@@ -171,7 +171,7 @@ describe('Logger', () => {
 
     it('should log error with string', () => {
       logger.error('Error occurred', 'Simple error string')
-      
+
       expect(consoleErrorSpy).toHaveBeenCalled()
       const logOutput = consoleErrorSpy.mock.calls[0][0]
       expect(logOutput).toContain('Simple error string')
@@ -179,7 +179,7 @@ describe('Logger', () => {
 
     it('should log error without error object', () => {
       logger.error('Error message only')
-      
+
       expect(consoleErrorSpy).toHaveBeenCalled()
       const logOutput = consoleErrorSpy.mock.calls[0][0]
       expect(logOutput).toContain('Error message only')
@@ -191,9 +191,9 @@ describe('Logger', () => {
       logger.info('User action', {
         userId: '123',
         action: 'login',
-        timestamp: Date.now()
+        timestamp: Date.now(),
       })
-      
+
       const logOutput = consoleInfoSpy.mock.calls[0][0]
       expect(logOutput).toContain('userId')
       expect(logOutput).toContain('123')
@@ -205,14 +205,14 @@ describe('Logger', () => {
       logger.info('Complex data', {
         user: {
           id: '123',
-          name: 'Test User'
+          name: 'Test User',
         },
         request: {
           method: 'POST',
-          path: '/api/test'
-        }
+          path: '/api/test',
+        },
       })
-      
+
       const logOutput = consoleInfoSpy.mock.calls[0][0]
       expect(logOutput).toContain('user')
       expect(logOutput).toContain('request')
@@ -220,7 +220,7 @@ describe('Logger', () => {
 
     it('should handle empty metadata', () => {
       logger.info('No metadata')
-      
+
       expect(consoleInfoSpy).toHaveBeenCalled()
       const logOutput = consoleInfoSpy.mock.calls[0][0]
       expect(logOutput).toContain('No metadata')
@@ -228,13 +228,13 @@ describe('Logger', () => {
 
     it('should handle null metadata', () => {
       logger.info('Null metadata', null)
-      
+
       expect(consoleInfoSpy).toHaveBeenCalled()
     })
 
     it('should handle undefined metadata', () => {
       logger.info('Undefined metadata', undefined)
-      
+
       expect(consoleInfoSpy).toHaveBeenCalled()
     })
   })
@@ -243,7 +243,7 @@ describe('Logger', () => {
     it('should set log level', () => {
       logger.setLevel('debug')
       expect(logger.level).toBe('debug')
-      
+
       logger.setLevel('error')
       expect(logger.level).toBe('error')
     })
@@ -254,7 +254,7 @@ describe('Logger', () => {
 
     it('should handle custom log levels', () => {
       logger.log('custom', 'Custom level message')
-      
+
       expect(consoleLogSpy).toHaveBeenCalled()
       const logOutput = consoleLogSpy.mock.calls[0][0]
       expect(logOutput).toContain('custom')
@@ -265,7 +265,7 @@ describe('Logger', () => {
   describe('Timestamp Formatting', () => {
     it('should include timestamp in logs', () => {
       logger.info('Timestamp test')
-      
+
       const logOutput = consoleInfoSpy.mock.calls[0][0]
       const parsed = JSON.parse(logOutput)
       expect(parsed.timestamp).toBeDefined()
@@ -274,7 +274,7 @@ describe('Logger', () => {
 
     it('should use ISO format for timestamps', () => {
       logger.info('ISO timestamp test')
-      
+
       const logOutput = consoleInfoSpy.mock.calls[0][0]
       const parsed = JSON.parse(logOutput)
       expect(parsed.timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/)
@@ -284,20 +284,20 @@ describe('Logger', () => {
   describe('Performance Logging', () => {
     it('should log performance metrics', () => {
       const startTime = Date.now()
-      
+
       // Simulate some operation
       for (let i = 0; i < 1000; i++) {
         Math.sqrt(i)
       }
-      
+
       const duration = Date.now() - startTime
-      
+
       logger.info('Operation completed', {
         operation: 'calculation',
         duration,
-        items: 1000
+        items: 1000,
       })
-      
+
       const logOutput = consoleInfoSpy.mock.calls[0][0]
       expect(logOutput).toContain('duration')
       expect(logOutput).toContain('calculation')
@@ -305,13 +305,13 @@ describe('Logger', () => {
 
     it('should log memory usage', () => {
       const memoryUsage = process.memoryUsage()
-      
+
       logger.info('Memory usage', {
         heapUsed: memoryUsage.heapUsed,
         heapTotal: memoryUsage.heapTotal,
-        rss: memoryUsage.rss
+        rss: memoryUsage.rss,
       })
-      
+
       const logOutput = consoleInfoSpy.mock.calls[0][0]
       expect(logOutput).toContain('heapUsed')
       expect(logOutput).toContain('heapTotal')
@@ -321,14 +321,14 @@ describe('Logger', () => {
   describe('Structured Logging', () => {
     it('should output valid JSON', () => {
       logger.info('JSON test', { key: 'value' })
-      
+
       const logOutput = consoleInfoSpy.mock.calls[0][0]
       expect(() => JSON.parse(logOutput)).not.toThrow()
     })
 
     it('should handle special characters in messages', () => {
       logger.info('Message with "quotes" and \n newlines')
-      
+
       const logOutput = consoleInfoSpy.mock.calls[0][0]
       const parsed = JSON.parse(logOutput)
       expect(parsed.message).toContain('quotes')
@@ -337,7 +337,7 @@ describe('Logger', () => {
 
     it('should handle Unicode characters', () => {
       logger.info('Unicode test: 你好 🌍')
-      
+
       const logOutput = consoleInfoSpy.mock.calls[0][0]
       const parsed = JSON.parse(logOutput)
       expect(parsed.message).toContain('你好')
@@ -351,9 +351,9 @@ describe('Logger', () => {
         requestId: 'req-123',
         method: 'POST',
         path: '/api/translate',
-        ip: '192.168.1.1'
+        ip: '192.168.1.1',
       })
-      
+
       const logOutput = consoleInfoSpy.mock.calls[0][0]
       expect(logOutput).toContain('requestId')
       expect(logOutput).toContain('req-123')
@@ -363,9 +363,9 @@ describe('Logger', () => {
       logger.info('User action', {
         userId: 'user-123',
         email: 'test@example.com',
-        role: 'admin'
+        role: 'admin',
       })
-      
+
       const logOutput = consoleInfoSpy.mock.calls[0][0]
       expect(logOutput).toContain('userId')
       expect(logOutput).toContain('test@example.com')
@@ -375,9 +375,9 @@ describe('Logger', () => {
       logger.error('Database error', new Error('Connection failed'), {
         query: 'SELECT * FROM users',
         database: 'main',
-        retries: 3
+        retries: 3,
       })
-      
+
       const logOutput = consoleErrorSpy.mock.calls[0][0]
       expect(logOutput).toContain('Connection failed')
       expect(logOutput).toContain('query')
@@ -390,12 +390,12 @@ describe('Logger', () => {
       const sensitiveData = {
         password: 'secret123',
         token: 'auth-token-xyz',
-        creditCard: '1234-5678-9012-3456'
+        creditCard: '1234-5678-9012-3456',
       }
-      
+
       // Logger should mask sensitive fields
       logger.info('User data', sensitiveData)
-      
+
       const logOutput = consoleInfoSpy.mock.calls[0][0]
       // In a real implementation, sensitive data should be masked
       expect(logOutput).toBeDefined()
@@ -406,9 +406,9 @@ describe('Logger', () => {
         ip: '192.168.1.1',
         email: 'test@example.com',
         attempts: 3,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       })
-      
+
       const logOutput = consoleWarnSpy.mock.calls[0][0]
       expect(logOutput).toContain('Failed login attempt')
       expect(logOutput).toContain('attempts')
@@ -418,21 +418,21 @@ describe('Logger', () => {
   describe('Batch Logging', () => {
     it('should handle multiple logs efficiently', () => {
       const startTime = performance.now()
-      
+
       for (let i = 0; i < 100; i++) {
         logger.info(`Log message ${i}`, { index: i })
       }
-      
+
       const endTime = performance.now()
       const totalTime = endTime - startTime
-      
+
       expect(consoleInfoSpy).toHaveBeenCalledTimes(100)
       expect(totalTime).toBeLessThan(50) // Should be fast
     })
 
     it('should handle concurrent logging', () => {
       const promises = []
-      
+
       for (let i = 0; i < 10; i++) {
         promises.push(
           Promise.resolve().then(() => {
@@ -440,7 +440,7 @@ describe('Logger', () => {
           })
         )
       }
-      
+
       return Promise.all(promises).then(() => {
         expect(consoleInfoSpy).toHaveBeenCalledTimes(10)
       })
@@ -451,7 +451,7 @@ describe('Logger', () => {
     it('should handle circular references in metadata', () => {
       const circular: any = { a: 1 }
       circular.self = circular
-      
+
       expect(() => logger.info('Circular reference', circular)).not.toThrow()
     })
 
@@ -460,7 +460,7 @@ describe('Logger', () => {
       for (let i = 0; i < 1000; i++) {
         largeObject[`key${i}`] = `value${i}`
       }
-      
+
       expect(() => logger.info('Large object', largeObject)).not.toThrow()
     })
 
@@ -469,7 +469,7 @@ describe('Logger', () => {
       consoleInfoSpy.mockImplementation(() => {
         throw new Error('Console error')
       })
-      
+
       expect(() => logger.info('Test message')).not.toThrow()
     })
   })
@@ -478,28 +478,28 @@ describe('Logger', () => {
     it('should log verbose in development', () => {
       const originalEnv = process.env.NODE_ENV
       process.env.NODE_ENV = 'development'
-      
+
       logger.debug('Development debug')
       logger.info('Development info')
-      
+
       expect(consoleDebugSpy).toHaveBeenCalled()
       expect(consoleInfoSpy).toHaveBeenCalled()
-      
+
       process.env.NODE_ENV = originalEnv
     })
 
     it('should log minimal in production', () => {
       const originalEnv = process.env.NODE_ENV
       process.env.NODE_ENV = 'production'
-      
+
       logger.debug('Production debug')
       logger.info('Production info')
       logger.error('Production error')
-      
+
       expect(consoleDebugSpy).not.toHaveBeenCalled()
       expect(consoleInfoSpy).toHaveBeenCalled()
       expect(consoleErrorSpy).toHaveBeenCalled()
-      
+
       process.env.NODE_ENV = originalEnv
     })
   })
@@ -507,10 +507,10 @@ describe('Logger', () => {
   describe('Log Formatting', () => {
     it('should format logs consistently', () => {
       logger.info('Test message', { data: 'value' })
-      
+
       const logOutput = consoleInfoSpy.mock.calls[0][0]
       const parsed = JSON.parse(logOutput)
-      
+
       expect(parsed).toHaveProperty('timestamp')
       expect(parsed).toHaveProperty('level')
       expect(parsed).toHaveProperty('message')
@@ -521,9 +521,9 @@ describe('Logger', () => {
       const multilineMessage = `Line 1
 Line 2
 Line 3`
-      
+
       logger.info(multilineMessage)
-      
+
       const logOutput = consoleInfoSpy.mock.calls[0][0]
       const parsed = JSON.parse(logOutput)
       expect(parsed.message).toContain('Line 1')

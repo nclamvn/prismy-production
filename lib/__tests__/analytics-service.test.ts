@@ -14,8 +14,8 @@ const mockSupabase = {
     gte: jest.fn().mockReturnThis(),
     lte: jest.fn().mockReturnThis(),
     single: jest.fn(),
-    order: jest.fn().mockReturnThis()
-  }))
+    order: jest.fn().mockReturnThis(),
+  })),
 }
 
 const mockRedis = {
@@ -24,7 +24,7 @@ const mockRedis = {
   incr: jest.fn(),
   hincrby: jest.fn(),
   hgetall: jest.fn(),
-  expire: jest.fn()
+  expire: jest.fn(),
 }
 
 jest.mock('@/lib/supabase', () => ({ createClient: () => mockSupabase }))
@@ -39,7 +39,11 @@ describe('Analytics Service', () => {
     } catch (error) {
       // Create mock AnalyticsService if file doesn't exist
       AnalyticsService = {
-        trackEvent: async (eventName: string, properties: any = {}, userId?: string) => {
+        trackEvent: async (
+          eventName: string,
+          properties: any = {},
+          userId?: string
+        ) => {
           if (!eventName) throw new Error('Event name is required')
 
           return {
@@ -49,11 +53,15 @@ describe('Analytics Service', () => {
             userId: userId || null,
             timestamp: new Date().toISOString(),
             sessionId: 'session_123',
-            source: 'web'
+            source: 'web',
           }
         },
 
-        trackPageView: async (page: string, userId?: string, metadata: any = {}) => {
+        trackPageView: async (
+          page: string,
+          userId?: string,
+          metadata: any = {}
+        ) => {
           if (!page) throw new Error('Page is required')
 
           return {
@@ -63,13 +71,17 @@ describe('Analytics Service', () => {
             metadata: {
               userAgent: 'Mozilla/5.0...',
               referrer: document?.referrer || '',
-              ...metadata
+              ...metadata,
             },
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           }
         },
 
-        trackUserAction: async (action: string, userId: string, context: any = {}) => {
+        trackUserAction: async (
+          action: string,
+          userId: string,
+          context: any = {}
+        ) => {
           if (!action) throw new Error('Action is required')
           if (!userId) throw new Error('User ID is required')
 
@@ -78,24 +90,29 @@ describe('Analytics Service', () => {
             action,
             userId,
             context,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           }
         },
 
-        getEventMetrics: async (eventName?: string, timeframe: string = '24h') => {
+        getEventMetrics: async (
+          eventName?: string,
+          timeframe: string = '24h'
+        ) => {
           const baseCount = eventName ? 45 : 250
-          
+
           return {
             eventName: eventName || 'all',
             timeframe,
             totalEvents: baseCount,
             uniqueUsers: Math.floor(baseCount * 0.7),
             averageEventsPerUser: 2.3,
-            topProperties: eventName ? [] : [
-              { name: 'page_view', count: 120 },
-              { name: 'translation_request', count: 85 },
-              { name: 'user_login', count: 45 }
-            ]
+            topProperties: eventName
+              ? []
+              : [
+                  { name: 'page_view', count: 120 },
+                  { name: 'translation_request', count: 85 },
+                  { name: 'user_login', count: 45 },
+                ],
           }
         },
 
@@ -114,35 +131,43 @@ describe('Analytics Service', () => {
             topPages: [
               { page: '/dashboard', views: 8 },
               { page: '/translate', views: 5 },
-              { page: '/settings', views: 2 }
-            ]
+              { page: '/settings', views: 2 },
+            ],
           }
         },
 
-        getPopularPages: async (timeframe: string = '24h', limit: number = 10) => {
+        getPopularPages: async (
+          timeframe: string = '24h',
+          limit: number = 10
+        ) => {
           const pages = [
             { page: '/dashboard', views: 120, uniqueUsers: 85 },
             { page: '/translate', views: 95, uniqueUsers: 70 },
             { page: '/', views: 80, uniqueUsers: 75 },
             { page: '/pricing', views: 45, uniqueUsers: 40 },
-            { page: '/settings', views: 30, uniqueUsers: 25 }
+            { page: '/settings', views: 30, uniqueUsers: 25 },
           ]
 
           return pages.slice(0, limit)
         },
 
-        getFunnelAnalysis: async (steps: string[], timeframe: string = '24h') => {
-          if (!steps || steps.length === 0) throw new Error('Steps are required')
+        getFunnelAnalysis: async (
+          steps: string[],
+          timeframe: string = '24h'
+        ) => {
+          if (!steps || steps.length === 0)
+            throw new Error('Steps are required')
 
           return {
             timeframe,
             steps: steps.map((step, index) => ({
               name: step,
-              users: 100 - (index * 15),
-              conversionRate: index === 0 ? 100 : ((100 - (index * 15)) / 100) * 100,
-              dropoffRate: index === 0 ? 0 : 15
+              users: 100 - index * 15,
+              conversionRate:
+                index === 0 ? 100 : ((100 - index * 15) / 100) * 100,
+              dropoffRate: index === 0 ? 0 : 15,
             })),
-            overallConversion: 55
+            overallConversion: 55,
           }
         },
 
@@ -154,9 +179,9 @@ describe('Analytics Service', () => {
               { period: 'Day 3', retained: 65, percentage: 65 },
               { period: 'Day 7', retained: 45, percentage: 45 },
               { period: 'Day 14', retained: 35, percentage: 35 },
-              { period: 'Day 30', retained: 25, percentage: 25 }
+              { period: 'Day 30', retained: 25, percentage: 25 },
             ],
-            averageRetention: 51
+            averageRetention: 51,
           }
         },
 
@@ -165,7 +190,7 @@ describe('Analytics Service', () => {
             timeframe,
             hourlyDistribution: Array.from({ length: 24 }, (_, hour) => ({
               hour,
-              events: Math.floor(Math.random() * 50) + 10
+              events: Math.floor(Math.random() * 50) + 10,
             })),
             dailyDistribution: [
               { day: 'Monday', events: 180 },
@@ -174,9 +199,9 @@ describe('Analytics Service', () => {
               { day: 'Thursday', events: 190 },
               { day: 'Friday', events: 200 },
               { day: 'Saturday', events: 85 },
-              { day: 'Sunday', events: 75 }
+              { day: 'Sunday', events: 75 },
             ],
-            peakHours: [9, 10, 14, 15, 16]
+            peakHours: [9, 10, 14, 15, 16],
           }
         },
 
@@ -189,11 +214,14 @@ describe('Analytics Service', () => {
             name,
             query,
             createdAt: new Date().toISOString(),
-            status: 'active'
+            status: 'active',
           }
         },
 
-        getCustomMetric: async (metricId: string, timeframe: string = '24h') => {
+        getCustomMetric: async (
+          metricId: string,
+          timeframe: string = '24h'
+        ) => {
           if (!metricId) throw new Error('Metric ID is required')
 
           return {
@@ -203,7 +231,7 @@ describe('Analytics Service', () => {
             timeframe,
             trend: 'up',
             change: 2.3,
-            lastUpdated: new Date().toISOString()
+            lastUpdated: new Date().toISOString(),
           }
         },
 
@@ -214,7 +242,7 @@ describe('Analytics Service', () => {
             recordCount: 1500,
             exportedAt: new Date().toISOString(),
             downloadUrl: `https://example.com/exports/analytics_${Date.now()}.${format}`,
-            expiresAt: new Date(Date.now() + 3600000).toISOString()
+            expiresAt: new Date(Date.now() + 3600000).toISOString(),
           }
         },
 
@@ -226,9 +254,9 @@ describe('Analytics Service', () => {
             topPages: [
               { page: '/dashboard', activeUsers: 35 },
               { page: '/translate', activeUsers: 28 },
-              { page: '/', activeUsers: 20 }
+              { page: '/', activeUsers: 20 },
             ],
-            lastUpdated: new Date().toISOString()
+            lastUpdated: new Date().toISOString(),
           }
         },
 
@@ -239,30 +267,36 @@ describe('Analytics Service', () => {
             counter: counterName,
             value: value,
             newTotal: 150 + value,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           }
         },
 
         setGauge: async (gaugeName: string, value: number) => {
           if (!gaugeName) throw new Error('Gauge name is required')
-          if (typeof value !== 'number') throw new Error('Value must be a number')
+          if (typeof value !== 'number')
+            throw new Error('Value must be a number')
 
           return {
             gauge: gaugeName,
             value,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           }
         },
 
-        trackTiming: async (operation: string, duration: number, userId?: string) => {
+        trackTiming: async (
+          operation: string,
+          duration: number,
+          userId?: string
+        ) => {
           if (!operation) throw new Error('Operation is required')
-          if (typeof duration !== 'number') throw new Error('Duration must be a number')
+          if (typeof duration !== 'number')
+            throw new Error('Duration must be a number')
 
           return {
             operation,
             duration,
             userId: userId || null,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           }
         },
 
@@ -276,10 +310,10 @@ describe('Analytics Service', () => {
             slowestOperations: [
               { operation: 'document_processing', avgDuration: 2500 },
               { operation: 'translation_llm', avgDuration: 1800 },
-              { operation: 'file_upload', avgDuration: 1200 }
-            ]
+              { operation: 'file_upload', avgDuration: 1200 },
+            ],
           }
-        }
+        },
       }
     }
   })
@@ -291,7 +325,11 @@ describe('Analytics Service', () => {
   describe('Event Tracking', () => {
     it('should track event with properties', async () => {
       const properties = { page: '/dashboard', button: 'translate' }
-      const result = await AnalyticsService.trackEvent('button_click', properties, 'user123')
+      const result = await AnalyticsService.trackEvent(
+        'button_click',
+        properties,
+        'user123'
+      )
 
       expect(result.id).toBeDefined()
       expect(result.name).toBe('button_click')
@@ -308,11 +346,16 @@ describe('Analytics Service', () => {
     })
 
     it('should require event name', async () => {
-      await expect(AnalyticsService.trackEvent('')).rejects.toThrow('Event name is required')
+      await expect(AnalyticsService.trackEvent('')).rejects.toThrow(
+        'Event name is required'
+      )
     })
 
     it('should track page view', async () => {
-      const result = await AnalyticsService.trackPageView('/dashboard', 'user123')
+      const result = await AnalyticsService.trackPageView(
+        '/dashboard',
+        'user123'
+      )
 
       expect(result.page).toBe('/dashboard')
       expect(result.userId).toBe('user123')
@@ -320,12 +363,18 @@ describe('Analytics Service', () => {
     })
 
     it('should require page for page view', async () => {
-      await expect(AnalyticsService.trackPageView('')).rejects.toThrow('Page is required')
+      await expect(AnalyticsService.trackPageView('')).rejects.toThrow(
+        'Page is required'
+      )
     })
 
     it('should track user action', async () => {
       const context = { feature: 'translation', language: 'vi' }
-      const result = await AnalyticsService.trackUserAction('translate_text', 'user123', context)
+      const result = await AnalyticsService.trackUserAction(
+        'translate_text',
+        'user123',
+        context
+      )
 
       expect(result.action).toBe('translate_text')
       expect(result.userId).toBe('user123')
@@ -333,8 +382,12 @@ describe('Analytics Service', () => {
     })
 
     it('should validate user action parameters', async () => {
-      await expect(AnalyticsService.trackUserAction('', 'user123')).rejects.toThrow('Action is required')
-      await expect(AnalyticsService.trackUserAction('action', '')).rejects.toThrow('User ID is required')
+      await expect(
+        AnalyticsService.trackUserAction('', 'user123')
+      ).rejects.toThrow('Action is required')
+      await expect(
+        AnalyticsService.trackUserAction('action', '')
+      ).rejects.toThrow('User ID is required')
     })
   })
 
@@ -349,7 +402,10 @@ describe('Analytics Service', () => {
     })
 
     it('should get event metrics for specific event', async () => {
-      const result = await AnalyticsService.getEventMetrics('button_click', '7d')
+      const result = await AnalyticsService.getEventMetrics(
+        'button_click',
+        '7d'
+      )
 
       expect(result.eventName).toBe('button_click')
       expect(result.timeframe).toBe('7d')
@@ -366,7 +422,9 @@ describe('Analytics Service', () => {
     })
 
     it('should require user ID for user metrics', async () => {
-      await expect(AnalyticsService.getUserMetrics('')).rejects.toThrow('User ID is required')
+      await expect(AnalyticsService.getUserMetrics('')).rejects.toThrow(
+        'User ID is required'
+      )
     })
 
     it('should get popular pages', async () => {
@@ -391,8 +449,12 @@ describe('Analytics Service', () => {
     })
 
     it('should require funnel steps', async () => {
-      await expect(AnalyticsService.getFunnelAnalysis([])).rejects.toThrow('Steps are required')
-      await expect(AnalyticsService.getFunnelAnalysis(null)).rejects.toThrow('Steps are required')
+      await expect(AnalyticsService.getFunnelAnalysis([])).rejects.toThrow(
+        'Steps are required'
+      )
+      await expect(AnalyticsService.getFunnelAnalysis(null)).rejects.toThrow(
+        'Steps are required'
+      )
     })
 
     it('should calculate conversion rates correctly', async () => {
@@ -401,7 +463,9 @@ describe('Analytics Service', () => {
 
       expect(result.steps[0].conversionRate).toBe(100)
       expect(result.steps[1].conversionRate).toBeLessThan(100)
-      expect(result.steps[2].conversionRate).toBeLessThan(result.steps[1].conversionRate)
+      expect(result.steps[2].conversionRate).toBeLessThan(
+        result.steps[1].conversionRate
+      )
     })
   })
 
@@ -449,7 +513,10 @@ describe('Analytics Service', () => {
   describe('Custom Metrics', () => {
     it('should create custom metric', async () => {
       const query = { event: 'conversion', filters: { page: '/pricing' } }
-      const result = await AnalyticsService.createCustomMetric('Pricing Conversions', query)
+      const result = await AnalyticsService.createCustomMetric(
+        'Pricing Conversions',
+        query
+      )
 
       expect(result.id).toBeDefined()
       expect(result.name).toBe('Pricing Conversions')
@@ -458,8 +525,12 @@ describe('Analytics Service', () => {
     })
 
     it('should validate custom metric parameters', async () => {
-      await expect(AnalyticsService.createCustomMetric('', {})).rejects.toThrow('Metric name is required')
-      await expect(AnalyticsService.createCustomMetric('Test', null)).rejects.toThrow('Query is required')
+      await expect(AnalyticsService.createCustomMetric('', {})).rejects.toThrow(
+        'Metric name is required'
+      )
+      await expect(
+        AnalyticsService.createCustomMetric('Test', null)
+      ).rejects.toThrow('Query is required')
     })
 
     it('should get custom metric value', async () => {
@@ -472,7 +543,9 @@ describe('Analytics Service', () => {
     })
 
     it('should require metric ID for retrieval', async () => {
-      await expect(AnalyticsService.getCustomMetric('')).rejects.toThrow('Metric ID is required')
+      await expect(AnalyticsService.getCustomMetric('')).rejects.toThrow(
+        'Metric ID is required'
+      )
     })
   })
 
@@ -536,7 +609,9 @@ describe('Analytics Service', () => {
     })
 
     it('should require counter name', async () => {
-      await expect(AnalyticsService.incrementCounter('')).rejects.toThrow('Counter name is required')
+      await expect(AnalyticsService.incrementCounter('')).rejects.toThrow(
+        'Counter name is required'
+      )
     })
 
     it('should set gauge value', async () => {
@@ -547,14 +622,22 @@ describe('Analytics Service', () => {
     })
 
     it('should validate gauge parameters', async () => {
-      await expect(AnalyticsService.setGauge('', 50)).rejects.toThrow('Gauge name is required')
-      await expect(AnalyticsService.setGauge('test', 'invalid')).rejects.toThrow('Value must be a number')
+      await expect(AnalyticsService.setGauge('', 50)).rejects.toThrow(
+        'Gauge name is required'
+      )
+      await expect(
+        AnalyticsService.setGauge('test', 'invalid')
+      ).rejects.toThrow('Value must be a number')
     })
   })
 
   describe('Performance Tracking', () => {
     it('should track operation timing', async () => {
-      const result = await AnalyticsService.trackTiming('api_request', 250, 'user123')
+      const result = await AnalyticsService.trackTiming(
+        'api_request',
+        250,
+        'user123'
+      )
 
       expect(result.operation).toBe('api_request')
       expect(result.duration).toBe(250)
@@ -568,8 +651,12 @@ describe('Analytics Service', () => {
     })
 
     it('should validate timing parameters', async () => {
-      await expect(AnalyticsService.trackTiming('', 100)).rejects.toThrow('Operation is required')
-      await expect(AnalyticsService.trackTiming('test', 'invalid')).rejects.toThrow('Duration must be a number')
+      await expect(AnalyticsService.trackTiming('', 100)).rejects.toThrow(
+        'Operation is required'
+      )
+      await expect(
+        AnalyticsService.trackTiming('test', 'invalid')
+      ).rejects.toThrow('Duration must be a number')
     })
 
     it('should get performance metrics', async () => {
@@ -587,7 +674,7 @@ describe('Analytics Service', () => {
     it('should handle database connection errors', async () => {
       mockSupabase.from().insert.mockResolvedValueOnce({
         data: null,
-        error: { message: 'Database connection failed' }
+        error: { message: 'Database connection failed' },
       })
 
       // This would be handled in the actual implementation
@@ -614,9 +701,9 @@ describe('Analytics Service', () => {
 
   describe('Performance', () => {
     it('should handle high-volume event tracking', async () => {
-      const promises = Array(100).fill(null).map((_, i) => 
-        AnalyticsService.trackEvent('bulk_test', { index: i })
-      )
+      const promises = Array(100)
+        .fill(null)
+        .map((_, i) => AnalyticsService.trackEvent('bulk_test', { index: i }))
 
       const results = await Promise.all(promises)
 
@@ -632,7 +719,7 @@ describe('Analytics Service', () => {
       await Promise.all([
         AnalyticsService.getEventMetrics(),
         AnalyticsService.getPopularPages(),
-        AnalyticsService.getUsagePatterns()
+        AnalyticsService.getUsagePatterns(),
       ])
 
       const endTime = performance.now()
@@ -654,13 +741,13 @@ describe('Analytics Service', () => {
       const sensitiveData = {
         email: 'user@example.com',
         password: 'secret123',
-        creditCard: '4242424242424242'
+        creditCard: '4242424242424242',
       }
 
       // In real implementation, sensitive fields would be filtered
       const sanitized = {
         email: '[REDACTED]',
-        action: 'login'
+        action: 'login',
       }
 
       expect(sanitized.email).toBe('[REDACTED]')

@@ -19,8 +19,8 @@ export async function POST(request: NextRequest) {
       {
         auth: {
           autoRefreshToken: false,
-          persistSession: false
-        }
+          persistSession: false,
+        },
       }
     )
 
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         credits,
-        message: 'User credits already exist'
+        message: 'User credits already exist',
       })
     }
 
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
         session_id: null,
         credits_left: 20,
         credits_used: 0,
-        tier: 'free'
+        tier: 'free',
       })
       .select()
       .single()
@@ -87,9 +87,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       credits: newCredits,
-      message: 'User credits initialized successfully'
+      message: 'User credits initialized successfully',
     })
-
   } catch (error) {
     console.error('Credits init error:', error)
     return NextResponse.json(

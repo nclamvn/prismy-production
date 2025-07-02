@@ -45,13 +45,13 @@ export class CacheManager {
     sets: 0,
     deletes: 0,
     memory: { size: 0, maxSize: 10000, usage: 0 },
-    performance: { avgGetTime: 0, avgSetTime: 0 }
+    performance: { avgGetTime: 0, avgSetTime: 0 },
   }
   private timers = new Map<string, NodeJS.Timeout>()
 
   private constructor(maxSize: number = 10000) {
     this.stats.memory.maxSize = maxSize
-    
+
     // Cleanup expired entries every 5 minutes
     setInterval(() => this.cleanup(), 5 * 60 * 1000)
   }
@@ -76,12 +76,12 @@ export class CacheManager {
     try {
       // Check memory cache first
       const entry = this.memoryCache.get(key)
-      
+
       if (entry && this.isValid(entry)) {
         entry.hits++
         this.stats.hits++
         this.updatePerformanceStats('get', performance.now() - startTime)
-        
+
         logger.debug('Cache hit', { key, source: 'memory' })
         return entry.value as T
       }
@@ -92,22 +92,21 @@ export class CacheManager {
       if (fallback) {
         logger.debug('Cache miss, executing fallback', { key })
         const value = await fallback()
-        
+
         if (value !== null && value !== undefined) {
           await this.set(key, value, config)
         }
-        
+
         this.updatePerformanceStats('get', performance.now() - startTime)
         return value
       }
 
       this.updatePerformanceStats('get', performance.now() - startTime)
       return null
-
     } catch (error) {
       logger.error('Cache get error', { error, key })
       this.updatePerformanceStats('get', performance.now() - startTime)
-      
+
       if (fallback) {
         try {
           return await fallback()
@@ -116,7 +115,7 @@ export class CacheManager {
           throw fallbackError
         }
       }
-      
+
       return null
     }
   }
@@ -143,7 +142,7 @@ export class CacheManager {
         timestamp: Date.now(),
         ttl: ttl * 1000, // Convert to milliseconds
         tags,
-        hits: 0
+        hits: 0,
       }
 
       // Set in memory cache
@@ -156,15 +155,14 @@ export class CacheManager {
         const timer = setTimeout(() => {
           this.delete(prefixedKey)
         }, ttl * 1000)
-        
+
         this.timers.set(prefixedKey, timer)
       }
 
       this.updatePerformanceStats('set', performance.now() - startTime)
-      
+
       logger.debug('Cache set', { key: prefixedKey, ttl, tags })
       return true
-
     } catch (error) {
       logger.error('Cache set error', { error, key, value })
       this.updatePerformanceStats('set', performance.now() - startTime)
@@ -178,23 +176,22 @@ export class CacheManager {
   async delete(key: string): Promise<boolean> {
     try {
       const deleted = this.memoryCache.delete(key)
-      
+
       if (deleted) {
         this.stats.deletes++
         this.updateMemoryStats()
-        
+
         // Clear timer if exists
         const timer = this.timers.get(key)
         if (timer) {
           clearTimeout(timer)
           this.timers.delete(key)
         }
-        
+
         logger.debug('Cache delete', { key })
       }
 
       return deleted
-
     } catch (error) {
       logger.error('Cache delete error', { error, key })
       return false
@@ -217,7 +214,6 @@ export class CacheManager {
 
       logger.info('Cache invalidated by tags', { tags, count: invalidated })
       return invalidated
-
     } catch (error) {
       logger.error('Cache invalidation error', { error, tags })
       return 0
@@ -240,7 +236,6 @@ export class CacheManager {
       this.updateMemoryStats()
 
       logger.info('Cache cleared')
-
     } catch (error) {
       logger.error('Cache clear error', { error })
     }
@@ -258,19 +253,21 @@ export class CacheManager {
    */
   getKeys(pattern?: string): string[] {
     const keys = Array.from(this.memoryCache.keys())
-    
+
     if (pattern) {
       const regex = new RegExp(pattern.replace(/\*/g, '.*'))
       return keys.filter(key => regex.test(key))
     }
-    
+
     return keys
   }
 
   /**
    * Warm up cache with common data
    */
-  async warmup(entries: Array<{ key: string; value: any; config?: CacheConfig }>): Promise<void> {
+  async warmup(
+    entries: Array<{ key: string; value: any; config?: CacheConfig }>
+  ): Promise<void> {
     try {
       logger.info('Starting cache warmup', { entries: entries.length })
 
@@ -279,9 +276,8 @@ export class CacheManager {
       )
 
       await Promise.allSettled(promises)
-      
-      logger.info('Cache warmup completed', { entries: entries.length })
 
+      logger.info('Cache warmup completed', { entries: entries.length })
     } catch (error) {
       logger.error('Cache warmup error', { error })
     }
@@ -297,7 +293,7 @@ export class CacheManager {
   ): T {
     return ((...args: Parameters<T>) => {
       const key = keyGenerator(...args)
-      
+
       return this.get(key, () => fn(...args), config)
     }) as T
   }
@@ -307,7 +303,7 @@ export class CacheManager {
    */
   private isValid(entry: CacheEntry): boolean {
     if (entry.ttl <= 0) return true // Permanent entry
-    return (Date.now() - entry.timestamp) < entry.ttl
+    return Date.now() - entry.timestamp < entry.ttl
   }
 
   /**
@@ -355,17 +351,24 @@ export class CacheManager {
    */
   private updateMemoryStats(): void {
     this.stats.memory.size = this.memoryCache.size
-    this.stats.memory.usage = (this.memoryCache.size / this.stats.memory.maxSize) * 100
+    this.stats.memory.usage =
+      (this.memoryCache.size / this.stats.memory.maxSize) * 100
   }
 
   /**
    * Update performance statistics
    */
-  private updatePerformanceStats(operation: 'get' | 'set', duration: number): void {
+  private updatePerformanceStats(
+    operation: 'get' | 'set',
+    duration: number
+  ): void {
     const key = operation === 'get' ? 'avgGetTime' : 'avgSetTime'
     const current = this.stats.performance[key]
-    const count = operation === 'get' ? (this.stats.hits + this.stats.misses) : this.stats.sets
-    
+    const count =
+      operation === 'get'
+        ? this.stats.hits + this.stats.misses
+        : this.stats.sets
+
     // Calculate running average
     this.stats.performance[key] = (current * (count - 1) + duration) / count
   }
@@ -376,14 +379,23 @@ export const cacheManager = CacheManager.getInstance()
 
 // Cache decorators
 export function Cached(config?: CacheConfig) {
-  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor
+  ) {
     const originalMethod = descriptor.value
 
     descriptor.value = async function (...args: any[]) {
-      const keyGenerator = () => `${target.constructor.name}:${propertyKey}:${JSON.stringify(args)}`
+      const keyGenerator = () =>
+        `${target.constructor.name}:${propertyKey}:${JSON.stringify(args)}`
       const key = keyGenerator()
 
-      return cacheManager.get(key, () => originalMethod.apply(this, args), config)
+      return cacheManager.get(
+        key,
+        () => originalMethod.apply(this, args),
+        config
+      )
     }
 
     return descriptor
@@ -391,7 +403,11 @@ export function Cached(config?: CacheConfig) {
 }
 
 export function CacheInvalidate(tags: string[]) {
-  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor
+  ) {
     const originalMethod = descriptor.value
 
     descriptor.value = async function (...args: any[]) {

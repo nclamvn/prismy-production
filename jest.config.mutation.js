@@ -9,31 +9,29 @@ const createJestConfig = nextJest({
 const customJestConfig = {
   setupFilesAfterEnv: ['<rootDir>/config/testing/jest.setup.minimal.js'],
   testEnvironment: 'jest-environment-jsdom',
-  collectCoverageFrom: [
-    'lib/utils.ts'
-  ],
+  collectCoverageFrom: ['lib/utils.ts'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },
   testMatch: [
     '<rootDir>/lib/__tests__/utils.test.ts',
     '<rootDir>/lib/__tests__/mutation-utils-focus.test.ts',
-    '<rootDir>/lib/__tests__/mutation-resistant.test.ts'
+    '<rootDir>/lib/__tests__/mutation-resistant.test.ts',
   ],
   testPathIgnorePatterns: [
     '<rootDir>/node_modules/',
     '<rootDir>/.next/',
     '<rootDir>/tests/', // Exclude Playwright tests
     '<rootDir>/config/testing/playwright.config.ts',
-    '<rootDir>/stryker-tmp/' // Exclude Stryker temp files
+    '<rootDir>/stryker-tmp/', // Exclude Stryker temp files
   ],
   coverageThreshold: {
     global: {
       branches: 70,
       functions: 70,
       lines: 70,
-      statements: 70
-    }
+      statements: 70,
+    },
   },
   coverageReporters: ['text', 'lcov', 'html'],
   testTimeout: 10000,
