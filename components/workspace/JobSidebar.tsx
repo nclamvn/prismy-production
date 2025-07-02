@@ -15,10 +15,13 @@ import {
   AlertCircle,
   FileText,
   Wifi,
-  WifiOff
+  WifiOff,
+  Video,
+  Brain
 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useMultipleJobEvents, useWebSocketConnection } from '@/lib/hooks/useJobEvents'
+import { AnimatedPanel, AnimatedList, AnimatedListItem, MotionCard, AnimatedProgress } from '@/components/motion/MotionComponents'
 
 interface JobSidebarProps {
   isOpen?: boolean
@@ -29,7 +32,7 @@ interface JobSidebarProps {
 interface Job {
   id: string
   title: string
-  type: 'translation' | 'processing' | 'analysis' | 'file-processing' | 'document-translation'
+  type: 'translation' | 'processing' | 'analysis' | 'file-processing' | 'document-translation' | 'semantic_analysis' | 'video_generation'
   status: 'queued' | 'processing' | 'completed' | 'failed' | 'cancelled' | 'retrying'
   progress: number
   createdAt: string
@@ -143,8 +146,29 @@ export function JobSidebar({
         return 'Document Translation'
       case 'document-analysis':
         return 'Document Analysis'
+      case 'semantic_analysis':
+        return 'Semantic Analysis'
+      case 'video_generation':
+        return 'Video Generation'
       default:
         return `Job ${jobId.slice(0, 8)}`
+    }
+  }
+
+  const getJobIcon = (type: string) => {
+    switch (type) {
+      case 'file-processing':
+        return <FileText className="h-4 w-4" />
+      case 'document-translation':
+        return <FileText className="h-4 w-4" />
+      case 'document-analysis':
+        return <FileText className="h-4 w-4" />
+      case 'semantic_analysis':
+        return <Brain className="h-4 w-4" />
+      case 'video_generation':
+        return <Video className="h-4 w-4" />
+      default:
+        return <FileText className="h-4 w-4" />
     }
   }
 
@@ -200,10 +224,12 @@ export function JobSidebar({
     }
   }
 
-  if (!isOpen) return null
-
   return (
-    <aside className={`w-job-sidebar bg-workspace-panel border-l border-workspace-border flex flex-col ${className}`}>
+    <AnimatedPanel 
+      isOpen={isOpen} 
+      side="right"
+      className={`w-job-sidebar bg-workspace-panel border-l border-workspace-border flex flex-col ${className}`}
+    >
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-workspace-divider">
         <div className="flex items-center space-x-2">
@@ -228,11 +254,13 @@ export function JobSidebar({
           {/* Active Jobs */}
           <div className="mb-6">
             <h3 className="text-sm font-medium text-secondary mb-3">Active Jobs</h3>
-            <div className="space-y-3">
+            <AnimatedList className="space-y-3">
               {jobs.filter(job => ['processing', 'queued'].includes(job.status)).map((job) => (
-                <div key={job.id} className="job-card">
+                <AnimatedListItem key={job.id}>
+                  <MotionCard className="job-card">
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex items-center space-x-2">
+                      {getJobIcon(job.type)}
                       {getStatusIcon(job.status)}
                       <h4 className="text-sm font-medium text-primary truncate">{job.title}</h4>
                     </div>
@@ -246,12 +274,10 @@ export function JobSidebar({
                     {/* Progress bar with real-time updates */}
                     {job.status === 'processing' && (
                       <div className="space-y-1">
-                        <div className="w-full bg-workspace-canvas rounded-full overflow-hidden">
-                          <div 
-                            className="h-2 bg-status-processing transition-all duration-300"
-                            style={{ width: `${job.progress}%` }}
-                          />
-                        </div>
+                        <AnimatedProgress 
+                          progress={job.progress}
+                          className="w-full"
+                        />
                         {/* Real-time progress message */}
                         {job.message && (
                           <div className="text-xs text-muted truncate" title={job.message}>
@@ -299,19 +325,22 @@ export function JobSidebar({
                       </Button>
                     </div>
                   </div>
-                </div>
+                  </MotionCard>
+                </AnimatedListItem>
               ))}
-            </div>
+            </AnimatedList>
           </div>
 
           {/* Completed Jobs */}
           <div>
             <h3 className="text-sm font-medium text-secondary mb-3">Recent Completed</h3>
-            <div className="space-y-3">
+            <AnimatedList className="space-y-3">
               {jobs.filter(job => ['completed', 'failed', 'cancelled'].includes(job.status)).map((job) => (
-                <div key={job.id} className="job-card">
+                <AnimatedListItem key={job.id}>
+                  <MotionCard className="job-card">
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex items-center space-x-2">
+                      {getJobIcon(job.type)}
                       {getStatusIcon(job.status)}
                       <h4 className="text-sm font-medium text-primary truncate">{job.title}</h4>
                     </div>
@@ -361,9 +390,10 @@ export function JobSidebar({
                       </Button>
                     </div>
                   </div>
-                </div>
+                  </MotionCard>
+                </AnimatedListItem>
               ))}
-            </div>
+            </AnimatedList>
           </div>
         </div>
       </div>
@@ -402,6 +432,6 @@ export function JobSidebar({
           </div>
         </div>
       </div>
-    </aside>
+    </AnimatedPanel>
   )
 }

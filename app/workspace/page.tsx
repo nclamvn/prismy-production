@@ -5,6 +5,7 @@ import { WorkspaceLayout } from '@/components/layouts/WorkspaceLayout'
 import { DocumentUpload } from '@/components/workspace/DocumentUpload'
 import { TranslationInterface } from '@/components/workspace/TranslationInterface'
 import { ChatInterface } from '@/components/workspace/ChatInterface'
+import { Logo } from '@/components/ui/Logo'
 
 interface Document {
   id: string
@@ -77,11 +78,8 @@ function WorkspaceContent() {
   const renderSidebar = () => (
     <div className="p-4">
       {/* Logo */}
-      <div className="flex items-center space-x-2 mb-6">
-        <div className="w-6 h-6 bg-accent-brand rounded flex items-center justify-center">
-          <span className="text-white font-semibold text-xs">P</span>
-        </div>
-        <span className="font-semibold text-primary">Prismy Workspace</span>
+      <div className="mb-6">
+        <Logo size={24} showText={true} textSize="sm" />
       </div>
 
       {/* Workflow Navigation */}

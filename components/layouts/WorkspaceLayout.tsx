@@ -6,6 +6,7 @@ import { SideNav } from '@/components/workspace/SideNav'
 import { JobSidebar } from '@/components/workspace/JobSidebar'
 import { CanvasArea } from '@/components/workspace/CanvasArea'
 import { AgentPane } from '@/components/workspace/AgentPane'
+import { BatchDropProvider } from '@/components/batch/BatchDropProvider'
 
 interface WorkspaceLayoutProps {
   children?: React.ReactNode
@@ -107,15 +108,16 @@ export function WorkspaceLayout({
   }
 
   return (
-    <div className={`h-screen flex flex-col bg-workspace-canvas ${className}`}>
-      {/* Top Bar - Always visible */}
-      <TopBar 
-        onToggleSidebar={handleToggleSideNav}
-        onToggleAgentPane={handleToggleAgentPane}
-      />
+    <BatchDropProvider>
+      <div className={`h-screen flex flex-col bg-workspace-canvas ${className}`}>
+        {/* Top Bar - Always visible */}
+        <TopBar 
+          onToggleSidebar={handleToggleSideNav}
+          onToggleAgentPane={handleToggleAgentPane}
+        />
 
-      {/* Main workspace grid */}
-      <div className={`flex-1 overflow-hidden ${getGridLayoutClass()}`}>
+        {/* Main workspace grid */}
+        <div className={`flex-1 overflow-hidden ${getGridLayoutClass()}`}>
         {/* Left Sidebar - SideNav */}
         {(!isMobile || !sideNavCollapsed) && (
           <SideNav
@@ -164,7 +166,7 @@ export function WorkspaceLayout({
                 className="fixed inset-0 bg-overlay z-40"
                 onClick={() => setSideNavCollapsed(true)}
               />
-              <div className="fixed left-0 top-16 bottom-0 z-50">
+              <div className="fixed left-0 top-[var(--layout-topbar-height)] bottom-0 z-50">
                 <SideNav
                   collapsed={false}
                   onToggleCollapse={() => setSideNavCollapsed(true)}
@@ -182,7 +184,7 @@ export function WorkspaceLayout({
                 className="fixed inset-0 bg-overlay z-40"
                 onClick={() => setAgentPaneOpen(false)}
               />
-              <div className="fixed right-0 top-16 bottom-0 z-50 w-full max-w-md">
+              <div className="fixed right-0 top-[var(--layout-topbar-height)] bottom-0 z-50 w-full max-w-md">
                 <AgentPane
                   isOpen={agentPaneOpen}
                   onClose={() => setAgentPaneOpen(false)}
@@ -200,7 +202,7 @@ export function WorkspaceLayout({
                 className="fixed inset-0 bg-overlay z-40"
                 onClick={() => setJobSidebarOpen(false)}
               />
-              <div className="fixed right-0 top-16 bottom-0 z-50 w-full max-w-sm">
+              <div className="fixed right-0 top-[var(--layout-topbar-height)] bottom-0 z-50 w-full max-w-sm">
                 <JobSidebar
                   isOpen={jobSidebarOpen}
                   onClose={() => setJobSidebarOpen(false)}
@@ -232,8 +234,9 @@ export function WorkspaceLayout({
         </div>
       )}
 
-      {/* Custom children content (if provided) */}
-      {children}
-    </div>
+        {/* Custom children content (if provided) */}
+        {children}
+      </div>
+    </BatchDropProvider>
   )
 }

@@ -1,8 +1,14 @@
+'use client'
+
+import { useI18n } from '@/hooks/useI18n'
+
 export default function PrivacyPage() {
+  const { t } = useI18n()
+  
   return (
     <div className="min-h-screen bg-bg-default">
       <div className="container max-w-4xl mx-auto px-4 py-16">
-        <h1 className="text-4xl font-bold text-primary mb-8">Privacy Policy</h1>
+        <h1 className="text-4xl font-bold text-primary mb-8">{t('auth.privacy_policy')}</h1>
         <div className="prose prose-gray max-w-none">
           <p className="text-secondary mb-4">
             Last updated: {new Date().toLocaleDateString()}

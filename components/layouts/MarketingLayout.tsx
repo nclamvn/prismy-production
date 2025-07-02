@@ -6,9 +6,13 @@ import { Button } from '@/components/ui/Button'
 import { UserMenu } from '@/components/auth/UserMenu'
 import { AuthModal } from '@/components/auth/AuthModal'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
+import { LanguageSelector } from '@/components/ui/LanguageSelector'
+import { Logo } from '@/components/ui/Logo'
+import { useI18n } from '@/hooks/useI18n'
 import { getBrowserClient } from '@/lib/supabase-browser'
 import { User } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
+import { Menu, X } from 'lucide-react'
 
 interface MarketingLayoutProps {
   children: React.ReactNode
@@ -23,7 +27,9 @@ export function MarketingLayout({ children }: MarketingLayoutProps) {
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
   const [mounted, setMounted] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const router = useRouter()
+  const { t } = useI18n()
 
   useEffect(() => {
     setMounted(true)
@@ -76,9 +82,12 @@ export function MarketingLayout({ children }: MarketingLayoutProps) {
       <header className="sticky top-0 z-50 bg-workspace-canvas/80 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
           <div className="flex items-center">
-            <span className="text-lg font-semibold text-primary">Prismy</span>
+            <Link href="/">
+              <Logo size={24} showText={true} textSize="md" />
+            </Link>
           </div>
 
+          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
             <a
               href="#features" // eslint-disable-line no-restricted-syntax
@@ -100,7 +109,11 @@ export function MarketingLayout({ children }: MarketingLayoutProps) {
             </a>
           </nav>
 
-          <div className="flex items-center space-x-3">
+          {/* Desktop Actions */}
+          <div className="hidden md:flex items-center space-x-3">
+            {/* Language selector */}
+            <LanguageSelector />
+            
             {/* Theme toggle */}
             <ThemeToggle />
 
@@ -108,7 +121,7 @@ export function MarketingLayout({ children }: MarketingLayoutProps) {
               <>
                 <Link href="/app">
                   <Button variant="outline" size="sm">
-                    Workspace
+                    {t('auth.workspace')}
                   </Button>
                 </Link>
                 <UserMenu />
@@ -116,15 +129,80 @@ export function MarketingLayout({ children }: MarketingLayoutProps) {
             ) : (
               <>
                 <Button variant="ghost" size="sm" onClick={handleSignIn}>
-                  Sign In
+                  {t('auth.sign_in')}
                 </Button>
                 <Button size="sm" onClick={handleGetStarted}>
-                  Get Started
+                  {t('auth.create_account')}
                 </Button>
               </>
             )}
           </div>
+
+          {/* Mobile Actions */}
+          <div className="flex md:hidden items-center space-x-2">
+            <LanguageSelector />
+            <ThemeToggle />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="h-8 w-8"
+            >
+              {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+              <span className="sr-only">Toggle menu</span>
+            </Button>
+          </div>
         </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-workspace-border bg-workspace-canvas/95 backdrop-blur">
+            <div className="px-4 py-6 space-y-4">
+              <nav className="flex flex-col space-y-4">
+                <a
+                  href="#features"
+                  className="text-secondary hover:text-primary transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Features
+                </a>
+                <a
+                  href="#pricing"
+                  className="text-secondary hover:text-primary transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Pricing
+                </a>
+                <a
+                  href="/demo"
+                  className="text-secondary hover:text-primary transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Demo
+                </a>
+              </nav>
+
+              <div className="flex flex-col space-y-3 pt-4 border-t border-workspace-border">
+                {user ? (
+                  <Link href="/app">
+                    <Button variant="outline" size="sm" className="w-full justify-center">
+                      {t('auth.workspace')}
+                    </Button>
+                  </Link>
+                ) : (
+                  <>
+                    <Button variant="ghost" size="sm" onClick={handleSignIn} className="w-full">
+                      {t('auth.sign_in')}
+                    </Button>
+                    <Button size="sm" onClick={handleGetStarted} className="w-full">
+                      {t('auth.create_account')}
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </header>
 
       {/* Main Content */}

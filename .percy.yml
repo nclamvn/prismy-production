@@ -1,0 +1,89 @@
+# Percy Visual Testing Configuration
+# UI/UX Polish Sprint - Phase 3.2: Percy Visual Testing per Locale
+
+version: 2
+
+discovery:
+  # Network idle strategy for better consistency
+  network-idle-timeout: 750
+  
+static-snapshots:
+  # Base URL for static snapshots
+  base-url: http://localhost:3000
+  
+  # Snapshot configuration
+  snapshot-files: '**/*.html'
+  ignore-files: 
+    - '**/node_modules/**'
+    - '**/.next/**'
+    - '**/coverage/**'
+    - '**/reports/**'
+
+# Multi-locale visual testing
+agent:
+  asset-discovery:
+    # Capture fonts and assets
+    network-idle-timeout: 750
+    allowed-hostnames:
+      - fonts.googleapis.com
+      - fonts.gstatic.com
+      - rsms.me
+
+# Browser and viewport configurations
+browsers:
+  - name: chrome
+    # Desktop viewports
+    additional-snapshots:
+      - name: Desktop Large
+        width: 1920
+        height: 1080
+      - name: Desktop Medium  
+        width: 1440
+        height: 900
+      - name: Desktop Small
+        width: 1280
+        height: 720
+      # Tablet viewports
+      - name: Tablet Landscape
+        width: 1024
+        height: 768
+      - name: Tablet Portrait
+        width: 768
+        height: 1024
+      # Mobile viewports
+      - name: Mobile Large
+        width: 414
+        height: 896
+      - name: Mobile Medium
+        width: 375
+        height: 667
+      - name: Mobile Small
+        width: 320
+        height: 568
+
+# RTL language support
+rtl-languages:
+  - ar
+
+# Locale-specific configurations
+locales:
+  en:
+    name: "English"
+    direction: ltr
+    font-family: "Inter, -apple-system, sans-serif"
+  vi:
+    name: "Tiếng Việt" 
+    direction: ltr
+    font-family: "Inter, -apple-system, sans-serif"
+  ja:
+    name: "日本語"
+    direction: ltr
+    font-family: "Inter, 'Noto Sans JP', sans-serif"
+  ar:
+    name: "العربية"
+    direction: rtl
+    font-family: "Inter, 'Noto Sans Arabic', sans-serif"
+  zh:
+    name: "中文"
+    direction: ltr
+    font-family: "Inter, 'Noto Sans SC', sans-serif"

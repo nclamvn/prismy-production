@@ -11,7 +11,8 @@ import {
   ChevronRight,
   Clock,
   CheckCircle,
-  XCircle
+  XCircle,
+  FolderOpen
 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 
@@ -52,6 +53,7 @@ export function SideNav({
   const navItems: NavItem[] = [
     { id: 'documents', label: 'Documents', icon: FileText, badge: 12 },
     { id: 'upload', label: 'Upload', icon: Upload },
+    { id: 'batches', label: 'Batches', icon: FolderOpen, badge: 2 },
     { id: 'translate', label: 'Translate', icon: Languages, badge: 3 },
     { id: 'agent', label: 'AI Agent', icon: Bot },
     { id: 'settings', label: 'Settings', icon: Settings },
@@ -71,7 +73,7 @@ export function SideNav({
   }
 
   return (
-    <aside className={`workspace-sidebar flex flex-col ${collapsed ? 'w-sidebar-collapsed' : 'w-sidebar'} ${className}`}>
+    <aside className={`workspace-sidebar flex flex-col ${collapsed ? 'w-sidebar-collapsed' : 'w-sidebar'} ${className}`} data-testid="side-nav">
       {/* Header */}
       <div className={`flex items-center justify-between p-4 ${collapsed ? 'px-2' : ''}`}>
         {!collapsed && (
@@ -109,6 +111,7 @@ export function SideNav({
                     : 'text-secondary hover:text-primary hover:bg-workspace-hover'
                 } ${collapsed ? 'justify-center' : 'justify-between'}`}
                 title={collapsed ? item.label : undefined}
+                data-testid={`nav-${item.id}`}
               >
                 <div className="flex items-center space-x-3">
                   <Icon className="h-4 w-4 flex-shrink-0" />

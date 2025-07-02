@@ -1,0 +1,41 @@
+/* Auto-generated Component Classes - UI/UX Polish Sprint Phase 1.1 */
+
+.btn-primary {
+  background-color: var(--pry-v2-components-button-primary-background);
+  color: var(--pry-v2-components-button-primary-text);
+  border: 1px solid var(--pry-v2-components-button-primary-border);
+  border-radius: var(--pry-v2-border-radius-md);
+  padding: var(--pry-v2-spacing-2) var(--pry-v2-spacing-4);
+  transition: all var(--pry-v2-animation-duration-fast) var(--pry-v2-animation-easing-ease-out);
+}
+
+.btn-primary:hover {
+  background-color: var(--pry-v2-components-button-primary-background-hover);
+}
+
+.workspace-panel {
+  background-color: var(--pry-v2-components-panel-workspace-background);
+  border: 1px solid var(--pry-v2-components-panel-workspace-border);
+  border-radius: var(--pry-v2-components-panel-workspace-border-radius);
+  box-shadow: var(--pry-v2-components-panel-workspace-shadow);
+}
+
+.workspace-sidebar {
+  background-color: var(--pry-v2-components-panel-sidebar-background);
+  border-right: 1px solid var(--pry-v2-components-panel-sidebar-border);
+  box-shadow: var(--pry-v2-components-panel-sidebar-shadow);
+}
+
+.job-card {
+  background-color: var(--pry-v2-workspace-canvas);
+  border: 1px solid var(--pry-v2-workspace-border);
+  border-radius: var(--pry-v2-border-radius-lg);
+  padding: var(--pry-v2-spacing-4);
+  transition: all var(--pry-v2-animation-duration-fast) var(--pry-v2-animation-easing-ease-out);
+}
+
+.job-card:hover {
+  border-color: var(--pry-v2-primary-300);
+  box-shadow: var(--pry-v2-shadows-md);
+}
+

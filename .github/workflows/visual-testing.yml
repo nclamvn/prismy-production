@@ -1,0 +1,245 @@
+name: Visual Regression Testing
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  percy-visual-tests:
+    name: Percy Multi-Locale Visual Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Build application
+        run: npm run build
+        env:
+          SKIP_ENV_VALIDATION: true
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          
+      - name: Start application
+        run: npm start &
+        env:
+          PORT: 3000
+          
+      - name: Wait for application
+        run: npx wait-on http://localhost:3000 --timeout 60000
+        
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+        
+      - name: Run Percy visual tests
+        run: npx percy exec -- npx playwright test tests/visual/multi-locale.spec.ts
+        env:
+          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+          PERCY_BRANCH: ${{ github.head_ref || github.ref_name }}
+          PERCY_COMMIT: ${{ github.sha }}
+          PERCY_PULL_REQUEST: ${{ github.event.number }}
+          
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: visual-test-results
+          path: |
+            test-results/
+            percy-snapshots/
+          retention-days: 30
+
+  storybook-visual-tests:
+    name: Storybook Visual Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Build Storybook
+        run: npm run build-storybook
+        
+      - name: Start Storybook
+        run: npx http-server storybook-static -p 6006 &
+        
+      - name: Wait for Storybook
+        run: npx wait-on http://localhost:6006 --timeout 60000
+        
+      - name: Run Storybook visual tests
+        run: |
+          npx percy storybook \
+            --widths=375,768,1024,1440,1920 \
+            --minimum-height=800 \
+            --rtl-regex=".*ar.*" \
+            --base-url=http://localhost:6006
+        env:
+          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+          PERCY_BRANCH: ${{ github.head_ref || github.ref_name }}-storybook
+          
+  mobile-visual-tests:
+    name: Mobile Visual Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Build application
+        run: npm run build
+        env:
+          SKIP_ENV_VALIDATION: true
+          
+      - name: Start application
+        run: npm start &
+        env:
+          PORT: 3000
+          
+      - name: Wait for application
+        run: npx wait-on http://localhost:3000 --timeout 60000
+        
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+        
+      - name: Run mobile visual tests
+        run: |
+          npx playwright test tests/visual/mobile-specific.spec.ts
+        env:
+          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+          PERCY_BRANCH: ${{ github.head_ref || github.ref_name }}-mobile
+          
+  rtl-visual-tests:
+    name: RTL Visual Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Build application
+        run: npm run build
+        env:
+          SKIP_ENV_VALIDATION: true
+          
+      - name: Start application
+        run: npm start &
+        env:
+          PORT: 3000
+          
+      - name: Wait for application
+        run: npx wait-on http://localhost:3000 --timeout 60000
+        
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+        
+      - name: Run RTL-specific visual tests
+        run: |
+          npx playwright test tests/visual/rtl-layout.spec.ts
+        env:
+          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+          PERCY_BRANCH: ${{ github.head_ref || github.ref_name }}-rtl
+          
+  visual-test-summary:
+    name: Visual Test Summary
+    runs-on: ubuntu-latest
+    needs: [percy-visual-tests, storybook-visual-tests, mobile-visual-tests, rtl-visual-tests]
+    if: always()
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Create visual test summary
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { context } = require('@actions/github');
+            
+            // Get job results
+            const jobs = [
+              { name: 'Percy Multi-Locale Tests', status: '${{ needs.percy-visual-tests.result }}' },
+              { name: 'Storybook Visual Tests', status: '${{ needs.storybook-visual-tests.result }}' },
+              { name: 'Mobile Visual Tests', status: '${{ needs.mobile-visual-tests.result }}' },
+              { name: 'RTL Visual Tests', status: '${{ needs.rtl-visual-tests.result }}' }
+            ];
+            
+            const passed = jobs.filter(job => job.status === 'success').length;
+            const total = jobs.length;
+            const allPassed = passed === total;
+            
+            const summary = `
+            ## 📸 Visual Regression Test Results
+            
+            **Status:** ${allPassed ? '✅ All tests passed' : '❌ Some tests failed'}
+            **Passed:** ${passed}/${total}
+            
+            ### Test Results:
+            ${jobs.map(job => {
+              const icon = job.status === 'success' ? '✅' : job.status === 'failure' ? '❌' : '⚠️';
+              return `${icon} **${job.name}:** ${job.status}`;
+            }).join('\n')}
+            
+            ### Links:
+            - [Percy Dashboard](https://percy.io/prismy/prismy-production)
+            - [Visual Test Artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            
+            ---
+            *Visual tests completed at ${new Date().toISOString()}*
+            `;
+            
+            // Post comment on PR
+            if (context.payload.pull_request) {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: summary
+              });
+            }
+            
+            // Set job summary
+            core.summary.addHeading('Visual Regression Test Results');
+            core.summary.addTable([
+              [{data: 'Test Suite', header: true}, {data: 'Status', header: true}],
+              ...jobs.map(job => [job.name, job.status])
+            ]);
+            core.summary.write();

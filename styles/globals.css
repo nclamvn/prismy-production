@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* UI/UX Polish Sprint - Phase 1.2: Conditional v2 Token Loading */
+/* Import v2 tokens and components when UI v2 is enabled */
+@import './tokens-v2.css';
+@import './components-v2.css';
+
 /* Design Token CSS Variables - Generated automatically by Tailwind plugins
  * Light mode variables are set in :root
  * Dark mode variables are set in .dark
@@ -37,6 +42,30 @@
     outline: none;
     box-shadow: 0 0 0 2px var(--color-border-focus);
     border-radius: var(--radius-sm);
+  }
+
+  /* Mobile-specific fixes */
+  @media (max-width: 768px) {
+    /* Prevent horizontal overflow */
+    body {
+      overflow-x: hidden;
+    }
+    
+    /* Ensure containers don't exceed viewport */
+    .container-content {
+      padding-left: var(--spacing-3);
+      padding-right: var(--spacing-3);
+    }
+    
+    /* Fix mobile sidebar overlay positioning */
+    .mobile-sidebar-overlay {
+      position: fixed;
+      top: var(--layout-topbar-height);
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 50;
+    }
   }
 
   /* Scrollbar styling with theming support */

@@ -1,0 +1,8 @@
+
+English: This document contains multiple languages for translation testing.
+Vietnamese: Tài liệu này chứa nhiều ngôn ngữ để thử nghiệm dịch thuật.
+Japanese: この文書には翻訳テスト用の複数の言語が含まれています。
+Chinese: 本文档包含多种语言，用于翻译测试。
+French: Ce document contient plusieurs langues pour les tests de traduction.
+German: Dieses Dokument enthält mehrere Sprachen zum Testen von Übersetzungen.
+Spanish: Este documento contiene varios idiomas para pruebas de traducción.

@@ -1,19 +1,35 @@
 {
   "version": 2,
-  "github": {
-    "silent": true
-  },
+  "name": "prismy-enterprise",
+  "alias": ["prismy.in", "www.prismy.in"],
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
   "framework": "nextjs",
-  "installCommand": "npm ci",
-  "regions": ["sin1"],
-  "functions": {
-    "app/api/**/*.ts": {
-      "maxDuration": 30
+  "installCommand": "npm ci --prefer-offline --no-audit",
+  "nodeVersion": "18.x",
+  "regions": ["sfo1", "hnd1", "fra1"],
+  "crons": [
+    {
+      "path": "/api/health",
+      "schedule": "*/5 * * * *"
     },
-    "app/api/documents/process/route.ts": {
+    {
+      "path": "/api/jobs/cleanup", 
+      "schedule": "0 2 * * *"
+    }
+  ],
+  "functions": {
+    "app/api/upload/chunk/route.ts": {
+      "maxDuration": 300
+    },
+    "app/api/workers/*/route.ts": {
+      "maxDuration": 900
+    },
+    "app/api/jobs/*/route.ts": {
       "maxDuration": 60
+    },
+    "app/api/ws/route.ts": {
+      "maxDuration": 300
     },
     "app/api/translate/route.ts": {
       "maxDuration": 45
@@ -21,13 +37,18 @@
   },
   "redirects": [
     {
-      "source": "/docs",
-      "destination": "/api-docs",
+      "source": "/workspace-direct",
+      "destination": "/workspace",
       "permanent": false
     },
     {
-      "source": "/storybook",
-      "destination": "https://prismy-storybook.vercel.app",
+      "source": "/app",
+      "destination": "/workspace",
+      "permanent": false
+    },
+    {
+      "source": "/docs",
+      "destination": "/api-docs",
       "permanent": false
     }
   ],
@@ -107,8 +128,8 @@
   ],
   "rewrites": [
     {
-      "source": "/storybook-static/(.*)",
-      "destination": "/storybook-static/$1"
+      "source": "/api/ws",
+      "destination": "/api/ws/route"
     },
     {
       "source": "/robots.txt",
@@ -122,7 +143,14 @@
   "env": {
     "NEXT_PUBLIC_APP_URL": "https://prismy.in",
     "NEXT_PUBLIC_APP_NAME": "Prismy",
-    "NEXT_PUBLIC_APP_VERSION": "2.0.0",
-    "NODE_ENV": "production"
+    "NEXT_PUBLIC_APP_VERSION": "3.6.0",
+    "NODE_ENV": "production",
+    "NEXT_TELEMETRY_DISABLED": "1"
+  },
+  "github": {
+    "enabled": true,
+    "autoAlias": true,
+    "autoJobCancelation": true,
+    "silent": false
   }
 }

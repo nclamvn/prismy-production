@@ -89,6 +89,16 @@ const nextConfig = {
   // ===== HEADERS CONFIGURATION =====
   async headers() {
     return [
+      // Font pre-connect headers for performance
+      {
+        source: '/((?!api|_next/static|_next/image|icons).*)',
+        headers: [
+          {
+            key: 'Link',
+            value: '<https://rsms.me>; rel=preconnect; crossorigin, <https://fonts.gstatic.com>; rel=preconnect; crossorigin, <https://fonts.googleapis.com>; rel=preconnect'
+          }
+        ]
+      },
       // Manifest.json - permissive headers to prevent 401
       {
         source: '/manifest.json',
@@ -167,11 +177,63 @@ const nextConfig = {
   webpack: (config, { dev, isServer }) => {
     // Production optimizations
     if (!dev && !isServer) {
-      // Enhanced chunk splitting for better caching
+      // Enhanced chunk splitting for better caching (Phase 2.2)
       config.optimization.splitChunks = {
         ...config.optimization.splitChunks,
+        chunks: 'all',
+        minSize: 20000,
+        maxSize: 200000,
         cacheGroups: {
-          ...config.optimization.splitChunks.cacheGroups,
+          // Framework chunks
+          framework: {
+            test: /[\\/]node_modules[\\/](react|react-dom|next)[\\/]/,
+            name: 'framework',
+            priority: 40,
+            chunks: 'all',
+            reuseExistingChunk: true,
+          },
+          // Framer Motion (large animation library)
+          motion: {
+            test: /[\\/]node_modules[\\/]framer-motion[\\/]/,
+            name: 'motion',
+            priority: 35,
+            chunks: 'all',
+            reuseExistingChunk: true,
+          },
+          // UI libraries (Radix, Lucide, etc.)
+          ui: {
+            test: /[\\/]node_modules[\\/](@radix-ui|lucide-react|@heroicons)[\\/]/,
+            name: 'ui-libs',
+            priority: 30,
+            chunks: 'all',
+            reuseExistingChunk: true,
+          },
+          // Document processing libraries
+          docProcessing: {
+            test: /[\\/]node_modules[\\/](tesseract|pdf|docx|mammoth|unpdf)[\\/]/,
+            name: 'doc-processing',
+            priority: 25,
+            chunks: 'async',
+            reuseExistingChunk: true,
+          },
+          // Supabase and auth
+          auth: {
+            test: /[\\/]node_modules[\\/](@supabase|@anthropic-ai)[\\/]/,
+            name: 'auth',
+            priority: 20,
+            chunks: 'all',
+            reuseExistingChunk: true,
+          },
+          // Other vendor libraries
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            priority: 10,
+            chunks: 'all',
+            minSize: 30000,
+            maxSize: 150000,
+            reuseExistingChunk: true,
+          },
           // Separate styles
           styles: {
             name: 'styles',
@@ -180,20 +242,14 @@ const nextConfig = {
             enforce: true,
             minSize: 0,
           },
-          // Separate vendor libraries
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
+          // App components
+          components: {
+            test: /[\\/](components|lib)[\\/]/,
+            name: 'components',
+            priority: 5,
             chunks: 'all',
-            minSize: 20000,
-            maxSize: 200000,
-          },
-          // Separate UI components
-          ui: {
-            test: /[\\/]components[\\/]ui[\\/]/,
-            name: 'ui-components',
-            chunks: 'all',
-            minSize: 10000,
+            minSize: 15000,
+            reuseExistingChunk: true,
           },
         },
       }

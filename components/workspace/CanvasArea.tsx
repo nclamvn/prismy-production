@@ -16,10 +16,12 @@ import {
   Filter,
   Languages,
   Bot,
-  Settings
+  Settings,
+  FolderOpen
 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { EnterpriseFileUpload } from '@/components/upload/EnterpriseFileUpload'
+import { BatchDashboard } from '@/components/batch/BatchDashboard'
 
 interface CanvasAreaProps {
   activeSection?: string
@@ -293,12 +295,18 @@ export function CanvasArea({
     </div>
   )
 
+  const renderBatchesSection = () => (
+    <BatchDashboard className="h-full" />
+  )
+
   const renderContent = () => {
     switch (activeSection) {
       case 'upload':
         return renderUploadSection()
       case 'documents':
         return renderDocumentsSection()
+      case 'batches':
+        return renderBatchesSection()
       case 'translate':
         return (
           <div className="text-center py-12">
@@ -329,7 +337,7 @@ export function CanvasArea({
   }
 
   return (
-    <main className={`flex-1 min-w-min-canvas bg-workspace-canvas p-6 overflow-y-auto ${className}`}>
+    <main className={`flex-1 min-w-min-canvas bg-workspace-canvas p-6 overflow-y-auto ${className}`} data-testid="workspace-canvas">
       {renderContent()}
     </main>
   )

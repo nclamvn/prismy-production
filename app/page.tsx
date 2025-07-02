@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { MarketingLayout } from '@/components/layouts/MarketingLayout'
 import { Button } from '@/components/ui/Button'
+import { useI18n } from '@/hooks/useI18n'
 import {
   Rocket,
   Globe,
@@ -34,6 +35,7 @@ import { useRouter } from 'next/navigation'
 export default function HomePage() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const router = useRouter()
+  const { t } = useI18n()
 
   const handleGetStarted = () => {
     router.push('/login?next=/app')
@@ -56,30 +58,29 @@ export default function HomePage() {
         <div className="container-content">
           <div className="max-w-4xl mx-auto text-center space-y-8">
             <h1 className="text-5xl md:text-6xl font-bold text-primary">
-              AI-Powered Document Translation
+              {t('homepage.hero_title')}
               <span className="block mt-2">
                 <span className="prism-gradient bg-clip-text text-transparent animate-gradient">
-                  Made Simple
+                  {t('homepage.hero_subtitle')}
                 </span>
               </span>
             </h1>
 
             <p className="text-xl text-secondary max-w-2xl mx-auto">
-              Transform your documents with enterprise-grade AI translation.
-              Upload, translate, and chat with your content in seconds.
+              {t('homepage.hero_description')}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" onClick={handleGetStarted}>
-                Workspace
+                {t('homepage.workspace_btn')}
               </Button>
               <Button size="lg" variant="outline" onClick={handleSignIn}>
-                Sign In
+                {t('homepage.sign_in_btn')}
               </Button>
             </div>
 
             <div className="text-sm text-muted">
-              No credit card required • 14-day free trial • Cancel anytime
+              {t('homepage.no_credit_card')}
             </div>
           </div>
         </div>
@@ -91,10 +92,10 @@ export default function HomePage() {
           <div className="max-w-3xl mx-auto space-y-8">
             <div className="text-center space-y-4">
               <h2 className="text-3xl font-bold text-primary">
-                Try It Now - No Sign Up Required
+                {t('homepage.try_now')}
               </h2>
               <p className="text-lg text-secondary">
-                Drop a document below to see Prismy in action
+                {t('homepage.try_description')}
               </p>
             </div>
 
@@ -108,10 +109,10 @@ export default function HomePage() {
                 <Rocket size={48} className="text-accent-brand mx-auto" />
                 <div>
                   <h3 className="text-xl font-semibold text-primary mb-2">
-                    Drop Your Document Here
+                    {t('homepage.drop_document')}
                   </h3>
                   <p className="text-muted">
-                    PDF, DOCX, or TXT files up to 10MB
+                    {t('homepage.pdf_docx_txt')}
                   </p>
                 </div>
               </div>
@@ -120,7 +121,7 @@ export default function HomePage() {
             {selectedFiles.length > 0 && (
               <div className="bg-accent-brand-light border border-accent-brand/20 rounded-lg p-4">
                 <p className="text-accent-brand text-center">
-                  Great! Sign up to start translating "{selectedFiles[0].name}"
+                  {t('homepage.sign_up_to_translate', { fileName: selectedFiles[0].name })}
                 </p>
               </div>
             )}
@@ -133,44 +134,43 @@ export default function HomePage() {
         <div className="container-content">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-primary mb-4">
-              Everything You Need for Document Intelligence
+              {t('homepage.everything_you_need')}
             </h2>
             <p className="text-lg text-secondary max-w-2xl mx-auto">
-              Powerful features designed for teams who work with multilingual
-              content
+              {t('homepage.powerful_features')}
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             <FeatureCard
               icon={<Globe size={24} className="text-accent-brand" />}
-              title="50+ Languages"
-              description="Translate between major world languages with AI-powered accuracy"
+              title={t('homepage.features.50_languages')}
+              description={t('homepage.features.50_languages_desc')}
             />
             <FeatureCard
               icon={<Zap size={24} className="text-accent-brand" />}
-              title="Lightning Fast"
-              description="Process documents in seconds, not hours. Built for speed at scale"
+              title={t('homepage.features.lightning_fast')}
+              description={t('homepage.features.lightning_fast_desc')}
             />
             <FeatureCard
               icon={<Shield size={24} className="text-accent-brand" />}
-              title="Enterprise Security"
-              description="Bank-level encryption and SOC 2 compliance for your sensitive data"
+              title={t('homepage.features.enterprise_security')}
+              description={t('homepage.features.enterprise_security_desc')}
             />
             <FeatureCard
               icon={<Bot size={24} className="text-accent-brand" />}
-              title="AI Chat Assistant"
-              description="Ask questions about your documents in any language"
+              title={t('homepage.features.ai_chat')}
+              description={t('homepage.features.ai_chat_desc')}
             />
             <FeatureCard
               icon={<BarChart3 size={24} className="text-accent-brand" />}
-              title="Batch Processing"
-              description="Upload and translate multiple documents simultaneously"
+              title={t('homepage.features.batch_processing')}
+              description={t('homepage.features.batch_processing_desc')}
             />
             <FeatureCard
               icon={<Plug size={24} className="text-accent-brand" />}
-              title="API Access"
-              description="Integrate translation capabilities into your existing workflow"
+              title={t('homepage.features.api_access')}
+              description={t('homepage.features.api_access_desc')}
             />
           </div>
         </div>
@@ -181,7 +181,7 @@ export default function HomePage() {
         <div className="container-content">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-primary mb-4">
-              Trusted by Teams Worldwide
+              {t('homepage.trusted_worldwide')}
             </h2>
           </div>
 
@@ -213,21 +213,21 @@ export default function HomePage() {
         <div className="container-content text-center">
           <div className="max-w-2xl mx-auto space-y-6">
             <h2 className="text-3xl font-bold text-primary">
-              Ready to Transform Your Document Workflow?
+              {t('homepage.ready_to_transform')}
             </h2>
             <p className="text-lg text-secondary">
-              Join thousands of teams using Prismy to break language barriers
+              {t('homepage.join_thousands')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" onClick={handleGetStarted}>
-                Workspace
+                {t('homepage.workspace_btn')}
               </Button>
               <Button
                 size="lg"
                 variant="outline"
                 onClick={() => router.push('/demo')}
               >
-                View Live Demo
+                {t('homepage.view_live_demo')}
               </Button>
             </div>
           </div>

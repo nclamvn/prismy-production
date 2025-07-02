@@ -1,15 +1,10 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter, JetBrains_Mono } from 'next/font/google'
+import { JetBrains_Mono } from 'next/font/google'
 import '@/styles/globals.css'
 import { ClientProviders } from '@/components/providers/ClientProviders'
 import { designTokens } from '@/lib/design-tokens'
-
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
-  weight: ['300', '400', '500', '600', '700'], // Design Doctrine: 300-700 range
-})
+import { THEME_INIT_SCRIPT } from '@/lib/theme/theme-system'
+import { inter, fontOptimizationScript } from '@/lib/fonts/font-setup'
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
@@ -53,6 +48,17 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <head>
         <meta name="version" content="2.0.0-vNEXT" />
+        <meta name="theme-color" content="#fafafa" />
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+        <script dangerouslySetInnerHTML={{ __html: fontOptimizationScript }} />
+        <link 
+          rel="preconnect" 
+          href={process.env.NEXT_PUBLIC_SUPABASE_URL} 
+          crossOrigin="anonymous"
+        />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://rsms.me" crossOrigin="anonymous" />
       </head>
       <body className="font-sans antialiased bg-default text-primary">
         <ClientProviders>{children}</ClientProviders>

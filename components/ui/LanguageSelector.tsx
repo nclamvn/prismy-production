@@ -9,14 +9,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import type { Locale } from '@/contexts/I18nContext'
 
 const languages = [
-  { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'vi', name: 'Tiếng Việt', flag: '🇻🇳' },
+  { code: 'en' as Locale, name: 'English', flag: '🇺🇸' },
+  { code: 'vi' as Locale, name: 'Tiếng Việt', flag: '🇻🇳' },
 ] as const
 
 export function LanguageSelector() {
-  const { locale, setLocale } = useI18n()
+  const { locale, setLocale, t } = useI18n()
 
   const currentLanguage = languages.find(lang => lang.code === locale)
 
@@ -27,7 +28,7 @@ export function LanguageSelector() {
           <span className="text-base">
             {currentLanguage?.flag || <Globe size={16} />}
           </span>
-          <span className="sr-only">Change language</span>
+          <span className="sr-only">{t('language_selector.change_language')}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-40">
@@ -38,7 +39,7 @@ export function LanguageSelector() {
             className={locale === language.code ? 'bg-accent' : ''}
           >
             <span className="mr-2 text-base">{language.flag}</span>
-            <span>{language.name}</span>
+            <span>{t(`language_selector.${language.code === 'en' ? 'english' : 'vietnamese'}`)}</span>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

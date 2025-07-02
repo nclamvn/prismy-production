@@ -1,4 +1,7 @@
+'use client'
+
 import Image from 'next/image'
+import { useI18n } from '@/hooks/useI18n'
 import { cn } from '@/lib/utils'
 
 interface LogoProps {
@@ -14,6 +17,8 @@ export function Logo({
   showText = true,
   textSize = 'md',
 }: LogoProps) {
+  const { t } = useI18n()
+  
   const textSizeClasses = {
     sm: 'text-sm',
     md: 'text-lg',

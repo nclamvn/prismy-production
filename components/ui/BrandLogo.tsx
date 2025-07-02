@@ -1,5 +1,8 @@
+'use client'
+
 import Image from 'next/image'
 import Link from 'next/link'
+import { useI18n } from '@/hooks/useI18n'
 import { cn } from '@/lib/utils'
 
 interface BrandLogoProps {
@@ -15,6 +18,8 @@ export default function BrandLogo({
   linkHref = "/",
   className 
 }: BrandLogoProps) {
+  const { t } = useI18n()
+  
   const LogoContent = () => (
     <div className={cn('flex items-center gap-2', className)}>
       {/* Use a simpler approach with explicit dimensions */}
