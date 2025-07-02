@@ -124,7 +124,7 @@ jobs:
           pnpm test:e2e
 
       - name: 📊 Upload test coverage
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info

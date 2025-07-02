@@ -120,7 +120,7 @@ jobs:
         run: pnpm audit --audit-level high
 
       - name: Upload coverage reports
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         with:
           file: ./coverage/lcov.info
           flags: unittests
