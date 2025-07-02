@@ -2,9 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Design Token CSS Variables */
+/* Design Token CSS Variables - Generated automatically by Tailwind plugins
+ * Light mode variables are set in :root
+ * Dark mode variables are set in .dark
+ * Variables include all colors, spacing, layout dimensions, component sizes
+ */
+
+/* Additional font variables for Next.js font optimization */
 :root {
-  /* Fonts */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, Menlo, monospace;
 }
@@ -13,79 +18,176 @@
 @layer base {
   html {
     font-family: var(--font-sans);
+    /* Smooth color transitions for theme switching */
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   body {
-    @apply bg-canvas text-gray-900;
+    background-color: var(--color-bg-default);
+    color: var(--color-text-primary);
     font-feature-settings:
       'rlig' 1,
       'calt' 1;
+    /* Smooth theme transitions */
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
-  /* Focus styles */
+  /* Focus styles using CSS variables */
   *:focus-visible {
-    @apply outline-none ring-2 ring-border-focus ring-offset-2 ring-offset-bg-default;
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-border-focus);
+    border-radius: var(--radius-sm);
   }
 
-  /* Scrollbar styling */
+  /* Scrollbar styling with theming support */
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-bg-muted;
+    background-color: var(--color-bg-muted);
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-border-default rounded-full;
+    background-color: var(--color-border-default);
+    border-radius: var(--radius-full);
+    transition: background-color 0.2s ease;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-border-focus;
+    background-color: var(--color-border-focus);
+  }
+
+  /* Dark mode scrollbar adjustments */
+  .dark ::-webkit-scrollbar-track {
+    background-color: var(--color-bg-muted);
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    background-color: var(--color-border-default);
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-border-focus);
   }
 }
 
-/* Component patterns */
+/* Component patterns with CSS variables for theming */
 @layer components {
   /* Content container */
   .container-content {
-    @apply max-w-[1440px] mx-auto px-4;
+    max-width: 1440px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--spacing-4);
+    padding-right: var(--spacing-4);
   }
 
-  /* Workspace grid layout */
-  .workspace-grid {
-    @apply grid h-screen;
-    grid-template-columns: 280px 1fr 320px;
+  /* Workspace layout grids with responsive behavior */
+  .workspace-grid-full {
+    display: grid;
+    grid-template-columns: var(--layout-sidebar-width) 1fr var(--layout-agent-pane-width);
+    height: 100vh;
+  }
+
+  .workspace-grid-main {
+    display: grid;
+    grid-template-columns: var(--layout-sidebar-width) 1fr;
+    height: 100vh;
+  }
+
+  .workspace-grid-collapsed {
+    display: grid;
+    grid-template-columns: var(--layout-sidebar-collapsed) 1fr var(--layout-agent-pane-width);
+    height: 100vh;
+  }
+
+  .workspace-grid-mobile {
+    display: grid;
+    grid-template-columns: 1fr;
+    height: 100vh;
   }
 
   /* Marketing grid */
   .marketing-grid {
-    @apply grid gap-6;
+    display: grid;
     grid-template-columns: repeat(12, 1fr);
+    gap: var(--spacing-6);
+  }
+
+  /* Workspace semantic components */
+  .workspace-panel {
+    background-color: var(--color-workspace-panel);
+    border: 1px solid var(--color-workspace-border);
+    border-radius: var(--radius-lg);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+
+  .workspace-sidebar {
+    background-color: var(--color-workspace-sidebar);
+    border-right: 1px solid var(--color-workspace-border);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+
+  .workspace-topbar {
+    height: var(--layout-topbar-height);
+    background-color: var(--color-workspace-panel);
+    border-bottom: 1px solid var(--color-workspace-divider);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+
+  /* Component utilities using design tokens */
+  .upload-dropzone {
+    height: var(--component-upload-dropzone-height);
+    border-radius: var(--radius-2xl);
+    border: 2px dashed var(--color-workspace-border);
+    background-color: var(--color-workspace-dropzone);
+    transition: all 0.2s ease;
+  }
+
+  .upload-dropzone.active {
+    background-color: var(--color-workspace-dropzone-active);
+    border-color: var(--color-border-focus);
+  }
+
+  .job-card {
+    height: var(--component-job-card-height);
+    padding: var(--component-job-card-padding);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-workspace-panel);
+    border: 1px solid var(--color-workspace-border);
+    transition: all 0.2s ease;
+  }
+
+  .job-card:hover {
+    background-color: var(--color-workspace-hover);
+  }
+
+  .output-chip {
+    height: var(--component-output-chip-height);
+    padding: var(--component-output-chip-padding);
+    border-radius: var(--radius-full);
+    background-color: var(--color-workspace-panel);
+    border: 1px solid var(--color-workspace-border);
+    transition: all 0.2s ease;
   }
 
   /* Elevation utilities */
   .elevation-sm {
-    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    box-shadow: var(--elevation-sm);
   }
 
   .elevation-md {
-    box-shadow:
-      0 4px 6px -1px rgb(0 0 0 / 0.1),
-      0 2px 4px -2px rgb(0 0 0 / 0.1);
+    box-shadow: var(--elevation-md);
   }
 
   .elevation-lg {
-    box-shadow:
-      0 10px 15px -3px rgb(0 0 0 / 0.1),
-      0 4px 6px -4px rgb(0 0 0 / 0.1);
+    box-shadow: var(--elevation-lg);
   }
 
   .elevation-xl {
-    box-shadow:
-      0 20px 25px -5px rgb(0 0 0 / 0.1),
-      0 8px 10px -6px rgb(0 0 0 / 0.1);
+    box-shadow: var(--elevation-xl);
   }
 
   /* Prism gradient animation for hero */

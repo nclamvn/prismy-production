@@ -1,89 +1,239 @@
-import React from 'react'
+'use client'
+
+import React, { useState, useEffect } from 'react'
+import { TopBar } from '@/components/workspace/TopBar'
+import { SideNav } from '@/components/workspace/SideNav' 
+import { JobSidebar } from '@/components/workspace/JobSidebar'
+import { CanvasArea } from '@/components/workspace/CanvasArea'
+import { AgentPane } from '@/components/workspace/AgentPane'
 
 interface WorkspaceLayoutProps {
-  children: React.ReactNode
-  sidebar?: React.ReactNode
-  chatPanel?: React.ReactNode
+  children?: React.ReactNode
+  className?: string
 }
 
 /**
- * Workspace Layout - NotebookML inspired
- * Three-column layout: Sidebar + Main + Chat Panel
+ * WorkspaceLayout - Enterprise-grade responsive layout system
+ * 
+ * Layout Breakpoints:
+ * - Desktop (1440px+): 3-column (SideNav + Canvas + AgentPane/JobSidebar)
+ * - Laptop (1024px+): 2-column (SideNav + Canvas) with overlay panels
+ * - Tablet (768px+): 1-column with collapsible sidebar
+ * - Mobile (640px-): Full single column with drawer navigation
  */
-export function WorkspaceLayout({
-  children,
-  sidebar,
-  chatPanel,
+export function WorkspaceLayout({ 
+  children, 
+  className = '' 
 }: WorkspaceLayoutProps) {
+  // Layout state
+  const [sideNavCollapsed, setSideNavCollapsed] = useState(false)
+  const [agentPaneOpen, setAgentPaneOpen] = useState(true)
+  const [jobSidebarOpen, setJobSidebarOpen] = useState(false)
+  const [agentPaneMaximized, setAgentPaneMaximized] = useState(false)
+  const [activeSection, setActiveSection] = useState('documents')
+  const [isMobile, setIsMobile] = useState(false)
+  const [isTablet, setIsTablet] = useState(false)
+
+  // Responsive behavior
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth
+      const newIsMobile = width < 768
+      const newIsTablet = width >= 768 && width < 1024
+      
+      setIsMobile(newIsMobile)
+      setIsTablet(newIsTablet)
+
+      // Auto-collapse sidebar on smaller screens
+      if (newIsMobile) {
+        setSideNavCollapsed(true)
+        setAgentPaneOpen(false)
+        setJobSidebarOpen(false)
+      } else if (newIsTablet) {
+        setAgentPaneOpen(false)
+        setJobSidebarOpen(false)
+      } else {
+        // Desktop - restore default state
+        setSideNavCollapsed(false)
+        setAgentPaneOpen(true)
+      }
+    }
+
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  // Layout handlers
+  const handleToggleSideNav = () => {
+    setSideNavCollapsed(!sideNavCollapsed)
+  }
+
+  const handleToggleAgentPane = () => {
+    setAgentPaneOpen(!agentPaneOpen)
+    // Close job sidebar if agent pane is opening
+    if (!agentPaneOpen && jobSidebarOpen) {
+      setJobSidebarOpen(false)
+    }
+  }
+
+  const handleToggleJobSidebar = () => {
+    setJobSidebarOpen(!jobSidebarOpen)
+    // Close agent pane if job sidebar is opening
+    if (!jobSidebarOpen && agentPaneOpen) {
+      setAgentPaneOpen(false)
+    }
+  }
+
+  const handleToggleAgentMaximize = () => {
+    setAgentPaneMaximized(!agentPaneMaximized)
+  }
+
+  const handleSectionChange = (section: string) => {
+    setActiveSection(section)
+  }
+
+  // Determine grid layout class based on current state
+  const getGridLayoutClass = () => {
+    if (agentPaneMaximized) return 'workspace-grid-mobile'
+    if (isMobile) return 'workspace-grid-mobile'
+    
+    const hasRightPanel = agentPaneOpen || jobSidebarOpen
+    
+    if (sideNavCollapsed && hasRightPanel) return 'workspace-grid-collapsed'
+    if (sideNavCollapsed && !hasRightPanel) return 'workspace-grid-main'
+    if (!sideNavCollapsed && hasRightPanel) return 'workspace-grid-full'
+    return 'workspace-grid-main'
+  }
+
   return (
-    <div className="workspace-grid">
-      {/* Sidebar */}
-      <aside className="bg-surface border-r border-muted overflow-y-auto">
-        {sidebar || <DefaultSidebar />}
-      </aside>
+    <div className={`h-screen flex flex-col bg-workspace-canvas ${className}`}>
+      {/* Top Bar - Always visible */}
+      <TopBar 
+        onToggleSidebar={handleToggleSideNav}
+        onToggleAgentPane={handleToggleAgentPane}
+      />
 
-      {/* Main Content */}
-      <main className="bg-default overflow-y-auto">{children}</main>
+      {/* Main workspace grid */}
+      <div className={`flex-1 overflow-hidden ${getGridLayoutClass()}`}>
+        {/* Left Sidebar - SideNav */}
+        {(!isMobile || !sideNavCollapsed) && (
+          <SideNav
+            collapsed={sideNavCollapsed}
+            onToggleCollapse={handleToggleSideNav}
+            activeSection={activeSection}
+            onSectionChange={handleSectionChange}
+          />
+        )}
 
-      {/* Chat Panel */}
-      {chatPanel && (
-        <aside className="bg-surface border-l border-muted overflow-y-auto">
-          {chatPanel}
-        </aside>
+        {/* Main Canvas Area */}
+        <CanvasArea 
+          activeSection={activeSection}
+          className="flex-1"
+        />
+
+        {/* Right Panel - Agent Pane or Job Sidebar */}
+        {(agentPaneOpen || jobSidebarOpen) && !isMobile && (
+          <>
+            {agentPaneOpen && (
+              <AgentPane
+                isOpen={agentPaneOpen}
+                onClose={() => setAgentPaneOpen(false)}
+                onToggleMaximize={handleToggleAgentMaximize}
+                isMaximized={agentPaneMaximized}
+              />
+            )}
+
+            {jobSidebarOpen && (
+              <JobSidebar
+                isOpen={jobSidebarOpen}
+                onClose={() => setJobSidebarOpen(false)}
+              />
+            )}
+          </>
+        )}
+      </div>
+
+      {/* Mobile overlays */}
+      {isMobile && (
+        <>
+          {/* Mobile sidebar overlay */}
+          {!sideNavCollapsed && (
+            <>
+              <div 
+                className="fixed inset-0 bg-overlay z-40"
+                onClick={() => setSideNavCollapsed(true)}
+              />
+              <div className="fixed left-0 top-16 bottom-0 z-50">
+                <SideNav
+                  collapsed={false}
+                  onToggleCollapse={() => setSideNavCollapsed(true)}
+                  activeSection={activeSection}
+                  onSectionChange={handleSectionChange}
+                />
+              </div>
+            </>
+          )}
+
+          {/* Mobile agent pane overlay */}
+          {agentPaneOpen && (
+            <>
+              <div 
+                className="fixed inset-0 bg-overlay z-40"
+                onClick={() => setAgentPaneOpen(false)}
+              />
+              <div className="fixed right-0 top-16 bottom-0 z-50 w-full max-w-md">
+                <AgentPane
+                  isOpen={agentPaneOpen}
+                  onClose={() => setAgentPaneOpen(false)}
+                  onToggleMaximize={handleToggleAgentMaximize}
+                  isMaximized={agentPaneMaximized}
+                />
+              </div>
+            </>
+          )}
+
+          {/* Mobile job sidebar overlay */}
+          {jobSidebarOpen && (
+            <>
+              <div 
+                className="fixed inset-0 bg-overlay z-40"
+                onClick={() => setJobSidebarOpen(false)}
+              />
+              <div className="fixed right-0 top-16 bottom-0 z-50 w-full max-w-sm">
+                <JobSidebar
+                  isOpen={jobSidebarOpen}
+                  onClose={() => setJobSidebarOpen(false)}
+                />
+              </div>
+            </>
+          )}
+        </>
       )}
-    </div>
-  )
-}
 
-function DefaultSidebar() {
-  return (
-    <div className="p-4">
-      <div className="mb-6">
-        <span className="font-semibold text-primary">Prismy</span>
-      </div>
+      {/* Floating Action Buttons for mobile */}
+      {isMobile && (
+        <div className="fixed bottom-4 right-4 flex flex-col space-y-2 z-30">
+          {/* Job sidebar toggle */}
+          <button
+            onClick={handleToggleJobSidebar}
+            className="w-12 h-12 bg-primary-blue text-white rounded-full shadow-lg flex items-center justify-center"
+          >
+            <span className="text-sm font-medium">Jobs</span>
+          </button>
 
-      <nav className="space-y-2">
-        <SidebarItem icon="📄" label="Documents" active />
-        <SidebarItem icon="🔄" label="Translate" />
-        <SidebarItem icon="💬" label="Chat" />
-        <SidebarItem icon="⚙️" label="Settings" />
-      </nav>
-
-      <div className="mt-8 pt-4 border-t border-muted">
-        <div className="text-xs text-muted mb-2">Recent</div>
-        <div className="space-y-1">
-          <div className="text-sm text-secondary hover:text-primary cursor-pointer py-1">
-            Annual_Report_2024.pdf
-          </div>
-          <div className="text-sm text-secondary hover:text-primary cursor-pointer py-1">
-            Contract_Review.docx
-          </div>
-          <div className="text-sm text-secondary hover:text-primary cursor-pointer py-1">
-            Meeting_Notes.txt
-          </div>
+          {/* Agent pane toggle */}
+          <button
+            onClick={handleToggleAgentPane}
+            className="w-12 h-12 bg-accent-brand text-white rounded-full shadow-lg flex items-center justify-center"
+          >
+            <span className="text-sm font-medium">AI</span>
+          </button>
         </div>
-      </div>
-    </div>
-  )
-}
+      )}
 
-interface SidebarItemProps {
-  icon: string
-  label: string
-  active?: boolean
-}
-
-function SidebarItem({ icon, label, active = false }: SidebarItemProps) {
-  return (
-    <div
-      className={`flex items-center space-x-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${
-        active
-          ? 'bg-accent-brand-light text-accent-brand'
-          : 'text-secondary hover:text-primary hover:bg-bg-muted'
-      }`}
-    >
-      <span>{icon}</span>
-      <span className="text-sm font-medium">{label}</span>
+      {/* Custom children content (if provided) */}
+      {children}
     </div>
   )
 }

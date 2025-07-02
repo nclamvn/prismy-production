@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 import { UserMenu } from '@/components/auth/UserMenu'
 import { AuthModal } from '@/components/auth/AuthModal'
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { getBrowserClient } from '@/lib/supabase-browser'
 import { User } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
@@ -70,9 +71,9 @@ export function MarketingLayout({ children }: MarketingLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-canvas">
+    <div className="min-h-screen bg-workspace-canvas">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-canvas/80 backdrop-blur">
+      <header className="sticky top-0 z-50 bg-workspace-canvas/80 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
           <div className="flex items-center">
             <span className="text-lg font-semibold text-primary">Prismy</span>
@@ -100,6 +101,9 @@ export function MarketingLayout({ children }: MarketingLayoutProps) {
           </nav>
 
           <div className="flex items-center space-x-3">
+            {/* Theme toggle */}
+            <ThemeToggle />
+
             {user ? (
               <>
                 <Link href="/app">
@@ -127,7 +131,7 @@ export function MarketingLayout({ children }: MarketingLayoutProps) {
       <main className="flex-1">{children}</main>
 
       {/* Footer */}
-      <footer className="bg-canvas border-t border-muted">
+      <footer className="bg-workspace-canvas border-t border-workspace-border">
         <div className="container-content py-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
