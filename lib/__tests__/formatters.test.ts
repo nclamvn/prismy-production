@@ -10,6 +10,9 @@ describe('Formatters', () => {
     // Mock formatters if file doesn't exist
     formatters = {
       formatCurrency: (amount: number, currency: string = 'USD') => {
+        if (amount === null || amount === undefined) {
+          throw new Error('Amount cannot be null or undefined')
+        }
         const formatter = new Intl.NumberFormat('en-US', {
           style: 'currency',
           currency,
@@ -18,6 +21,9 @@ describe('Formatters', () => {
       },
       formatDate: (date: Date | string, format?: string) => {
         const d = new Date(date)
+        if (isNaN(d.getTime())) {
+          return 'Invalid Date'
+        }
         if (format === 'short') {
           return d.toLocaleDateString()
         }
@@ -39,6 +45,9 @@ describe('Formatters', () => {
         return `${Math.floor(minutes / 1440)}d ago`
       },
       formatNumber: (num: number, decimals: number = 2) => {
+        if (num === null || num === undefined) {
+          throw new Error('Number cannot be null or undefined')
+        }
         return num.toFixed(decimals)
       },
       formatPercentage: (value: number, decimals: number = 1) => {
@@ -95,7 +104,7 @@ describe('Formatters', () => {
           .replace(/ +/g, '-')
       },
       pluralize: (count: number, singular: string, plural?: string) => {
-        if (count === 1) return singular
+        if (Math.abs(count) === 1) return singular
         return plural || singular + 's'
       },
     }

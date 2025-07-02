@@ -415,6 +415,36 @@ if (!global.console.groupEnd) {
   global.console.groupEnd = () => {}
 }
 
+// BroadcastChannel polyfill for MSW
+if (typeof global.BroadcastChannel === 'undefined') {
+  global.BroadcastChannel = class BroadcastChannel extends EventTarget {
+    constructor(name) {
+      super()
+      this.name = name
+    }
+
+    postMessage(data) {
+      // In test environment, just emit event
+      const event = new MessageEvent('message', { data })
+      this.dispatchEvent(event)
+    }
+
+    close() {}
+  }
+}
+
+// MessageEvent polyfill
+if (typeof global.MessageEvent === 'undefined') {
+  global.MessageEvent = class MessageEvent extends Event {
+    constructor(type, eventInitDict = {}) {
+      super(type, eventInitDict)
+      this.data = eventInitDict.data
+      this.origin = eventInitDict.origin || ''
+      this.source = eventInitDict.source || null
+    }
+  }
+}
+
 // Ensure global document and window are available
 if (typeof global.document === 'undefined') {
   const { JSDOM } = require('jsdom')
