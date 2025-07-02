@@ -115,7 +115,7 @@ export default function OAuthTestPage() {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/oauth-test`,
+          redirectTo: `${window.location.origin}/auth/debug-flow`,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent'

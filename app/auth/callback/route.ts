@@ -5,7 +5,13 @@ import { cookies } from 'next/headers'
 export async function GET(request: NextRequest) {
   console.log('🚨 [AUTH CALLBACK] Request received:', {
     timestamp: new Date().toISOString(),
-    url: request.url
+    url: request.url,
+    cookies: request.cookies.getAll().map(c => ({
+      name: c.name,
+      hasValue: !!c.value,
+      valueLength: c.value?.length,
+      valuePreview: c.value?.substring(0, 50)
+    }))
   })
   
   try {
@@ -40,9 +46,25 @@ export async function GET(request: NextRequest) {
         {
           cookies: {
             get(name: string) {
-              const value = cookies().get(name)?.value
-              console.log(`🍪 [COOKIE GET] ${name}:`, { hasValue: !!value })
-              return value
+              const cookieStore = cookies()
+              const cookie = cookieStore.get(name)
+              console.log(`🍪 [COOKIE GET] ${name}:`, { 
+                hasValue: !!cookie?.value,
+                valueLength: cookie?.value?.length,
+                isCodeVerifier: name.includes('code-verifier')
+              })
+              
+              // If looking for code verifier, try to find any matching cookie
+              if (!cookie && name.includes('code-verifier')) {
+                const allCookies = cookieStore.getAll()
+                const codeVerifierCookie = allCookies.find(c => c.name.includes('code-verifier'))
+                if (codeVerifierCookie) {
+                  console.log(`🔑 Found alternative code verifier: ${codeVerifierCookie.name}`)
+                  return codeVerifierCookie.value
+                }
+              }
+              
+              return cookie?.value
             },
             set(name: string, value: string, options: any) {
               console.log(`🍪 [COOKIE SET] ${name}:`, { hasValue: !!value })
@@ -57,6 +79,15 @@ export async function GET(request: NextRequest) {
       )
 
       console.log('🔄 Attempting code exchange...')
+      
+      // Debug: List all cookies before exchange
+      const cookieStore = cookies()
+      const allCookies = cookieStore.getAll()
+      console.log('🍪 All available cookies:', allCookies.map(c => ({
+        name: c.name,
+        isCodeVerifier: c.name.includes('code-verifier'),
+        valueLength: c.value?.length
+      })))
 
       // 🎯 SIMPLIFIED: Let Supabase handle PKCE automatically
       const { data: { user }, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)

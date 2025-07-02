@@ -159,7 +159,7 @@ export const getBrowserClient = (): SupabaseClient => {
         detectSessionInUrl: false, // Prevent URL conflicts
         flowType: 'pkce',
         storage: window.localStorage,
-        storageKey: `sb-prismy-auth-${instanceId}`, // Unique storage key
+        storageKey: `sb-${supabaseUrl.match(/https:\/\/([^.]+)/)?.[1]}-auth-token`, // Fixed storage key matching Supabase pattern
         debug: false,
       },
       db: {

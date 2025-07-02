@@ -13,6 +13,7 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/icons/') ||
     pathname.startsWith('/images/') ||
     pathname.startsWith('/auth/callback') ||
+    pathname.startsWith('/auth/debug') ||
     pathname === '/workspace-direct' ||
     pathname === '/oauth-test'
   ) {
