@@ -98,7 +98,7 @@ jobs:
           npm run test:e2e:load
           
       - name: 📊 Upload Test Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: test-results-${{ matrix.test-suite }}
@@ -141,7 +141,7 @@ jobs:
             -J zap-report.json || true
             
       - name: 📊 Upload Security Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: security-results
@@ -270,7 +270,7 @@ jobs:
           LHCI_BUILD_CONTEXT__COMMIT_TIME: ${{ github.event.head_commit.timestamp }}
           
       - name: 📊 Upload Preview Test Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: preview-test-results
