@@ -145,7 +145,7 @@ export default function DemoPage() {
             <h2 className="text-2xl font-semibold text-primary">
               Complete Form
             </h2>
-            <div className="bg-surface elevation-md rounded-lg p-8 max-w-2xl">
+            <div className="bg-canvas rounded-lg p-8 max-w-2xl border border-gray-200">
               <form className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -203,7 +203,7 @@ export default function DemoPage() {
                 <div className="text-sm font-medium text-primary mb-2">
                   Background Default
                 </div>
-                <div className="text-xs text-muted">bg-default (#FAFAFA)</div>
+                <div className="text-xs text-muted">bg-default (#F9FAFB)</div>
               </div>
               <div className="bg-surface p-4 rounded-lg border border-border-default">
                 <div className="text-sm font-medium text-primary mb-2">

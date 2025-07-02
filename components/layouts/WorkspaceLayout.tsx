@@ -1,5 +1,5 @@
 import React from 'react'
-import { Logo } from '@/components/ui/Logo'
+import BrandLogo from '@/components/ui/BrandLogo'
 
 interface WorkspaceLayoutProps {
   children: React.ReactNode
@@ -40,7 +40,7 @@ function DefaultSidebar() {
   return (
     <div className="p-4">
       <div className="mb-6">
-        <Logo size={24} textSize="sm" />
+        <BrandLogo size={24} showText={true} linkHref="" />
       </div>
 
       <nav className="space-y-2">

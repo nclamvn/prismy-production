@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 import { UserMenu } from '@/components/auth/UserMenu'
 import { AuthModal } from '@/components/auth/AuthModal'
-import { Logo } from '@/components/ui/Logo'
+import BrandLogo from '@/components/ui/BrandLogo'
 import { getBrowserClient } from '@/lib/supabase-browser'
 import { User } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
@@ -71,16 +71,13 @@ export function MarketingLayout({ children }: MarketingLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-default">
+    <div className="min-h-screen bg-canvas">
       {/* Header */}
-      <header className="bg-surface border-b border-muted">
-        <div className="container-content py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/">
-              <Logo size={32} />
-            </Link>
+      <header className="sticky top-0 z-50 bg-canvas/80 backdrop-blur border-b border-muted">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
+          <BrandLogo size={32} showText={true} />
 
-            <nav className="hidden md:flex items-center space-x-6">
+          <nav className="hidden md:flex items-center space-x-6">
               <a
                 href="#features" // eslint-disable-line no-restricted-syntax
                 className="text-secondary hover:text-primary transition-colors"
@@ -99,9 +96,9 @@ export function MarketingLayout({ children }: MarketingLayoutProps) {
               >
                 Demo
               </a>
-            </nav>
+          </nav>
 
-            <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-3">
               {user ? (
                 <>
                   <Link href="/app">
@@ -121,7 +118,6 @@ export function MarketingLayout({ children }: MarketingLayoutProps) {
                   </Button>
                 </>
               )}
-            </div>
           </div>
         </div>
       </header>
@@ -130,11 +126,11 @@ export function MarketingLayout({ children }: MarketingLayoutProps) {
       <main className="flex-1">{children}</main>
 
       {/* Footer */}
-      <footer className="bg-surface border-t border-muted">
+      <footer className="bg-canvas border-t border-muted">
         <div className="container-content py-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <Logo size={24} showText={false} />
+              <BrandLogo size={24} showText={false} linkHref="" />
               <span className="text-sm text-muted">
                 © 2024 Prismy. Enterprise Document Processing.
               </span>
