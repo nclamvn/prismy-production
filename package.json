@@ -49,6 +49,8 @@
     "ui:inventory": "npm run ui:audit",
     "clean": "rm -rf .next out dist coverage",
     "prepare": "husky",
+    "release": "semantic-release",
+    "coverage:badge": "npx coverage-badge-creator",
     "build-prod": "next build",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",

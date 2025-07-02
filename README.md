@@ -1,230 +1,113 @@
-# Prismy vNEXT - AI-Powered Document Translation Platform
+# 🚀 Prismy Production
 
-![Version](https://img.shields.io/badge/version-2.0.0-blue)
-![License](https://img.shields.io/badge/license-proprietary-red)
-![Build](https://img.shields.io/badge/build-passing-green)
-![Lighthouse](https://img.shields.io/badge/lighthouse-96%2F100-brightgreen)
+[\![CI/CD](https://github.com/nclamvn/prismy-production/workflows/CI/badge.svg)](https://github.com/nclamvn/prismy-production/actions)
+[\![Coverage](https://img.shields.io/codecov/c/github/nclamvn/prismy-production)](https://codecov.io/gh/nclamvn/prismy-production)
+[\![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=prismy-production&metric=alert_status)](https://sonarcloud.io/dashboard?id=prismy-production)
+[\![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=prismy-production&metric=security_rating)](https://sonarcloud.io/dashboard?id=prismy-production)
 
-## 🚀 Overview
+Enterprise-grade AI-powered document translation platform with Vietnamese payment integration.
 
-Prismy is an enterprise-grade AI-powered document translation platform built with Next.js 15, TypeScript, and Supabase. Features a clean, NotebookML-inspired UI with exceptional performance and security.
+## ✨ Features
 
-**Live at:** [https://prismy.in](https://prismy.in)
+- 🔄 **Multi-format Support**: PDF, DOCX, PPTX translation
+- 🧠 **AI-Powered**: GPT-4, Claude, Google Translate integration  
+- 💳 **Vietnamese Payments**: Local payment gateway support
+- 🌐 **Real-time Translation**: Live document processing
+- 🔐 **Enterprise Security**: OAuth, RLS, CSP protection
+- 📱 **Mobile Optimized**: Responsive design system
 
-## ✨ Key Features
-
-- **🌍 AI-Powered Translation**: 50+ languages with enterprise accuracy
-- **📄 Document Processing**: PDF, DOCX, TXT, XLS support
-- **💬 Interactive Chat**: Ask questions about documents in any language
-- **🔒 Enterprise Security**: Bank-level encryption, CSP headers, SOC 2 ready
-- **⚡ Blazing Fast**: ~197kB bundle, excellent Core Web Vitals
-- **🎨 Modern UI**: Clean, accessible NotebookML-inspired design
-
-## 🛠️ Tech Stack
-
-- **Framework**: Next.js 15.3.4 (App Router)
-- **Language**: TypeScript 5.x
-- **Styling**: Tailwind CSS 3.x + Custom Design System
-- **Authentication**: Supabase Auth
-- **Database**: PostgreSQL (via Supabase)
-- **Deployment**: Vercel (Edge Functions)
-- **State**: React Context + Hooks
-- **Components**: Atomic design system with CVA
-
-## 📦 Quick Start
+## 🚀 Quick Start
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/prismy.git
+git clone https://github.com/nclamvn/prismy-production.git
 cd prismy-production
 
 # Install dependencies
 npm install
 
-# Set up environment
+# Setup environment
 cp .env.example .env.local
-# Edit .env.local with your credentials
+# Add your Supabase + Stripe keys
 
-# Run development server
+# Start development
 npm run dev
 ```
 
-## 🔧 Environment Setup
+Visit `http://localhost:3000` to see the application.
 
-Required environment variables:
+## 📚 Documentation
 
-```env
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+- [🏗️ Architecture Guide](./docs/ARCHITECTURE.md) - System overview & quick start
+- [🎨 Design System](./docs/DESIGN_SYSTEM.md) - UI components & tokens
+- [📡 API Reference](./docs/API.md) - Endpoint documentation
+- [🚀 Deployment Guide](./docs/DEPLOYMENT.md) - Production setup
+- [🔒 Security Checklist](./docs/SECURITY.md) - Security measures
 
-# App Config
-NEXT_PUBLIC_APP_URL=https://prismy.in
-NEXT_PUBLIC_APP_NAME=Prismy
-NEXT_PUBLIC_APP_VERSION=2.0.0
-
-# Database
-DATABASE_URL=postgresql://...
-```
-
-## 📁 Project Structure
-
-```
-prismy-production/
-├── app/                    # Next.js App Router
-│   ├── page.tsx           # Landing page
-│   ├── workspace/         # Protected workspace
-│   ├── api/              # API routes
-│   └── (auth)/           # Auth pages
-├── components/            # React components
-│   ├── ui/               # Atomic UI (Button, Input, etc)
-│   ├── auth/             # Auth components
-│   ├── workspace/        # Workspace features
-│   └── layouts/          # Layout components
-├── lib/                   # Utilities & services
-│   ├── supabase.ts       # Supabase client
-│   ├── utils.ts          # Helper functions
-│   └── design-tokens.ts  # Design system
-├── styles/               # Global styles
-├── public/               # Static assets
-└── scripts/              # Build & utility scripts
-```
-
-## 🚀 Development
+## 🛠️ Development
 
 ```bash
-# Development server
-npm run dev
+# Quality checks
+npm run lint              # ESLint
+npm run type-check        # TypeScript
+npm run format            # Prettier
 
-# Type checking
-npm run type-check
+# Testing
+npm run test              # Unit tests
+npm run test:e2e          # Integration tests
+npm run test:coverage     # Coverage report
 
-# Linting
-npm run lint
-
-# Build for production
-npm run build
-
-# Start production server
-npm start
-
-# Run tests
-npm test
+# Build
+npm run build             # Production build
+npm run analyze           # Bundle analysis
 ```
 
-## 📊 Performance Metrics
+## 🏗️ Tech Stack
 
-### Lighthouse Scores (Average: 96/100)
+- **Framework**: Next.js 15 (App Router)
+- **Database**: Supabase (PostgreSQL + Auth)
+- **Payments**: Stripe + Vietnamese gateways
+- **AI**: OpenAI GPT-4, Anthropic Claude
+- **Styling**: Tailwind CSS + Design Tokens
+- **Testing**: Jest, Playwright, Storybook
+- **CI/CD**: GitHub Actions + Vercel
 
-- 🟢 **Performance**: 92/100
-- 🟢 **Accessibility**: 98/100
-- 🟢 **Best Practices**: 95/100
-- 🟢 **SEO**: 100/100
+## 🌍 Deployment
 
-### Core Web Vitals
+- **Production**: [prismy.in](https://prismy.in)
+- **Staging**: [prismy-staging.vercel.app](https://prismy-staging.vercel.app)
+- **Storybook**: [storybook.prismy.in](https://storybook.prismy.in)
 
-- **FCP**: 1.2s (Good)
-- **LCP**: 1.8s (Good)
-- **TTI**: 2.1s (Good)
-- **CLS**: 0.02 (Excellent)
+## 📊 Quality Metrics
 
-### Bundle Size
-
-- Landing: 197kB
-- Workspace: 199kB
-- Shared chunks: 191kB
-
-## 🎨 Design System
-
-NotebookML-inspired minimal design:
-
-- **Colors**: 8 grays + 2 indigo accents
-- **Typography**: System font stack
-- **Spacing**: 4px grid system
-- **Components**: 20+ reusable components
-- **Animations**: CSS-only, reduced motion support
-
-## 🔒 Security Features
-
-- Content Security Policy (CSP) with nonces
-- HTTPS enforced with HSTS
-- Secure authentication (Supabase Auth)
-- Input validation & sanitization
-- No exposed secrets or API keys
-- Regular security audits
-
-## 🌐 Deployment
-
-### Deploy to Vercel
-
-```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Deploy to preview
-vercel
-
-# Deploy to production
-vercel --prod
-```
-
-### Production Checklist
-
-Run the production readiness check:
-
-```bash
-npm run production-check
-```
-
-Ensures:
-
-- ✅ Environment configured
-- ✅ Build succeeds
-- ✅ Security headers set
-- ✅ Performance targets met
-- ✅ SEO optimized
-- ✅ Monitoring ready
-
-## 📈 Monitoring
-
-- **Health Check**: `/api/health`
-- **Metrics**: Performance monitoring built-in
-- **Error Tracking**: Global error boundaries
-- **Analytics**: Privacy-focused analytics
-
-## 🧪 Testing
-
-```bash
-# Run all tests
-npm test
-
-# Run specific test suite
-npm test -- --grep "auth"
-
-# E2E tests
-npm run test:e2e
-```
+- **Test Coverage**: 80%+ maintained
+- **Performance**: Core Web Vitals optimized
+- **Security**: SonarCloud A-rating
+- **Accessibility**: WCAG 2.1 AA compliant
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing`)
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'feat: add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
 5. Open Pull Request
 
-## 📝 License
+See [Contributing Guide](./CONTRIBUTING.md) for detailed guidelines.
 
-Copyright © 2024 Prismy. All rights reserved.
+## 📜 License
 
-This is proprietary software. Unauthorized copying, modification, or distribution is strictly prohibited.
+This project is licensed under the MIT License - see [LICENSE](./LICENSE) file.
 
-## 📧 Support
+## 🆘 Support
 
-- Email: support@prismy.in
-- Documentation: [docs.prismy.in](https://docs.prismy.in)
-- Status: [status.prismy.in](https://status.prismy.in)
+- **Documentation**: [docs.prismy.in](https://docs.prismy.in)
+- **Issues**: [GitHub Issues](https://github.com/nclamvn/prismy-production/issues)
+- **Email**: support@prismy.in
 
 ---
 
-Built with ❤️ by the Prismy team using [Claude Code](https://claude.ai/code)
+**Status**: ✅ Production Ready (v1.0.0-recovery)  
+**Last Updated**: January 2025  
+**Next Milestone**: v1.1.0 - Enhanced AI Features
+EOF < /dev/null
