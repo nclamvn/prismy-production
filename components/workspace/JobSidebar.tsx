@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { 
   X, 
   MoreVertical, 
@@ -13,9 +13,12 @@ import {
   CheckCircle,
   XCircle,
   AlertCircle,
-  FileText
+  FileText,
+  Wifi,
+  WifiOff
 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
+import { useMultipleJobEvents, useWebSocketConnection } from '@/lib/hooks/useJobEvents'
 
 interface JobSidebarProps {
   isOpen?: boolean
@@ -39,8 +42,9 @@ interface Job {
 }
 
 /**
- * JobSidebar - Right sidebar for job management
+ * JobSidebar - Right sidebar for job management (Phase 3.4-C WebSocket Integration)
  * 320px width, contains active jobs, queue, and job controls
+ * Now uses real-time WebSocket updates instead of polling
  */
 export function JobSidebar({ 
   isOpen = true,
@@ -49,13 +53,40 @@ export function JobSidebar({
 }: JobSidebarProps) {
   const [jobs, setJobs] = useState<Job[]>([])
   const [loading, setLoading] = useState(true)
+  const [jobIds, setJobIds] = useState<string[]>([])
 
-  // Fetch jobs from API
+  // WebSocket connection for real-time updates
+  const { connectionState, isConnected, connect, disconnect, error: wsError } = useWebSocketConnection()
+
+  // Real-time job progress updates
+  const { progressMap } = useMultipleJobEvents(
+    jobIds,
+    useCallback((jobId: string, progress) => {
+      console.log('[JobSidebar] Real-time progress update:', jobId, progress)
+      
+      // Update specific job with new progress
+      setJobs(prevJobs => 
+        prevJobs.map(job => 
+          job.id === jobId
+            ? {
+                ...job,
+                status: progress.status as Job['status'],
+                progress: progress.progress,
+                message: progress.message,
+                currentStep: progress.currentStep,
+                totalSteps: progress.totalSteps
+              }
+            : job
+        )
+      )
+    }, [])
+  )
+
+  // Initial job fetch (only once, then WebSocket takes over)
   useEffect(() => {
     let mounted = true
-    let pollInterval: NodeJS.Timeout
 
-    const fetchJobs = async () => {
+    const fetchInitialJobs = async () => {
       try {
         const response = await fetch('/api/jobs/queue')
         if (response.ok) {
@@ -74,11 +105,13 @@ export function JobSidebar({
               message: apiJob.progress_message,
               fileCount: 1, // Default for now
             }))
+            
             setJobs(transformedJobs)
+            setJobIds(transformedJobs.map(job => job.id))
           }
         }
       } catch (error) {
-        console.error('Failed to fetch jobs:', error)
+        console.error('Failed to fetch initial jobs:', error)
       } finally {
         if (mounted) {
           setLoading(false)
@@ -86,20 +119,21 @@ export function JobSidebar({
       }
     }
 
-    fetchJobs()
-
-    // Poll for updates every 3 seconds
     if (isOpen) {
-      pollInterval = setInterval(fetchJobs, 3000)
+      fetchInitialJobs()
     }
 
     return () => {
       mounted = false
-      if (pollInterval) {
-        clearInterval(pollInterval)
-      }
     }
   }, [isOpen])
+
+  // Connect to WebSocket when sidebar opens
+  useEffect(() => {
+    if (isOpen && connectionState === 'disconnected') {
+      connect()
+    }
+  }, [isOpen, connectionState, connect])
 
   const getJobTitle = (type: string, jobId: string) => {
     switch (type) {
@@ -172,7 +206,17 @@ export function JobSidebar({
     <aside className={`w-job-sidebar bg-workspace-panel border-l border-workspace-border flex flex-col ${className}`}>
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-workspace-divider">
-        <h2 className="font-semibold text-primary">Jobs & Tasks</h2>
+        <div className="flex items-center space-x-2">
+          <h2 className="font-semibold text-primary">Jobs & Tasks</h2>
+          {/* WebSocket connection indicator */}
+          <div className="flex items-center space-x-1">
+            {isConnected ? (
+              <Wifi className="h-3 w-3 text-status-success" title="Connected (Real-time)" />
+            ) : (
+              <WifiOff className="h-3 w-3 text-status-error" title="Disconnected" />
+            )}
+          </div>
+        </div>
         <Button variant="ghost" size="sm" onClick={onClose} className="p-1 h-6 w-6">
           <X className="h-4 w-4" />
         </Button>
@@ -199,13 +243,27 @@ export function JobSidebar({
                   </div>
 
                   <div className="space-y-2">
-                    {/* Progress bar */}
+                    {/* Progress bar with real-time updates */}
                     {job.status === 'processing' && (
-                      <div className="w-full bg-workspace-canvas rounded-full overflow-hidden">
-                        <div 
-                          className="h-2 bg-status-processing transition-all duration-500"
-                          style={{ width: `${job.progress}%` }}
-                        />
+                      <div className="space-y-1">
+                        <div className="w-full bg-workspace-canvas rounded-full overflow-hidden">
+                          <div 
+                            className="h-2 bg-status-processing transition-all duration-300"
+                            style={{ width: `${job.progress}%` }}
+                          />
+                        </div>
+                        {/* Real-time progress message */}
+                        {job.message && (
+                          <div className="text-xs text-muted truncate" title={job.message}>
+                            {job.message}
+                          </div>
+                        )}
+                        {/* Step indicator */}
+                        {job.currentStep && job.totalSteps && (
+                          <div className="text-xs text-muted">
+                            Step {job.currentStep} of {job.totalSteps}
+                          </div>
+                        )}
                       </div>
                     )}
 
@@ -310,10 +368,38 @@ export function JobSidebar({
         </div>
       </div>
 
-      {/* Footer */}
+      {/* Footer with connection status */}
       <div className="p-4 border-t border-workspace-divider">
-        <div className="text-xs text-muted text-center">
-          {jobs.filter(j => j.status === 'processing').length} active • {jobs.filter(j => j.status === 'queued').length} queued
+        <div className="text-xs text-muted text-center space-y-1">
+          <div>
+            {jobs.filter(j => j.status === 'processing').length} active • {jobs.filter(j => j.status === 'queued').length} queued
+          </div>
+          {/* Connection status */}
+          <div className="flex items-center justify-center space-x-1">
+            {isConnected ? (
+              <>
+                <Wifi className="h-3 w-3 text-status-success" />
+                <span className="text-status-success">Real-time updates</span>
+              </>
+            ) : (
+              <>
+                <WifiOff className="h-3 w-3 text-status-warning" />
+                <span className="text-status-warning">
+                  {connectionState === 'connecting' ? 'Connecting...' : 'Offline mode'}
+                </span>
+                {wsError && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={connect}
+                    className="text-xs p-1 h-4"
+                  >
+                    Retry
+                  </Button>
+                )}
+              </>
+            )}
+          </div>
         </div>
       </div>
     </aside>

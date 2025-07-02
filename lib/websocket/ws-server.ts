@@ -64,6 +64,7 @@ export class PrismyWebSocketServer {
     })
     
     this.setupEventHandlers()
+    this.setupBroadcastEndpoint()
   }
 
   /**
@@ -489,6 +490,74 @@ export class PrismyWebSocketServer {
         connectionCount: connections.size
       }))
     }
+  }
+
+  /**
+   * HTTP endpoint for broadcasting messages (for server-side integration)
+   */
+  setupBroadcastEndpoint(): void {
+    this.server.on('request', (req: any, res: any) => {
+      if (req.method === 'POST' && req.url === '/broadcast') {
+        this.handleBroadcastRequest(req, res)
+      } else if (req.method === 'GET' && req.url === '/status') {
+        this.handleStatusRequest(req, res)
+      } else {
+        res.writeHead(404, { 'Content-Type': 'text/plain' })
+        res.end('Not Found')
+      }
+    })
+  }
+
+  /**
+   * Handle broadcast requests from other services
+   */
+  private handleBroadcastRequest(req: any, res: any): void {
+    let body = ''
+    
+    req.on('data', (chunk: Buffer) => {
+      body += chunk.toString()
+    })
+    
+    req.on('end', () => {
+      try {
+        const { type, roomId, payload } = JSON.parse(body)
+        
+        // Simple authentication check
+        const authHeader = req.headers.authorization
+        const expectedAuth = `Bearer ${process.env.WS_BROADCAST_SECRET || 'fallback-secret'}`
+        
+        if (authHeader !== expectedAuth) {
+          res.writeHead(401, { 'Content-Type': 'application/json' })
+          res.end(JSON.stringify({ error: 'Unauthorized' }))
+          return
+        }
+        
+        // Broadcast the message
+        this.broadcastToRoom(roomId, { type, payload })
+        
+        res.writeHead(200, { 'Content-Type': 'application/json' })
+        res.end(JSON.stringify({ success: true, roomId, type }))
+        
+      } catch (error) {
+        console.error('[WS SERVER] Broadcast request error:', error)
+        res.writeHead(400, { 'Content-Type': 'application/json' })
+        res.end(JSON.stringify({ error: 'Invalid request' }))
+      }
+    })
+  }
+
+  /**
+   * Handle status requests
+   */
+  private handleStatusRequest(req: any, res: any): void {
+    const stats = this.getStats()
+    res.writeHead(200, { 'Content-Type': 'application/json' })
+    res.end(JSON.stringify({
+      status: 'running',
+      ...stats,
+      uptime: process.uptime(),
+      timestamp: new Date().toISOString()
+    }))
   }
 }
 
