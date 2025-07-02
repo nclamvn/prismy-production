@@ -1,1 +1,11 @@
-npx lint-staged --allow-empty
+#!/bin/sh
+
+# Run lint-staged for file-level checks
+npx lint-staged
+
+# Run essential pre-commit checks (allow warnings, block errors)
+echo "🔍 Running pre-commit quality checks..."
+npm run lint -- --max-warnings 1000 || exit 1
+npm run type-check || exit 1
+
+echo "✅ Pre-commit checks passed!"

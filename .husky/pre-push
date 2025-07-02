@@ -1,4 +1,20 @@
-#!/usr/bin/env sh
-# Temporarily disabled type-check for deployment
-# npm run type-check
-echo "Pre-push checks temporarily disabled for deployment"
+#\!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Run comprehensive quality checks before push
+echo "🔍 Running pre-push quality gates..."
+
+# Type checking
+echo "📝 Running TypeScript type check..."
+npm run type-check || exit 1
+
+# Test coverage
+echo "🧪 Running tests with coverage..."
+npm run test:coverage || exit 1
+
+# Security audit
+echo "🔒 Running security audit..."
+npm audit --audit-level moderate || exit 1
+
+echo "✅ All quality gates passed\! Ready to push."
+EOF < /dev/null
