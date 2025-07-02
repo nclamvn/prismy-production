@@ -48,16 +48,20 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <head>
         <meta name="version" content="2.0.0-vNEXT" />
-        <meta name="theme-color" content="#fafafa" />
+        <meta name="theme-color" content={designTokens.color.surface.default} />
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <script dangerouslySetInnerHTML={{ __html: fontOptimizationScript }} />
-        <link 
-          rel="preconnect" 
-          href={process.env.NEXT_PUBLIC_SUPABASE_URL} 
+        <link
+          rel="preconnect"
+          href={process.env.NEXT_PUBLIC_SUPABASE_URL}
           crossOrigin="anonymous"
         />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
         <link rel="preconnect" href="https://rsms.me" crossOrigin="anonymous" />
       </head>
       <body className="font-sans antialiased bg-default text-primary">

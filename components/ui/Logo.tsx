@@ -5,20 +5,18 @@ import { useI18n } from '@/hooks/useI18n'
 import { cn } from '@/lib/utils'
 
 interface LogoProps {
-  size?: number
   className?: string
   showText?: boolean
   textSize?: 'sm' | 'md' | 'lg'
 }
 
 export function Logo({
-  size = 32,
   className,
   showText = true,
   textSize = 'md',
 }: LogoProps) {
   const { t } = useI18n()
-  
+
   const textSizeClasses = {
     sm: 'text-sm',
     md: 'text-lg',
@@ -30,9 +28,9 @@ export function Logo({
       <Image
         src="/logo.svg"
         alt="Prismy Logo"
-        width={size}
-        height={size}
-        className="w-auto h-auto"
+        width={128}
+        height={40}
+        className="h-7 w-auto md:h-10"
         priority
       />
       {showText && (
