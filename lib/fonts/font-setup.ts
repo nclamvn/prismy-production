@@ -45,23 +45,12 @@ export const fontPreconnectUrls = [
   'https://rsms.me' // Inter font CDN
 ]
 
-// Font loading optimization script
+// Font loading optimization script - Removed manual preload to avoid conflicts with next/font
 export const fontOptimizationScript = `
 (function() {
-  // Preload critical font files
-  const criticalFonts = [
-    'https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2'
-  ];
-  
-  criticalFonts.forEach(function(url) {
-    const link = document.createElement('link');
-    link.rel = 'preload';
-    link.as = 'font';
-    link.type = 'font/woff2';
-    link.crossOrigin = 'anonymous';
-    link.href = url;
-    document.head.appendChild(link);
-  });
+  // Font optimization handled by next/font/google
+  // No manual preloading needed - prevents 404s and unused preload warnings
+  console.debug('[Font] Using next/font optimization for Inter');
 })();
 `
 
