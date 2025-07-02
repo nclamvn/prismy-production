@@ -9,7 +9,7 @@ import {
   CheckCircle,
   Plus,
 } from 'lucide-react'
-import { Button } from '@/components/ui/Button'
+// import { Button } from '@/components/ui/Button'
 
 export function DocumentTabs() {
   const {
@@ -188,7 +188,7 @@ function DocumentTab({
 }
 
 // Custom scrollbar styles (add to globals.css if needed)
-const scrollbarStyles = `
+const _scrollbarStyles = `
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;

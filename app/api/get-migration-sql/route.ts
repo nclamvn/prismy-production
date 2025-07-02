@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   const migrationSQL = `-- =====================================================
 -- PRISMY vNEXT WORKSPACE PIPELINE SCHEMA
 -- Migration: 20250701_workspace_pipeline

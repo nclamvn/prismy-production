@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
-import { RefreshCw, Bot, Languages } from 'lucide-react'
+import { RefreshCw, Bot } from 'lucide-react'
 
 interface TranslationJob {
   id: string

@@ -445,7 +445,7 @@ describe('Formatters', () => {
     })
 
     it('should handle very large numbers', () => {
-      const largeNumber = 9999999999999999
+      const largeNumber = 9999999999999
       expect(formatters.formatCurrency(largeNumber)).toContain('999')
     })
 

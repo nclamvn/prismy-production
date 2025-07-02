@@ -14,7 +14,7 @@ import { EmailForm } from './EmailForm'
 import { PhoneForm } from './PhoneForm'
 import { GoogleButton } from './GoogleButton'
 import { createClient } from '@/lib/supabase-browser'
-import Image from 'next/image'
+// import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowLeft, Sparkles } from 'lucide-react'
 

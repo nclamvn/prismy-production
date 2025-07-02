@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createSupabaseServerClient } from '@/lib/supabase-server'
+// import { createSupabaseServerClient } from '@/lib/supabase-server'
 
 // Mock Google Translate API (replace with actual implementation)
 async function translateWithGoogle(
   text: string,
-  sourceLang: string,
-  targetLang: string
+  _sourceLang: string,
+  _targetLang: string
 ): Promise<string> {
   // Simulate translation delay
   await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000))

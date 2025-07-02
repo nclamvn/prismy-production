@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
-import { Bot, Send } from 'lucide-react'
+import { Bot } from 'lucide-react'
 
 interface ChatMessage {
   id: string

@@ -72,7 +72,10 @@ describe('Job Queue', () => {
           }
         },
 
-        processJob: async (queueName: string, handler: Function) => {
+        processJob: async (
+          queueName: string,
+          handler: (data: any) => Promise<any>
+        ) => {
           if (!queueName) throw new Error('Queue name is required')
           if (!handler) throw new Error('Job handler is required')
 

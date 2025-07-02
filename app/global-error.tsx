@@ -1,5 +1,7 @@
 'use client'
 
+import Link from 'next/link'
+
 export default function GlobalError({
   error,
   reset,
@@ -35,12 +37,12 @@ export default function GlobalError({
                 Try again
               </button>
 
-              <a
+              <Link
                 href="/"
                 className="block w-full px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
               >
                 Go to homepage
-              </a>
+              </Link>
             </div>
 
             {process.env.NODE_ENV === 'development' && (

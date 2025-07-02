@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { getBrowserClient } from '@/lib/supabase-browser'
 import { User } from '@supabase/supabase-js'
-import { Button } from '@/components/ui/Button'
+// import { Button } from '@/components/ui/Button'
 
 export function UserMenu() {
   const [user, setUser] = useState<User | null>(null)

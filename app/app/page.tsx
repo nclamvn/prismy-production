@@ -40,14 +40,14 @@ export default function WorkspacePage() {
     sidebarCollapsed,
     setSidebarCollapsed,
     tier,
-    setTier,
+    setTier: _setTier,
     chatPanelOpen,
-    setChatPanelOpen,
+    setChatPanelOpen: _setChatPanelOpen,
     documents,
     activeDocumentId,
   } = useWorkspaceStore()
 
-  const { user, signOut, credits, loading: authLoading } = useAuth()
+  const { user, signOut, credits, loading: _authLoading } = useAuth()
   const [isMobile, setIsMobile] = useState(false)
   const [mounted, setMounted] = useState(false)
 

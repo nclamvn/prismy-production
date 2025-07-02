@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import '@/styles/globals.css'
 import { ClientProviders } from '@/components/providers/ClientProviders'
+import { designTokens } from '@/lib/design-tokens'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -32,7 +33,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#4E82FF', // Design Doctrine: brand-primary (exception: metadata)
+  themeColor: designTokens.color.accent[600], // Design Doctrine: brand-primary
 }
 
 export default function RootLayout({

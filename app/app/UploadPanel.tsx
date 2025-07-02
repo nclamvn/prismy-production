@@ -6,7 +6,7 @@ import { FileText, UploadCloud, Crown, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 
 export function UploadPanel() {
-  const { upload, tier, setTier } = useWorkspaceStore()
+  const { upload, tier, setTier: _setTier } = useWorkspaceStore()
   const [isDragOver, setIsDragOver] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -21,13 +21,16 @@ export function UploadPanel() {
     setIsDragOver(false)
   }, [])
 
-  const handleDrop = useCallback(async (e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragOver(false)
+  const handleDrop = useCallback(
+    async (e: React.DragEvent) => {
+      e.preventDefault()
+      setIsDragOver(false)
 
-    const files = Array.from(e.dataTransfer.files)
-    await handleUpload(files)
-  }, [])
+      const files = Array.from(e.dataTransfer.files)
+      await handleUpload(files)
+    },
+    [handleUpload]
+  )
 
   const handleFileInput = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,7 +40,7 @@ export function UploadPanel() {
       // Reset input
       e.target.value = ''
     },
-    []
+    [handleUpload]
   )
 
   const handleUpload = async (files: File[]) => {

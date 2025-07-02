@@ -7,7 +7,7 @@ function calculateCredits(tokens: number): number {
 }
 
 // Mock LLM response generator (replace with actual LLM API)
-async function* generateLLMResponse(prompt: string, documentContext: string) {
+async function* generateLLMResponse(_prompt: string, _documentContext: string) {
   const responses = [
     "I understand you're asking about the document. Let me analyze the content...",
     ' Based on my review of the document, here are the key points:',
@@ -57,7 +57,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No session found' }, { status: 401 })
     }
 
-    const { jobId, prompt, model = 'gpt-3.5-turbo' } = await request.json()
+    const {
+      jobId,
+      prompt,
+      model: _model = 'gpt-3.5-turbo',
+    } = await request.json()
 
     if (!jobId || !prompt) {
       return NextResponse.json(

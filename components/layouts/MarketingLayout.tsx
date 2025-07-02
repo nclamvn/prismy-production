@@ -84,7 +84,7 @@ export function MarketingLayout({ children }: MarketingLayoutProps) {
 
             <nav className="hidden md:flex items-center space-x-6">
               <a
-                href="#features"
+                href="#features" // eslint-disable-line no-restricted-syntax
                 className="text-secondary hover:text-primary transition-colors"
               >
                 Features

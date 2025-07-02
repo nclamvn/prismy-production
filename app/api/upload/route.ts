@@ -235,7 +235,7 @@ export async function POST(request: NextRequest) {
 
     // Database connection and table verification
     console.log('[SERVER] Testing database connection...')
-    let connectionTest = null
+    const connectionTest = null
     let connectionError = null
 
     try {
@@ -243,7 +243,7 @@ export async function POST(request: NextRequest) {
         .from('translation_jobs')
         .select('count', { count: 'exact', head: true })
 
-      connectionTest = testData
+      const _connectionTest = testData
       connectionError = testError
 
       console.log('[SERVER] Database connection test:', {

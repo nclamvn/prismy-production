@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const cookieStore = cookies()
 
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
     // Check if user has credits
     let credits = null
     if (user) {
-      const { data: creditsData, error: creditsError } = await supabase
+      const { data: creditsData, error: _creditsError } = await supabase
         .from('user_credits')
         .select('*')
         .eq('user_id', user.id)

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { designTokens } from '@/lib/design-tokens'
 
 export async function GET() {
   const manifest = {
@@ -7,8 +8,8 @@ export async function GET() {
     description: 'Enterprise-grade AI-powered document translation platform',
     start_url: '/',
     display: 'standalone',
-    background_color: '#FAFAFA',
-    theme_color: '#4F46E5',
+    background_color: designTokens.color.bg.default,
+    theme_color: designTokens.color.accent[600],
     orientation: 'portrait',
     icons: [
       {

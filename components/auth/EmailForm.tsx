@@ -23,7 +23,7 @@ export function EmailForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const { t } = useI18n()
+  const { t: _t } = useI18n()
   const supabase = createClient()
 
   const {

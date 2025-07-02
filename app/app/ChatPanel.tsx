@@ -5,7 +5,6 @@ import { useWorkspaceStore, type Document } from './hooks/useWorkspaceStore'
 import {
   Bot,
   Send,
-  Loader,
   MessageCircle,
   X,
   Sparkles,
@@ -255,7 +254,7 @@ interface ChatMessageProps {
 }
 
 function ChatMessage({ message }: ChatMessageProps) {
-  const [copied, setCopied] = useState(false)
+  const [_copied, setCopied] = useState(false)
 
   const handleCopy = async () => {
     try {

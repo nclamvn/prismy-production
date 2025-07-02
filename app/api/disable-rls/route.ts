@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   const disableRLSSQL = `-- TEMPORARY: Disable RLS to fix upload issue
 -- This allows the service role to access all tables without restriction
 

@@ -9,7 +9,6 @@ import {
   Crown,
   Loader,
   RefreshCw,
-  Eye,
   Copy,
   CheckCircle,
 } from 'lucide-react'
@@ -263,7 +262,7 @@ function ProcessingView({ document }: { document: Document }) {
 
 // Error State Component
 function ErrorView({
-  document,
+  document: _document,
   onRetry,
 }: {
   document: Document

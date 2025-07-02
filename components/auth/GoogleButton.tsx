@@ -12,7 +12,7 @@ export function GoogleButton() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const searchParams = useSearchParams()
-  const router = useRouter()
+  const _router = useRouter()
   const supabase = createClient()
 
   // 🎯 Note: Auth code detection moved to AuthLayout to ensure it works regardless of active tab
