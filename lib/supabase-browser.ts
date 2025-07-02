@@ -11,7 +11,7 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 // Multi-level singleton protection
 let supabaseInstance: SupabaseClient | null = null
 let isCreating = false
-let creationPromise: Promise<SupabaseClient> | null = null
+const creationPromise: Promise<SupabaseClient> | null = null
 
 // Global markers and locks
 declare global {
@@ -29,7 +29,7 @@ const CREATION_LOCK_KEY = 'prismy-supabase-lock'
 
 class SupabaseSingleton {
   private static instanceId: string | null = null
-  
+
   static generateInstanceId(): string {
     return `prismy-${Date.now()}-${Math.random().toString(36).substring(2)}`
   }
@@ -38,16 +38,16 @@ class SupabaseSingleton {
     try {
       const lockValue = localStorage.getItem(CREATION_LOCK_KEY)
       if (!lockValue) return false
-      
+
       const lockData = JSON.parse(lockValue)
       const now = Date.now()
-      
+
       // Lock expires after 5 seconds
       if (now - lockData.timestamp > 5000) {
         localStorage.removeItem(CREATION_LOCK_KEY)
         return false
       }
-      
+
       return lockData.locked === true
     } catch {
       return false
@@ -57,13 +57,13 @@ class SupabaseSingleton {
   static acquireLock(): boolean {
     try {
       if (this.isLocked()) return false
-      
+
       const lockData = {
         locked: true,
         timestamp: Date.now(),
-        instanceId: this.generateInstanceId()
+        instanceId: this.generateInstanceId(),
       }
-      
+
       localStorage.setItem(CREATION_LOCK_KEY, JSON.stringify(lockData))
       window.__PRISMY_SUPABASE_LOCK__ = true
       return true
@@ -93,7 +93,9 @@ class SupabaseSingleton {
 export const getBrowserClient = (): SupabaseClient => {
   // Server-side protection
   if (typeof window === 'undefined') {
-    throw new Error('getBrowserClient() can only be called in browser environment')
+    throw new Error(
+      'getBrowserClient() can only be called in browser environment'
+    )
   }
 
   // Return existing instance immediately
@@ -117,7 +119,7 @@ export const getBrowserClient = (): SupabaseClient => {
     // Wait for existing creation to complete
     let attempts = 0
     const maxAttempts = 50 // 500ms total wait
-    
+
     while (attempts < maxAttempts && !SupabaseSingleton.hasExistingInstance()) {
       attempts++
       // Synchronous wait
@@ -126,7 +128,7 @@ export const getBrowserClient = (): SupabaseClient => {
         // 10ms busy wait
       }
     }
-    
+
     if (window.__PRISMY_SUPABASE_CLIENT__) {
       supabaseInstance = window.__PRISMY_SUPABASE_CLIENT__
       return supabaseInstance
@@ -140,7 +142,7 @@ export const getBrowserClient = (): SupabaseClient => {
 
   try {
     isCreating = true
-    
+
     // Double-check after acquiring lock
     if (window.__PRISMY_SUPABASE_CLIENT__) {
       supabaseInstance = window.__PRISMY_SUPABASE_CLIENT__
@@ -181,13 +183,11 @@ export const getBrowserClient = (): SupabaseClient => {
     window.__PRISMY_SUPABASE_CLIENT__ = supabaseInstance
     window.__PRISMY_SUPABASE_CREATED__ = true
     window.__PRISMY_CREATION_TIMESTAMP__ = Date.now()
-    
+
     // Store instance tracking
     localStorage.setItem(STORAGE_KEY, instanceId)
 
-    console.log(`🔒 [Supabase] ULTIMATE singleton created: ${instanceId}`)
     return supabaseInstance
-
   } catch (error) {
     console.error('Supabase singleton creation failed:', error)
     throw error
