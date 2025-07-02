@@ -1,55 +1,27 @@
 {
   "version": 2,
-  "name": "prismy-enterprise",
-  "alias": ["prismy.in", "www.prismy.in"],
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
   "framework": "nextjs",
   "installCommand": "npm ci --prefer-offline --no-audit",
-  "nodeVersion": "18.x",
-  "regions": ["sfo1", "hnd1", "fra1"],
-  "crons": [
-    {
-      "path": "/api/health",
-      "schedule": "*/5 * * * *"
-    },
-    {
-      "path": "/api/jobs/cleanup", 
-      "schedule": "0 2 * * *"
-    }
-  ],
   "functions": {
-    "app/api/upload/chunk/route.ts": {
-      "maxDuration": 300
-    },
-    "app/api/workers/*/route.ts": {
-      "maxDuration": 900
-    },
-    "app/api/jobs/*/route.ts": {
-      "maxDuration": 60
-    },
-    "app/api/ws/route.ts": {
-      "maxDuration": 300
-    },
     "app/api/translate/route.ts": {
       "maxDuration": 45
+    },
+    "app/api/llm-chat/route.ts": {
+      "maxDuration": 60
     }
   },
   "redirects": [
     {
+      "source": "/workspace/:path*",
+      "destination": "/app/:path*",
+      "permanent": true
+    },
+    {
       "source": "/workspace-direct",
-      "destination": "/workspace",
-      "permanent": false
-    },
-    {
-      "source": "/app",
-      "destination": "/workspace",
-      "permanent": false
-    },
-    {
-      "source": "/docs",
-      "destination": "/api-docs",
-      "permanent": false
+      "destination": "/app",
+      "permanent": true
     }
   ],
   "headers": [
