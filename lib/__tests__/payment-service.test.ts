@@ -337,7 +337,7 @@ describe('Payment Service', () => {
 
   describe('Edge Cases and Error Handling', () => {
     it('should handle invalid plan keys gracefully', () => {
-      // @ts-ignore - Testing runtime behavior with invalid input
+      // @ts-expect-error - Testing runtime behavior with invalid input
       const result = getPlanId('invalid' as UnifiedSubscriptionPlan, 'stripe')
       expect(result).toBeNull()
     })

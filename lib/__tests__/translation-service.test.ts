@@ -56,9 +56,9 @@ describe('Translation Service', () => {
     jest.spyOn(console, 'error').mockImplementation()
 
     // Import after setting up mocks
-    const module = require('../translation-service')
-    PrismyTranslationService = module.PrismyTranslationService
-    translationService = module.translationService
+    const translationModule = require('../translation-service')
+    PrismyTranslationService = translationModule.PrismyTranslationService
+    translationService = translationModule.translationService
   })
 
   beforeEach(() => {
