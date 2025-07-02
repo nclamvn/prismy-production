@@ -14,8 +14,7 @@ export function useI18n() {
   const context = useContext(I18nContext)
   
   if (!context) {
-    // Return safe defaults instead of throwing error
-    console.warn('useI18n used without I18nProvider, returning defaults')
+    // Return safe defaults instead of throwing error (removed console.warn to stop spam)
     return {
       t: defaultT,
       locale: 'en' as const,
