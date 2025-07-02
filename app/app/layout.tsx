@@ -4,7 +4,6 @@ import { Home } from 'lucide-react'
 import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
 import { UserMenu } from '@/components/auth/UserMenu'
-import BrandLogo from '@/components/ui/BrandLogo'
 
 // Force dynamic rendering to avoid SSR issues with auth
 export const dynamic = 'force-dynamic'
@@ -15,13 +14,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="h-screen flex flex-col bg-canvas">
       {/* App Header */}
-      <header className="bg-canvas border-b border-muted">
+      <header className="bg-canvas">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
           <div className="flex items-center space-x-4">
             <Link href="/" className="flex items-center space-x-2">
               <Home className="h-5 w-5 text-secondary hover:text-primary transition-colors" />
             </Link>
-            <BrandLogo size={24} showText={true} linkHref="" />
+            <span className="text-lg font-semibold text-primary">
+              Prismy Workspace
+            </span>
           </div>
 
           <div className="flex items-center space-x-3">

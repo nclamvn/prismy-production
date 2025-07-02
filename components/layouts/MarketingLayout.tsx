@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 import { UserMenu } from '@/components/auth/UserMenu'
 import { AuthModal } from '@/components/auth/AuthModal'
-import BrandLogo from '@/components/ui/BrandLogo'
 import { getBrowserClient } from '@/lib/supabase-browser'
 import { User } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
@@ -73,51 +72,53 @@ export function MarketingLayout({ children }: MarketingLayoutProps) {
   return (
     <div className="min-h-screen bg-canvas">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-canvas/80 backdrop-blur border-b border-muted">
+      <header className="sticky top-0 z-50 bg-canvas/80 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
-          <BrandLogo size={32} showText={true} />
+          <div className="flex items-center">
+            <span className="text-lg font-semibold text-primary">Prismy</span>
+          </div>
 
           <nav className="hidden md:flex items-center space-x-6">
-              <a
-                href="#features" // eslint-disable-line no-restricted-syntax
-                className="text-secondary hover:text-primary transition-colors"
-              >
-                Features
-              </a>
-              <a
-                href="#pricing"
-                className="text-secondary hover:text-primary transition-colors"
-              >
-                Pricing
-              </a>
-              <a
-                href="/demo"
-                className="text-secondary hover:text-primary transition-colors"
-              >
-                Demo
-              </a>
+            <a
+              href="#features" // eslint-disable-line no-restricted-syntax
+              className="text-secondary hover:text-primary transition-colors"
+            >
+              Features
+            </a>
+            <a
+              href="#pricing"
+              className="text-secondary hover:text-primary transition-colors"
+            >
+              Pricing
+            </a>
+            <a
+              href="/demo"
+              className="text-secondary hover:text-primary transition-colors"
+            >
+              Demo
+            </a>
           </nav>
 
           <div className="flex items-center space-x-3">
-              {user ? (
-                <>
-                  <Link href="/app">
-                    <Button variant="outline" size="sm">
-                      Workspace
-                    </Button>
-                  </Link>
-                  <UserMenu />
-                </>
-              ) : (
-                <>
-                  <Button variant="ghost" size="sm" onClick={handleSignIn}>
-                    Sign In
+            {user ? (
+              <>
+                <Link href="/app">
+                  <Button variant="outline" size="sm">
+                    Workspace
                   </Button>
-                  <Button size="sm" onClick={handleGetStarted}>
-                    Get Started
-                  </Button>
-                </>
-              )}
+                </Link>
+                <UserMenu />
+              </>
+            ) : (
+              <>
+                <Button variant="ghost" size="sm" onClick={handleSignIn}>
+                  Sign In
+                </Button>
+                <Button size="sm" onClick={handleGetStarted}>
+                  Get Started
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </header>
@@ -130,7 +131,6 @@ export function MarketingLayout({ children }: MarketingLayoutProps) {
         <div className="container-content py-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <BrandLogo size={24} showText={false} linkHref="" />
               <span className="text-sm text-muted">
                 © 2024 Prismy. Enterprise Document Processing.
               </span>
