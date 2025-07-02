@@ -75,7 +75,13 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
 export function useI18n() {
   const context = useContext(I18nContext)
   if (!context) {
-    throw new Error('useI18n must be used within I18nProvider')
+    // Return safe defaults instead of throwing error (Production Fix v2.0.1)
+    console.warn('useI18n used without I18nProvider, returning defaults')
+    return {
+      locale: 'en' as Locale,
+      setLocale: () => {},
+      t: (key: string) => key.split('.').pop() || key,
+    }
   }
   return context
 }

@@ -19,10 +19,10 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://prismy.in'),
   icons: {
     icon: [
-      { url: '/favicon.svg', type: 'image/svg+xml' },
-      { url: '/favicon-32.svg', sizes: '32x32', type: 'image/svg+xml' },
-      { url: '/favicon-48.svg', sizes: '48x48', type: 'image/svg+xml' },
-      { url: '/favicon-64.svg', sizes: '64x64', type: 'image/svg+xml' },
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon-rounded.svg', type: 'image/svg+xml' },
     ],
   },
   openGraph: {
