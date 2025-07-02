@@ -58,7 +58,7 @@ jobs:
         continue-on-error: true
 
       - name: Upload Snyk report
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: snyk-report.json
@@ -78,7 +78,7 @@ jobs:
           fetch-depth: 0
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
+        uses: github/codeql-action/init@v3
         with:
           languages: javascript
           queries: security-and-quality
@@ -100,7 +100,7 @@ jobs:
         run: pnpm build
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
+        uses: github/codeql-action/analyze@v3
 
       - name: Semgrep Security Scan
         uses: returntocorp/semgrep-action@v1
@@ -136,7 +136,7 @@ jobs:
           soft_fail: true
 
       - name: Upload tfsec results
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: tfsec.sarif
@@ -151,7 +151,7 @@ jobs:
           soft_fail: true
 
       - name: Upload Checkov results
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: checkov.sarif
@@ -189,7 +189,7 @@ jobs:
           output: 'trivy-container-results.sarif'
 
       - name: Upload Trivy results
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: 'trivy-container-results.sarif'
@@ -204,7 +204,7 @@ jobs:
           summary: true
 
       - name: Upload Scout results
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: scout-results.sarif
