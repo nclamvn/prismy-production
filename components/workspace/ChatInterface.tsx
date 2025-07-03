@@ -118,7 +118,7 @@ export function ChatInterface({
   ]
 
   return (
-    <div className="flex flex-col h-full max-h-[calc(100vh-3.5rem)]">
+    <div className="flex flex-col h-full">
       {/* Header */}
       <div className="flex-shrink-0 p-4 border-b border-border-default bg-surface">
         <div className="flex items-center space-x-3">

@@ -158,7 +158,7 @@ export function SideNav({
       </div>
       
       {/* Sidebar Footer - Fixed at bottom */}
-      <SidebarFooter collapsed={collapsed} className="flex-shrink-0" />
+      <SidebarFooter collapsed={collapsed} className="mt-auto flex-shrink-0" />
     </aside>
   )
 }
