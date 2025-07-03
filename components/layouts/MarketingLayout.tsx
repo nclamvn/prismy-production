@@ -4,13 +4,19 @@ import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 import { UserMenu } from '@/components/auth/UserMenu'
-import { AuthModal } from '@/components/auth/AuthModal'
+import dynamic from 'next/dynamic'
+
+// Dynamic import for AuthModal to improve initial bundle size
+const AuthModal = dynamic(() => import('@/components/auth/AuthModal').then(mod => mod.AuthModal), {
+  ssr: false,
+  loading: () => null
+})
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { LanguageSelector } from '@/components/ui/LanguageSelector'
 import { Logo } from '@/components/ui/Logo'
 import { useI18n } from '@/hooks/useI18n'
 import { useAuth } from '@/contexts/AuthContext'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { Menu, X, Loader2 } from 'lucide-react'
 
 interface MarketingLayoutProps {
@@ -22,6 +28,14 @@ interface MarketingLayoutProps {
  * Clean, minimal, content-focused design
  */
 export function MarketingLayout({ children }: MarketingLayoutProps) {
+  const pathname = usePathname()
+  
+  // Pathname guard: Only render on marketing pages to prevent layout overlap
+  const marketingPages = ['/', '/login', '/demo', '/privacy', '/terms', '/support']
+  if (!marketingPages.includes(pathname)) {
+    return null
+  }
+
   const { user, signInWithGoogle, loading } = useAuth()
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
@@ -72,7 +86,7 @@ export function MarketingLayout({ children }: MarketingLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-workspace-canvas">
+    <div className="layout-root-marketing min-h-screen bg-workspace-canvas">
       {/* Header */}
       <header className="sticky top-0 z-10 bg-workspace-canvas/80 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">

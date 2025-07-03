@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { FileDropZone } from '@/components/ui/FileDropZone'
+import FileDropZone from '@/components/ui/FileDropZone'
 import { Button } from '@/components/ui/Button'
 import { FileText, FileEdit, Clipboard, Folder } from 'lucide-react'
 
@@ -12,6 +12,8 @@ interface UploadedDocument {
   type: string
   uploadedAt: Date
   status: 'uploading' | 'ready' | 'processing' | 'error'
+  jobId?: string
+  queuedAt?: string
 }
 
 interface DocumentUploadProps {
@@ -21,6 +23,90 @@ interface DocumentUploadProps {
 export function DocumentUpload({ onDocumentUploaded }: DocumentUploadProps) {
   const [documents, setDocuments] = useState<UploadedDocument[]>([])
   const [isProcessing, setIsProcessing] = useState(false)
+  const [translatingDocs, setTranslatingDocs] = useState<Set<string>>(new Set())
+
+  const handleTranslateDocument = async (document: UploadedDocument) => {
+    try {
+      console.log('🔄 [DocumentUpload] Starting translation for:', document.name)
+      
+      // Mark document as being translated
+      setTranslatingDocs(prev => new Set([...prev, document.id]))
+      
+      // Update document status to processing
+      setDocuments(prev =>
+        prev.map(doc =>
+          doc.id === document.id ? { ...doc, status: 'processing' } : doc
+        )
+      )
+
+      // Queue translation job via API
+      const response = await fetch('/api/jobs/queue', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'document-translation',
+          payload: {
+            documentId: document.id,
+            documentName: document.name,
+            documentSize: document.size,
+            documentType: document.type,
+            sourceLang: 'auto',
+            targetLang: 'en', // Default to English, could be made configurable
+            uploadedAt: document.uploadedAt.toISOString()
+          },
+          priority: 1, // Higher priority for translation jobs
+          retryLimit: 3
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`Failed to queue translation job: ${response.statusText}`)
+      }
+
+      const result = await response.json()
+      console.log('✅ [DocumentUpload] Translation job queued:', result)
+
+      // Store job ID with document for progress tracking
+      setDocuments(prev =>
+        prev.map(doc =>
+          doc.id === document.id 
+            ? { ...doc, jobId: result.jobId, queuedAt: result.queuedAt } 
+            : doc
+        )
+      )
+
+      // Notify parent component that translation has started
+      if (onDocumentUploaded) {
+        onDocumentUploaded({
+          ...document,
+          status: 'processing',
+          jobId: result.jobId
+        })
+      }
+      
+    } catch (error) {
+      console.error('❌ [DocumentUpload] Translation error:', error)
+      
+      // Revert document status on error
+      setDocuments(prev =>
+        prev.map(doc =>
+          doc.id === document.id ? { ...doc, status: 'error' } : doc
+        )
+      )
+      
+      // Show error to user (could be improved with a toast notification)
+      alert('Failed to start translation. Please try again.')
+    } finally {
+      // Remove from translating set
+      setTranslatingDocs(prev => {
+        const newSet = new Set(prev)
+        newSet.delete(document.id)
+        return newSet
+      })
+    }
+  }
 
   const handleFilesSelected = async (files: File[]) => {
     setIsProcessing(true)
@@ -156,8 +242,18 @@ export function DocumentUpload({ onDocumentUploaded }: DocumentUploadProps) {
                       {getStatusText(doc.status)}
                     </span>
                     {doc.status === 'ready' && (
-                      <Button size="sm" variant="outline">
-                        Translate
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => handleTranslateDocument(doc)}
+                        disabled={translatingDocs.has(doc.id)}
+                      >
+                        {translatingDocs.has(doc.id) ? 'Starting...' : 'Translate'}
+                      </Button>
+                    )}
+                    {doc.status === 'processing' && (
+                      <Button size="sm" variant="outline" disabled>
+                        Translating...
                       </Button>
                     )}
                   </div>

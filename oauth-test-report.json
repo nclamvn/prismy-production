@@ -1,0 +1,64 @@
+{
+  "totalTests": 6,
+  "passedTests": 2,
+  "failedTests": 4,
+  "successRate": 33.33333333333333,
+  "averageDuration": 6692.166666666667,
+  "overallHealth": "CRITICAL",
+  "results": [
+    {
+      "test": "OAuth Flow Performance",
+      "passed": false,
+      "duration": 5596,
+      "details": "OAuth flow failed",
+      "error": "Google login button not found",
+      "timestamp": "2025-07-03T17:24:27.283Z"
+    },
+    {
+      "test": "Session Persistence",
+      "passed": false,
+      "duration": 2997,
+      "details": "StayedOnApp: false, RedirectedToLogin: true, Loading: false",
+      "error": null,
+      "timestamp": "2025-07-03T17:24:30.280Z"
+    },
+    {
+      "test": "Sign-out Performance",
+      "passed": false,
+      "duration": 30003,
+      "details": "Sign-out test failed",
+      "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Sign\"), button:has-text(\"Logout\"), a:has-text(\"Sign\"), [data-testid=\"signout\"]').first()\u001b[22m\n",
+      "timestamp": "2025-07-03T17:25:00.283Z"
+    },
+    {
+      "test": "Domain Isolation",
+      "passed": true,
+      "duration": 284,
+      "details": "TestData preserved: true, Auth data cleared: true",
+      "error": null,
+      "timestamp": "2025-07-03T17:25:00.567Z"
+    },
+    {
+      "test": "Chat Scroll Isolation",
+      "passed": false,
+      "duration": 1272,
+      "details": "Page scroll changed: false, Chat overflow: none, Overscroll: undefined",
+      "error": null,
+      "timestamp": "2025-07-03T17:25:01.839Z"
+    },
+    {
+      "test": "Performance Monitoring",
+      "passed": true,
+      "duration": 1,
+      "details": "Navigation: 233ms, FCP: 0ms, Auth events: 0",
+      "error": null,
+      "timestamp": "2025-07-03T17:25:01.840Z"
+    }
+  ],
+  "totalDuration": 40957,
+  "timestamp": "2025-07-03T17:25:01.840Z",
+  "environment": {
+    "baseUrl": "http://localhost:3000",
+    "userAgent": "Test Suite"
+  }
+}

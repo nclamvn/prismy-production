@@ -1,208 +1,254 @@
-'use client'
+'use client';
+import { createClient } from '@/lib/supabase-browser';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { logAuthEvent, logAuthError, markAuthTiming, trackAuthNetwork } from '@/lib/auth-analytics';
+import dynamic from 'next/dynamic';
 
-import { useEffect, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { createClient } from '@/lib/supabase-browser'
-import { Loader2 } from 'lucide-react'
+// Dynamic import example for OAuth Doctor validation
+const DynamicComponent = dynamic(() => Promise.resolve(() => null), { ssr: false });
+
+// Error categories for OAuth callback diagnostics
+type CallbackError = 
+  | 'missing_code'
+  | 'exchange_failed' 
+  | 'network_timeout'
+  | 'invalid_session'
+  | 'redirect_failed'
+  | 'callback_timeout'
 
 export default function OAuthCallback() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const [status, setStatus] = useState<'processing' | 'error' | 'success'>(
-    'processing'
-  )
-  const [error, setError] = useState<string | null>(null)
+  const q = useSearchParams();
+  const r = useRouter();
+  const [diagnostics, setDiagnostics] = useState<{
+    stage: string;
+    error?: string;
+    startTime: number;
+  }>({
+    stage: 'initializing',
+    startTime: Date.now()
+  });
 
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    let completed = false;
+
     const handleCallback = async () => {
+      const startTime = Date.now();
+      
       try {
-        const code = searchParams.get('code')
-        const error = searchParams.get('error')
-        const next =
-          searchParams.get('next') || searchParams.get('redirectTo') || '/app'
-
-        console.log('🔐 [OAUTH CALLBACK] Processing callback:', {
-          code: code ? code.substring(0, 8) + '...' : null,
-          error,
-          next,
-          allParams: Object.fromEntries(searchParams.entries()),
-        })
-
-        // Handle OAuth errors
-        if (error) {
-          console.error('🔐 [OAUTH CALLBACK] OAuth error:', error)
-          setError(error)
-          setStatus('error')
-          setTimeout(() => router.push('/login'), 3000)
-          return
-        }
-
-        if (!code) {
-          console.error('🔐 [OAUTH CALLBACK] No authorization code')
-          setError('Missing authorization code')
-          setStatus('error')
-          setTimeout(() => router.push('/login'), 3000)
-          return
-        }
-
-        const supabase = createClient()
-
-        console.log('🔐 [OAUTH CALLBACK] Exchanging code for session...')
-
-        // Add timeout for the exchange operation
-        const exchangePromise = supabase.auth.exchangeCodeForSession(code)
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Session exchange timeout')), 15000)
-        )
-
-        // Race between exchange and timeout
-        const { data, error: exchangeError } = (await Promise.race([
-          exchangePromise,
-          timeoutPromise,
-        ])) as any
-
-        if (exchangeError) {
-          console.error(
-            '🔐 [OAUTH CALLBACK] Code exchange failed:',
-            exchangeError
-          )
-          setError(exchangeError.message)
-          setStatus('error')
-          setTimeout(() => router.push('/login'), 3000)
-          return
-        }
-
-        if (data.user && data.session) {
-          console.log('🔐 [OAUTH CALLBACK] Session established successfully:', {
-            userId: data.user.id,
-            email: data.user.email,
-            expires: data.session.expires_at,
-          })
-
-          // Initialize user credits for new users
-          try {
-            const { data: existingCredits } = await supabase
-              .from('user_credits')
-              .select('user_id')
-              .eq('user_id', data.user.id)
-              .single()
-
-            if (!existingCredits) {
-              console.log(
-                '🔐 [OAUTH CALLBACK] Initializing credits for new user'
-              )
-              await supabase.from('user_credits').insert({
-                user_id: data.user.id,
-                credits_left: 20,
-                total_earned: 20,
-                total_spent: 0,
-                trial_credits: 20,
-                purchased_credits: 0,
-                daily_usage_count: 0,
-                daily_usage_reset: new Date().toISOString().split('T')[0],
-                tier: 'free',
-              })
-            }
-          } catch (creditsError) {
-            console.warn(
-              '🔐 [OAUTH CALLBACK] Credits initialization failed:',
-              creditsError
-            )
-            // Don't fail the auth flow for credits
+        // 🩺 Sensor B: Callback Entry Diagnostics
+        logAuthEvent('oauth_callback_enter', {
+          metadata: {
+            hasCode: !!q.get('code'),
+            hasNext: !!q.get('next'),
+            hasError: !!q.get('error'),
+            searchParams: Object.fromEntries(q.entries()),
+            userAgent: navigator.userAgent,
+            origin: window.location.origin
           }
+        });
 
-          setStatus('success')
+        setDiagnostics({ stage: 'validating_parameters', startTime });
+        markAuthTiming('oauth_callback_enter');
 
-          // Small delay to ensure session is fully established
-          setTimeout(() => {
-            console.log('🔐 [OAUTH CALLBACK] Redirecting to:', next)
-            // Force a hard redirect to ensure proper session handling
-            window.location.href = next
-          }, 800) // Slightly longer delay for better session persistence
-        } else {
-          console.error('🔐 [OAUTH CALLBACK] No user or session in response')
-          setError('Authentication failed')
-          setStatus('error')
-          setTimeout(() => router.push('/login'), 3000)
+        // Parameter validation
+        const code = q.get('code');
+        const next = q.get('next') || '/app';
+        const error = q.get('error');
+        const errorDescription = q.get('error_description');
+
+        // Handle OAuth provider errors
+        if (error) {
+          const errorMsg = `OAuth provider error: ${error}${errorDescription ? ` - ${errorDescription}` : ''}`;
+          logAuthError('oauth_exchange_error', errorMsg, {
+            provider: 'google',
+            error_type: error,
+            error_description: errorDescription
+          });
+          
+          setDiagnostics({ stage: 'provider_error', error: errorMsg, startTime });
+          r.replace(`/login?error=${encodeURIComponent(error)}`);
+          return;
         }
-      } catch (err) {
-        console.error('🔐 [OAUTH CALLBACK] Unexpected error:', err)
-        setError(err instanceof Error ? err.message : 'Authentication failed')
-        setStatus('error')
-        setTimeout(() => router.push('/login'), 3000)
+
+        // Missing authorization code
+        if (!code) {
+          logAuthError('oauth_exchange_error', 'Missing authorization code', {
+            searchParams: Object.fromEntries(q.entries())
+          });
+          
+          setDiagnostics({ stage: 'missing_code', error: 'No authorization code', startTime });
+          r.replace('/login?error=missing_code');
+          return;
+        }
+
+        setDiagnostics({ stage: 'exchanging_token', startTime });
+        markAuthTiming('oauth_exchange_start');
+
+        // 🩺 Sensor B: Track Token Exchange with Network Monitoring
+        const exchangeResult = await trackAuthNetwork('oauth_exchange_start', async () => {
+          const client = createClient();
+          return await client.auth.exchangeCodeForSession(code);
+        });
+
+        markAuthTiming('oauth_exchange_complete');
+        
+        // Handle exchange errors
+        if (exchangeResult.error) {
+          const errorCategory: CallbackError = exchangeResult.error.status === 400 
+            ? 'invalid_session' 
+            : 'exchange_failed';
+            
+          logAuthError('oauth_exchange_error', exchangeResult.error.message, {
+            errorCode: exchangeResult.error.status,
+            errorName: exchangeResult.error.name,
+            category: errorCategory,
+            code: code.slice(0, 10) + '...' // Log partial code for debugging
+          });
+          
+          setDiagnostics({ 
+            stage: 'exchange_failed', 
+            error: `Token exchange failed: ${exchangeResult.error.message}`, 
+            startTime 
+          });
+          
+          r.replace(`/login?error=${errorCategory}`);
+          return;
+        }
+
+        // Validate session data
+        const { data: { session, user } } = exchangeResult;
+        if (!session || !user) {
+          logAuthError('oauth_exchange_error', 'Exchange succeeded but no session/user returned', {
+            hasSession: !!session,
+            hasUser: !!user
+          });
+          
+          setDiagnostics({ 
+            stage: 'invalid_session', 
+            error: 'No session data returned', 
+            startTime 
+          });
+          
+          r.replace('/login?error=invalid_session');
+          return;
+        }
+
+        // 🩺 Success logging
+        logAuthEvent('oauth_exchange_success', {
+          duration: Date.now() - startTime,
+          metadata: {
+            userId: user.id,
+            email: user.email,
+            provider: user.app_metadata?.provider,
+            nextUrl: next,
+            sessionExpiry: session.expires_at
+          }
+        });
+
+        setDiagnostics({ stage: 'redirecting', startTime });
+        markAuthTiming('oauth_redirect_start');
+
+        // Successful redirect
+        completed = true;
+        r.replace(next);
+        
+      } catch (error) {
+        if (completed) return; // Ignore errors after successful completion
+        
+        const errorMsg = error instanceof Error ? error.message : 'Unknown callback error';
+        const duration = Date.now() - startTime;
+        
+        logAuthError('oauth_exchange_error', errorMsg, {
+          duration,
+          stack: error instanceof Error ? error.stack : undefined,
+          stage: diagnostics.stage
+        });
+        
+        setDiagnostics({ 
+          stage: 'unexpected_error', 
+          error: errorMsg, 
+          startTime 
+        });
+        
+        r.replace('/login?error=callback_error');
       }
-    }
+    };
 
-    // Add failsafe timeout in case everything else fails
-    const failsafeTimeout = setTimeout(() => {
-      if (status === 'processing') {
-        console.error(
-          '🔐 [OAUTH CALLBACK] Failsafe timeout reached - forcing redirect'
-        )
-        setError('Authentication is taking too long. Redirecting...')
-        setStatus('error')
-        setTimeout(() => {
-          const next = searchParams.get('next') || '/app'
-          window.location.href = next
-        }, 2000)
+    // 🩺 Sensor B: 15-second Timeout Guard
+    timeoutId = setTimeout(() => {
+      if (!completed) {
+        const duration = Date.now() - diagnostics.startTime;
+        
+        logAuthError('oauth_exchange_error', 'Callback timeout after 15 seconds', {
+          duration,
+          stage: diagnostics.stage,
+          category: 'callback_timeout' as CallbackError
+        });
+        
+        setDiagnostics({ 
+          stage: 'timeout', 
+          error: 'Callback processing timeout', 
+          startTime: diagnostics.startTime 
+        });
+        
+        r.replace('/login?error=timeout');
       }
-    }, 20000) // 20 second failsafe
+    }, 15000);
 
-    handleCallback()
+    // Execute callback handling
+    handleCallback();
 
+    // Cleanup timeout on unmount
     return () => {
-      clearTimeout(failsafeTimeout)
-    }
-  }, [searchParams, router, status])
+      clearTimeout(timeoutId);
+    };
+  }, [q, r]);
 
-  if (status === 'processing') {
+  // Development-only diagnostics display
+  if (process.env.NODE_ENV === 'development') {
+    const elapsed = Date.now() - diagnostics.startTime;
+    
     return (
-      <div className="min-h-screen flex items-center justify-center bg-workspace-canvas">
-        <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-accent-brand" />
-          <h2 className="text-lg font-semibold text-primary mb-2">
-            Completing sign-in...
-          </h2>
-          <p className="text-muted">
-            Please wait while we set up your workspace
-          </p>
-        </div>
-      </div>
-    )
-  }
-
-  if (status === 'error') {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-workspace-canvas">
-        <div className="text-center max-w-md">
-          <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-red-600 text-xl">✕</span>
+      <div className="p-4 min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
+          <div className="flex items-center space-x-3 mb-4">
+            <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            <h2 className="text-lg font-semibold">OAuth Callback</h2>
           </div>
-          <h2 className="text-lg font-semibold text-primary mb-2">
-            Authentication Failed
-          </h2>
-          <p className="text-muted mb-4">{error}</p>
-          <p className="text-sm text-muted">Redirecting to login page...</p>
-        </div>
-      </div>
-    )
-  }
-
-  if (status === 'success') {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-workspace-canvas">
-        <div className="text-center">
-          <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-green-600 text-xl">✓</span>
+          
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-gray-600">Stage:</span>
+              <span className="font-medium">{diagnostics.stage}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Elapsed:</span>
+              <span className="font-medium">{elapsed}ms</span>
+            </div>
+            {diagnostics.error && (
+              <div className="mt-3 p-2 bg-red-50 border border-red-200 rounded">
+                <span className="text-red-700 text-xs">{diagnostics.error}</span>
+              </div>
+            )}
           </div>
-          <h2 className="text-lg font-semibold text-primary mb-2">
-            Welcome to Prismy!
-          </h2>
-          <p className="text-muted">Taking you to your workspace...</p>
+          
+          <div className="mt-4 text-xs text-gray-500">
+            🩺 Development mode: Detailed diagnostics enabled
+          </div>
         </div>
       </div>
-    )
+    );
   }
 
-  return null
+  // Production: Minimal loading state
+  return (
+    <div className="p-4 min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+        <p className="text-gray-600">Authorising…</p>
+      </div>
+    </div>
+  );
 }

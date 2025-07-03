@@ -153,6 +153,24 @@ export const getBrowserClient = (): SupabaseClient => {
     const instanceId = SupabaseSingleton.generateInstanceId()
     SupabaseSingleton.instanceId = instanceId
 
+    // Environment-specific storage key to prevent cross-contamination
+    const getStorageKey = () => {
+      const baseKey = supabaseUrl.match(/https:\/\/([^.]+)/)?.[1] || 'prismy'
+      const origin = window.location.origin
+      
+      if (origin.includes('localhost')) {
+        return `sb-${baseKey}-localhost-auth-token`
+      } else if (origin.includes('.vercel.app')) {
+        // Use a hash of the preview URL to make it unique per deployment
+        const hash = origin.split('//')[1].split('.')[0].slice(-8) // Last 8 chars for uniqueness
+        return `sb-${baseKey}-preview-${hash}-auth-token`
+      } else if (origin.includes('prismy.in')) {
+        return `sb-${baseKey}-prod-auth-token`
+      } else {
+        return `sb-${baseKey}-${btoa(origin).slice(0, 8)}-auth-token`
+      }
+    }
+
     // Create the ultimate singleton instance
     supabaseInstance = createBrowserClient(supabaseUrl, supabaseAnonKey, {
       auth: {
@@ -161,7 +179,7 @@ export const getBrowserClient = (): SupabaseClient => {
         detectSessionInUrl: false, // Prevent URL conflicts
         flowType: 'pkce',
         storage: window.localStorage,
-        storageKey: `sb-${supabaseUrl.match(/https:\/\/([^.]+)/)?.[1]}-auth-token`, // Fixed storage key matching Supabase pattern
+        storageKey: getStorageKey(),
         debug: false,
       },
       db: {

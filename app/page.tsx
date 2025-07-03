@@ -14,24 +14,8 @@ import {
   Plug,
   Star,
 } from 'lucide-react'
-import dynamic from 'next/dynamic'
-
-const FileDropZone = dynamic(
-  () => import('@/components/ui/FileDropZone').then(mod => mod.FileDropZone),
-  {
-    loading: () => (
-      <div className="border-2 border-dashed border-border-default rounded-lg p-12 text-center">
-        <div className="animate-pulse">
-          <div className="w-16 h-16 bg-bg-muted rounded-lg mx-auto mb-4"></div>
-          <div className="h-4 bg-bg-muted rounded w-48 mx-auto mb-2"></div>
-          <div className="h-3 bg-bg-muted rounded w-32 mx-auto"></div>
-        </div>
-      </div>
-    ),
-  }
-)
 import { useRouter } from 'next/navigation'
-
+import FileDropZone from '@/components/ui/FileDropZone'
 export default function HomePage() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const router = useRouter()
@@ -50,6 +34,7 @@ export default function HomePage() {
     // Redirect to login to save work
     router.push('/login?next=/app')
   }
+
 
   return (
     <MarketingLayout>

@@ -144,7 +144,7 @@ export function ChatPanel({ document }: ChatPanelProps) {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4" style={{maxHeight: 'calc(100vh - 200px)'}}>
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0" style={{ overscrollBehavior: 'contain' }}>
         {documentMessages.length === 0 ? (
           <EmptyState
             suggestions={suggestedQuestions}

@@ -26,7 +26,6 @@ const nextConfig = {
     // Package import optimizations for bundle size
     optimizePackageImports: [
       'lucide-react',
-      'framer-motion',
       '@radix-ui/react-dropdown-menu',
       '@radix-ui/react-toast',
       '@radix-ui/react-dialog',
@@ -61,10 +60,6 @@ const nextConfig = {
     },
     '@radix-ui/react-dropdown-menu': {
       transform: '@radix-ui/react-dropdown-menu/dist/{{member}}',
-      skipDefaultConversion: true,
-    },
-    'framer-motion': {
-      transform: 'framer-motion/dist/{{member}}',
       skipDefaultConversion: true,
     },
   },
@@ -162,6 +157,10 @@ const nextConfig = {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=()',
           },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload',
+          },
           // Relaxed CSP for Next.js compatibility
           {
             key: 'Content-Security-Policy',
@@ -175,88 +174,15 @@ const nextConfig = {
 
   // ===== WEBPACK OPTIMIZATIONS =====
   webpack: (config, { dev, isServer }) => {
-    // Production optimizations
+    // Production optimizations - DISABLED to prevent module resolution issues
     if (!dev && !isServer) {
-      // Enhanced chunk splitting for better caching (Phase 2.2)
-      config.optimization.splitChunks = {
-        ...config.optimization.splitChunks,
-        chunks: 'all',
-        minSize: 20000,
-        maxSize: 200000,
-        cacheGroups: {
-          // Framework chunks
-          framework: {
-            test: /[\\/]node_modules[\\/](react|react-dom|next)[\\/]/,
-            name: 'framework',
-            priority: 40,
-            chunks: 'all',
-            reuseExistingChunk: true,
-          },
-          // Framer Motion (large animation library)
-          motion: {
-            test: /[\\/]node_modules[\\/]framer-motion[\\/]/,
-            name: 'motion',
-            priority: 35,
-            chunks: 'all',
-            reuseExistingChunk: true,
-          },
-          // UI libraries (Radix, Lucide, etc.)
-          ui: {
-            test: /[\\/]node_modules[\\/](@radix-ui|lucide-react|@heroicons)[\\/]/,
-            name: 'ui-libs',
-            priority: 30,
-            chunks: 'all',
-            reuseExistingChunk: true,
-          },
-          // Document processing libraries
-          docProcessing: {
-            test: /[\\/]node_modules[\\/](tesseract|pdf|docx|mammoth|unpdf)[\\/]/,
-            name: 'doc-processing',
-            priority: 25,
-            chunks: 'async',
-            reuseExistingChunk: true,
-          },
-          // Supabase and auth
-          auth: {
-            test: /[\\/]node_modules[\\/](@supabase|@anthropic-ai)[\\/]/,
-            name: 'auth',
-            priority: 20,
-            chunks: 'all',
-            reuseExistingChunk: true,
-          },
-          // Other vendor libraries
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
-            priority: 10,
-            chunks: 'all',
-            minSize: 30000,
-            maxSize: 150000,
-            reuseExistingChunk: true,
-          },
-          // Separate styles
-          styles: {
-            name: 'styles',
-            test: /\.(css|scss)$/,
-            chunks: 'all',
-            enforce: true,
-            minSize: 0,
-          },
-          // App components
-          components: {
-            test: /[\\/](components|lib)[\\/]/,
-            name: 'components',
-            priority: 5,
-            chunks: 'all',
-            minSize: 15000,
-            reuseExistingChunk: true,
-          },
-        },
-      }
-
-      // Tree shaking optimizations
-      config.optimization.usedExports = true
+      // Use Next.js default chunk splitting
+      config.optimization.splitChunks = undefined
+      
+      // Disable all problematic optimizations
+      config.optimization.usedExports = false
       config.optimization.sideEffects = false
+      config.optimization.mangleExports = false
     }
 
     // Enhanced configuration for document processing libraries

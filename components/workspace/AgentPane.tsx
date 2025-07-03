@@ -133,7 +133,7 @@ export function AgentPane({
   if (!isOpen) return null
 
   return (
-    <aside className={`w-agent-pane bg-workspace-panel border-l border-workspace-border flex flex-col h-full ${isMaximized ? 'fixed inset-0 z-50 w-full pt-14' : ''} ${className}`}>
+    <aside className={`chat-pane w-agent-pane bg-workspace-panel border-l border-workspace-border flex flex-col h-full ${isMaximized ? 'fixed inset-0 z-50 w-full pt-14' : ''} ${className}`}>
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-workspace-divider">
         <div className="flex items-center space-x-2">
@@ -158,7 +158,7 @@ export function AgentPane({
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
+      <div className="chat-messages flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
         {messages.map((message) => (
           <div key={message.id} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div className={`flex space-x-2 max-w-[80%] ${message.type === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>

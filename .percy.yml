@@ -1,11 +1,13 @@
 # Percy Visual Testing Configuration
-# UI/UX Polish Sprint - Phase 3.2: Percy Visual Testing per Locale
+# PRISMY ZERO-CHAOS TEST & RELEASE PLAYBOOK - Visual Regression Testing
+# Critical UI components must pass visual regression before merge
 
 version: 2
 
 discovery:
   # Network idle strategy for better consistency
   network-idle-timeout: 750
+  disable-cache: true
   
 static-snapshots:
   # Base URL for static snapshots
@@ -18,8 +20,77 @@ static-snapshots:
     - '**/.next/**'
     - '**/coverage/**'
     - '**/reports/**'
+    - '**/*.test.{js,jsx,ts,tsx}'
+    - '**/*.spec.{js,jsx,ts,tsx}'
 
-# Multi-locale visual testing
+# Enhanced snapshot configuration for Zero-Chaos Testing
+snapshot:
+  # Percy CSS for consistent rendering and hiding dynamic content
+  percy-css: |
+    /* Hide dynamic timestamps and loading indicators */
+    [data-testid="timestamp"],
+    [data-testid="loading"],
+    .animate-spin,
+    .animate-pulse,
+    .animate-bounce {
+      visibility: hidden !important;
+    }
+    
+    /* Hide user-specific content for consistent snapshots */
+    [data-testid="user-avatar"],
+    [data-testid="user-email"],
+    [data-testid="user-name"] {
+      visibility: hidden !important;
+    }
+    
+    /* Hide dynamic counters and metrics */
+    [data-testid="credits-count"],
+    [data-testid="usage-count"],
+    [data-testid="file-count"] {
+      visibility: hidden !important;
+    }
+    
+    /* Ensure consistent font rendering across environments */
+    * {
+      -webkit-font-smoothing: antialiased !important;
+      -moz-osx-font-smoothing: grayscale !important;
+      text-rendering: optimizeLegibility !important;
+    }
+    
+    /* Disable flaky animations for consistent snapshots */
+    .transition-all,
+    .transition-colors,
+    .transition-opacity,
+    .transition-transform {
+      transition: none !important;
+    }
+    
+    /* Hide auth-dependent elements */
+    [data-percy-hide] {
+      visibility: hidden !important;
+    }
+  
+  # Enable JavaScript for dynamic content rendering
+  enable-javascript: true
+  
+  # Wait for layout stability
+  enable-layout: true
+  
+  # Minimum height to capture full component
+  min-height: 1024
+
+# Comparison thresholds per Zero-Chaos requirements
+options:
+  # Strict threshold - even 1px difference should fail
+  threshold: 0.01
+  
+  # Include only meaningful visual differences
+  include-same-height: false
+  
+  # Freeze animations for consistent comparison
+  freeze-animated-image: true
+
+# Multi-locale visual testing with Zero-Chaos validation
 agent:
   asset-discovery:
     # Capture fonts and assets
@@ -28,6 +99,8 @@ agent:
       - fonts.googleapis.com
       - fonts.gstatic.com
       - rsms.me
+      - "*.supabase.co"
+      - "*.vercel.app"
 
 # Browser and viewport configurations
 browsers:

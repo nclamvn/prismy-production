@@ -1,0 +1,11 @@
+# OAuth Health Monitoring - Endoscope Method
+# Runs every 5 minutes to check OAuth system health
+
+# OAuth health check
+*/5 * * * * cd /Users/mac/prismy/prismy-production && npm run doctor > /tmp/oauth-health.log 2>&1 || echo "OAuth health check failed"
+
+# OAuth flow test (every 15 minutes)
+*/15 * * * * cd /Users/mac/prismy/prismy-production && npm run test:oauth:prod > /tmp/oauth-test.log 2>&1 || echo "OAuth flow test failed"
+
+# Daily health report (9 AM)
+0 9 * * * cd /Users/mac/prismy/prismy-production && npm run doctor && echo "Daily OAuth health check completed"

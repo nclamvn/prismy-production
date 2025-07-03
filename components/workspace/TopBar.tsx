@@ -28,10 +28,18 @@ export function TopBar({
   onToggleAgentPane,
   className = ''
 }: TopBarProps) {
-  const { user } = useAuth()
+  const { user, loading, sessionRestored } = useAuth()
   const { t } = useI18n()
   const { openSearch } = useSearch()
   const router = useRouter()
+
+  // 🐛 DEBUG: Log user state to trace avatar issue
+  console.log('🔍 [TopBar] Auth state:', { 
+    hasUser: !!user, 
+    userEmail: user?.email, 
+    loading, 
+    sessionRestored 
+  })
 
   return (
     <header className={`workspace-topbar fixed top-0 left-0 right-0 flex items-center justify-between px-4 h-14 z-topbar bg-white border-b border-gray-200 ${className}`}>
@@ -96,8 +104,22 @@ export function TopBar({
 
         <div className="hidden md:block h-6 w-px bg-workspace-divider" />
 
-        {/* User menu */}
-        {user && <UserMenu />}
+        {/* User menu with debug states */}
+        {loading ? (
+          <div className="flex items-center px-3 py-2">
+            <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse"></div>
+            <span className="ml-2 text-xs text-gray-400 hidden sm:block">Loading...</span>
+          </div>
+        ) : user ? (
+          <UserMenu />
+        ) : (
+          <div className="flex items-center px-3 py-2">
+            <div className="w-8 h-8 bg-red-200 rounded-full flex items-center justify-center">
+              <span className="text-red-600 text-xs">?</span>
+            </div>
+            <span className="ml-2 text-xs text-red-600 hidden sm:block">No User</span>
+          </div>
+        )}
       </div>
     </header>
   )

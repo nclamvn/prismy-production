@@ -14,7 +14,7 @@ interface FileDropZoneProps {
   children?: React.ReactNode
 }
 
-export function FileDropZone({
+function FileDropZone({
   onFilesSelected,
   accept = '.pdf,.docx,.txt,.doc',
   maxFiles = 10,
@@ -149,3 +149,5 @@ export function FileDropZone({
     </div>
   )
 }
+
+export default FileDropZone

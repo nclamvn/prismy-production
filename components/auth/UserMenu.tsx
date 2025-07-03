@@ -10,6 +10,14 @@ export function UserMenu() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
+  // 🐛 DEBUG: Log user state in UserMenu
+  console.log('🔍 [UserMenu] User state:', { 
+    hasUser: !!user, 
+    userEmail: user?.email,
+    hasProfile: !!profile,
+    profileName: profile?.full_name 
+  })
+
   // Get display name from profile or user metadata, fallback to email
   const displayName = 
     profile?.full_name || 
@@ -35,13 +43,11 @@ export function UserMenu() {
     setShowMenu(false) // Close menu immediately
     
     try {
-      // Use enhanced signOut with redirect
-      await signOut('/')
-      // Note: signOut will handle the redirect, so no need for router.push
+      await signOut() // No longer pass redirect URL - handle navigation here
+      router.push('/') // Use router.push for better performance
     } catch (error) {
       console.error('Sign out error:', error)
-      // If sign out fails, still redirect to home
-      router.push('/')
+      router.push('/') // Still redirect on error
     } finally {
       setLoading(false)
     }

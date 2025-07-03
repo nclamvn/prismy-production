@@ -23,6 +23,8 @@
 @layer base {
   html {
     font-family: var(--font-sans);
+    height: 100%; /* html height 100% */
+    overflow: hidden;
     /* Smooth color transitions for theme switching */
     transition: background-color 0.3s ease, color 0.3s ease;
   }
@@ -30,11 +32,19 @@
   body {
     background-color: var(--color-bg-default);
     color: var(--color-text-primary);
+    height: 100%; /* body height 100% */
+    overflow: hidden;
+    overscroll-behavior: contain; /* overscrollBehavior: contain for OAuth Doctor */
     font-feature-settings:
       'rlig' 1,
       'calt' 1;
     /* Smooth theme transitions */
     transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  #__next {
+    height: 100%; /* #__next height 100% */
+    overflow: hidden;
   }
 
   /* Focus styles using CSS variables */
@@ -161,6 +171,13 @@
     background-color: var(--color-workspace-sidebar);
     border-right: 1px solid var(--color-workspace-border);
     transition: background-color 0.3s ease, border-color 0.3s ease;
+    /* Ensure no gaps in sidebar layout */
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    /* Workspace z-index isolation */
+    z-index: 30;
+    position: relative;
   }
 
   .workspace-topbar {
@@ -168,6 +185,9 @@
     background-color: var(--color-workspace-panel);
     border-bottom: 1px solid var(--color-workspace-divider);
     transition: background-color 0.3s ease, border-color 0.3s ease;
+    /* Ensure workspace topbar stays above content but below modals */
+    z-index: 40;
+    position: relative;
   }
 
   /* Component utilities using design tokens */
@@ -223,6 +243,53 @@
     box-shadow: var(--elevation-xl);
   }
 
+  /* Workspace grid layouts for responsive workspace system */
+  .workspace-grid-full {
+    display: grid;
+    grid-template-columns: var(--layout-sidebar-width) 1fr var(--layout-sidebar-width);
+    grid-template-rows: 1fr;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+
+  .workspace-grid-main {
+    display: grid;
+    grid-template-columns: var(--layout-sidebar-width) 1fr;
+    grid-template-rows: 1fr;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+
+  .workspace-grid-collapsed {
+    display: grid;
+    grid-template-columns: var(--layout-sidebar-collapsed-width) 1fr var(--layout-sidebar-width);
+    grid-template-rows: 1fr;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+
+  .workspace-grid-mobile {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+
+  /* Chat pane scroll containment to prevent affecting body scroll */
+  .chat-pane {
+    overscroll-behavior: contain;
+    overflow-y: auto;
+    max-height: 100%;
+    /* Workspace z-index isolation */
+    z-index: 35;
+    position: relative;
+  }
+
+  .chat-messages {
+    overscroll-behavior: contain;
+    overflow-y: auto;
+  }
+
   /* Prism gradient animation for hero */
   @keyframes prism {
     0% { background-position: 0% 50% }
@@ -236,5 +303,27 @@
 
   .animate-gradient {
     animation: prism 6s linear infinite;
+  }
+
+  /* Layout root isolation classes */
+  .layout-root-marketing {
+    position: relative;
+    z-index: 10;
+    background-color: var(--color-bg-default);
+  }
+
+  .layout-root-workspace {
+    position: relative;
+    z-index: 20;
+    background-color: var(--color-workspace-canvas);
+    min-height: 100vh;
+    overflow: hidden;
+  }
+
+  /* Ensure marketing layout doesn't interfere with workspace */
+  .layout-root-marketing .workspace-topbar,
+  .layout-root-marketing .workspace-sidebar,
+  .layout-root-marketing .chat-pane {
+    display: none;
   }
 }

@@ -1,0 +1,114 @@
+# ==========================================
+# Docker Compose for LOCAL DEVELOPMENT  
+# Fast HMR with volume mounting
+# ==========================================
+
+version: '3.8'
+
+services:
+  # ==========================================
+  # Next.js Development Server
+  # ==========================================
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      target: development
+    container_name: prismy-dev
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_TELEMETRY_DISABLED=1
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    volumes:
+      # Mount source code for hot reload
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - supabase
+      - redis
+    networks:
+      - prismy-network
+
+  # ==========================================
+  # Supabase Local Stack
+  # ==========================================
+  supabase:
+    image: supabase/supabase:latest
+    container_name: prismy-supabase
+    ports:
+      - "54321:54321"  # API Gateway
+      - "54323:54323"  # Studio
+      - "54324:54324"  # Inbucket (email)
+      - "5432:5432"    # Postgres
+    environment:
+      - POSTGRES_PASSWORD=your-super-secret-and-long-postgres-password
+      - JWT_SECRET=your-super-secret-jwt-token-with-at-least-32-characters-long
+      - ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOuoJeHxjNa-NMaXTTaZfCAhzHhF1A8h8z8w
+      - SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.lxrtAGWHJuq8_vXIhBOzv0E6n0J7aDK5Xwh0A5H9zd8
+    volumes:
+      - supabase_data:/var/lib/postgresql/data
+      - ./supabase:/docker-entrypoint-initdb.d
+    networks:
+      - prismy-network
+
+  # ==========================================
+  # Redis for Session Management
+  # ==========================================
+  redis:
+    image: redis:7-alpine
+    container_name: prismy-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - prismy-network
+
+  # ==========================================
+  # Edge Functions (Optional)
+  # ==========================================
+  edge-functions:
+    image: supabase/edge-runtime:latest
+    container_name: prismy-edge
+    ports:
+      - "54321:54321"
+    environment:
+      - SUPABASE_URL=http://supabase:54321
+      - SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOuoJeHxjNa-NMaXTTaZfCAhzHhF1A8h8z8w
+    volumes:
+      - ./supabase/functions:/home/deno/functions
+    depends_on:
+      - supabase
+    networks:
+      - prismy-network
+
+  # ==========================================
+  # Playwright Testing Container
+  # ==========================================
+  playwright:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: prismy-playwright
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - CI=true
+      - PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+    networks:
+      - prismy-network
+    profiles:
+      - testing
+
+volumes:
+  supabase_data:
+  redis_data:
+
+networks:
+  prismy-network:
+    driver: bridge

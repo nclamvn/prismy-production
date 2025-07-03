@@ -7,6 +7,7 @@ import { JobSidebar } from '@/components/workspace/JobSidebar'
 import { CanvasArea } from '@/components/workspace/CanvasArea'
 import { AgentPane } from '@/components/workspace/AgentPane'
 import { BatchDropProvider } from '@/components/batch/BatchDropProvider'
+import { AuthDebugPanel } from '@/components/debug/AuthDebugPanel'
 
 interface WorkspaceLayoutProps {
   children?: React.ReactNode
@@ -109,7 +110,7 @@ export function WorkspaceLayout({
 
   return (
     <BatchDropProvider>
-      <div className={`h-full flex flex-col bg-[#F9FAFB] overflow-hidden ${className}`}>
+      <div className={`layout-root-workspace min-h-full h-full flex flex-col bg-[#F9FAFB] overflow-hidden ${className}`}>
         {/* Top Bar - Always visible - Fixed position */}
         <TopBar 
           onToggleSidebar={handleToggleSideNav}
@@ -117,7 +118,7 @@ export function WorkspaceLayout({
         />
 
         {/* Main workspace grid */}
-        <div className={`flex-1 ${getGridLayoutClass()}`}>
+        <div className={`flex-1 min-h-0 ${getGridLayoutClass()}`}>
         {/* Left Sidebar - SideNav */}
         {(!isMobile || !sideNavCollapsed) && (
           <SideNav
@@ -236,6 +237,9 @@ export function WorkspaceLayout({
 
         {/* Custom children content (if provided) */}
         {children}
+
+        {/* 🐛 DEBUG: Auth state panel for debugging avatar issue */}
+        {process.env.NODE_ENV === 'development' && <AuthDebugPanel />}
       </div>
     </BatchDropProvider>
   )

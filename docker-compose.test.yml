@@ -1,0 +1,81 @@
+# ==========================================
+# Docker Compose for E2E Testing
+# Isolated testing environment
+# ==========================================
+
+version: '3.8'
+
+services:
+  # ==========================================
+  # Application Under Test
+  # ==========================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      target: production
+    container_name: prismy-test-app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=test
+      - PORT=3000
+      - NEXT_PUBLIC_SUPABASE_URL=http://localhost:54321
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOuoJeHxjNa-NMaXTTaZfCAhzHhF1A8h8z8w
+      - SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.lxrtAGWHJuq8_vXIhBOzv0E6n0J7aDK5Xwh0A5H9zd8
+      - DATABASE_URL=postgresql://postgres:postgres@supabase-test:5432/postgres
+      - REDIS_URL=redis://redis-test:6379
+    depends_on:
+      - supabase-test
+      - redis-test
+    networks:
+      - test-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ==========================================
+  # Test Database (Supabase)
+  # ==========================================
+  supabase-test:
+    image: supabase/supabase:latest
+    container_name: prismy-test-supabase
+    ports:
+      - "54321:54321"
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - JWT_SECRET=your-super-secret-jwt-token-with-at-least-32-characters-long
+      - ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOuoJeHxjNa-NMaXTTaZfCAhzHhF1A8h8z8w
+      - SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.lxrtAGWHJuq8_vXIhBOzv0E6n0J7aDK5Xwh0A5H9zd8
+    volumes:
+      - ./supabase/seed.sql:/docker-entrypoint-initdb.d/seed.sql
+    networks:
+      - test-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==========================================
+  # Test Redis
+  # ==========================================
+  redis-test:
+    image: redis:7-alpine
+    container_name: prismy-test-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - test-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+networks:
+  test-network:
+    driver: bridge

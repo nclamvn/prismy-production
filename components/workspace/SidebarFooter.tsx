@@ -22,7 +22,7 @@ export function SidebarFooter({
   className = '',
 }: SidebarFooterProps) {
   const router = useRouter()
-  const { user, loading } = useAuth()
+  const { user, loading, authStable, authTransition } = useAuth()
   const [credits, setCredits] = useState({
     remaining: 0,
     bonus: 0,
@@ -34,35 +34,20 @@ export function SidebarFooter({
     router.push('/')
   }
 
-  // Fetch credits when user is available
+  // Fetch credits when user is available and auth is stable
   useEffect(() => {
-    if (user && !loading) {
+    if (user && !loading && authStable && !authTransition) {
       const fetchCredits = async () => {
         try {
           setCreditsLoading(true)
 
-          // Add a small delay to ensure auth state is fully propagated
-          // This prevents the flash of "unauthorized" errors during auth transitions
-          await new Promise(resolve => setTimeout(resolve, 800))
-
+          // Auth state is stable, so we can make the API call directly
           const response = await fetch('/api/credits/current')
 
-          // Handle 401 errors silently during initial load
-          // These can occur during auth state transitions
+          // If we still get 401, it indicates a real auth issue
           if (response.status === 401) {
-            console.log('Credits API: Auth check in progress, will retry...')
-            // Retry once after another delay
-            await new Promise(resolve => setTimeout(resolve, 1000))
-            const retryResponse = await fetch('/api/credits/current')
-            if (retryResponse.ok) {
-              const retryData = await retryResponse.json()
-              if (retryData.success) {
-                setCredits(retryData.credits)
-              }
-            } else {
-              // Still unauthorized after retry, set defaults silently
-              setCredits({ remaining: 0, bonus: 0, tier: 'free' })
-            }
+            console.warn('Credits API: Unexpected auth failure despite stable auth state')
+            setCredits({ remaining: 0, bonus: 0, tier: 'free' })
             return
           }
 
@@ -92,11 +77,11 @@ export function SidebarFooter({
       setCredits({ remaining: 0, bonus: 0, tier: 'free' })
       setCreditsLoading(false)
     }
-  }, [user, loading])
+  }, [user, loading, authStable, authTransition])
 
   // Note: Mobile hiding handled by CSS classes
 
-  if (loading || creditsLoading) {
+  if (loading || creditsLoading || authTransition || !authStable) {
     return (
       <div
         className={`h-14 hidden md:flex items-center justify-center border-t border-border-default bg-surface dark:bg-[#111] ${className}`}
