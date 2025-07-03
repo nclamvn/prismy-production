@@ -17,13 +17,17 @@ interface SidebarFooterProps {
  * SidebarFooter - Footer action bar inside workspace sidebar
  * Contains home button, credits display, upgrade link, and user avatar
  */
-export function SidebarFooter({ 
-  collapsed = false, 
-  className = '' 
+export function SidebarFooter({
+  collapsed = false,
+  className = '',
 }: SidebarFooterProps) {
   const router = useRouter()
   const { user, loading } = useAuth()
-  const [credits, setCredits] = useState({ remaining: 0, bonus: 0, tier: 'free' })
+  const [credits, setCredits] = useState({
+    remaining: 0,
+    bonus: 0,
+    tier: 'free',
+  })
   const [creditsLoading, setCreditsLoading] = useState(true)
 
   const handleHomeClick = () => {
@@ -36,18 +40,47 @@ export function SidebarFooter({
       const fetchCredits = async () => {
         try {
           setCreditsLoading(true)
+
+          // Add a small delay to ensure auth state is fully propagated
+          // This prevents the flash of "unauthorized" errors during auth transitions
+          await new Promise(resolve => setTimeout(resolve, 800))
+
           const response = await fetch('/api/credits/current')
+
+          // Handle 401 errors silently during initial load
+          // These can occur during auth state transitions
+          if (response.status === 401) {
+            console.log('Credits API: Auth check in progress, will retry...')
+            // Retry once after another delay
+            await new Promise(resolve => setTimeout(resolve, 1000))
+            const retryResponse = await fetch('/api/credits/current')
+            if (retryResponse.ok) {
+              const retryData = await retryResponse.json()
+              if (retryData.success) {
+                setCredits(retryData.credits)
+              }
+            } else {
+              // Still unauthorized after retry, set defaults silently
+              setCredits({ remaining: 0, bonus: 0, tier: 'free' })
+            }
+            return
+          }
+
           const data = await response.json()
-          
+
           if (data.success) {
             setCredits(data.credits)
           } else {
-            console.warn('Failed to fetch credits:', data.error)
+            // Only log non-auth errors
+            if (data.error !== 'Unauthorized') {
+              console.warn('Failed to fetch credits:', data.error)
+            }
             // Set default values if API fails
             setCredits({ remaining: 0, bonus: 0, tier: 'free' })
           }
         } catch (error) {
-          console.error('Error fetching credits:', error)
+          // Silently handle errors during initial load
+          console.debug('Credits fetch error (non-critical):', error)
           setCredits({ remaining: 0, bonus: 0, tier: 'free' })
         } finally {
           setCreditsLoading(false)
@@ -65,7 +98,9 @@ export function SidebarFooter({
 
   if (loading || creditsLoading) {
     return (
-      <div className={`h-14 hidden md:flex items-center justify-center border-t border-border-default bg-surface dark:bg-[#111] ${className}`}>
+      <div
+        className={`h-14 hidden md:flex items-center justify-center border-t border-border-default bg-surface dark:bg-[#111] ${className}`}
+      >
         <div className="animate-pulse flex space-x-2">
           <div className="w-9 h-9 bg-muted rounded-lg"></div>
           <div className="w-16 h-6 bg-muted rounded-full"></div>
@@ -77,7 +112,9 @@ export function SidebarFooter({
 
   if (collapsed) {
     return (
-      <div className={`h-14 hidden md:flex flex-col items-center justify-center gap-1 border-t border-border-default bg-surface dark:bg-[#111] ${className}`}>
+      <div
+        className={`h-14 hidden md:flex flex-col items-center justify-center gap-1 border-t border-border-default bg-surface dark:bg-[#111] ${className}`}
+      >
         <button
           onClick={handleHomeClick}
           aria-label="Home"
@@ -90,7 +127,9 @@ export function SidebarFooter({
   }
 
   return (
-    <div className={`h-14 hidden md:flex items-center justify-between px-3 border-t border-border-default bg-surface dark:bg-[#111] ${className}`}>
+    <div
+      className={`h-14 hidden md:flex items-center justify-between px-3 border-t border-border-default bg-surface dark:bg-[#111] ${className}`}
+    >
       {/* Home Button */}
       <button
         onClick={handleHomeClick}
@@ -102,7 +141,7 @@ export function SidebarFooter({
 
       {/* Credits and Upgrade */}
       <div className="flex items-center gap-2">
-        <div 
+        <div
           className="flex items-center gap-1 px-3 py-2 rounded-full bg-zinc-800 text-white text-xs dark:bg-zinc-600 transition-colors"
           role="status"
           aria-label={`${credits.remaining} credits remaining`}
@@ -110,8 +149,8 @@ export function SidebarFooter({
           <Sparkles className="h-3 w-3" />
           <span>{credits.remaining}</span>
         </div>
-        <Link 
-          href="/pricing" 
+        <Link
+          href="/pricing"
           className="text-sm text-primary hover:underline transition-colors"
           aria-label="Upgrade to get more credits"
         >
@@ -121,16 +160,16 @@ export function SidebarFooter({
 
       {/* User Avatar / Sign In */}
       {user ? (
-        <UserMenu 
+        <UserMenu
           user={user}
           trigger={
-            <button 
+            <button
               className="flex h-8 w-8 items-center justify-center rounded-full ring-1 ring-black/10 dark:ring-white/10 overflow-hidden hover:ring-2 hover:ring-accent-brand transition-all"
               aria-label="User menu"
             >
               {user.user_metadata?.avatar_url ? (
-                <img 
-                  src={user.user_metadata.avatar_url} 
+                <img
+                  src={user.user_metadata.avatar_url}
                   alt="User avatar"
                   className="h-full w-full object-cover"
                 />

@@ -10,10 +10,10 @@ export async function GET(request: NextRequest) {
         get(name: string) {
           return request.cookies.get(name)?.value
         },
-        set(name: string, value: string, options: any) {
+        set(_name: string, _value: string, _options: any) {
           // Response handled by parent
         },
-        remove(name: string, options: any) {
+        remove(_name: string, _options: any) {
           // Response handled by parent
         },
       },
@@ -21,16 +21,27 @@ export async function GET(request: NextRequest) {
   )
 
   try {
+    // First try to get session (faster, uses cookies)
     const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser()
+      data: { session },
+    } = await supabase.auth.getSession()
 
-    if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+    // If no session, check if we have a valid user (slower, verifies token)
+    let user = session?.user
+
+    if (!user) {
+      const {
+        data: { user: verifiedUser },
+        error: authError,
+      } = await supabase.auth.getUser()
+
+      if (authError || !verifiedUser) {
+        // Log for debugging but don't expose auth transition states
+        console.log('[Credits API] Auth check failed during transition')
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      }
+
+      user = verifiedUser
     }
 
     // Fetch user credits

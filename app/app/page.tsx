@@ -13,11 +13,26 @@ export default function WorkspacePage() {
   const { user, loading, sessionRestored } = useAuth()
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
+  const [authSettled, setAuthSettled] = useState(false)
 
   // Handle hydration
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  // Add a small delay after auth is restored to ensure all components
+  // have time to receive the auth state before rendering
+  useEffect(() => {
+    if (sessionRestored && user) {
+      const timer = setTimeout(() => {
+        setAuthSettled(true)
+      }, 300) // Small delay to let auth state propagate
+
+      return () => clearTimeout(timer)
+    } else if (sessionRestored && !user) {
+      setAuthSettled(true) // No delay needed when redirecting
+    }
+  }, [sessionRestored, user])
 
   // Wait for auth to be fully initialized before making decisions
   useEffect(() => {
@@ -28,19 +43,23 @@ export default function WorkspacePage() {
   }, [mounted, sessionRestored, loading, user, router])
 
   // Show loading state during hydration or while auth is initializing
-  if (!mounted || loading || !sessionRestored) {
+  // Extended loading state to ensure auth is fully settled
+  if (!mounted || loading || !sessionRestored || (user && !authSettled)) {
     return (
       <div className="h-screen flex items-center justify-center bg-workspace-canvas">
         <div className="text-center">
-          <Rocket size={32} className="text-accent-brand mx-auto mb-4" />
+          <Rocket
+            size={32}
+            className="text-accent-brand mx-auto mb-4 animate-pulse"
+          />
           <p className="text-secondary">Loading workspace...</p>
         </div>
       </div>
     )
   }
 
-  // If we have a user, show the workspace
-  if (user) {
+  // If we have a user and auth has settled, show the workspace
+  if (user && authSettled) {
     return <WorkspaceLayout />
   }
 
