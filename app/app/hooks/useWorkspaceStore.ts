@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { devtools, persist } from 'zustand/middleware'
+import { WebSocketClient } from '@/lib/websocket/ws-client'
 
 // Types for workspace entities - updated to match API contract
 export interface Document {
@@ -42,6 +43,10 @@ export interface WorkspaceState {
   sidebarCollapsed: boolean
   uploadDropzoneVisible: boolean
 
+  // WebSocket state
+  wsClient: WebSocketClient | null
+  wsConnected: boolean
+
   // Actions
   upload: (files: File[]) => Promise<void>
   translate: (
@@ -57,6 +62,8 @@ export interface WorkspaceState {
   updateDocumentFromAPI: (docId: string) => Promise<void>
   removeDocument: (docId: string) => void
   reset: () => void
+  connectWebSocket: () => Promise<void>
+  disconnectWebSocket: () => void
 }
 
 // Initial state
@@ -70,6 +77,8 @@ const initialState = {
   tier: 'free' as const,
   sidebarCollapsed: false,
   uploadDropzoneVisible: false,
+  wsClient: null,
+  wsConnected: false,
 }
 
 export const useWorkspaceStore = create<WorkspaceState>()(
@@ -233,9 +242,46 @@ export const useWorkspaceStore = create<WorkspaceState>()(
                 }
               }, 1000)
 
-              // Start polling for status updates
-              console.log('[CLIENT] Starting status polling for:', jobId)
-              get().pollJobStatus(jobId)
+              // Connect to WebSocket and subscribe to job progress
+              console.log('[CLIENT] Setting up WebSocket subscription for:', jobId)
+              await get().connectWebSocket()
+              
+              const { wsClient } = get()
+              if (wsClient) {
+                wsClient.subscribeToJob(jobId, (progress) => {
+                  console.log('[WS] Job progress update:', progress)
+                  
+                  // Update document status in store
+                  set(state => ({
+                    documents: state.documents.map(d =>
+                      d.id === jobId
+                        ? {
+                            ...d,
+                            status: progress.status as Document['status'],
+                            progress: progress.progress,
+                            errorMessage: progress.error,
+                          }
+                        : d
+                    ),
+                  }))
+
+                  // Add welcome message when translation completes
+                  if (progress.status === 'translated') {
+                    const document = get().documents.find(d => d.id === jobId)
+                    if (document && !get().messages.some(m => m.documentId === jobId)) {
+                      get().addMessage({
+                        role: 'assistant',
+                        content: `Document "${document.name}" has been translated! You can now ask me questions about its content.`,
+                        documentId: jobId,
+                      })
+                    }
+                  }
+                })
+              } else {
+                // Fallback to polling if WebSocket fails
+                console.log('[CLIENT] WebSocket not available, falling back to polling')
+                get().pollJobStatus(jobId)
+              }
 
               console.groupEnd() // End file processing group
             } catch (error) {
@@ -278,7 +324,41 @@ export const useWorkspaceStore = create<WorkspaceState>()(
               throw new Error(error.error || 'Translation failed')
             }
 
-            // Translation started successfully - polling will handle status updates
+            // Translation started successfully - set up WebSocket monitoring
+            await get().connectWebSocket()
+            
+            const { wsClient } = get()
+            if (wsClient) {
+              wsClient.subscribeToJob(docId, (progress) => {
+                console.log('[WS] Translation progress update:', progress)
+                
+                // Update document status in store
+                set(state => ({
+                  documents: state.documents.map(d =>
+                    d.id === docId
+                      ? {
+                          ...d,
+                          status: progress.status as Document['status'],
+                          progress: progress.progress,
+                          errorMessage: progress.error,
+                        }
+                      : d
+                  ),
+                }))
+
+                // Add welcome message when translation completes
+                if (progress.status === 'translated') {
+                  const document = get().documents.find(d => d.id === docId)
+                  if (document && !get().messages.some(m => m.documentId === docId)) {
+                    get().addMessage({
+                      role: 'assistant',
+                      content: `Document "${document.name}" has been translated! You can now ask me questions about its content.`,
+                      documentId: docId,
+                    })
+                  }
+                }
+              })
+            }
           } catch (error) {
             // Update document status to failed
             set(state => ({
@@ -491,6 +571,43 @@ export const useWorkspaceStore = create<WorkspaceState>()(
           })),
 
         reset: () => set(initialState),
+
+        // WebSocket connection management
+        connectWebSocket: async () => {
+          const { wsClient } = get()
+          if (wsClient && wsClient.isReady()) {
+            return // Already connected
+          }
+
+          try {
+            // Get WebSocket token
+            const tokenResponse = await fetch('/api/ws/token')
+            if (!tokenResponse.ok) {
+              throw new Error('Failed to get WebSocket token')
+            }
+            const { token } = await tokenResponse.json()
+
+            // Create and connect WebSocket client
+            const client = new WebSocketClient()
+            await client.connect(token)
+
+            set({ wsClient: client, wsConnected: true })
+
+            console.log('[WS] WebSocket connected successfully')
+          } catch (error) {
+            console.error('[WS] Failed to connect WebSocket:', error)
+            set({ wsConnected: false })
+          }
+        },
+
+        disconnectWebSocket: () => {
+          const { wsClient } = get()
+          if (wsClient) {
+            wsClient.disconnect()
+            set({ wsClient: null, wsConnected: false })
+            console.log('[WS] WebSocket disconnected')
+          }
+        },
       }),
       {
         name: 'prismy-workspace',
