@@ -18,7 +18,12 @@ export default function OAuthCallback() {
         const error = searchParams.get('error')
         const next = searchParams.get('next') || searchParams.get('redirectTo') || '/app'
 
-        console.log('🔐 [OAUTH CALLBACK] Processing callback:', { code: !!code, error, next })
+        console.log('🔐 [OAUTH CALLBACK] Processing callback:', { 
+          code: code ? code.substring(0, 8) + '...' : null, 
+          error, 
+          next,
+          allParams: Object.fromEntries(searchParams.entries())
+        })
 
         // Handle OAuth errors
         if (error) {
@@ -41,8 +46,17 @@ export default function OAuthCallback() {
         
         console.log('🔐 [OAUTH CALLBACK] Exchanging code for session...')
         
-        // Exchange code for session - this will automatically set cookies and localStorage
-        const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
+        // Add timeout for the exchange operation
+        const exchangePromise = supabase.auth.exchangeCodeForSession(code)
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Session exchange timeout')), 15000)
+        )
+        
+        // Race between exchange and timeout
+        const { data, error: exchangeError } = await Promise.race([
+          exchangePromise,
+          timeoutPromise
+        ]) as any
 
         if (exchangeError) {
           console.error('🔐 [OAUTH CALLBACK] Code exchange failed:', exchangeError)
@@ -93,7 +107,7 @@ export default function OAuthCallback() {
           // Small delay to ensure session is fully established
           setTimeout(() => {
             console.log('🔐 [OAUTH CALLBACK] Redirecting to:', next)
-            router.replace(next)
+            window.location.href = next // Use window.location instead of router for more reliable redirect
           }, 500)
         } else {
           console.error('🔐 [OAUTH CALLBACK] No user or session in response')
@@ -109,8 +123,25 @@ export default function OAuthCallback() {
       }
     }
 
+    // Add failsafe timeout in case everything else fails
+    const failsafeTimeout = setTimeout(() => {
+      if (status === 'processing') {
+        console.error('🔐 [OAUTH CALLBACK] Failsafe timeout reached - forcing redirect')
+        setError('Authentication is taking too long. Redirecting...')
+        setStatus('error')
+        setTimeout(() => {
+          const next = searchParams.get('next') || '/app'
+          window.location.href = next
+        }, 2000)
+      }
+    }, 20000) // 20 second failsafe
+
     handleCallback()
-  }, [searchParams, router])
+
+    return () => {
+      clearTimeout(failsafeTimeout)
+    }
+  }, [searchParams, router, status])
 
   if (status === 'processing') {
     return (
