@@ -79,7 +79,7 @@ export function MarketingLayout({ children }: MarketingLayoutProps) {
   return (
     <div className="min-h-screen bg-workspace-canvas">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-workspace-canvas/80 backdrop-blur">
+      <header className="sticky top-0 z-10 bg-workspace-canvas/80 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
           <div className="flex items-center">
             <Link href="/">
