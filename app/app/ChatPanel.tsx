@@ -94,7 +94,7 @@ export function ChatPanel({ document }: ChatPanelProps) {
   ]
 
   return (
-    <div className="h-full flex flex-col bg-surface">
+    <div className="h-full flex flex-col bg-surface overflow-hidden">
       {/* Header */}
       <div className="flex-shrink-0 p-4 border-b border-border-default">
         <div className="flex items-center justify-between">
@@ -144,7 +144,7 @@ export function ChatPanel({ document }: ChatPanelProps) {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4" style={{maxHeight: 'calc(100vh - 200px)'}}>
         {documentMessages.length === 0 ? (
           <EmptyState
             suggestions={suggestedQuestions}
