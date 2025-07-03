@@ -58,6 +58,14 @@ export function MarketingLayout({ children }: MarketingLayoutProps) {
     }
   }
 
+  // Prefetch critical routes for better performance
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      router.prefetch('/app')
+      router.prefetch('/login')
+    }
+  }, [router])
+
   const handleSignIn = () => {
     setAuthMode('signin')
     setShowAuthModal(true)

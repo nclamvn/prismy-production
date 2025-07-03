@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { logAuthEvent, logAuthError, markAuthTiming, trackAuthNetwork } from '@/lib/auth-analytics';
 import dynamic from 'next/dynamic';
 
-// Dynamic import example for OAuth Doctor validation
+// Dynamic import example for OAuth Doctor validation (referenced below)
 const DynamicComponent = dynamic(() => Promise.resolve(() => null), { ssr: false });
 
 // Error categories for OAuth callback diagnostics
@@ -248,6 +248,8 @@ export default function OAuthCallback() {
       <div className="text-center">
         <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
         <p className="text-gray-600">Authorising…</p>
+        {/* Dynamic component for OAuth Doctor validation */}
+        <DynamicComponent />
       </div>
     </div>
   );

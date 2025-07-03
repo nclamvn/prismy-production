@@ -66,11 +66,14 @@ const nextConfig = {
 
   // ===== IMAGES OPTIMIZATION =====
   images: {
-    domains: ['images.unsplash.com', 'prismy.in', 'www.prismy.in'],
+    domains: ['images.unsplash.com', 'prismy.in', 'www.prismy.in', 'lh3.googleusercontent.com'],
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 86400, // 24 hours
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    // Optimize for OAuth avatar images and performance
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
 
   // ===== BUILD OPTIMIZATION =====
@@ -84,13 +87,13 @@ const nextConfig = {
   // ===== HEADERS CONFIGURATION =====
   async headers() {
     return [
-      // Font pre-connect headers for performance
+      // Font pre-connect and DNS prefetch headers for performance
       {
         source: '/((?!api|_next/static|_next/image|icons).*)',
         headers: [
           {
             key: 'Link',
-            value: '<https://rsms.me>; rel=preconnect; crossorigin, <https://fonts.gstatic.com>; rel=preconnect; crossorigin, <https://fonts.googleapis.com>; rel=preconnect'
+            value: '<https://rsms.me>; rel=preconnect; crossorigin, <https://fonts.gstatic.com>; rel=preconnect; crossorigin, <https://fonts.googleapis.com>; rel=preconnect, <https://accounts.google.com>; rel=dns-prefetch, <https://oauth2.googleapis.com>; rel=dns-prefetch'
           }
         ]
       },

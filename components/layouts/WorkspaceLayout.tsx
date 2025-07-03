@@ -7,7 +7,13 @@ import { JobSidebar } from '@/components/workspace/JobSidebar'
 import { CanvasArea } from '@/components/workspace/CanvasArea'
 import { AgentPane } from '@/components/workspace/AgentPane'
 import { BatchDropProvider } from '@/components/batch/BatchDropProvider'
-import { AuthDebugPanel } from '@/components/debug/AuthDebugPanel'
+import dynamic from 'next/dynamic'
+
+// Dynamic import for debug panel (dev-only)
+const AuthDebugPanel = dynamic(() => import('@/components/debug/AuthDebugPanel').then(mod => mod.AuthDebugPanel), {
+  ssr: false,
+  loading: () => null
+})
 
 interface WorkspaceLayoutProps {
   children?: React.ReactNode
