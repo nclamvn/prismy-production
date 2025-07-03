@@ -227,22 +227,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Build callback URL with intended redirect as query param
     const callbackUrl = new URL('/auth/callback', window.location.origin)
-    callbackUrl.searchParams.set('redirectTo', intendedRedirect)
+    callbackUrl.searchParams.set('next', intendedRedirect)
 
     try {
+      console.log('🔐 [AUTH] Initiating Google OAuth with callback:', callbackUrl.toString())
+      
       const { error } = await getSupabaseClient().auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: callbackUrl.toString(),
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
         },
       })
 
       if (error) {
+        console.error('🔐 [AUTH] Google OAuth error:', error)
         return { error }
       }
 
+      console.log('🔐 [AUTH] Google OAuth initiated successfully')
       return { error: null }
     } catch (err) {
+      console.error('🔐 [AUTH] Google OAuth failed:', err)
       return { error: err }
     }
   }
