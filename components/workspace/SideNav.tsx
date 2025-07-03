@@ -15,6 +15,7 @@ import {
   FolderOpen
 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
+import { SidebarFooter } from './SidebarFooter'
 
 interface SideNavProps {
   collapsed?: boolean
@@ -73,8 +74,10 @@ export function SideNav({
   }
 
   return (
-    <aside className={`workspace-sidebar flex flex-col h-full pt-14 overflow-y-auto ${collapsed ? 'w-sidebar-collapsed' : 'w-sidebar'} ${className}`} data-testid="side-nav">
-      {/* Header */}
+    <aside className={`workspace-sidebar flex flex-col h-full pt-14 ${collapsed ? 'w-sidebar-collapsed' : 'w-sidebar'} ${className}`} data-testid="side-nav">
+      {/* Scrollable Content Container */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Header */}
       <div className={`flex-shrink-0 flex items-center justify-between p-4 ${collapsed ? 'px-2' : ''}`}>
         {!collapsed && (
           <span className="font-semibold text-primary">Navigation</span>
@@ -94,8 +97,10 @@ export function SideNav({
         </Button>
       </div>
 
-      {/* Main Navigation */}
-      <nav className="flex-1 px-2 min-h-0">
+        {/* Scrollable Main Content */}
+        <div className="flex-1 overflow-y-auto">
+          {/* Main Navigation */}
+          <nav className="px-2 min-h-0">
         <div className="space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon
@@ -126,12 +131,12 @@ export function SideNav({
               </button>
             )
           })}
-        </div>
-      </nav>
+          </div>
+          </nav>
 
-      {/* Recent Activity */}
-      {!collapsed && (
-        <div className="p-4 border-t border-workspace-divider">
+          {/* Recent Activity */}
+          {!collapsed && (
+            <div className="p-4 border-t border-workspace-divider">
           <div className="text-xs text-muted mb-3">Recent Files</div>
           <div className="space-y-2">
             {recentFiles.slice(0, 4).map((file, index) => (
@@ -147,8 +152,13 @@ export function SideNav({
               </div>
             ))}
           </div>
+          </div>
+        )}
         </div>
-      )}
+      </div>
+      
+      {/* Sidebar Footer - Fixed at bottom */}
+      <SidebarFooter collapsed={collapsed} className="flex-shrink-0" />
     </aside>
   )
 }
