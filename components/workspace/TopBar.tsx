@@ -1,7 +1,8 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Home, Settings, Bell, Search, Menu } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { UserMenu } from '@/components/auth/UserMenu'
@@ -10,6 +11,7 @@ import { LanguageSelector } from '@/components/ui/LanguageSelector'
 import { Logo } from '@/components/ui/Logo'
 import { useAuth } from '@/hooks/useAuth'
 import { useI18n } from '@/hooks/useI18n'
+import { createClient } from '@/lib/supabase-browser'
 
 interface TopBarProps {
   onToggleSidebar?: () => void
@@ -28,6 +30,39 @@ export function TopBar({
 }: TopBarProps) {
   const { user } = useAuth()
   const { t } = useI18n()
+  const router = useRouter()
+  const supabase = createClient()
+
+  // Session refresh on TopBar mount
+  useEffect(() => {
+    const refreshSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.refreshSession()
+        
+        if (error) {
+          console.error('Session refresh failed:', error)
+          // If session refresh fails, redirect to signin
+          router.push('/login')
+          return
+        }
+
+        if (session?.access_token) {
+          console.log('Session refreshed successfully:', {
+            expires_at: session.expires_at,
+            token_preview: session.access_token.substring(0, 20) + '...'
+          })
+        }
+      } catch (error) {
+        console.error('Session refresh error:', error)
+        router.push('/login')
+      }
+    }
+
+    // Only refresh if user exists (avoid unnecessary calls)
+    if (user) {
+      refreshSession()
+    }
+  }, [user, supabase, router])
 
   return (
     <header className={`workspace-topbar flex items-center justify-between px-4 ${className}`}>
