@@ -8,6 +8,7 @@ import {
   AlertCircle,
   CheckCircle,
   Plus,
+  Languages,
 } from 'lucide-react'
 // import { Button } from '@/components/ui/Button'
 
@@ -18,6 +19,7 @@ export function DocumentTabs() {
     setActiveDocument,
     removeDocument,
     upload,
+    translate,
   } = useWorkspaceStore()
 
   const handleTabClick = (docId: string) => {
@@ -48,6 +50,15 @@ export function DocumentTabs() {
     input.click()
   }
 
+  const handleTranslate = async (e: React.MouseEvent, docId: string) => {
+    e.stopPropagation()
+    try {
+      await translate(docId)
+    } catch (error) {
+      console.error('Translation error:', error)
+    }
+  }
+
   if (documents.length === 0) return null
 
   return (
@@ -61,6 +72,7 @@ export function DocumentTabs() {
             isActive={doc.id === activeDocumentId}
             onClick={() => handleTabClick(doc.id)}
             onClose={e => handleCloseTab(e, doc.id)}
+            onTranslate={e => handleTranslate(e, doc.id)}
           />
         ))}
 
@@ -82,6 +94,7 @@ interface DocumentTabProps {
   isActive: boolean
   onClick: () => void
   onClose: (e: React.MouseEvent) => void
+  onTranslate: (e: React.MouseEvent) => void
 }
 
 function DocumentTab({
@@ -89,6 +102,7 @@ function DocumentTab({
   isActive,
   onClick,
   onClose,
+  onTranslate,
 }: DocumentTabProps) {
   const getStatusIcon = () => {
     switch (document.status) {
@@ -96,10 +110,22 @@ function DocumentTab({
         return <Loader size={14} className="animate-spin text-accent-brand" />
       case 'processing':
         return <Loader size={14} className="animate-spin text-accent-brand" />
+      case 'translating':
+        return <Loader size={14} className="animate-spin text-accent-brand" />
       case 'translated':
         return <CheckCircle size={14} className="text-green-500" />
       case 'error':
         return <AlertCircle size={14} className="text-red-500" />
+      case 'queued':
+        return (
+          <button
+            onClick={onTranslate}
+            className="flex items-center justify-center w-6 h-6 bg-accent-brand hover:bg-accent-brand-dark rounded-full transition-colors"
+            title="Start translation"
+          >
+            <Languages size={12} className="text-white" />
+          </button>
+        )
       default:
         return null
     }
@@ -125,7 +151,9 @@ function DocumentTab({
   }
 
   const isProcessing =
-    document.status === 'uploading' || document.status === 'processing'
+    document.status === 'uploading' ||
+    document.status === 'processing' ||
+    document.status === 'translating'
 
   return (
     <div
