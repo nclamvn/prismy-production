@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { createClient } from '@/lib/supabase-browser'
+import { useAuth } from '@/contexts/AuthContext'
 import { Loader2, AlertCircle } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -13,7 +13,7 @@ export function GoogleButton() {
   const [error, setError] = useState<string | null>(null)
   const searchParams = useSearchParams()
   const _router = useRouter()
-  const supabase = createClient()
+  const { signInWithGoogle } = useAuth()
 
   // 🎯 Note: Auth code detection moved to AuthLayout to ensure it works regardless of active tab
 
@@ -33,50 +33,18 @@ export function GoogleButton() {
       // Get the intended redirect URL from search params or default to /app
       const redirectTo = searchParams.get('next') || '/app'
 
-      // 🚨 ULTRA DEBUG: Log everything about OAuth initiation
       console.log('🚨 [GOOGLE OAUTH] Initiating OAuth flow:', {
         timestamp: new Date().toISOString(),
         redirectTo,
         windowOrigin: window.location.origin,
         windowHref: window.location.href,
         searchParams: Object.fromEntries(searchParams.entries()),
-        supabaseUrl: supabase.supabaseUrl,
-        supabaseKey: supabase.supabaseKey.substring(0, 20) + '...',
       })
 
-      // Build callback URL with intended redirect as query param
-      const callbackUrl = new URL('/auth/callback', window.location.origin)
-      callbackUrl.searchParams.set('redirectTo', redirectTo)
+      const { error } = await signInWithGoogle(redirectTo)
 
-      console.log('🚨 [GOOGLE OAUTH] Built callback URL:', {
-        callbackUrl: callbackUrl.toString(),
-        origin: window.location.origin,
-        pathname: callbackUrl.pathname,
-        search: callbackUrl.search,
-      })
-
-      console.log('🚨 [GOOGLE OAUTH] Calling supabase.auth.signInWithOAuth...')
-
-      const oauthResult = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: callbackUrl.toString(),
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-          },
-        },
-      })
-
-      console.log('🚨 [GOOGLE OAUTH] Supabase OAuth result:', {
-        hasData: !!oauthResult.data,
-        hasError: !!oauthResult.error,
-        error: oauthResult.error,
-        data: oauthResult.data,
-      })
-
-      if (oauthResult.error) {
-        throw oauthResult.error
+      if (error) {
+        throw error
       }
 
       console.log(

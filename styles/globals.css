@@ -117,25 +117,33 @@
   .workspace-grid-full {
     display: grid;
     grid-template-columns: var(--layout-sidebar-width) 1fr var(--layout-agent-pane-width);
+    min-height: 100vh;
     height: 100vh;
+    overflow: hidden;
   }
 
   .workspace-grid-main {
     display: grid;
     grid-template-columns: var(--layout-sidebar-width) 1fr;
+    min-height: 100vh;
     height: 100vh;
+    overflow: hidden;
   }
 
   .workspace-grid-collapsed {
     display: grid;
     grid-template-columns: var(--layout-sidebar-collapsed) 1fr var(--layout-agent-pane-width);
+    min-height: 100vh;
     height: 100vh;
+    overflow: hidden;
   }
 
   .workspace-grid-mobile {
     display: grid;
     grid-template-columns: 1fr;
+    min-height: 100vh;
     height: 100vh;
+    overflow: hidden;
   }
 
   /* Marketing grid */

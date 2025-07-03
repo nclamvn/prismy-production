@@ -73,9 +73,9 @@ export function SideNav({
   }
 
   return (
-    <aside className={`workspace-sidebar flex flex-col ${collapsed ? 'w-sidebar-collapsed' : 'w-sidebar'} ${className}`} data-testid="side-nav">
+    <aside className={`workspace-sidebar flex flex-col h-full max-h-[calc(100vh-3.5rem)] overflow-y-auto ${collapsed ? 'w-sidebar-collapsed' : 'w-sidebar'} ${className}`} data-testid="side-nav">
       {/* Header */}
-      <div className={`flex items-center justify-between p-4 ${collapsed ? 'px-2' : ''}`}>
+      <div className={`flex-shrink-0 flex items-center justify-between p-4 ${collapsed ? 'px-2' : ''}`}>
         {!collapsed && (
           <span className="font-semibold text-primary">Navigation</span>
         )}
@@ -95,7 +95,7 @@ export function SideNav({
       </div>
 
       {/* Main Navigation */}
-      <nav className="flex-1 px-2">
+      <nav className="flex-1 px-2 min-h-0">
         <div className="space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon

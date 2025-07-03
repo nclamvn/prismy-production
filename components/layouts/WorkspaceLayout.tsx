@@ -109,7 +109,7 @@ export function WorkspaceLayout({
 
   return (
     <BatchDropProvider>
-      <div className={`h-screen flex flex-col bg-workspace-canvas ${className}`}>
+      <div className={`h-screen flex flex-col bg-workspace-canvas overflow-hidden ${className}`}>
         {/* Top Bar - Always visible */}
         <TopBar 
           onToggleSidebar={handleToggleSideNav}
@@ -117,7 +117,7 @@ export function WorkspaceLayout({
         />
 
         {/* Main workspace grid */}
-        <div className={`flex-1 overflow-hidden ${getGridLayoutClass()}`}>
+        <div className={`flex-1 ${getGridLayoutClass()}`}>
         {/* Left Sidebar - SideNav */}
         {(!isMobile || !sideNavCollapsed) && (
           <SideNav
@@ -163,10 +163,10 @@ export function WorkspaceLayout({
           {!sideNavCollapsed && (
             <>
               <div 
-                className="fixed inset-0 bg-overlay z-40"
+                className="fixed inset-0 bg-overlay z-overlay"
                 onClick={() => setSideNavCollapsed(true)}
               />
-              <div className="fixed left-0 top-[var(--layout-topbar-height)] bottom-0 z-50">
+              <div className="fixed left-0 top-[var(--layout-topbar-height)] bottom-0 z-modal">
                 <SideNav
                   collapsed={false}
                   onToggleCollapse={() => setSideNavCollapsed(true)}
@@ -181,10 +181,10 @@ export function WorkspaceLayout({
           {agentPaneOpen && (
             <>
               <div 
-                className="fixed inset-0 bg-overlay z-40"
+                className="fixed inset-0 bg-overlay z-overlay"
                 onClick={() => setAgentPaneOpen(false)}
               />
-              <div className="fixed right-0 top-[var(--layout-topbar-height)] bottom-0 z-50 w-full max-w-md">
+              <div className="fixed right-0 top-[var(--layout-topbar-height)] bottom-0 z-modal w-full max-w-md">
                 <AgentPane
                   isOpen={agentPaneOpen}
                   onClose={() => setAgentPaneOpen(false)}
@@ -199,10 +199,10 @@ export function WorkspaceLayout({
           {jobSidebarOpen && (
             <>
               <div 
-                className="fixed inset-0 bg-overlay z-40"
+                className="fixed inset-0 bg-overlay z-overlay"
                 onClick={() => setJobSidebarOpen(false)}
               />
-              <div className="fixed right-0 top-[var(--layout-topbar-height)] bottom-0 z-50 w-full max-w-sm">
+              <div className="fixed right-0 top-[var(--layout-topbar-height)] bottom-0 z-modal w-full max-w-sm">
                 <JobSidebar
                   isOpen={jobSidebarOpen}
                   onClose={() => setJobSidebarOpen(false)}
@@ -215,7 +215,7 @@ export function WorkspaceLayout({
 
       {/* Floating Action Buttons for mobile */}
       {isMobile && (
-        <div className="fixed bottom-4 right-4 flex flex-col space-y-2 z-30">
+        <div className="fixed bottom-4 right-4 flex flex-col space-y-2 z-sticky">
           {/* Job sidebar toggle */}
           <button
             onClick={handleToggleJobSidebar}

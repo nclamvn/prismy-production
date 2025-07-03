@@ -272,17 +272,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const signOut = async () => {
+  const signOut = async (redirectTo?: string) => {
     try {
+      console.log('🔐 [AUTH] Initiating sign out...')
+      
       const { error } = await getSupabaseClient().auth.signOut()
-      if (!error) {
-        // Clear all state
-        setUser(null)
-        setSession(null)
-        setProfile(null)
+      
+      if (error) {
+        console.error('🔐 [AUTH] Sign out error:', error)
+        throw error
       }
+
+      // Clear all state immediately
+      setUser(null)
+      setSession(null)
+      setProfile(null)
+
+      console.log('🔐 [AUTH] Sign out successful - state cleared')
+
+      // Clear any additional cached data
+      if (typeof window !== 'undefined') {
+        // Clear local storage items that might contain user data
+        const keysToRemove = Object.keys(localStorage).filter(key => 
+          key.includes('sb-') || key.includes('supabase') || key.includes('user')
+        )
+        keysToRemove.forEach(key => localStorage.removeItem(key))
+        
+        // Clear session storage
+        sessionStorage.clear()
+        
+        console.log('🔐 [AUTH] Local storage cleared')
+      }
+
+      // Optional redirect
+      if (redirectTo && typeof window !== 'undefined') {
+        setTimeout(() => {
+          window.location.href = redirectTo
+        }, 100) // Small delay to ensure state is cleared
+      }
+      
     } catch (error) {
-      // Silent error handling for production
+      console.error('🔐 [AUTH] Sign out failed:', error)
+      throw error
     }
   }
 

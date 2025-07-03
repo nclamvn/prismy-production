@@ -118,7 +118,7 @@ export function ChatInterface({
   ]
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full max-h-[calc(100vh-3.5rem)]">
       {/* Header */}
       <div className="flex-shrink-0 p-4 border-b border-border-default bg-surface">
         <div className="flex items-center space-x-3">
@@ -135,7 +135,7 @@ export function ChatInterface({
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
         {messages.map(message => (
           <div
             key={message.id}

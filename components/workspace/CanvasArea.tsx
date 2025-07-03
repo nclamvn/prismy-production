@@ -22,6 +22,8 @@ import {
 import { Button } from '@/components/ui/Button'
 import { EnterpriseFileUpload } from '@/components/upload/EnterpriseFileUpload'
 import { BatchDashboard } from '@/components/batch/BatchDashboard'
+import { SearchTrigger } from '@/components/search/SearchTrigger'
+import { useSearch } from '@/components/search/SearchProvider'
 
 interface CanvasAreaProps {
   activeSection?: string
@@ -46,6 +48,7 @@ export function CanvasArea({
   activeSection = 'documents',
   className = ''
 }: CanvasAreaProps) {
+  const { openSearch } = useSearch()
   const [files, setFiles] = useState<UploadedFile[]>([
     {
       id: '1',
@@ -180,14 +183,12 @@ export function CanvasArea({
 
         <div className="flex items-center space-x-2">
           {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted" />
-            <input
-              type="text"
-              placeholder="Search files..."
-              className="w-64 h-8 pl-10 pr-4 bg-workspace-canvas border border-workspace-border rounded-lg text-sm placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-border-focus"
-            />
-          </div>
+          <SearchTrigger
+            onOpenSearch={() => openSearch('documents:')}
+            variant="button"
+            placeholder="Search files..."
+            className="w-64"
+          />
 
           {/* Filter */}
           <Button variant="ghost" size="sm">
@@ -337,8 +338,10 @@ export function CanvasArea({
   }
 
   return (
-    <main className={`flex-1 min-w-min-canvas bg-workspace-canvas p-6 overflow-y-auto ${className}`} data-testid="workspace-canvas">
-      {renderContent()}
+    <main className={`flex-1 min-w-min-canvas bg-workspace-canvas h-full max-h-[calc(100vh-3.5rem)] overflow-y-auto ${className}`} data-testid="workspace-canvas">
+      <div className="p-6 min-h-full">
+        {renderContent()}
+      </div>
     </main>
   )
 }

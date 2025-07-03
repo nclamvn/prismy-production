@@ -1,43 +1,50 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { getBrowserClient } from '@/lib/supabase-browser'
-import { User } from '@supabase/supabase-js'
-// import { Button } from '@/components/ui/Button'
+import { useAuth } from '@/contexts/AuthContext'
 
 export function UserMenu() {
-  const [user, setUser] = useState<User | null>(null)
+  const { user, signOut, profile } = useAuth()
   const [showMenu, setShowMenu] = useState(false)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
-  useEffect(() => {
-    const supabase = getBrowserClient()
+  // Get display name from profile or user metadata, fallback to email
+  const displayName = 
+    profile?.full_name || 
+    user?.user_metadata?.full_name || 
+    user?.email?.split('@')[0] || 
+    'User'
 
-    // Get initial user
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user)
-    })
-
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
-    })
-
-    return () => {
-      subscription.unsubscribe()
+  // Get user initials for avatar
+  const getInitials = () => {
+    if (profile?.full_name) {
+      return profile.full_name
+        .split(' ')
+        .map(name => name[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2)
     }
-  }, [])
+    return user?.email?.[0].toUpperCase() || 'U'
+  }
 
   const handleSignOut = async () => {
     setLoading(true)
-    const supabase = getBrowserClient()
-    await supabase.auth.signOut()
-    router.push('/')
-    setLoading(false)
+    setShowMenu(false) // Close menu immediately
+    
+    try {
+      // Use enhanced signOut with redirect
+      await signOut('/')
+      // Note: signOut will handle the redirect, so no need for router.push
+    } catch (error) {
+      console.error('Sign out error:', error)
+      // If sign out fails, still redirect to home
+      router.push('/')
+    } finally {
+      setLoading(false)
+    }
   }
 
   if (!user) return null
@@ -50,11 +57,11 @@ export function UserMenu() {
       >
         <div className="w-8 h-8 bg-accent-brand rounded-full flex items-center justify-center">
           <span className="text-white text-sm font-medium">
-            {user.email?.[0].toUpperCase()}
+            {getInitials()}
           </span>
         </div>
         <span className="text-sm text-primary hidden sm:block">
-          {user.email}
+          {displayName}
         </span>
       </button>
 
@@ -70,6 +77,9 @@ export function UserMenu() {
           <div className="absolute right-0 mt-2 w-64 bg-surface border border-border-default rounded-lg shadow-lg py-2 z-50">
             <div className="px-4 py-2 border-b border-border-default">
               <div className="text-sm font-medium text-primary">
+                {displayName}
+              </div>
+              <div className="text-xs text-muted mt-1">
                 {user.email}
               </div>
               <div className="text-xs text-muted mt-1">
@@ -80,7 +90,7 @@ export function UserMenu() {
             <div className="py-2">
               <MenuItem
                 onClick={() => {
-                  router.push('/workspace')
+                  router.push('/app')
                   setShowMenu(false)
                 }}
               >

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
-import { getBrowserClient } from '@/lib/supabase-browser'
+import { useAuth } from '@/contexts/AuthContext'
 import { X } from 'lucide-react'
 
 interface AuthModalProps {
@@ -24,6 +24,7 @@ export function AuthModal({
   const [authMode, setAuthMode] = useState(mode)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const { signIn, signUp } = useAuth()
 
   useEffect(() => {
     setAuthMode(mode)
@@ -44,30 +45,13 @@ export function AuthModal({
     setError(null)
 
     try {
-      const supabase = getBrowserClient()
-
       if (authMode === 'signup') {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/auth/callback`,
-          },
-        })
-
+        const { error } = await signUp(email, password, 'User Name')
         if (error) throw error
-
-        // Success
         onSuccess?.()
       } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        })
-
+        const { error } = await signIn(email, password)
         if (error) throw error
-
-        // Success
         onSuccess?.()
       }
     } catch (err: any) {
