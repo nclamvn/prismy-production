@@ -54,6 +54,9 @@ browsers:
       - name: Mobile Large
         width: 414
         height: 896
+      - name: Mobile iPhone 12
+        width: 390
+        height: 844
       - name: Mobile Medium
         width: 375
         height: 667

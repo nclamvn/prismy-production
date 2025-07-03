@@ -14,8 +14,8 @@ test.describe('Mobile Visual Tests', () => {
   test.beforeEach(async ({ page }) => {
     percyTester = await setupPercyTesting(page)
     
-    // Set mobile viewport
-    await page.setViewportSize({ width: 375, height: 667 })
+    // Set mobile viewport (will be overridden per test)
+    await page.setViewportSize({ width: 390, height: 844 })
     
     // Enable touch events
     await page.evaluate(() => {
@@ -566,6 +566,51 @@ test.describe('Mobile Visual Tests', () => {
           )
         } catch (error) {
           console.log(`Workspace not available in ${orientation.name}`)
+        }
+      })
+    }
+  })
+
+  test('iPhone 12 viewport (390×844) testing', async ({ page }) => {
+    const shouldRunPercy = process.env.PERCY_TOKEN || process.env.CI
+    test.skip(!shouldRunPercy, 'Percy not configured')
+    
+    // Set iPhone 12 mini viewport specifically
+    await page.setViewportSize({ width: 390, height: 844 })
+    
+    for (const locale of ['en', 'vi', 'ar']) {
+      await test.step(`iPhone 12 Viewport - ${locale}`, async () => {
+        await page.goto(`http://localhost:3000?locale=${locale}`)
+        await page.waitForSelector('main')
+        
+        // Test home page at 390×844
+        await percyTester.testPage(
+          { name: 'iPhone 12 Home Page', path: '/', waitFor: 'main' },
+          locale,
+          'light',
+          [{ name: 'iPhone 12', width: 390, height: 844 }]
+        )
+        
+        // Test workspace if authenticated
+        await page.evaluate(() => {
+          localStorage.setItem('supabase.auth.token', JSON.stringify({
+            access_token: 'mock-token',
+            user: { id: 'test-user', email: 'test@prismy.in' }
+          }))
+        })
+        
+        try {
+          await page.goto(`http://localhost:3000/workspace?locale=${locale}`)
+          await page.waitForSelector('[data-testid="workspace-main"]', { timeout: 5000 })
+          
+          await percyTester.testPage(
+            { name: 'iPhone 12 Workspace', path: '/workspace', waitFor: '[data-testid="workspace-main"]' },
+            locale,
+            'light',
+            [{ name: 'iPhone 12', width: 390, height: 844 }]
+          )
+        } catch (error) {
+          console.log(`Workspace not available for ${locale} on iPhone 12 viewport`)
         }
       })
     }

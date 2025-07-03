@@ -34,7 +34,8 @@ export interface PergySnapshotOptions {
 export const DEFAULT_VISUAL_CONFIG: VisualTestConfig = {
   locales: ['en', 'vi', 'ja', 'ar', 'zh'],
   viewports: [
-    { name: 'Mobile', width: 375, height: 667 },
+    { name: 'Mobile Small', width: 375, height: 667 },
+    { name: 'Mobile iPhone 12', width: 390, height: 844 },
     { name: 'Tablet', width: 768, height: 1024 },
     { name: 'Desktop', width: 1440, height: 900 },
     { name: 'Large Desktop', width: 1920, height: 1080 }
