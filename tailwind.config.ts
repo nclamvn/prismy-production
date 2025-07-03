@@ -24,6 +24,13 @@ const config: Config = {
       colors: {
         canvas: '#F9FAFB', // Unified canvas background
       },
+      height: {
+        header: '3.5rem', // 56px header height
+      },
+      zIndex: {
+        header: '20',
+        sidebar: '30',
+      },
     },
   },
 }

@@ -223,7 +223,7 @@ export function ChatInterface({
             Send
           </Button>
         </div>
-        <div className="text-xs text-muted mt-2">
+        <div className="text-xs text-muted mt-2 mb-0">
           Press Enter to send, Shift+Enter for new line
         </div>
       </div>

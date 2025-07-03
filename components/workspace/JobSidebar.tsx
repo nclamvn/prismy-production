@@ -228,7 +228,7 @@ export function JobSidebar({
     <AnimatedPanel 
       isOpen={isOpen} 
       side="right"
-      className={`w-job-sidebar bg-workspace-panel border-l border-workspace-border flex flex-col ${className}`}
+      className={`w-job-sidebar bg-workspace-panel border-l border-workspace-border flex flex-col pt-14 h-full ${className}`}
     >
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-workspace-divider">

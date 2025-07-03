@@ -64,7 +64,7 @@ export default function RootLayout({
         />
         <link rel="preconnect" href="https://rsms.me" crossOrigin="anonymous" />
       </head>
-      <body className="font-sans antialiased bg-default text-primary">
+      <body className="h-screen overflow-hidden bg-[#F9FAFB] font-sans antialiased text-primary">
         <ClientProviders>{children}</ClientProviders>
       </body>
     </html>

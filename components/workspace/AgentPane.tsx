@@ -133,7 +133,7 @@ export function AgentPane({
   if (!isOpen) return null
 
   return (
-    <aside className={`w-agent-pane bg-workspace-panel border-l border-workspace-border flex flex-col h-full max-h-[calc(100vh-3.5rem)] ${isMaximized ? 'fixed inset-0 z-50 w-full max-h-screen' : ''} ${className}`}>
+    <aside className={`w-agent-pane bg-workspace-panel border-l border-workspace-border flex flex-col h-full ${isMaximized ? 'fixed inset-0 z-50 w-full pt-14' : 'pt-14'} ${className}`}>
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-workspace-divider">
         <div className="flex items-center space-x-2">

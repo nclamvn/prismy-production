@@ -34,7 +34,7 @@ export function TopBar({
   const router = useRouter()
 
   return (
-    <header className={`workspace-topbar flex items-center justify-between px-4 h-14 z-topbar bg-white border-b border-gray-200 ${className}`}>
+    <header className={`workspace-topbar fixed top-0 left-0 right-0 flex items-center justify-between px-4 h-14 z-topbar bg-white border-b border-gray-200 ${className}`}>
       {/* Left section */}
       <div className="flex items-center space-x-2 md:space-x-4">
         {/* Mobile hamburger menu */}

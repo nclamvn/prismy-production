@@ -73,7 +73,7 @@ export function SideNav({
   }
 
   return (
-    <aside className={`workspace-sidebar flex flex-col h-full max-h-[calc(100vh-3.5rem)] overflow-y-auto ${collapsed ? 'w-sidebar-collapsed' : 'w-sidebar'} ${className}`} data-testid="side-nav">
+    <aside className={`workspace-sidebar flex flex-col h-full pt-14 overflow-y-auto ${collapsed ? 'w-sidebar-collapsed' : 'w-sidebar'} ${className}`} data-testid="side-nav">
       {/* Header */}
       <div className={`flex-shrink-0 flex items-center justify-between p-4 ${collapsed ? 'px-2' : ''}`}>
         {!collapsed && (

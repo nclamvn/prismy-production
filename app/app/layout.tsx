@@ -12,8 +12,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { user } = useAuth()
 
   return (
-    <div className="h-screen flex flex-col">
-      {/* WorkspaceLayout handles its own TopBar - removed duplicate header */}
+    <div className="workspace flex h-full">
       <main className="flex-1 overflow-hidden">{children}</main>
     </div>
   )

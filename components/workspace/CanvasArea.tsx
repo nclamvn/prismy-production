@@ -338,8 +338,8 @@ export function CanvasArea({
   }
 
   return (
-    <main className={`flex-1 min-w-min-canvas bg-workspace-canvas h-full max-h-[calc(100vh-3.5rem)] overflow-y-auto ${className}`} data-testid="workspace-canvas">
-      <div className="p-6 min-h-full">
+    <main className={`flex-1 min-w-min-canvas bg-[#F9FAFB] h-full pt-14 overflow-y-auto ${className}`} data-testid="workspace-canvas">
+      <div className="p-6 min-h-full pb-0">
         {renderContent()}
       </div>
     </main>

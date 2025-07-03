@@ -109,8 +109,8 @@ export function WorkspaceLayout({
 
   return (
     <BatchDropProvider>
-      <div className={`h-screen flex flex-col bg-workspace-canvas overflow-hidden ${className}`}>
-        {/* Top Bar - Always visible */}
+      <div className={`h-full flex flex-col bg-[#F9FAFB] overflow-hidden ${className}`}>
+        {/* Top Bar - Always visible - Fixed position */}
         <TopBar 
           onToggleSidebar={handleToggleSideNav}
           onToggleAgentPane={handleToggleAgentPane}
