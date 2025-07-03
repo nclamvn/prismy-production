@@ -12,26 +12,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { user } = useAuth()
 
   return (
-    <div className="h-screen flex flex-col bg-canvas">
-      {/* App Header */}
-      <header className="bg-canvas">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
-          <div className="flex items-center space-x-4">
-            <Link href="/" className="flex items-center space-x-2">
-              <Home className="h-5 w-5 text-secondary hover:text-primary transition-colors" />
-            </Link>
-            <span className="text-lg font-semibold text-primary">
-              Prismy Workspace
-            </span>
-          </div>
-
-          <div className="flex items-center space-x-3">
-            {user && <UserMenu />}
-          </div>
-        </div>
-      </header>
-
-      {/* App Content */}
+    <div className="h-screen flex flex-col">
+      {/* WorkspaceLayout handles its own TopBar - removed duplicate header */}
       <main className="flex-1 overflow-hidden">{children}</main>
     </div>
   )
