@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import Link from 'next/link';
 
 export default function HomePage() {
   return (
@@ -9,7 +10,9 @@ export default function HomePage() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold">Prismy v2</h1>
-            <Button variant="outline">Sign In</Button>
+            <Link href="/login">
+              <Button variant="outline">Sign In</Button>
+            </Link>
           </div>
         </div>
       </header>
@@ -26,7 +29,9 @@ export default function HomePage() {
             Built with modern architecture for reliability and speed.
           </p>
           <div className="flex gap-4 justify-center">
-            <Button size="lg">Get Started</Button>
+            <Link href="/login">
+              <Button size="lg">Get Started</Button>
+            </Link>
             <Button size="lg" variant="outline">Learn More</Button>
           </div>
         </div>
@@ -65,7 +70,7 @@ export default function HomePage() {
         <div className="mt-16 text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-secondary rounded-full">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            <span className="text-sm font-medium">Greenfield v2 - Day 1 Complete</span>
+            <span className="text-sm font-medium">Greenfield v2 - Day 7 Complete</span>
           </div>
         </div>
       </main>
