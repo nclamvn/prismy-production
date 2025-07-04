@@ -1,6 +1,8 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
+import { Button } from '@/design-system/components/button'
+import { SidebarNav, SidebarNavItem } from '@/design-system/components/navigation'
+import { Hide } from '@/design-system/components/responsive-container'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { 
@@ -38,10 +40,12 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
     <>
       {/* Mobile overlay */}
       {isOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-          onClick={onToggle}
-        />
+        <Hide above="lg">
+          <div 
+            className="fixed inset-0 bg-black/50 z-40"
+            onClick={onToggle}
+          />
+        </Hide>
       )}
       
       {/* Sidebar */}
@@ -65,25 +69,22 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
           </div>
 
           {/* Navigation */}
-          <ScrollArea className="flex-1 px-3 py-4">
-            <nav className="space-y-2">
+          <ScrollArea className="flex-1">
+            <SidebarNav className="px-2 py-4">
               {navigation.map((item) => {
                 const Icon = item.icon
                 return (
-                  <Button
+                  <SidebarNavItem
                     key={item.name}
-                    variant="ghost"
-                    className="w-full justify-start"
-                    asChild
+                    href={item.href}
+                    icon={<Icon className="h-4 w-4" />}
+                    active={false} // TODO: Add active state logic
                   >
-                    <a href={item.href}>
-                      <Icon className="mr-2 h-4 w-4" />
-                      {item.name}
-                    </a>
-                  </Button>
+                    {item.name}
+                  </SidebarNavItem>
                 )
               })}
-            </nav>
+            </SidebarNav>
           </ScrollArea>
 
           <Separator />

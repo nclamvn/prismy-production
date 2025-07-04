@@ -1,11 +1,11 @@
 'use client'
 
 import { useState, useRef, useCallback } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/design-system/components/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/design-system/components/card'
+import { Badge } from '@/design-system/components/badge'
 import { Progress } from '@/components/ui/progress'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Badge } from '@/components/ui/badge'
 import { ChunkedUploader } from '@/lib/upload/chunked-uploader'
 import { 
   Upload, 

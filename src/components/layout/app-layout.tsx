@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Sidebar } from './sidebar'
 import { AppHeader } from './app-header'
 import { RightPanel } from './right-panel'
+import { Container, Hide } from '@/design-system/components/responsive-container'
 
 interface FileData {
   name: string
@@ -40,9 +41,9 @@ export function AppLayout({ children, userEmail }: AppLayoutProps) {
         <div className="flex-1 flex overflow-hidden">
           {/* Main content */}
           <main className="flex-1 overflow-auto">
-            <div className="h-full p-6">
+            <Container size="7xl" padding="md" className="h-full py-6">
               {children}
-            </div>
+            </Container>
           </main>
           
           {/* Right panel */}
@@ -56,16 +57,20 @@ export function AppLayout({ children, userEmail }: AppLayoutProps) {
       
       {/* Mobile overlays */}
       {sidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
+        <Hide above="lg">
+          <div 
+            className="fixed inset-0 bg-black/50 z-30"
+            onClick={() => setSidebarOpen(false)}
+          />
+        </Hide>
       )}
       {rightPanelOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
-          onClick={() => setRightPanelOpen(false)}
-        />
+        <Hide above="lg">
+          <div 
+            className="fixed inset-0 bg-black/50 z-30"
+            onClick={() => setRightPanelOpen(false)}
+          />
+        </Hide>
       )}
     </div>
   )
