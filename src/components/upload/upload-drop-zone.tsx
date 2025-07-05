@@ -106,18 +106,30 @@ export function UploadDropZone({ onUploadComplete, className = "" }: UploadDropZ
       formData.append('fromLang', 'auto')
       formData.append('toLang', 'vi') // Default to Vietnamese
       
-      const response = await fetch('/api/upload', {
+      console.log('🚀 Starting upload for file:', file.name)
+      
+      // Try full upload first, fallback to simple if it fails
+      let response = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
       })
       
+      // If full upload fails, try simple upload
+      if (!response.ok) {
+        console.log('📡 Full upload failed, trying simple upload...')
+        response = await fetch('/api/upload-simple', {
+          method: 'POST',
+          body: formData,
+        })
+      }
+      
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.error || 'Upload failed')
+        throw new Error(errorData.error || `Upload failed with status ${response.status}`)
       }
       
       const result = await response.json()
-      console.log('Upload result:', result)
+      console.log('✅ Upload result:', result)
       
       if (result.success) {
         setUploadComplete(true)
@@ -135,6 +147,7 @@ export function UploadDropZone({ onUploadComplete, className = "" }: UploadDropZ
         throw new Error(result.message || 'Upload failed')
       }
     } catch (err) {
+      console.error('❌ Upload error:', err)
       const errorMessage = err instanceof Error ? err.message : 'Upload failed. Please try again.'
       setError(errorMessage)
     } finally {
