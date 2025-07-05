@@ -6,8 +6,7 @@ import { useTranslations } from 'next-intl'
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { ThemeToggle } from "@/components/ui/theme-toggle"
-import { LocaleSwitch } from "@/components/ui/locale-switch"
+import { Toolbar } from "@/components/ui/toolbar"
 
 export interface HeaderProps extends React.HTMLAttributes<HTMLElement> {
   transparent?: boolean
@@ -75,8 +74,7 @@ const Header = React.forwardRef<HTMLElement, HeaderProps>(
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center space-x-2">
-            <LocaleSwitch />
-            <ThemeToggle />
+            <Toolbar />
             <Button variant="ghost" size="sm" onClick={() => window.location.href = '/login'}>
               {t('signIn')}
             </Button>
@@ -124,9 +122,8 @@ const Header = React.forwardRef<HTMLElement, HeaderProps>(
                 </a>
               </nav>
               <div className="flex flex-col space-y-2 pt-4 border-t border-border">
-                <div className="flex items-center justify-between mb-2">
-                  <LocaleSwitch />
-                  <ThemeToggle />
+                <div className="flex items-center justify-center mb-2">
+                  <Toolbar />
                 </div>
                 <Button 
                   variant="ghost" 

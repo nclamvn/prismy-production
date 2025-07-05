@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation';
 import "../globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 
-const locales = ['en', 'vi'];
+const locales = ['vi', 'en'];
 
 export const metadata: Metadata = {
   title: "Prismy v2 - Document Translation Platform",
