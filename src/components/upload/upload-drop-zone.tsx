@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Upload, File, X, CheckCircle, AlertCircle, Loader2 } from 'lucide-react'
 
 interface UploadDropZoneProps {
-  onUploadComplete?: (files: File[]) => void
+  onUploadComplete?: (result: { documentId: string; conversationId: string; filename: string }) => void
   className?: string
 }
 
@@ -15,6 +15,7 @@ export function UploadDropZone({ onUploadComplete, className = "" }: UploadDropZ
   const [isUploading, setIsUploading] = useState(false)
   const [uploadComplete, setUploadComplete] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [uploadResult, setUploadResult] = useState<{ documentId: string; conversationId: string; filename: string } | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const validateFile = (file: File): { valid: boolean; error?: string } => {
@@ -87,6 +88,7 @@ export function UploadDropZone({ onUploadComplete, className = "" }: UploadDropZ
     setError(null)
     setUploadComplete(false)
     setIsUploading(false)
+    setUploadResult(null)
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
     }
@@ -98,12 +100,43 @@ export function UploadDropZone({ onUploadComplete, className = "" }: UploadDropZ
     setIsUploading(true)
     setError(null)
     
-    // Simulate upload process
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      setUploadComplete(true)
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('fromLang', 'auto')
+      formData.append('toLang', 'vi') // Default to Vietnamese
+      
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      })
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Upload failed')
+      }
+      
+      const result = await response.json()
+      console.log('Upload result:', result)
+      
+      if (result.success) {
+        setUploadComplete(true)
+        const uploadData = {
+          documentId: result.documentId,
+          conversationId: result.conversationId,
+          filename: result.filename
+        }
+        setUploadResult(uploadData)
+        
+        if (onUploadComplete) {
+          onUploadComplete(uploadData)
+        }
+      } else {
+        throw new Error(result.message || 'Upload failed')
+      }
     } catch (err) {
-      setError('Upload failed. Please try again.')
+      const errorMessage = err instanceof Error ? err.message : 'Upload failed. Please try again.'
+      setError(errorMessage)
     } finally {
       setIsUploading(false)
     }
@@ -151,9 +184,15 @@ export function UploadDropZone({ onUploadComplete, className = "" }: UploadDropZ
               Start Upload
             </Button>
           )}
-          {uploadComplete && (
-            <Button size="sm">
-              Start Translation
+          {uploadComplete && uploadResult && (
+            <Button 
+              size="sm"
+              onClick={() => {
+                // Navigate to chat with the conversation
+                window.location.href = `/app/chat?conversation=${uploadResult.conversationId}`
+              }}
+            >
+              Start Chat
             </Button>
           )}
           <Button

@@ -2,7 +2,6 @@
 
 import { useState, useRef, useCallback } from 'react'
 import { Button } from '@/design-system/components/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/design-system/components/card'
 import { Badge } from '@/design-system/components/badge'
 import { Progress } from '@/components/ui/progress'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -152,17 +151,7 @@ export function FileUpload() {
   }
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Upload className="h-5 w-5" />
-          Document Upload
-        </CardTitle>
-        <CardDescription>
-          Upload PDF, DOCX, DOC, TXT, or MD files up to 1GB for translation
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
+    <div className="w-full space-y-6">
         {/* Upload Area */}
         {uploadState.status === 'idle' && !uploadState.file && (
           <div
@@ -294,7 +283,6 @@ export function FileUpload() {
             </AlertDescription>
           </Alert>
         )}
-      </CardContent>
-    </Card>
+    </div>
   )
 }

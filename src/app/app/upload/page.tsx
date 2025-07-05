@@ -28,7 +28,12 @@ export default function UploadPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <UploadDropZone onUploadComplete={(files) => console.log('Uploaded:', files)} />
+              <UploadDropZone 
+                onUploadComplete={(result) => {
+                  console.log('Upload completed:', result)
+                  // Could show a success message or navigate to chat
+                }} 
+              />
             </CardContent>
           </Card>
 
