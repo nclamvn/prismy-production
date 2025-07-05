@@ -19,7 +19,7 @@ export default function SearchPage() {
         </p>
       </div>
 
-      {/* Search bar */}
+      {/* Search bar - Full width */}
       <SearchBar onSearch={handleSearch} />
 
       {/* Search results and filters */}

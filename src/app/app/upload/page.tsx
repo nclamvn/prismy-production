@@ -1,8 +1,8 @@
 'use client'
 
-import { FileUpload } from '@/components/upload/file-upload'
+import { UploadDropZone } from '@/components/upload/upload-drop-zone'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Upload, FileText, Zap, AlertCircle } from 'lucide-react'
+import { FileText, Zap } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 export default function UploadPage() {
@@ -18,25 +18,22 @@ export default function UploadPage() {
 
       {/* Main Upload Area */}
       <div className="grid gap-6 lg:grid-cols-3">
-        {/* Upload Zone */}
-        <div className="lg:col-span-2">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Upload className="w-5 h-5" />
-                File Upload
-              </CardTitle>
+        {/* Upload Zone - Single card with drop zone */}
+        <div className="lg:col-span-2 space-y-6">
+          <Card className="space-y-6">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg">Upload a document</CardTitle>
               <CardDescription>
-                Drag and drop files or click to browse. Supports PDF, DOCX, TXT, and more.
+                PDF, DOCX, DOC, TXT &nbsp;·&nbsp; ≤ 1 GB
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <FileUpload onUploadComplete={(files) => console.log('Uploaded:', files)} />
+              <UploadDropZone onUploadComplete={(files) => console.log('Uploaded:', files)} />
             </CardContent>
           </Card>
 
           {/* Upload History */}
-          <Card className="mt-6">
+          <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FileText className="w-5 h-5" />
