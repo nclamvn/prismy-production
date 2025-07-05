@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { SkipToMain } from "@/components/accessibility";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -15,8 +16,11 @@ export default function RootLayout({
   return (
     <html lang="vi" suppressHydrationWarning>
       <body className="font-sans antialiased bg-background text-foreground">
+        <SkipToMain />
         <ThemeProvider>
-          {children}
+          <main id="main-content">
+            {children}
+          </main>
         </ThemeProvider>
       </body>
     </html>

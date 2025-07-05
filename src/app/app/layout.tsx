@@ -4,6 +4,8 @@ import { useSupabase } from '@/hooks/use-supabase'
 import { AppLayout } from '@/components/layout/app-layout'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import ErrorBoundary from '@/components/error-boundary'
+import { FullPageLoading } from '@/components/loading-spinner'
 import Link from 'next/link'
 
 interface AppLayoutWrapperProps {
@@ -14,14 +16,7 @@ export default function AppLayoutWrapper({ children }: AppLayoutWrapperProps) {
   const { user, loading, supabase } = useSupabase()
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-2 text-sm text-muted-foreground">Loading workspace...</p>
-        </div>
-      </div>
-    )
+    return <FullPageLoading message="Loading workspace..." />
   }
 
   if (!user) {
@@ -45,8 +40,12 @@ export default function AppLayoutWrapper({ children }: AppLayoutWrapperProps) {
   }
 
   return (
-    <AppLayout userEmail={user.email}>
-      {children}
-    </AppLayout>
+    <ErrorBoundary>
+      <AppLayout userEmail={user.email}>
+        <ErrorBoundary>
+          {children}
+        </ErrorBoundary>
+      </AppLayout>
+    </ErrorBoundary>
   )
 }
