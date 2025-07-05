@@ -14,12 +14,12 @@ function ThemeScript() {
         __html: `
           (function() {
             try {
-              var theme = document.cookie.match(/prismy-theme=(\\w+)/)?.[1];
-              if (theme) {
-                document.documentElement.className = theme;
-              } else {
-                document.documentElement.className = 'light';
-              }
+              var theme = document.cookie.match(/prismy-theme=(\\w+)/)?.[1] || 'light';
+              // Remove any existing theme classes first
+              document.documentElement.classList.remove('light', 'dark');
+              // Add the current theme
+              document.documentElement.classList.add(theme);
+              document.documentElement.style.colorScheme = theme;
             } catch (e) {}
           })();
         `,
@@ -42,7 +42,7 @@ export default function RootLayout({
       <head>
         <ThemeScript />
       </head>
-      <body>
+      <body className="font-sans antialiased bg-background text-foreground">
         {children}
       </body>
     </html>
