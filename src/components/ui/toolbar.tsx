@@ -24,8 +24,6 @@ export function Toolbar() {
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
-    // Set cookie for SSR consistency
-    document.cookie = `prismy-theme=${newTheme}; path=/; max-age=31536000; SameSite=Lax`;
     setTheme(newTheme);
   };
 
