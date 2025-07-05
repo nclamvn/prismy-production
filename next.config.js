@@ -1,5 +1,3 @@
-const { withSentryConfig } = require("@sentry/nextjs");
-
 const withNextIntl = require('next-intl/plugin')(
   './i18n.ts'
 );
@@ -40,15 +38,4 @@ const nextConfig = {
   },
 }
 
-module.exports = withSentryConfig(withNextIntl(nextConfig), {
-  org: "prismy",
-  project: "prismy-v2",
-  silent: !process.env.CI,
-  widenClientFileUpload: true,
-  reactComponentAnnotation: {
-    enabled: true,
-  },
-  hideSourceMaps: true,
-  disableLogger: true,
-  automaticVercelMonitors: true,
-});
+module.exports = withNextIntl(nextConfig);
