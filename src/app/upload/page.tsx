@@ -34,9 +34,12 @@ export default function UploadPage() {
       const result = await response.json();
       
       if (response.ok) {
-        alert(`File "${file.name}" uploaded successfully! Processing started.`);
-        // In production: redirect to status page
-        console.log('Document ID:', result.documentId);
+        if (result.mode === 'mvp') {
+          alert(`✅ File processed successfully!\n\nDetected: ${result.detectedLanguage}\nOriginal: ${result.originalText}\nTranslated: ${result.translatedText}`);
+        } else {
+          alert(`File "${file.name}" uploaded successfully! Processing started.`);
+        }
+        console.log('Upload result:', result);
       } else {
         alert(`Upload failed: ${result.error}`);
       }

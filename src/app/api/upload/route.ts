@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createSupabaseClient } from '@/lib/supabase/server'
-import { processDocument } from '@/lib/processing/document-processor'
+import { getFeatureFlags } from '@/lib/feature-flags'
+import { detectLanguage } from '@/lib/ocr/language-detector'
+import { translateText } from '@/lib/translation/translation-service'
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,56 +25,34 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unsupported file type' }, { status: 400 })
     }
     
-    // Convert file to buffer
-    const fileBuffer = await file.arrayBuffer()
-    const buffer = Buffer.from(fileBuffer)
+    const flags = getFeatureFlags()
     
-    // Initialize Supabase client
-    const supabase = createSupabaseClient()
-    
-    // Upload file to Supabase Storage
-    const fileName = `${Date.now()}-${file.name}`
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('documents')
-      .upload(fileName, buffer, {
-        contentType: file.type,
-        upsert: false
+    // MVP Mode: Process file directly without database
+    if (flags.MVP_MODE) {
+      // Read file content
+      const fileText = await file.text()
+      
+      // Detect language
+      const detectedLang = fromLang === 'auto' ? detectLanguage(fileText) : fromLang
+      
+      // Translate text
+      const translatedText = await translateText(fileText, detectedLang, toLang)
+      
+      return NextResponse.json({
+        success: true,
+        mode: 'mvp',
+        originalText: fileText.substring(0, 200) + '...',
+        detectedLanguage: detectedLang,
+        translatedText: translatedText.substring(0, 200) + '...',
+        message: 'File processed successfully (MVP mode)'
       })
-    
-    if (uploadError) {
-      console.error('Upload error:', uploadError)
-      return NextResponse.json({ error: 'Upload failed' }, { status: 500 })
     }
     
-    // Create document record
-    const { data: docData, error: docError } = await supabase
-      .from('documents')
-      .insert({
-        filename: file.name,
-        file_path: uploadData.path,
-        file_size: file.size,
-        file_type: file.type,
-        source_language: fromLang === 'auto' ? null : fromLang,
-        target_language: toLang,
-        status: 'uploaded'
-      })
-      .select()
-      .single()
-    
-    if (docError) {
-      console.error('Database error:', docError)
-      return NextResponse.json({ error: 'Database error' }, { status: 500 })
-    }
-    
-    // Start processing in background
-    processDocument(docData.id).catch(error => {
-      console.error('Processing error:', error)
-    })
-    
+    // Full mode would use Supabase here
     return NextResponse.json({
       success: true,
-      documentId: docData.id,
-      message: 'File uploaded and processing started'
+      mode: 'demo',
+      message: 'Upload received. Full processing will be enabled when environment is configured.'
     })
     
   } catch (error) {

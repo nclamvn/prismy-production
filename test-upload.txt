@@ -1,0 +1,14 @@
+This is a test document for translation. 
+
+Hello world! This is a sample English text that we will use to test the upload and translation functionality.
+
+The system should detect that this is English text and translate it to Vietnamese when requested.
+
+Features to test:
+- File upload
+- Language detection
+- Translation processing
+- Status tracking
+- Download functionality
+
+This test will help verify that the complete end-to-end pipeline is working correctly.
