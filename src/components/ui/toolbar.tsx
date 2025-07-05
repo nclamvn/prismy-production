@@ -37,7 +37,7 @@ export function Toolbar() {
         aria-label="Switch language"
         className="h-9 px-3 font-medium text-sm"
       >
-        {locale === 'vi' ? 'EN' : 'VI'}
+        {locale === 'vi' ? 'VI' : 'EN'}
       </Button>
       
       {/* Theme Toggle */}
@@ -49,9 +49,9 @@ export function Toolbar() {
         className="h-9 w-9"
       >
         {theme === 'dark' ? (
-          <Sun className="h-4 w-4" stroke="currentColor" fill="none" />
-        ) : (
           <Moon className="h-4 w-4" stroke="currentColor" fill="none" />
+        ) : (
+          <Sun className="h-4 w-4" stroke="currentColor" fill="none" />
         )}
       </Button>
     </div>
