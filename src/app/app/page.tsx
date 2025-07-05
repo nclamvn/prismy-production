@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { FileUpload } from '@/components/upload/file-upload'
+import { SimpleFileUpload } from '@/components/upload/simple-file-upload'
 import { MessageSquare, Upload, FileText, Zap } from 'lucide-react'
 
 export default function WorkspacePage() {
@@ -16,24 +16,22 @@ export default function WorkspacePage() {
         
         {/* Welcome State */}
         {!hasFiles && (
-          <div className="flex-1 flex items-center justify-center">
-            <div className="max-w-2xl mx-auto text-center space-y-8">
-              {/* Hero Section */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mx-auto">
-                  <MessageSquare className="w-8 h-8 text-primary" />
-                </div>
-                <h1 className="text-3xl font-bold tracking-tight">
+          <div className="flex-1 overflow-y-auto">
+            <div className="max-w-2xl mx-auto px-4 py-8 space-y-6">
+              {/* Hero Section - Compact */}
+              <div className="text-center space-y-3">
+                <h1 className="text-2xl md:text-3xl font-bold tracking-tight flex items-center justify-center gap-2">
+                  <MessageSquare className="w-6 h-6 text-primary" />
                   Welcome to Prismy Workspace
                 </h1>
-                <p className="text-lg text-muted-foreground">
+                <p className="text-base text-muted-foreground max-w-prose mx-auto">
                   Your AI-powered document translation co-pilot. Upload documents to start a conversation about translation, analysis, and more.
                 </p>
               </div>
 
-              {/* Upload Zone */}
-              <div className="border-2 border-dashed border-border rounded-lg p-8">
-                <FileUpload 
+              {/* Upload Zone - Primary Action */}
+              <div className="border-2 border-dashed border-border rounded-lg p-6 md:p-8 bg-muted/5">
+                <SimpleFileUpload 
                   onUploadComplete={(files) => {
                     setHasFiles(files.length > 0)
                   }}
@@ -80,9 +78,9 @@ export default function WorkspacePage() {
               </div>
 
               {/* Tips */}
-              <div className="text-center space-y-2">
+              <div className="text-center space-y-1">
                 <p className="text-sm text-muted-foreground">
-                  💡 <strong>Pro tip:</strong> You can also paste text directly into the chat or drag URLs for web content
+                  💡 <strong>Pro tip:</strong> You can also paste text directly into the chat
                 </p>
                 <p className="text-xs text-muted-foreground">
                   Supported formats: PDF, DOCX, TXT, and more
