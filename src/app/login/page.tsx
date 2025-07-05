@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { AuthForm } from '@/components/auth/auth-form'
 import { DebugInfo } from '@/components/debug-info'
 import { SupabaseDiagnostics } from '@/components/supabase-diagnostics'
+import { QuickAuthDebug } from '@/components/quick-auth-debug'
 import Link from 'next/link'
 
 export default function LoginPage() {
@@ -42,6 +43,7 @@ export default function LoginPage() {
       {/* Debug Tools (development only) */}
       <DebugInfo />
       <SupabaseDiagnostics />
+      <QuickAuthDebug />
     </div>
   )
 }
