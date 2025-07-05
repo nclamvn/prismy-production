@@ -11,6 +11,8 @@ import { FeatureCard } from "@/components/ui/feature-card"
 import { Timeline, TimelineItem } from "@/components/ui/timeline"
 import { LogoCloud, demoLogos } from "@/components/ui/logo-cloud"
 import { Button } from "@/components/ui/button"
+import { GoLiveBanner } from "@/components/go-live-banner"
+import { FeedbackWidget } from "@/components/feedback-widget"
 
 // Enable static generation for all locales
 export const dynamic = 'force-static'
@@ -30,6 +32,9 @@ export default function LandingPage({ params: { locale } }: Props) {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Go Live Banner */}
+      <GoLiveBanner />
+      
       {/* Header */}
       <Header transparent />
 
@@ -163,6 +168,9 @@ export default function LandingPage({ params: { locale } }: Props) {
 
       {/* Footer */}
       <Footer />
+      
+      {/* Feedback Widget */}
+      <FeedbackWidget />
     </div>
   )
 }
