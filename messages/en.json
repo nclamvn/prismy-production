@@ -1,0 +1,81 @@
+{
+  "navigation": {
+    "docs": "Docs",
+    "pricing": "Pricing", 
+    "about": "About",
+    "signIn": "Sign In",
+    "getStarted": "Get Started"
+  },
+  "hero": {
+    "badge": "Production Ready",
+    "title": "Document Translation Simplified",
+    "subtitle": "Upload any document and get professional translations in seconds. Built with modern architecture for reliability and speed.",
+    "ctaTry": "Try it in 30 seconds",
+    "ctaLearn": "See how it works",
+    "trustIndicator": "Trusted by 1000+ teams",
+    "noCreditCard": "No credit card required"
+  },
+  "features": {
+    "title": "Everything you need for professional translation",
+    "subtitle": "Powerful features designed to make document translation fast, accurate, and secure.",
+    "fast": {
+      "title": "Lightning Fast",
+      "description": "Modern architecture with Next.js 15 and edge computing for instant translations that scale globally."
+    },
+    "secure": {
+      "title": "Enterprise Security", 
+      "description": "Built-in RLS policies, encryption at rest, and SOC 2 compliance to protect your sensitive documents."
+    },
+    "languages": {
+      "title": "50+ Languages",
+      "description": "Professional translation quality with AI-powered language detection and context-aware processing."
+    }
+  },
+  "workflow": {
+    "title": "Simple workflow, powerful results",
+    "subtitle": "Get professional translations in three simple steps.",
+    "upload": {
+      "title": "Upload",
+      "description": "Drag and drop your document or paste text. We support PDF, DOCX, and more."
+    },
+    "translate": {
+      "title": "Translate", 
+      "description": "Our AI detects the language and translates with context awareness and professional quality."
+    },
+    "download": {
+      "title": "Download",
+      "description": "Get your translated document with preserved formatting and layout in seconds."
+    },
+    "cta": "Try it now for free"
+  },
+  "socialProof": {
+    "title": "Trusted by teams at leading companies"
+  },
+  "cta": {
+    "title": "Ready to transform your document workflow?",
+    "subtitle": "Join thousands of teams who trust Prismy for their translation needs. Start translating in under 30 seconds.",
+    "getStarted": "Get Started Free",
+    "viewStatus": "View API Status",
+    "features": "No credit card required • Free tier available • Enterprise ready"
+  },
+  "footer": {
+    "description": "Professional document translation powered by AI. Fast, accurate, and secure.",
+    "product": "Product",
+    "features": "Features",
+    "pricing": "Pricing", 
+    "api": "API",
+    "integrations": "Integrations",
+    "company": "Company",
+    "about": "About",
+    "blog": "Blog",
+    "careers": "Careers",
+    "contact": "Contact",
+    "legal": "Legal",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "security": "Security",
+    "gdpr": "GDPR",
+    "copyright": "© {year} Prismy. All rights reserved.",
+    "made": "Made with ❤️ for global communication"
+  }
+}

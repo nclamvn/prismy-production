@@ -1,5 +1,6 @@
 import * as React from "react"
 import { Github, Twitter, Linkedin, Mail } from "lucide-react"
+import { useTranslations } from 'next-intl'
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -8,6 +9,7 @@ export interface FooterProps extends React.HTMLAttributes<HTMLElement> {}
 
 const Footer = React.forwardRef<HTMLElement, FooterProps>(
   ({ className, ...props }, ref) => {
+    const t = useTranslations('footer')
     const currentYear = new Date().getFullYear()
 
     return (
@@ -30,8 +32,7 @@ const Footer = React.forwardRef<HTMLElement, FooterProps>(
                 <span className="text-xl font-bold text-foreground">Prismy</span>
               </div>
               <p className="text-sm text-muted-foreground max-w-xs">
-                Professional document translation powered by AI. 
-                Fast, accurate, and secure.
+                {t('description')}
               </p>
               <div className="flex space-x-2">
                 <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -51,26 +52,26 @@ const Footer = React.forwardRef<HTMLElement, FooterProps>(
 
             {/* Product links */}
             <div className="space-y-4">
-              <h3 className="text-sm font-semibold text-foreground">Product</h3>
+              <h3 className="text-sm font-semibold text-foreground">{t('product')}</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>
                   <a href="/features" className="hover:text-foreground transition-colors">
-                    Features
+                    {t('features')}
                   </a>
                 </li>
                 <li>
                   <a href="/pricing" className="hover:text-foreground transition-colors">
-                    Pricing
+                    {t('pricing')}
                   </a>
                 </li>
                 <li>
                   <a href="/api" className="hover:text-foreground transition-colors">
-                    API
+                    {t('api')}
                   </a>
                 </li>
                 <li>
                   <a href="/integrations" className="hover:text-foreground transition-colors">
-                    Integrations
+                    {t('integrations')}
                   </a>
                 </li>
               </ul>
@@ -78,26 +79,26 @@ const Footer = React.forwardRef<HTMLElement, FooterProps>(
 
             {/* Company links */}
             <div className="space-y-4">
-              <h3 className="text-sm font-semibold text-foreground">Company</h3>
+              <h3 className="text-sm font-semibold text-foreground">{t('company')}</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>
                   <a href="/about" className="hover:text-foreground transition-colors">
-                    About
+                    {t('about')}
                   </a>
                 </li>
                 <li>
                   <a href="/blog" className="hover:text-foreground transition-colors">
-                    Blog
+                    {t('blog')}
                   </a>
                 </li>
                 <li>
                   <a href="/careers" className="hover:text-foreground transition-colors">
-                    Careers
+                    {t('careers')}
                   </a>
                 </li>
                 <li>
                   <a href="/contact" className="hover:text-foreground transition-colors">
-                    Contact
+                    {t('contact')}
                   </a>
                 </li>
               </ul>
@@ -105,26 +106,26 @@ const Footer = React.forwardRef<HTMLElement, FooterProps>(
 
             {/* Legal links */}
             <div className="space-y-4">
-              <h3 className="text-sm font-semibold text-foreground">Legal</h3>
+              <h3 className="text-sm font-semibold text-foreground">{t('legal')}</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>
                   <a href="/privacy" className="hover:text-foreground transition-colors">
-                    Privacy Policy
+                    {t('privacy')}
                   </a>
                 </li>
                 <li>
                   <a href="/terms" className="hover:text-foreground transition-colors">
-                    Terms of Service
+                    {t('terms')}
                   </a>
                 </li>
                 <li>
                   <a href="/security" className="hover:text-foreground transition-colors">
-                    Security
+                    {t('security')}
                   </a>
                 </li>
                 <li>
                   <a href="/gdpr" className="hover:text-foreground transition-colors">
-                    GDPR
+                    {t('gdpr')}
                   </a>
                 </li>
               </ul>
@@ -135,10 +136,10 @@ const Footer = React.forwardRef<HTMLElement, FooterProps>(
           <div className="mt-12 pt-8 border-t border-border">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
               <p className="text-sm text-muted-foreground">
-                © {currentYear} Prismy. All rights reserved.
+                {t('copyright', { year: currentYear })}
               </p>
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                <span>Made with ❤️ for global communication</span>
+                <span>{t('made')}</span>
               </div>
             </div>
           </div>

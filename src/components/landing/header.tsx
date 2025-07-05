@@ -2,9 +2,12 @@
 
 import * as React from "react"
 import { Menu, X } from "lucide-react"
+import { useTranslations } from 'next-intl'
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
+import { LocaleSwitch } from "@/components/ui/locale-switch"
 
 export interface HeaderProps extends React.HTMLAttributes<HTMLElement> {
   transparent?: boolean
@@ -12,6 +15,7 @@ export interface HeaderProps extends React.HTMLAttributes<HTMLElement> {
 
 const Header = React.forwardRef<HTMLElement, HeaderProps>(
   ({ className, transparent = false, ...props }, ref) => {
+    const t = useTranslations('navigation')
     const [isOpen, setIsOpen] = React.useState(false)
     const [isScrolled, setIsScrolled] = React.useState(false)
 
@@ -53,29 +57,31 @@ const Header = React.forwardRef<HTMLElement, HeaderProps>(
               href="/docs"
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
-              Docs
+              {t('docs')}
             </a>
             <a
               href="/pricing"
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
-              Pricing
+              {t('pricing')}
             </a>
             <a
               href="/about"
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
-              About
+              {t('about')}
             </a>
           </nav>
 
           {/* Desktop CTA */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden md:flex items-center space-x-2">
+            <LocaleSwitch />
+            <ThemeToggle />
             <Button variant="ghost" size="sm" onClick={() => window.location.href = '/login'}>
-              Sign In
+              {t('signIn')}
             </Button>
             <Button size="sm" onClick={() => window.location.href = '/upload'}>
-              Get Started
+              {t('getStarted')}
             </Button>
           </div>
 
@@ -100,24 +106,28 @@ const Header = React.forwardRef<HTMLElement, HeaderProps>(
                   className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
-                  Docs
+                  {t('docs')}
                 </a>
                 <a
                   href="/pricing"
                   className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
-                  Pricing
+                  {t('pricing')}
                 </a>
                 <a
                   href="/about"
                   className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
-                  About
+                  {t('about')}
                 </a>
               </nav>
               <div className="flex flex-col space-y-2 pt-4 border-t border-border">
+                <div className="flex items-center justify-between mb-2">
+                  <LocaleSwitch />
+                  <ThemeToggle />
+                </div>
                 <Button 
                   variant="ghost" 
                   className="justify-start" 
@@ -126,7 +136,7 @@ const Header = React.forwardRef<HTMLElement, HeaderProps>(
                     window.location.href = '/login'
                   }}
                 >
-                  Sign In
+                  {t('signIn')}
                 </Button>
                 <Button 
                   className="justify-start" 
@@ -135,7 +145,7 @@ const Header = React.forwardRef<HTMLElement, HeaderProps>(
                     window.location.href = '/upload'
                   }}
                 >
-                  Get Started
+                  {t('getStarted')}
                 </Button>
               </div>
             </div>

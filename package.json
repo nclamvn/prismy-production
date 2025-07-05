@@ -19,7 +19,9 @@
     "tailwind-merge": "^2.0.0",
     "lucide-react": "^0.400.0",
     "react-dropzone": "^14.2.3",
-    "@radix-ui/react-slot": "^1.0.2"
+    "@radix-ui/react-slot": "^1.0.2",
+    "next-themes": "^0.2.1",
+    "next-intl": "^3.0.0"
   },
   "devDependencies": {
     "@types/node": "^20",

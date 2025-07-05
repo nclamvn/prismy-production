@@ -1,0 +1,81 @@
+{
+  "navigation": {
+    "docs": "Tài liệu",
+    "pricing": "Bảng giá",
+    "about": "Giới thiệu", 
+    "signIn": "Đăng nhập",
+    "getStarted": "Bắt đầu"
+  },
+  "hero": {
+    "badge": "Sẵn sàng Production",
+    "title": "Dịch tài liệu đơn giản hóa",
+    "subtitle": "Tải lên tài liệu bất kỳ và nhận bản dịch chuyên nghiệp trong vài giây. Được xây dựng với kiến trúc hiện đại để đảm bảo độ tin cậy và tốc độ.",
+    "ctaTry": "Thử ngay trong 30 giây",
+    "ctaLearn": "Xem cách hoạt động",
+    "trustIndicator": "Được tin tưởng bởi 1000+ đội ngũ",
+    "noCreditCard": "Không cần thẻ tín dụng"
+  },
+  "features": {
+    "title": "Mọi thứ bạn cần cho dịch thuật chuyên nghiệp",
+    "subtitle": "Các tính năng mạnh mẽ được thiết kế để làm cho việc dịch tài liệu nhanh chóng, chính xác và an toàn.",
+    "fast": {
+      "title": "Cực kỳ nhanh",
+      "description": "Kiến trúc hiện đại với Next.js 15 và edge computing cho bản dịch tức thì có thể mở rộng toàn cầu."
+    },
+    "secure": {
+      "title": "Bảo mật doanh nghiệp",
+      "description": "Chính sách RLS tích hợp, mã hóa khi lưu trữ và tuân thủ SOC 2 để bảo vệ tài liệu nhạy cảm của bạn."
+    },
+    "languages": {
+      "title": "50+ ngôn ngữ", 
+      "description": "Chất lượng dịch thuật chuyên nghiệp với AI phát hiện ngôn ngữ và xử lý có nhận thức ngữ cảnh."
+    }
+  },
+  "workflow": {
+    "title": "Quy trình đơn giản, kết quả mạnh mẽ",
+    "subtitle": "Nhận bản dịch chuyên nghiệp chỉ trong ba bước đơn giản.",
+    "upload": {
+      "title": "Tải lên",
+      "description": "Kéo thả tài liệu hoặc dán văn bản. Chúng tôi hỗ trợ PDF, DOCX và nhiều định dạng khác."
+    },
+    "translate": {
+      "title": "Dịch thuật",
+      "description": "AI của chúng tôi phát hiện ngôn ngữ và dịch với nhận thức ngữ cảnh và chất lượng chuyên nghiệp."
+    },
+    "download": {
+      "title": "Tải xuống", 
+      "description": "Nhận tài liệu đã dịch với định dạng và bố cục được bảo toàn trong vài giây."
+    },
+    "cta": "Thử ngay miễn phí"
+  },
+  "socialProof": {
+    "title": "Được tin tưởng bởi các đội ngũ tại những công ty hàng đầu"
+  },
+  "cta": {
+    "title": "Sẵn sàng chuyển đổi quy trình tài liệu của bạn?",
+    "subtitle": "Tham gia cùng hàng nghìn đội ngũ tin tưởng Prismy cho nhu cầu dịch thuật. Bắt đầu dịch trong vòng chưa đầy 30 giây.",
+    "getStarted": "Bắt đầu miễn phí",
+    "viewStatus": "Xem trạng thái API",
+    "features": "Không cần thẻ tín dụng • Có gói miễn phí • Sẵn sàng cho doanh nghiệp"
+  },
+  "footer": {
+    "description": "Dịch tài liệu chuyên nghiệp được hỗ trợ bởi AI. Nhanh, chính xác và an toàn.",
+    "product": "Sản phẩm",
+    "features": "Tính năng", 
+    "pricing": "Bảng giá",
+    "api": "API",
+    "integrations": "Tích hợp",
+    "company": "Công ty",
+    "about": "Giới thiệu",
+    "blog": "Blog",
+    "careers": "Tuyển dụng",
+    "contact": "Liên hệ",
+    "legal": "Pháp lý",
+    "privacy": "Chính sách bảo mật",
+    "terms": "Điều khoản dịch vụ",
+    "security": "Bảo mật",
+    "gdpr": "GDPR", 
+    "copyright": "© {year} Prismy. Bảo lưu mọi quyền.",
+    "made": "Được tạo ra với ❤️ cho Cốm & Cherry"
+  }
+}

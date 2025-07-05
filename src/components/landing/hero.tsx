@@ -1,5 +1,6 @@
 import * as React from "react"
 import { ArrowRight, Play } from "lucide-react"
+import { useTranslations } from 'next-intl'
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -8,6 +9,7 @@ export interface HeroProps extends React.HTMLAttributes<HTMLElement> {}
 
 const Hero = React.forwardRef<HTMLElement, HeroProps>(
   ({ className, ...props }, ref) => {
+    const t = useTranslations('hero')
     return (
       <section
         ref={ref}
@@ -30,19 +32,15 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
               <div className="space-y-4">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-muted/50 text-sm text-muted-foreground">
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                  Production Ready
+                  {t('badge')}
                 </div>
                 
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-balance">
-                  Document&nbsp;Translation{" "}
-                  <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-                    Simplified
-                  </span>
+                  {t('title')}
                 </h1>
                 
                 <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto lg:mx-0">
-                  Upload any document and get professional translations in seconds. 
-                  Built with modern architecture for reliability and speed.
+                  {t('subtitle')}
                 </p>
               </div>
 
@@ -53,7 +51,7 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
                   className="gap-2 text-base px-8 py-6 h-auto"
                   onClick={() => window.location.href = '/upload'}
                 >
-                  Try it in 30 seconds
+                  {t('ctaTry')}
                   <ArrowRight className="h-4 w-4" />
                 </Button>
                 <Button 
@@ -66,7 +64,7 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
                   }}
                 >
                   <Play className="h-4 w-4" />
-                  See how it works
+                  {t('ctaLearn')}
                 </Button>
               </div>
 
@@ -83,10 +81,10 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
                       </div>
                     ))}
                   </div>
-                  <span>Trusted by 1000+ teams</span>
+                  <span>{t('trustIndicator')}</span>
                 </div>
                 <div className="h-4 w-px bg-border hidden sm:block" />
-                <span>✨ No credit card required</span>
+                <span>✨ {t('noCreditCard')}</span>
               </div>
             </div>
 
