@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { AuthForm } from '@/components/auth/auth-form'
+import { DebugInfo } from '@/components/debug-info'
 import Link from 'next/link'
 
 export default function LoginPage() {
@@ -36,6 +37,9 @@ export default function LoginPage() {
           </Link>
         </div>
       </div>
+      
+      {/* Debug Info (development only) */}
+      <DebugInfo />
     </div>
   )
 }

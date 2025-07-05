@@ -27,37 +27,90 @@ export function AuthForm({ mode, onModeChange }: AuthFormProps) {
     setMessage(null)
 
     try {
+      // Enhanced validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(email)) {
+        setMessage({ type: 'error', text: 'Please enter a valid email address' })
+        setLoading(false)
+        return
+      }
+
+      if (password.length < 8) {
+        setMessage({ type: 'error', text: 'Password must be at least 8 characters long' })
+        setLoading(false)
+        return
+      }
+
+      const redirectUrl = `${window.location.origin}/auth/callback`
+      
       if (mode === 'signup') {
-        const { error } = await supabase.auth.signUp({
+        console.log('🔧 DEBUG: Signup attempt:', {
+          email: email,
+          passwordLength: password.length,
+          redirectUrl: redirectUrl,
+          origin: window.location.origin
+        })
+
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/auth/callback`,
+            emailRedirectTo: redirectUrl,
           },
         })
 
+        console.log('🔧 DEBUG: Supabase response:', { data, error })
+
         if (error) {
-          setMessage({ type: 'error', text: error.message })
+          console.error('🚨 Supabase signup error:', {
+            message: error.message,
+            status: error.status,
+            code: error.code || 'unknown',
+            details: error
+          })
+          
+          // Enhanced error messages based on common 422 causes
+          let userMessage = error.message
+          if (error.message?.includes('Invalid email') || error.message?.includes('invalid_email')) {
+            userMessage = 'Invalid email address format. Please check and try again.'
+          } else if (error.message?.includes('password') || error.message?.includes('Password')) {
+            userMessage = 'Password does not meet requirements. Try a stronger password with 8+ characters.'
+          } else if (error.message?.includes('redirect') || error.message?.includes('invalid_redirect_url')) {
+            userMessage = 'Authentication configuration error. Please contact support.'
+          } else if (error.message?.includes('rate limit') || error.message?.includes('too many')) {
+            userMessage = 'Too many attempts. Please wait a few minutes and try again.'
+          } else if (error.message?.includes('already registered') || error.message?.includes('already exists')) {
+            userMessage = 'Email already registered. Try signing in instead.'
+          }
+          
+          setMessage({ type: 'error', text: userMessage })
         } else {
+          console.log('✅ Signup successful:', data)
           setMessage({
             type: 'success',
             text: 'Check your email for the confirmation link!',
           })
         }
       } else {
-        const { error } = await supabase.auth.signInWithPassword({
+        console.log('🔧 DEBUG: Login attempt:', { email })
+        
+        const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
         })
 
+        console.log('🔧 DEBUG: Login response:', { data, error })
+
         if (error) {
+          console.error('🚨 Supabase login error:', error)
           setMessage({ type: 'error', text: error.message })
         } else {
-          // Redirect will be handled by middleware
+          console.log('✅ Login successful, redirecting...')
           window.location.href = '/app'
         }
       }
-    } catch {
+    } catch (err) {
+      console.error('🚨 Unexpected error:', err)
       setMessage({
         type: 'error',
         text: 'An unexpected error occurred. Please try again.',
@@ -106,7 +159,7 @@ export function AuthForm({ mode, onModeChange }: AuthFormProps) {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              minLength={6}
+              minLength={8}
             />
           </div>
 
