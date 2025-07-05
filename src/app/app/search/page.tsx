@@ -1,35 +1,28 @@
 'use client'
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Search, FileText, Filter, Clock } from 'lucide-react'
+import { SearchBar } from '@/components/search/search-bar'
+import { FileText, Filter, Clock } from 'lucide-react'
 
 export default function SearchPage() {
+  const handleSearch = (query: string) => {
+    console.log('Search query:', query)
+    // TODO: Implement search functionality
+  }
+
   return (
-    <div className="h-full p-6 space-y-6">
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">Search</h1>
+    <section className="mx-auto max-w-6xl space-y-8 p-6">
+      <div className="space-y-1">
+        <h1 className="text-3xl font-bold">Search</h1>
         <p className="text-muted-foreground">
           Search through your documents and translations
         </p>
       </div>
 
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder="Search documents, translations, or content..."
-                className="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-lg"
-              />
-            </div>
-            <Button size="lg">Search</Button>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Search bar */}
+      <SearchBar onSearch={handleSearch} />
 
+      {/* Search results and filters */}
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
@@ -40,7 +33,7 @@ export default function SearchPage() {
           </CardHeader>
           <CardContent>
             <div className="text-center py-8 text-muted-foreground">
-              <Search className="w-12 h-12 mx-auto mb-4 opacity-50" />
+              <Clock className="w-12 h-12 mx-auto mb-4 opacity-50" />
               <p>No recent searches</p>
             </div>
           </CardContent>
@@ -87,6 +80,6 @@ export default function SearchPage() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </section>
   )
 }
