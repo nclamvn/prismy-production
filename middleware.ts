@@ -1,7 +1,9 @@
 import createIntlMiddleware from 'next-intl/middleware';
+import { NextRequest } from 'next/server';
+import { updateSession } from '@/lib/supabase/middleware';
 import { locales, defaultLocale } from './i18n';
- 
-export default createIntlMiddleware({
+
+const intlMiddleware = createIntlMiddleware({
   // A list of all locales that are supported
   locales,
  
@@ -11,8 +13,20 @@ export default createIntlMiddleware({
   // Don't add locale prefix for default locale
   localePrefix: 'as-needed'
 });
+
+export async function middleware(request: NextRequest) {
+  // Handle auth first for protected routes
+  if (request.nextUrl.pathname.startsWith('/app') || 
+      request.nextUrl.pathname === '/login' ||
+      request.nextUrl.pathname === '/signup') {
+    return await updateSession(request);
+  }
+
+  // Handle internationalization for other routes
+  return intlMiddleware(request);
+}
  
 export const config = {
-  // Match only internationalized pathnames
-  matcher: ['/', '/((?!api|_next|_vercel|.*\\..*).*)']
+  // Match only internationalized pathnames and auth routes
+  matcher: ['/', '/app/:path*', '/login', '/signup', '/((?!api|_next|_vercel|.*\\..*).*)']
 };

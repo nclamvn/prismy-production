@@ -1,46 +1,41 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+'use client'
+
+import { useState } from 'react'
+import { AuthForm } from '@/components/auth/auth-form'
+import Link from 'next/link'
 
 export default function LoginPage() {
+  const [mode, setMode] = useState<'login' | 'signup'>('login')
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Welcome to Prismy v2</CardTitle>
-          <CardDescription>
-            Sign in to your account to start translating documents
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              placeholder="Enter your email"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          
-          <Button className="w-full" size="lg">
-            Sign In with Email
-          </Button>
-          
-          <div className="text-center text-sm text-gray-600">
-            We'll send you a magic link to sign in
-          </div>
-          
-          <div className="mt-6 p-4 bg-blue-50 rounded-md">
-            <h4 className="font-semibold text-blue-900 mb-2">🚧 Authentication Coming Soon</h4>
-            <p className="text-blue-800 text-sm">
-              Full Supabase authentication will be enabled in the next phase. 
-              For now, this is a preview of the login interface.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 flex items-center justify-center p-4">
+      <div className="w-full max-w-md space-y-6">
+        {/* Logo/Brand */}
+        <div className="text-center">
+          <Link href="/" className="inline-flex items-center space-x-2">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold">
+              P
+            </div>
+            <span className="text-2xl font-bold">Prismy</span>
+          </Link>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Professional document translation platform
+          </p>
+        </div>
+
+        {/* Auth Form */}
+        <AuthForm mode={mode} onModeChange={setMode} />
+
+        {/* Back to Home */}
+        <div className="text-center">
+          <Link 
+            href="/" 
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            ← Back to home
+          </Link>
+        </div>
+      </div>
     </div>
-  );
+  )
 }
