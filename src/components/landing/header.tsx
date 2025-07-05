@@ -35,8 +35,8 @@ const Header = React.forwardRef<HTMLElement, HeaderProps>(
         className={cn(
           "sticky top-0 z-50 w-full border-b transition-all duration-300",
           shouldBeTransparent
-            ? "bg-background/80 backdrop-blur-md border-border/50"
-            : "bg-background/95 backdrop-blur-md border-border",
+            ? "bg-background/60 backdrop-blur-md border-border/50"
+            : "bg-background/60 backdrop-blur-md border-border",
           className
         )}
         {...props}
@@ -96,7 +96,7 @@ const Header = React.forwardRef<HTMLElement, HeaderProps>(
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="md:hidden border-t border-border bg-background/95 backdrop-blur-md">
+          <div className="md:hidden border-t border-border bg-background/60 backdrop-blur-md">
             <div className="container mx-auto px-4 py-4 space-y-4">
               <nav className="flex flex-col space-y-4">
                 <a

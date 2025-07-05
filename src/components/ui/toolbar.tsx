@@ -1,6 +1,6 @@
 "use client";
 
-import { Globe, Moon, Sun } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useLocale } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
@@ -18,8 +18,8 @@ export function Toolbar() {
     const cleanPath = pathname.replace(/^\/(vi|en)/, '') || '/';
     // Build new path with target locale
     const newPath = newLocale === 'vi' ? cleanPath : `/en${cleanPath}`;
-    // Use replace to avoid prefetching both locales
-    router.push(newPath);
+    // Use replace to avoid history entries
+    router.replace(newPath);
   };
 
   const toggleTheme = () => {
@@ -32,12 +32,12 @@ export function Toolbar() {
       {/* Language Switch */}
       <Button
         variant="ghost"
-        size="icon"
+        size="sm"
         onClick={switchLocale}
         aria-label="Switch language"
-        className="h-9 w-9"
+        className="h-9 px-3 font-medium text-sm"
       >
-        <Globe className="h-4 w-4" stroke="currentColor" fill="none" />
+        {locale === 'vi' ? 'EN' : 'VI'}
       </Button>
       
       {/* Theme Toggle */}
@@ -48,10 +48,10 @@ export function Toolbar() {
         aria-label="Toggle theme"
         className="h-9 w-9"
       >
-        {theme === 'light' ? (
-          <Moon className="h-4 w-4" stroke="currentColor" fill="none" />
-        ) : (
+        {theme === 'dark' ? (
           <Sun className="h-4 w-4" stroke="currentColor" fill="none" />
+        ) : (
+          <Moon className="h-4 w-4" stroke="currentColor" fill="none" />
         )}
       </Button>
     </div>
