@@ -30,13 +30,11 @@ export default function WorkspacePage() {
               </div>
 
               {/* Upload Zone - Primary Action */}
-              <div className="border-2 border-dashed border-border rounded-lg p-6 md:p-8 bg-muted/5">
-                <SimpleFileUpload 
-                  onUploadComplete={(files) => {
-                    setHasFiles(files.length > 0)
-                  }}
-                />
-              </div>
+              <SimpleFileUpload 
+                onUploadComplete={(files) => {
+                  setHasFiles(files.length > 0)
+                }}
+              />
 
               {/* Quick Actions */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto">

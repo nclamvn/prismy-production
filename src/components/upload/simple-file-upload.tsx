@@ -56,23 +56,27 @@ export function SimpleFileUpload({ onUploadComplete }: SimpleFileUploadProps) {
 
   if (file) {
     return (
-      <div className="flex items-center justify-between p-4 bg-muted/20 rounded-lg">
-        <div className="flex items-center gap-3">
-          <File className="h-8 w-8 text-primary" />
-          <div>
-            <p className="font-medium">{file.name}</p>
-            <p className="text-sm text-muted-foreground">
-              {(file.size / 1024 / 1024).toFixed(2)} MB
-            </p>
-          </div>
+      <div className="flex flex-col items-center justify-center gap-4 w-full h-72 rounded-lg border-2 border-solid border-primary/60 bg-primary/5">
+        <div className="text-center">
+          <File className="h-12 w-12 text-primary mx-auto mb-3" />
+          <p className="font-medium text-lg">{file.name}</p>
+          <p className="text-sm text-muted-foreground">
+            {(file.size / 1024 / 1024).toFixed(2)} MB
+          </p>
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={resetFile}
-        >
-          <X className="h-4 w-4" />
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="secondary" size="sm">
+            Start Translation
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={resetFile}
+          >
+            <X className="h-4 w-4 mr-1" />
+            Remove
+          </Button>
+        </div>
       </div>
     )
   }
@@ -80,20 +84,29 @@ export function SimpleFileUpload({ onUploadComplete }: SimpleFileUploadProps) {
   return (
     <div
       className={`
-        text-center transition-colors cursor-pointer
-        ${isDragOver ? 'bg-primary/5' : ''}
+        flex flex-col items-center justify-center
+        gap-3
+        w-full h-72
+        rounded-lg border-2 border-dashed
+        transition-colors cursor-pointer
+        ${isDragOver 
+          ? 'border-primary bg-primary/5' 
+          : 'border-primary/40 hover:border-primary bg-muted/20'
+        }
       `}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onClick={() => fileInputRef.current?.click()}
     >
-      <Upload className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
-      <h3 className="text-base font-medium mb-1">Drop your file here</h3>
-      <p className="text-sm text-muted-foreground mb-3">
-        or click to browse
+      <Upload className="h-12 w-12 text-primary/80" />
+      <p className="font-medium text-lg text-foreground">
+        Drop your file here
       </p>
-      <Button variant="outline" size="sm">
+      <p className="text-sm text-muted-foreground -mt-1">
+        or click to browse (PDF, DOCX, TXT · ≤ 1 GB)
+      </p>
+      <Button variant="secondary" size="sm" className="mt-2">
         Select File
       </Button>
       <input
