@@ -1,156 +1,143 @@
 'use client'
 
-import { useSupabase } from '@/hooks/use-supabase'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import Link from 'next/link'
+import { FileUpload } from '@/components/upload/file-upload'
+import { MessageSquare, Upload, FileText, Zap } from 'lucide-react'
 
-export default function AppPage() {
-  const { user, loading, supabase } = useSupabase()
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut()
-    window.location.href = '/'
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-2 text-sm text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    )
-  }
-
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <CardTitle>Authentication Required</CardTitle>
-            <CardDescription>
-              Please sign in to access your dashboard
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Link href="/login">
-              <Button className="w-full">Sign In</Button>
-            </Link>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
+export default function WorkspacePage() {
+  const [hasFiles, setHasFiles] = useState(false)
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
-      {/* Simple Header */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <div className="flex items-center space-x-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-sm">
-              P
+    <div className="h-full flex flex-col">
+      {/* Conversation Canvas - Main Content Area */}
+      <div className="flex-1 flex flex-col">
+        
+        {/* Welcome State */}
+        {!hasFiles && (
+          <div className="flex-1 flex items-center justify-center">
+            <div className="max-w-2xl mx-auto text-center space-y-8">
+              {/* Hero Section */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mx-auto">
+                  <MessageSquare className="w-8 h-8 text-primary" />
+                </div>
+                <h1 className="text-3xl font-bold tracking-tight">
+                  Welcome to Prismy Workspace
+                </h1>
+                <p className="text-lg text-muted-foreground">
+                  Your AI-powered document translation co-pilot. Upload documents to start a conversation about translation, analysis, and more.
+                </p>
+              </div>
+
+              {/* Upload Zone */}
+              <div className="border-2 border-dashed border-border rounded-lg p-8">
+                <FileUpload 
+                  onUploadComplete={(files) => {
+                    setHasFiles(files.length > 0)
+                  }}
+                />
+              </div>
+
+              {/* Quick Actions */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
+                <Card className="cursor-pointer hover:shadow-md transition-shadow">
+                  <CardHeader className="text-center pb-2">
+                    <Upload className="w-6 h-6 text-primary mx-auto mb-2" />
+                    <CardTitle className="text-sm">Upload & Translate</CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <CardDescription className="text-xs">
+                      Drag and drop documents for instant translation
+                    </CardDescription>
+                  </CardContent>
+                </Card>
+
+                <Card className="cursor-pointer hover:shadow-md transition-shadow">
+                  <CardHeader className="text-center pb-2">
+                    <FileText className="w-6 h-6 text-primary mx-auto mb-2" />
+                    <CardTitle className="text-sm">Analyze Content</CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <CardDescription className="text-xs">
+                      Get insights about document structure and language
+                    </CardDescription>
+                  </CardContent>
+                </Card>
+
+                <Card className="cursor-pointer hover:shadow-md transition-shadow">
+                  <CardHeader className="text-center pb-2">
+                    <Zap className="w-6 h-6 text-primary mx-auto mb-2" />
+                    <CardTitle className="text-sm">Smart Actions</CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <CardDescription className="text-xs">
+                      AI-powered suggestions for your documents
+                    </CardDescription>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Tips */}
+              <div className="text-center space-y-2">
+                <p className="text-sm text-muted-foreground">
+                  💡 <strong>Pro tip:</strong> You can also paste text directly into the chat or drag URLs for web content
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Supported formats: PDF, DOCX, TXT, and more
+                </p>
+              </div>
             </div>
-            <span className="text-xl font-bold">Prismy</span>
           </div>
-          
-          <div className="flex items-center space-x-4">
-            <span className="text-sm text-muted-foreground">
-              Welcome, {user.email}
-            </span>
-            <Button variant="outline" onClick={handleLogout}>
-              Sign Out
-            </Button>
-          </div>
-        </div>
-      </header>
+        )}
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto space-y-8">
-          {/* Welcome Section */}
-          <div className="text-center">
-            <h1 className="text-4xl font-bold tracking-tight">
-              Welcome to Prismy Dashboard
-            </h1>
-            <p className="mt-2 text-lg text-muted-foreground">
-              Your document translation workspace
-            </p>
-          </div>
-
-          {/* Quick Actions */}
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <Card>
-              <CardHeader>
-                <CardTitle>Upload Document</CardTitle>
-                <CardDescription>
-                  Start translating a new document
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Link href="/upload">
-                  <Button className="w-full">
-                    Upload & Translate
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Recent Documents</CardTitle>
-                <CardDescription>
-                  View your translation history
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button variant="outline" className="w-full" disabled>
-                  Coming Soon
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Settings</CardTitle>
-                <CardDescription>
-                  Manage your account preferences
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button variant="outline" className="w-full" disabled>
-                  Coming Soon
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* User Info */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Account Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-sm font-medium">Email:</span>
-                <span className="text-sm text-muted-foreground">{user.email}</span>
+        {/* Conversation State */}
+        {hasFiles && (
+          <div className="flex-1 flex flex-col">
+            {/* Chat Thread Area */}
+            <div className="flex-1 p-6">
+              <div className="max-w-4xl mx-auto">
+                <div className="text-center py-8">
+                  <h2 className="text-xl font-semibold mb-2">Ready to start working!</h2>
+                  <p className="text-muted-foreground">
+                    Your files are uploaded. Ask me anything about them or request translations.
+                  </p>
+                </div>
+                
+                {/* Placeholder for chat messages */}
+                <div className="space-y-4">
+                  <div className="bg-muted/30 rounded-lg p-4">
+                    <p className="text-sm text-muted-foreground">
+                      💬 Chat interface coming soon...
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-sm font-medium">User ID:</span>
-                <span className="text-sm text-muted-foreground font-mono">{user.id}</span>
+            </div>
+
+            {/* Chat Input Area */}
+            <div className="border-t p-4">
+              <div className="max-w-4xl mx-auto">
+                <div className="flex gap-2">
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      placeholder="Ask me anything about your documents..."
+                      className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                      disabled
+                    />
+                  </div>
+                  <Button disabled>Send</Button>
+                </div>
+                <p className="text-xs text-muted-foreground mt-2 text-center">
+                  Interactive chat coming in the next update
+                </p>
               </div>
-              <div className="flex justify-between">
-                <span className="text-sm font-medium">Signed up:</span>
-                <span className="text-sm text-muted-foreground">
-                  {new Date(user.created_at).toLocaleDateString()}
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </main>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
