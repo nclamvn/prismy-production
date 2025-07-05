@@ -1,6 +1,7 @@
 import * as React from "react"
 import { ArrowRight, Play } from "lucide-react"
 import { useTranslations } from 'next-intl'
+import Link from 'next/link'
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -49,22 +50,23 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
                 <Button 
                   size="lg" 
                   className="gap-2 text-base px-8 py-6 h-auto"
-                  onClick={() => window.location.href = '/upload'}
+                  asChild
                 >
-                  {t('ctaTry')}
-                  <ArrowRight className="h-4 w-4" />
+                  <Link href="/upload">
+                    {t('ctaTry')}
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
                 </Button>
                 <Button 
                   variant="outline" 
                   size="lg" 
                   className="gap-2 text-base px-8 py-6 h-auto"
-                  onClick={() => {
-                    // Scroll to demo video or features section
-                    document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })
-                  }}
+                  asChild
                 >
-                  <Play className="h-4 w-4" />
-                  {t('ctaLearn')}
+                  <Link href="#features">
+                    <Play className="h-4 w-4" />
+                    {t('ctaLearn')}
+                  </Link>
                 </Button>
               </div>
 

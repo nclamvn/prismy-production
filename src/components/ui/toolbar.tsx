@@ -18,11 +18,15 @@ export function Toolbar() {
     const cleanPath = pathname.replace(/^\/(vi|en)/, '') || '/';
     // Build new path with target locale
     const newPath = newLocale === 'vi' ? cleanPath : `/en${cleanPath}`;
+    // Use replace to avoid prefetching both locales
     router.push(newPath);
   };
 
   const toggleTheme = () => {
-    setTheme(theme === 'light' ? 'dark' : 'light');
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    // Set cookie for SSR consistency
+    document.cookie = `prismy-theme=${newTheme}; path=/; max-age=31536000; SameSite=Lax`;
+    setTheme(newTheme);
   };
 
   return (

@@ -1,11 +1,12 @@
 import createIntlMiddleware from 'next-intl/middleware';
+import { locales, defaultLocale } from './i18n';
  
 export default createIntlMiddleware({
   // A list of all locales that are supported
-  locales: ['vi', 'en'],
+  locales,
  
   // Used when no locale matches - Vietnamese default
-  defaultLocale: 'vi',
+  defaultLocale,
   
   // Don't add locale prefix for default locale
   localePrefix: 'as-needed'

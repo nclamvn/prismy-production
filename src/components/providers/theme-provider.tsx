@@ -11,6 +11,8 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
       enableSystem={false}
       storageKey="prismy-theme"
       disableTransitionOnChange
+      // Prevent hydration mismatch by using cookie storage
+      nonce={undefined}
       {...props}
     >
       {children}

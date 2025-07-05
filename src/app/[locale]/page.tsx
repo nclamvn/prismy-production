@@ -1,7 +1,8 @@
-"use client"
-
 import { Upload, Zap, Shield, ArrowRight, FileText, Languages, Download } from "lucide-react"
 import { useTranslations } from 'next-intl'
+import { setRequestLocale } from 'next-intl/server'
+import { locales } from '../../../i18n'
+import Link from 'next/link'
 
 import { Header } from "@/components/landing/header"
 import { Hero } from "@/components/landing/hero"
@@ -11,8 +12,21 @@ import { Timeline, TimelineItem } from "@/components/ui/timeline"
 import { LogoCloud, demoLogos } from "@/components/ui/logo-cloud"
 import { Button } from "@/components/ui/button"
 
-export default function LandingPage() {
-  const t = useTranslations();
+// Enable static generation for all locales
+export const dynamic = 'force-static'
+
+export async function generateStaticParams() {
+  return locales.map((locale) => ({ locale }))
+}
+
+type Props = {
+  params: { locale: string }
+}
+
+export default function LandingPage({ params: { locale } }: Props) {
+  // Enable static rendering
+  setRequestLocale(locale)
+  const t = useTranslations()
 
   return (
     <div className="min-h-screen bg-background">
@@ -94,9 +108,11 @@ export default function LandingPage() {
           </Timeline>
 
           <div className="text-center mt-12">
-            <Button size="lg" className="gap-2" onClick={() => window.location.href = '/upload'}>
-              {t('workflow.cta')}
-              <ArrowRight className="h-4 w-4" />
+            <Button size="lg" className="gap-2" asChild>
+              <Link href="/upload">
+                {t('workflow.cta')}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
             </Button>
           </div>
         </div>
@@ -125,13 +141,17 @@ export default function LandingPage() {
               {t('cta.subtitle')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="gap-2 text-base px-8 py-6 h-auto" onClick={() => window.location.href = '/upload'}>
-                {t('cta.getStarted')}
-                <ArrowRight className="h-4 w-4" />
+              <Button size="lg" className="gap-2 text-base px-8 py-6 h-auto" asChild>
+                <Link href="/upload">
+                  {t('cta.getStarted')}
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
               </Button>
-              <Button variant="outline" size="lg" className="gap-2 text-base px-8 py-6 h-auto" onClick={() => window.location.href = '/api/health'}>
-                <FileText className="h-4 w-4" />
-                {t('cta.viewStatus')}
+              <Button variant="outline" size="lg" className="gap-2 text-base px-8 py-6 h-auto" asChild>
+                <Link href="/api/health">
+                  <FileText className="h-4 w-4" />
+                  {t('cta.viewStatus')}
+                </Link>
               </Button>
             </div>
             <p className="text-sm text-muted-foreground">
