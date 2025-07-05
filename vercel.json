@@ -1,0 +1,57 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "functions": {
+    "app/api/upload/route.js": {
+      "maxDuration": 300
+    },
+    "app/api/translate/route.js": {
+      "maxDuration": 300
+    },
+    "app/api/ocr/route.js": {
+      "maxDuration": 300
+    }
+  },
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, PUT, DELETE, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "X-Requested-With, Content-Type, Authorization"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/health",
+      "destination": "/api/health/route"
+    }
+  ],
+  "env": {
+    "MVP_MODE": "true",
+    "ENABLE_LARGE_UPLOADS": "false",
+    "ENABLE_CHUNKED_UPLOAD": "false",
+    "ENABLE_OCR_QUEUE": "false",
+    "ENABLE_REAL_TRANSLATION": "true",
+    "ENABLE_ADMIN_PANEL": "true",
+    "ENABLE_ANALYTICS": "true",
+    "ENABLE_ERROR_TRACKING": "true",
+    "ENABLE_RATE_LIMITING": "true",
+    "ENABLE_PERFORMANCE_MONITORING": "true",
+    "NEXT_PUBLIC_PIPELINE_V2": "true",
+    "NEXT_PUBLIC_APP_URL": "https://prismy.in",
+    "NEXT_PUBLIC_ENVIRONMENT": "production"
+  }
+}
